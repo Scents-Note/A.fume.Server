@@ -76,7 +76,7 @@ module.exports = {
             const connection = await pool.getConnection()
             try {
                 await connection.beginTransaction();
-                args.forEach(async (it) => await it(connection));
+                args.forEach((it) => it(connection));
                 await connection.commit();
             } catch (transactionError) {
                 await connection.rollback();
