@@ -20,7 +20,7 @@ module.exports.create = ({
 }
 
 /**
- * 특정 브랜드 조회
+ * 브랜드 세부 조회 
  * 
  */
 const SQL_BRAND_SELECT_BY_IDX = "SELECT brand_idx, name, english_name, start_character, image_url, description FROM brand WHERE brand_idx = ?";
@@ -33,7 +33,7 @@ module.exports.read = async (brand_idx) => {
 }
 
 /**
- * 브랜드 전체 조회
+ * 브랜드 전체 목록 조회
  * 
  */
 const SQL_BRAND_SELECT_ALL = "SELECT brand_idx, name, start_character, image_url, description FROM brand";
