@@ -1,4 +1,4 @@
-const statusCode = require('../util/statusCode.js');
+const statusCode = require('../statusCode.js');
 
 class DatabaseError extends Error {
     constructor(code = 'GENERIC', status = statusCode.DB_ERROR, ...params) {
