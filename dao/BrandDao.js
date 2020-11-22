@@ -50,11 +50,11 @@ module.exports.update = async ({
     brand_idx,
     name,
     english_name,
-    start_char,
+    start_character,
     image_url,
     description
 }) => {
-    return pool.queryParam_Parse(SQL_BRAND_UPDATE, [name, english_name, start_char, image_url, description, brand_idx]);
+    return pool.queryParam_Parse(SQL_BRAND_UPDATE, [name, english_name, start_character, image_url, description, brand_idx]);
 }
 
 /**

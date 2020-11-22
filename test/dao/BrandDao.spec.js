@@ -7,19 +7,18 @@ const pool = require('../../utils/db/pool.js');
 describe('# brandDao Test', () => {
     describe('# create Test', () => {
         before(async () => {
-            await pool.queryParam_None("DELETE FROM brand WHERE name='조말론'");
+            await pool.queryParam_None("DELETE FROM brand WHERE name='삽입테스트'");
         });
         it('# success case', (done) => {
-            brandDao.create({name: '조말론', english_name: 'Jo Malone', start_char: 'ㅈ', image_url: '', description: ''}).then((result) => {
+            brandDao.create({name: '삽입테스트', english_name: 'insert Test', start_char: 'ㅅ', image_url: '', description: 'brand 생성 테스트를 위한 더미데이터입니다.'})
+            .then((result) => {
                 expect(result.affectedRows).eq(1);
-                done();
-            }).catch((err) => {
-                expect(false).true();
                 done();
             });
         });
         it('# DuplicatedEntryError case', (done) => {
-            brandDao.create({name: '조말론', english_name: 'Jo Malone', start_char: 'ㅈ', image_url: '', description: ''}).then((result) => {
+            brandDao.create({name: '삽입테스트', english_name: 'insert Test', start_char: 'ㅅ', image_url: '', description: ''})
+            .then((result) => {
                 expect(false).true();
                 done();
             }).catch((err) => {
@@ -30,19 +29,11 @@ describe('# brandDao Test', () => {
     });
     
     describe('# read Test', () => {
-        let brand_idx;
-        before(async () => {
-            await pool.queryParam_None("DELETE FROM brand WHERE name='읽기테스트'");
-            const result = await pool.queryParam_None("INSERT brand(name, english_name, start_character, image_url, description) values('읽기테스트','modify test', 'ㅇ', '', '')");
-            brand_idx = result.insertId;
-        });
-        // TODO Database에 Dependency 가지지 않도록 수정하기
         it('# success case', (done) => {
-            brandDao.read(brand_idx).then((result) => {
-                expect(result.name).eq('읽기테스트');
-                done();
-            }).catch((err) => {
-                expect(false).true();
+            brandDao.read(2).then((result) => {
+                expect(result.name).eq('르 라보');
+                expect(result.start_character).eq('ㄹ');
+                expect(result.description.length).gt(0);
                 done();
             });
         });
@@ -51,10 +42,7 @@ describe('# brandDao Test', () => {
     describe('# readAll Test', () => {
         it('# success case', (done) => {
             brandDao.readAll().then((result) => {
-                expect(result.length).greaterThan(0);
-                done();
-            }).catch((err) => {
-                expect(false).true();
+                expect(result.length).gt(3);
                 done();
             });
         });
@@ -63,16 +51,19 @@ describe('# brandDao Test', () => {
     describe('# update Test', () => {
         let brand_idx;
         before(async () => {
-            await pool.queryParam_None("DELETE FROM brand WHERE name='수정테스트'");
             const result = await pool.queryParam_None("INSERT brand(name, english_name, start_character, image_url, description) values('수정테스트','modify test', 'ㅅ', '', '')");
             brand_idx = result.insertId;
         });
         it('# success case', (done) => {
-            brandDao.update({brand_idx, name:'수정버전', english_name:'modify_test', start_char:'ㅅ', image_url: '', description: ''}).then((result) => {
+            brandDao.update({brand_idx, name:'변경된 이름', english_name:'modified_name', start_character:'ㅂ', image_url: 'image_url', description: '변경완료'})
+            .then(async (result) => {
                 expect(result.affectedRows).eq(1);
-                done();
-            }).catch((err) => {
-                expect(false).true();
+                const updated = await brandDao.read(brand_idx);
+                expect(updated.name).eq('변경된 이름');
+                expect(updated.english_name).eq('modified_name');
+                expect(updated.start_character).eq('ㅂ');
+                expect(updated.image_url).eq('image_url');
+                expect(updated.description).eq('변경완료');
                 done();
             });
         });
@@ -84,16 +75,12 @@ describe('# brandDao Test', () => {
     describe('# delete Test', () => {
         let brand_idx;
         before(async () => {
-            await pool.queryParam_None("DELETE FROM brand WHERE name = '삭제테스트'");
-            const result = await pool.queryParam_None("INSERT brand(name, english_name, start_character, image_url, description) values('삭제테스트','delete test', 'ㅅ', '', '')");
+            const result = await pool.queryParam_None("INSERT brand(name, english_name, start_character, image_url, description) values('삭제테스트','delete test', 'ㅅ', '', '') ON DUPLICATE KEY UPDATE name = '삭제테스트'");
             brand_idx = result.insertId;
         });
         it('# success case', (done) => {
             brandDao.delete(brand_idx).then((result) => {
                 expect(result.affectedRows).eq(1);
-                done();
-            }).catch((err) => {
-                expect(false).true();
                 done();
             });
         });
