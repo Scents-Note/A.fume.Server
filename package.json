@@ -1,18 +1,21 @@
 {
-  "name": "sample",
-  "version": "0.0.0",
-  "private": true,
+  "name": "swagger-a-fume-server",
+  "version": "0.0.1",
+  "description": "향수 정보 서비스 A.fume Server Api 문서",
+  "main": "index.js",
   "scripts": {
-    "start": "node ./bin/www",
+    "prestart": "npm install",
+    "start": "node index.js",
     "test": "mocha --recursive"
   },
+  "keywords": [
+    "swagger"
+  ],
+  "license": "Unlicense",
+  "private": true,
   "dependencies": {
-    "chai": "^4.2.0",
-    "cookie-parser": "~1.4.4",
-    "debug": "~2.6.9",
-    "express": "~4.16.1",
-    "http-errors": "~1.6.3",
-    "jade": "~1.11.0",
-    "morgan": "~1.9.1"
+    "connect": "^3.2.0",
+    "js-yaml": "^3.3.0",
+    "swagger-tools": "0.10.1"
   }
 }

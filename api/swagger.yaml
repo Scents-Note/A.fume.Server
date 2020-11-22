@@ -1,0 +1,965 @@
+---
+swagger: "2.0"
+info:
+  description: "향수 정보 서비스 A.fume Server Api 문서"
+  version: "0.0.1"
+  title: "Swagger A.fume Server"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "heesung6701@naver.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:8080"
+basePath: "/A.fume/api/0.0.1"
+tags:
+- name: "perfume"
+  description: "향수 정보"
+  externalDocs:
+    description: "Find out more"
+    url: "http://swagger.io"
+- name: "series"
+  description: "계열"
+- name: "ingredient"
+  description: "향료"
+- name: "brand"
+  description: "브랜드"
+- name: "review"
+  description: "시향기"
+- name: "wishlist"
+  description: "위시리스트"
+- name: "user"
+  description: "Operations about user"
+  externalDocs:
+    description: "Find out more about our store"
+    url: "http://swagger.io"
+schemes:
+#- "https"
+- "http"
+#security:
+#- APIKeyHeader: []
+paths:
+  /perfume:
+    post:
+      tags:
+      - "perfume"
+      summary: "향수 정보 추가"
+      description: "향수 정보를 추가한다."
+      operationId: "createPerfume"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/Perfume"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        "405":
+          description: "Invalid input"
+      deprecated: true
+      x-swagger-router-controller: "Perfume"
+    put:
+      tags:
+      - "perfume"
+      summary: "향수 정보 업데이트"
+      description: ""
+      operationId: "updatePerfume"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/Perfume"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        "405":
+          description: "Invalid input"
+      deprecated: true
+      x-swagger-router-controller: "Perfume"
+  /perfume/search:
+    get:
+      tags:
+      - "perfume"
+      summary: "향수 검색"
+      description: "검색 조건에 해당하는 향수를 반환한다."
+      operationId: "searchPerfume"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "Filter"
+        description: "검색 필터"
+        required: false
+        schema:
+          $ref: "#/definitions/Filter"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Perfume"
+        "400":
+          description: "Invalid tag value"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Perfume"
+  /perfume/{perfumeIdx}:
+    get:
+      tags:
+      - "perfume"
+      summary: "향수 세부 정보 조회"
+      description: "향수 세부 정보를 반환한다."
+      operationId: "getPerfumeById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "perfumeIdx"
+        in: "path"
+        description: "ID of perfume to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            $ref: "#/definitions/PerfumeDetail"
+        "400":
+          description: "Invalid ID supplied"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        "404":
+          description: "Perfume not found"
+      x-swagger-router-controller: "Perfume"
+    delete:
+      tags:
+      - "perfume"
+      summary: "Deletes a perfume"
+      description: ""
+      operationId: "deletePerfume"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "api_key"
+        in: "header"
+        required: false
+        type: "string"
+      - name: "perfumeIdx"
+        in: "path"
+        description: "Pet id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        "404":
+          description: "Pet not found"
+      deprecated: true
+      x-swagger-router-controller: "Perfume"
+  /brand:
+    get:
+      tags:
+      - "brand"
+      summary: "브랜드 전체 조회"
+      description: "브랜드 전체 반환"
+      operationId: "getBrandList"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/BrandInfo"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Brand"
+  /ingredient:
+    get:
+      tags:
+      - "ingredient"
+      summary: "향료 목록 조회"
+      description: "향료 목록 반환"
+      operationId: "getIngredientList"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/IngredientInfo"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Ingredient"
+  /series:
+    get:
+      tags:
+      - "series"
+      summary: "계열 목록 조회"
+      description: "계열 목록 반환"
+      operationId: "getSeriesList"
+      produces:
+      - "application/json"
+      parameters: []
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/SeriesInfo"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Series"
+    post:
+      tags:
+      - "series"
+      summary: "계열 삽입"
+      description: "계열 삽입"
+      operationId: "insertSeries"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Updated name of the pet"
+        required: false
+        schema:
+          $ref: "#/definitions/SeriesInfo"
+      responses:
+        "200":
+          description: "성공"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      deprecated: true
+      x-swagger-router-controller: "Series"
+  /series/{seriesIdx}:
+    put:
+      tags:
+      - "series"
+      summary: "계열 수정"
+      description: "계열 수정"
+      operationId: "putSeries"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "seriesIdx"
+        in: "path"
+        description: "계열 ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "Updated name of the pet"
+        required: false
+        schema:
+          $ref: "#/definitions/SeriesInfo"
+      responses:
+        "200":
+          description: "성공"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      deprecated: true
+      x-swagger-router-controller: "Series"
+    delete:
+      tags:
+      - "series"
+      summary: "계열 삭제"
+      description: "계열 삭제"
+      operationId: "deleteSeries"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "seriesIdx"
+        in: "path"
+        description: "계열 ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      deprecated: true
+      x-swagger-router-controller: "Series"
+  /perfume/{perfumeIdx}/review:
+    get:
+      tags:
+      - "review"
+      summary: "향수의 시향기 정보 가져오기"
+      description: "review 반환"
+      operationId: "getReviewOfPerfume"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "perfumeIdx"
+        in: "path"
+        description: "향수 ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ReviewInfo"
+        "400":
+          description: "Invalid username/password supplied"
+      x-swagger-router-controller: "Review"
+  /review/{reviewIdx}:
+    get:
+      tags:
+      - "review"
+      summary: "시향기 정보 가져오기"
+      description: "review 정보를 반환"
+      operationId: "getReview"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "reviewIdx"
+        in: "path"
+        description: "리뷰 ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ReviewInfo"
+        "400":
+          description: "Invalid username/password supplied"
+      x-swagger-router-controller: "Review"
+    put:
+      tags:
+      - "review"
+      summary: "향수의 시향기 정보 업데이트"
+      description: "review 업데이트"
+      operationId: "updateReview"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "reviewIdx"
+        in: "path"
+        description: "시향기 ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "review 정보"
+        required: true
+        schema:
+          $ref: "#/definitions/ReviewInfo"
+      responses:
+        "400":
+          description: "Invalid username/password supplied"
+      x-swagger-router-controller: "Review"
+  /user:
+    post:
+      tags:
+      - "user"
+      summary: "Create user"
+      description: "This can only be done by the logged in user."
+      operationId: "createUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Created user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        default:
+          description: "successful operation"
+      x-swagger-router-controller: "User"
+  /user/login:
+    get:
+      tags:
+      - "user"
+      summary: "Logs user into the system"
+      description: ""
+      operationId: "loginUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "query"
+        description: "The user name for login"
+        required: true
+        type: "string"
+      - name: "password"
+        in: "query"
+        description: "The password for login in clear text"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          headers:
+            X-Rate-Limit:
+              type: "integer"
+              format: "int32"
+              description: "calls per hour allowed by the user"
+            X-Expires-After:
+              type: "string"
+              format: "date-time"
+              description: "date in UTC when token expires"
+          schema:
+            type: "string"
+        "400":
+          description: "Invalid username/password supplied"
+      x-swagger-router-controller: "User"
+  /user/logout:
+    get:
+      tags:
+      - "user"
+      summary: "Logs out current logged in user session"
+      description: ""
+      operationId: "logoutUser"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters: []
+      responses:
+        default:
+          description: "successful operation"
+      x-swagger-router-controller: "User"
+  /user/{userIdx}:
+    get:
+      tags:
+      - "user"
+      summary: "Get user by user idx"
+      description: ""
+      operationId: "getUserByIdx"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userIdx"
+        in: "path"
+        description: "유저 ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/User"
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "User not found"
+      x-swagger-router-controller: "User"
+    put:
+      tags:
+      - "user"
+      summary: "Updated user"
+      description: "This can only be done by the logged in user."
+      operationId: "updateUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userIdx"
+        in: "path"
+        description: "name that need to be updated"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "body"
+        description: "Updated user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        "400":
+          description: "Invalid user supplied"
+        "404":
+          description: "User not found"
+      x-swagger-router-controller: "User"
+    delete:
+      tags:
+      - "user"
+      summary: "Delete user"
+      description: "This can only be done by the logged in user."
+      operationId: "deleteUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userIdx"
+        in: "path"
+        description: "The Idx that needs to be deleted"
+        required: true
+        type: "string"
+      responses:
+        "400":
+          description: "Invalid username supplied"
+        "404":
+          description: "User not found"
+      x-swagger-router-controller: "User"
+  /user/{userIdx}/wishlist:
+    post:
+      tags:
+      - "wishlist"
+      summary: "add wishlist"
+      description: "위시 리스트에 추가하기"
+      operationId: "createWishList"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userIdx"
+        in: "path"
+        description: "유저 ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "Created user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        default:
+          description: "successful operation"
+      x-swagger-router-controller: "WishList"
+securityDefinitions:
+  perfume_auth:
+    type: "oauth2"
+    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
+    flow: "implicit"
+    scopes:
+      write:perfumes: "modify perfumes in your account"
+      read:perfumes: "read your perfumes"
+  APIKeyHeader:
+    type: "apiKey"
+    name: "X-API-Key"
+    in: "header"
+definitions:
+  User:
+    type: "object"
+    properties:
+      userIdx:
+        type: "integer"
+        format: "int64"
+      username:
+        type: "string"
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      phone:
+        type: "string"
+      userStatus:
+        type: "integer"
+        format: "int32"
+        description: "User Status"
+    example:
+      firstName: "firstName"
+      lastName: "lastName"
+      password: "password"
+      userStatus: 6
+      phone: "phone"
+      userIdx: 0
+      email: "email"
+      username: "username"
+  KeywordInfo:
+    type: "object"
+    properties:
+      keyword_id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+  VolumeAndPrice:
+    type: "object"
+    properties:
+      volume:
+        type: "string"
+      price:
+        type: "string"
+  PerfumeInfo:
+    type: "object"
+    properties:
+      perform_id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      english_name:
+        type: "string"
+      brand_name:
+        type: "string"
+      image_url:
+        type: "string"
+    example:
+      main_series: "만다린 오렌지"
+      image_url: "https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554"
+      name: "154 코롱"
+      brand_name: "조말론"
+      english_name: "154 Cologne"
+      perform_id: 1
+  Perfume:
+    properties:
+      like:
+        type: "integer"
+      is_like:
+        type: "boolean"
+    allOf:
+    - $ref: "#/definitions/PerfumeInfo"
+    - {}
+    example:
+      like: 4
+      is_like: true
+  PerfumeDetailInfo:
+    properties:
+      main_series:
+        type: "string"
+      story:
+        type: "string"
+      abudance_rate:
+        type: "string"
+        enum:
+        - "코롱"
+        - "오 드 뜨왈렛"
+        - "오 드 퍼퓸"
+        - "퍼퓸:"
+      image_url:
+        type: "string"
+      volume_and_price:
+        type: "array"
+        items:
+          $ref: "#/definitions/VolumeAndPrice"
+      note_type:
+        type: "integer"
+        description: "0은 일반 노트, 1은 single 노트"
+      ingredients:
+        $ref: "#/definitions/PerfumeDetailInfo_ingredients"
+    example:
+      story: "조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트\
+        , 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다."
+      volume_and_price:
+      - volume: "30"
+        price: "90,000"
+      - volume: "30"
+        price: "90,000"
+      - volume: "30"
+        price: "90,000"
+      note_type: 0
+      ingredients:
+        top:
+        - ingredient_id: 1
+          name: "재료1"
+          description: "향긋"
+        - ingredient_id: 5
+          name: "재료5"
+          description: "향긋"
+        middle:
+        - ingredient_id: 2
+          name: "재료2"
+          description: "향긋"
+        - ingredient_id: 6
+          name: "재료6"
+          description: "향긋"
+        base:
+        - ingredient_id: 3
+          name: "재료3"
+          description: "향긋"
+        - ingredient_id: 4
+          name: "재료4"
+          description: "향긋"
+        - ingredient_id: 7
+          name: "재료7"
+          description: "향긋"
+  PerfumeDetail:
+    properties:
+      score:
+        type: "number"
+        description: "점수 평균 값"
+        minimum: 0
+        maximum: 5
+      persistance:
+        type: "object"
+        properties:
+          약함:
+            type: "integer"
+          중간:
+            type: "integer"
+          강함:
+            type: "integer"
+      reverberance:
+        type: "object"
+        properties:
+          가벼움:
+            type: "integer"
+          보통:
+            type: "integer"
+          무거움:
+            type: "integer"
+      seasonal:
+        type: "object"
+        properties:
+          봄:
+            type: "integer"
+          여름:
+            type: "integer"
+          가을:
+            type: "integer"
+          겨울:
+            type: "integer"
+      keywords:
+        type: "array"
+        items:
+          type: "string"
+          example: ""
+    allOf:
+    - $ref: "#/definitions/PerfumeInfo"
+    - $ref: "#/definitions/PerfumeDetailInfo"
+    example:
+      score: 5.4000000000000003552713678800500929355621337890625
+      abudance_rate: "오 드 퍼퓸"
+      seasonal:
+        봄: 0
+        여름: 0.299999999999999988897769753748434595763683319091796875
+        가을: 0.299999999999999988897769753748434595763683319091796875
+        겨울: 0.40000000000000002220446049250313080847263336181640625
+      reverberance:
+        가벼움: 0.40000000000000002220446049250313080847263336181640625
+        보통: 0.200000000000000011102230246251565404236316680908203125
+        무거움: 0.40000000000000002220446049250313080847263336181640625
+      persistance:
+        매우약함: 0.1000000000000000055511151231257827021181583404541015625
+        약함: 0.200000000000000011102230246251565404236316680908203125
+        보통: 0.40000000000000002220446049250313080847263336181640625
+        강함: 0.200000000000000011102230246251565404236316680908203125
+        매우강함: 0.1000000000000000055511151231257827021181583404541015625
+  SeriesInfo:
+    type: "object"
+    properties:
+      series_id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+    example:
+      name: "우드"
+      series_id: 1
+  IngredientInfo:
+    type: "object"
+    properties:
+      ingredient_id:
+        type: "integer"
+      name:
+        type: "string"
+      description:
+        type: "string"
+    example:
+      name: "만다린 오렌지"
+      ingredient_id: 1
+      description: "상큼하고 새콤한 만다린 오렌지 향이 생기 넘치는 상쾌함을 더합니다"
+  BrandInfo:
+    type: "object"
+    properties:
+      brand_id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      english_name:
+        type: "string"
+    example:
+      name: "조말론"
+      english_name: "조말론(영어로)"
+      brand_id: 0
+  ReviewInfo:
+    type: "object"
+    properties:
+      review_idx:
+        type: "integer"
+        format: "int64"
+      perfume_idx:
+        type: "integer"
+        format: "int64"
+      user_idx:
+        type: "integer"
+        format: "int64"
+      score:
+        type: "number"
+      persistance:
+        type: "string"
+      reverberance:
+        type: "string"
+      seasonal:
+        type: "array"
+        items:
+          type: "string"
+      generage:
+        type: "string"
+      access:
+        type: "boolean"
+      content:
+        type: "string"
+    example:
+      review_idx: 0
+      perfume_idx: 0
+      user_idx: 0
+      score: 2.399999999999999911182158029987476766109466552734375
+      persistance: "강함"
+      reverberance: "보통"
+      seasonal:
+      - "겨울"
+      - "가을"
+      generage: "중성"
+      access: true
+      content: "향수 잠시 남기기"
+  myPerfume:
+    properties:
+      star:
+        type: "integer"
+        example: 5
+    allOf:
+    - $ref: "#/definitions/PerfumeInfo"
+    - {}
+  Filter:
+    type: "object"
+    properties:
+      series:
+        type: "array"
+        items:
+          type: "string"
+      brands:
+        type: "array"
+        items:
+          type: "string"
+      keywords:
+        type: "array"
+        items:
+          type: "string"
+      sortby:
+        type: "string"
+    example:
+      series:
+      - "계열1"
+      - "계열2"
+      - "계열3"
+      brands:
+      - "브랜드 이름1"
+      - "브랜드 이름2"
+      - "브랜드 이름3"
+      keywords:
+      - "달달한"
+      - "쿨한"
+      - "멋있는"
+      sortby: "인기순"
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
+  PerfumeDetailInfo_ingredients:
+    type: "object"
+    properties:
+      top:
+        type: "array"
+        items:
+          $ref: "#/definitions/IngredientInfo"
+      middle:
+        type: "array"
+        items:
+          $ref: "#/definitions/IngredientInfo"
+      base:
+        type: "array"
+        items:
+          $ref: "#/definitions/IngredientInfo"
+      single:
+        type: "array"
+        items:
+          $ref: "#/definitions/IngredientInfo"
+responses:
+  UnauthorizedError:
+    description: "API key is missing or invalid"
+    headers:
+      WWW_Authenticate:
+        type: "string"
+externalDocs:
+  description: "Afume Server Git Wiki"
+  url: "https://github.com/A-fume/A.fume.Server/wiki"
