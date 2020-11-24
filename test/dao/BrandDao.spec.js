@@ -7,7 +7,7 @@ const pool = require('../../utils/db/pool.js');
 describe('# brandDao Test', () => {
     describe('# create Test', () => {
         before(async () => {
-            await pool.queryParam_None("DELETE FROM brand WHERE name='삽입테스트'");
+            await pool.queryParam_None('DELETE FROM brand WHERE name="삽입테스트"');
         });
         it('# success case', (done) => {
             brandDao.create({name: '삽입테스트', english_name: 'insert Test', start_char: 'ㅅ', image_url: '', description: 'brand 생성 테스트를 위한 더미데이터입니다.'})
@@ -51,7 +51,7 @@ describe('# brandDao Test', () => {
     describe('# update Test', () => {
         let brand_idx;
         before(async () => {
-            const result = await pool.queryParam_None("INSERT brand(name, english_name, start_character, image_url, description) values('수정테스트','modify test', 'ㅅ', '', '')");
+            const result = await pool.queryParam_None('INSERT brand(name, english_name, start_character, image_url, description) values("수정테스트","modify test", "ㅅ", "", "")');
             brand_idx = result.insertId;
         });
         it('# success case', (done) => {
@@ -75,7 +75,7 @@ describe('# brandDao Test', () => {
     describe('# delete Test', () => {
         let brand_idx;
         before(async () => {
-            const result = await pool.queryParam_None("INSERT brand(name, english_name, start_character, image_url, description) values('삭제테스트','delete test', 'ㅅ', '', '') ON DUPLICATE KEY UPDATE name = '삭제테스트'");
+            const result = await pool.queryParam_None('INSERT brand(name, english_name, start_character, image_url, description) values("삭제테스트","delete test", "ㅅ", "", "") ON DUPLICATE KEY UPDATE name = "삭제테스트"');
             brand_idx = result.insertId;
         });
         it('# success case', (done) => {

@@ -70,16 +70,25 @@ module.exports = {
         return result;
     },
     Transaction: async (...args) => {
-        let result = true;
+        let result = false;
         try {
             const pool = await poolPromise;
             const connection = await pool.getConnection()
             try {
                 await connection.beginTransaction();
-                args.forEach((it) => it(connection));
+                result = await Promise.all(args.map(it => it(connection)));
                 await connection.commit();
             } catch (transactionError) {
                 await connection.rollback();
+                switch(transactionError.errno){
+                    case 1453:
+                        transactionError = new NoReferencedRowError();
+                        break;
+                    case 1062:
+                        transactionError = new DuplicatedEntryError();
+                        break;
+                    default:
+                }
                 throw transactionError;
             }
             pool.releaseConnection(connection);
