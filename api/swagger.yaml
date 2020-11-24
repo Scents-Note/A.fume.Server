@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   description: "향수 정보 서비스 A.fume Server Api 문서"
-  version: "0.0.1"
+  version: 1.0.0
   title: "Swagger A.fume Server"
   termsOfService: "http://swagger.io/terms/"
   contact:
@@ -26,6 +26,8 @@ tags:
   description: "브랜드"
 - name: "review"
   description: "시향기"
+- name: "reply"
+  description: "댓글"
 - name: "wishlist"
   description: "위시리스트"
 - name: "user"
@@ -212,6 +214,119 @@ paths:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Brand"
+    post:
+      tags:
+      - "brand"
+      summary: "향료 삽입"
+      description: "향료 삽입"
+      operationId: "insertBrand"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Insert new brand info"
+        required: false
+        schema:
+          $ref: "#/definitions/BrandInfo"
+      responses:
+        "200":
+          description: "성공"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Brand"
+  /brand/{brand_idx}:
+    get:
+      tags:
+      - "brand"
+      summary: "특정 브랜드 조회"
+      description: "특정 브랜드 조회"
+      operationId: "getBrandByIdx"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "brand_idx"
+        in: "path"
+        description: "브랜드 ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+              $ref: "#/definitions/BrandInfo"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Brand"
+    put:
+      tags:
+      - "brand"
+      summary: "브랜드 수정"
+      description: "브랜드 수정"
+      operationId: "putBrand"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "brand_idx"
+        in: "path"
+        description: "향료 ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "Updated brand info"
+        required: false
+        schema:
+          $ref: "#/definitions/BrandInfo"
+      responses:
+        "200":
+          description: "성공"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Brand"
+    delete:
+      tags:
+      - "brand"
+      summary: "브랜드 삭제"
+      description: "브랜드 삭제"
+      operationId: "deleteBrand"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "brand_idx"
+        in: "path"
+        description: "브랜드 ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Brand"
   /ingredient:
     get:
       tags:
@@ -235,12 +350,125 @@ paths:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Ingredient"
+    post:
+      tags:
+      - "ingredient"
+      summary: "향료 삽입"
+      description: "향료 삽입"
+      operationId: "insertIngredient"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Insert new ingredient info"
+        required: false
+        schema:
+          $ref: "#/definitions/IngredientInfo"
+      responses:
+        "200":
+          description: "성공"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Ingredient"
+  /ingredient/{ingredient_idx}:
+    get:
+      tags:
+      - "ingredient"
+      summary: "특정 향료 조회"
+      description: "특정 향료 조회"
+      operationId: "getIngredientByIdx"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "ingredient_idx"
+        in: "path"
+        description: "향료 ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            $ref: "#/definitions/IngredientInfo"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Ingredient"
+    put:
+      tags:
+      - "ingredient"
+      summary: "향료 수정"
+      description: "향료 수정"
+      operationId: "putIngredient"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "ingredient_idx"
+        in: "path"
+        description: "향료 ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "Updated series info"
+        required: false
+        schema:
+          $ref: "#/definitions/IngredientInfo"
+      responses:
+        "200":
+          description: "성공"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Ingredient"
+    delete:
+      tags:
+      - "ingredient"
+      summary: "향료 삭제"
+      description: "향료 삭제"
+      operationId: "deleteIngredient"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "ingredient_idx"
+        in: "path"
+        description: "향료 ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Ingredient"
   /series:
     get:
       tags:
       - "series"
-      summary: "계열 목록 조회"
-      description: "계열 목록 반환"
+      summary: "계열 전체 목록 조회"
+      description: "계열 전체 목록 반환"
       operationId: "getSeriesList"
       produces:
       - "application/json"
@@ -271,7 +499,7 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        description: "Updated name of the pet"
+        description: "Insert new series info"
         required: false
         schema:
           $ref: "#/definitions/SeriesInfo"
@@ -283,9 +511,36 @@ paths:
           headers:
             WWW_Authenticate:
               type: "string"
-      deprecated: true
       x-swagger-router-controller: "Series"
-  /series/{seriesIdx}:
+  /series/{series_idx}:
+    get:
+      tags:
+      - "series"
+      summary: "특정 계열 조회"
+      description: "특정 계열 조회"
+      operationId: "getSeriesByIdx"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "series_idx"
+        in: "path"
+        description: "계열 ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            $ref: "#/definitions/SeriesInfo"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Series"
     put:
       tags:
       - "series"
@@ -297,7 +552,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "seriesIdx"
+      - name: "series_idx"
         in: "path"
         description: "계열 ID"
         required: true
@@ -305,7 +560,7 @@ paths:
         format: "int64"
       - in: "body"
         name: "body"
-        description: "Updated name of the pet"
+        description: "Updated series info"
         required: false
         schema:
           $ref: "#/definitions/SeriesInfo"
@@ -317,7 +572,6 @@ paths:
           headers:
             WWW_Authenticate:
               type: "string"
-      deprecated: true
       x-swagger-router-controller: "Series"
     delete:
       tags:
@@ -330,7 +584,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "seriesIdx"
+      - name: "series_idx"
         in: "path"
         description: "계열 ID"
         required: true
@@ -344,83 +598,63 @@ paths:
           headers:
             WWW_Authenticate:
               type: "string"
-      deprecated: true
       x-swagger-router-controller: "Series"
-  /perfume/{perfumeIdx}/review:
-    get:
+  /reply:
+    post:
       tags:
-      - "review"
-      summary: "향수의 시향기 정보 가져오기"
-      description: "review 반환"
-      operationId: "getReviewOfPerfume"
+      - "reply"
+      summary: "reply 추가"
+      description : "시향기에 댓글 추가"
+      operationId: "insertReply"
       produces:
       - "application/json"
       parameters:
-      - name: "perfumeIdx"
-        in: "path"
-        description: "향수 ID"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        "200":
-          description: "successful operation"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/ReviewInfo"
-        "400":
-          description: "Invalid username/password supplied"
-      x-swagger-router-controller: "Review"
-  /review/{reviewIdx}:
-    get:
-      tags:
-      - "review"
-      summary: "시향기 정보 가져오기"
-      description: "review 정보를 반환"
-      operationId: "getReview"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "reviewIdx"
-        in: "path"
-        description: "리뷰 ID"
-        required: true
-        type: "integer"
-        format: "int64"
-      responses:
-        "200":
-          description: "successful operation"
-          schema:
-            $ref: "#/definitions/ReviewInfo"
-        "400":
-          description: "Invalid username/password supplied"
-      x-swagger-router-controller: "Review"
-    put:
-      tags:
-      - "review"
-      summary: "향수의 시향기 정보 업데이트"
-      description: "review 업데이트"
-      operationId: "updateReview"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "reviewIdx"
-        in: "path"
-        description: "시향기 ID"
-        required: true
-        type: "integer"
-        format: "int64"
-      - in: "body"
-        name: "body"
-        description: "review 정보"
+      - name: "body"
+        in: "body"
+        description: "reply 정보"
         required: true
         schema:
-          $ref: "#/definitions/ReviewInfo"
+          $ref: "#/definitions/ReplyInfo"
       responses:
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        "405":
+          description: "Invalid input"
+      x-swagger-router-controller: "Reply"
+  /reply/{reply_idx}:
+    get:
+      tags:
+      - "reply"
+      summary: "댓글 가져오기"
+      description: "시향노트에 달린 특정 댓글 가져오기"
+      operationId: "getReplyById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "reply_idx"
+        in: "path"
+        description: "댓글 고유 아이디"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            $ref: "#/definitions/ReplyInfo"
         "400":
-          description: "Invalid username/password supplied"
-      x-swagger-router-controller: "Review"
+          description: "Invalid ID supplied"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        "404":
+          description: "Reply not found"
+      x-swagger-router-controller: "Reply"
   /user:
     post:
       tags:
@@ -810,82 +1044,75 @@ definitions:
   SeriesInfo:
     type: "object"
     properties:
-      series_id:
-        type: "integer"
-        format: "int64"
-      name:
-        type: "string"
-    example:
-      name: "우드"
-      series_id: 1
-  IngredientInfo:
-    type: "object"
-    properties:
-      ingredient_id:
-        type: "integer"
-      name:
-        type: "string"
-      description:
-        type: "string"
-    example:
-      name: "만다린 오렌지"
-      ingredient_id: 1
-      description: "상큼하고 새콤한 만다린 오렌지 향이 생기 넘치는 상쾌함을 더합니다"
-  BrandInfo:
-    type: "object"
-    properties:
-      brand_id:
+      series_idx:
         type: "integer"
         format: "int64"
       name:
         type: "string"
       english_name:
         type: "string"
+      description:
+        type: "string"
     example:
-      name: "조말론"
-      english_name: "조말론(영어로)"
-      brand_id: 0
-  ReviewInfo:
+      name: "꿀"
+      english_name: "Honey"
+      description: "화이트 허니, 허니"
+      series_idx: 1
+  IngredientInfo:
     type: "object"
     properties:
-      review_idx:
+      ingredient_idx:
         type: "integer"
         format: "int64"
-      perfume_idx:
+      name:
+        type: "string"
+      english_name:
+        type: "string"
+      description:
+        type: "string"
+    example:
+      name: "씨쏠트"
+      english_name: "Sea Salt"
+      ingredient_idx: 1
+      description: "바다 소금"
+  BrandInfo:
+    type: "object"
+    properties:
+      brand_idx:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      english_name:
+        type: "string"
+      start_character:
+        type: "string"
+      description:
+        type: "string"
+    example:
+      name: "조말론"
+      english_name: "Jo Malone"
+      start_character: "ㅈ"
+      description: "런던 브랜드"
+      brand_idx: 0
+  ReplyInfo:
+    type: "object"
+    properties:
+      reply_idx:
+        type: "integer"
+        format: "int64"
+      review_idx:
         type: "integer"
         format: "int64"
       user_idx:
         type: "integer"
         format: "int64"
-      score:
-        type: "number"
-      persistance:
-        type: "string"
-      reverberance:
-        type: "string"
-      seasonal:
-        type: "array"
-        items:
-          type: "string"
-      generage:
-        type: "string"
-      access:
-        type: "boolean"
       content:
         type: "string"
     example:
       review_idx: 0
-      perfume_idx: 0
       user_idx: 0
-      score: 2.399999999999999911182158029987476766109466552734375
-      persistance: "강함"
-      reverberance: "보통"
-      seasonal:
-      - "겨울"
-      - "가을"
-      generage: "중성"
-      access: true
-      content: "향수 잠시 남기기"
+      content: "저한테도 인생 향수에요~"
   myPerfume:
     properties:
       star:
