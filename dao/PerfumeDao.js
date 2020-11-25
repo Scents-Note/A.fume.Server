@@ -12,7 +12,7 @@ const SQL_PERFUME_INSERT = 'INSERT perfume(brand_idx, main_series_idx, name, eng
 const SQL_PERFUME_DETAIL_INSERT = 'INSERT perfume_detail(perfume_idx, story, abundance_rate, volume_and_price, image_url) VALUES(?, ?, ?, ?, ?)';
 module.exports.create = async ({brandIdx, name, englishName, volumeAndPrice, imageThumbnailUrl, mainSeriesIdx, story, abundanceRate, imageUrl}) => {
     volumeAndPrice = JSON.stringify(volumeAndPrice);
-    return pool.Transaction(async (connection) => {
+    const result = await pool.Transaction(async (connection) => {
         const perfumeResult = await connection.query(SQL_PERFUME_INSERT, [brandIdx, mainSeriesIdx, name, englishName, imageThumbnailUrl]);
         if(perfumeResult.insertId == 0) {
             throw new FailedToCreateError();
@@ -24,6 +24,7 @@ module.exports.create = async ({brandIdx, name, englishName, volumeAndPrice, ima
         }
         return perfumeIdx;
     });
+    return result[0];
 }
 
 /**

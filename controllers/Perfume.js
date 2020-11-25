@@ -1,60 +1,72 @@
 'use strict';
 
-var utils = require('../utils/writer.js');
-var Perfume = require('../service/PerfumeService');
+const utils = require('../utils/writer.js');
+const Perfume = require('../service/PerfumeService');
 
-module.exports.createPerfume = function createPerfume (req, res, next) {
-  var body = req.swagger.params['body'].value;
+module.exports.createPerfume = (req, res, next) => {
+  const body = req.swagger.params['body'].value;
   Perfume.createPerfume(body)
-    .then(function (response) {
-      utils.writeJson(res, response);
+    .then((response) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '향수 생성 성공',
+        data: response
+      }));
     })
-    .catch(function (response) {
+    .catch((response) => {
       utils.writeJson(res, response);
     });
 };
 
-module.exports.deletePerfume = function deletePerfume (req, res, next) {
-  var perfumeIdx = req.swagger.params['perfumeIdx'].value;
-  var api_key = req.swagger.params['api_key'].value;
-  Perfume.deletePerfume(perfumeIdx,api_key)
-    .then(function (response) {
-      utils.writeJson(res, response);
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
-};
-
-module.exports.getPerfumeById = function getPerfumeById (req, res, next) {
-  var perfumeIdx = req.swagger.params['perfumeIdx'].value;
+module.exports.getPerfumeById = (req, res, next) => {
+  const perfumeIdx = req.swagger.params['perfumeIdx'].value;
   Perfume.getPerfumeById(perfumeIdx)
-    .then(function (response) {
-      utils.writeJson(res, response);
+    .then((response) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '향수 조회 성공',
+        data: response
+      }));
     })
-    .catch(function (response) {
+    .catch((response) => {
       utils.writeJson(res, response);
     });
 };
 
-module.exports.searchPerfume = function searchPerfume (req, res, next) {
-  var filter = req.swagger.params['filter'].value;
+module.exports.searchPerfume = (req, res, next) => {
+  const filter = req.swagger.params['filter'].value;
   Perfume.searchPerfume(filter)
-    .then(function (response) {
-      utils.writeJson(res, response);
+    .then((response) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '향수 검색 성공',
+        data: response
+      }));
     })
-    .catch(function (response) {
+    .catch((response) => {
       utils.writeJson(res, response);
     });
 };
 
-module.exports.updatePerfume = function updatePerfume (req, res, next) {
-  var body = req.swagger.params['body'].value;
+module.exports.updatePerfume = (req, res, next) => {
+  const body = req.swagger.params['body'].value;
   Perfume.updatePerfume(body)
-    .then(function (response) {
-      utils.writeJson(res, response);
+    .then(() => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '향수 수정 성공'
+      }));
     })
-    .catch(function (response) {
+    .catch((response) => {
+      utils.writeJson(res, response);
+    });
+};
+
+module.exports.deletePerfume = (req, res, next) => {
+  const perfumeIdx = req.swagger.params['perfumeIdx'].value;
+  Perfume.deletePerfume(perfumeIdx)
+    .then(() => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '향수 삭제 성공'
+      }));
+    })
+    .catch((response) => {
       utils.writeJson(res, response);
     });
 };
