@@ -1,19 +1,15 @@
 'use strict';
 
-var utils = require('../utils/writer.js');
-var Wishlist = require('../service/WishlistService');
+const utils = require('../utils/writer.js');
+const Wishlist = require('../service/WishlistService');
 
 module.exports.createWishlist = (req, res, next) => {
   const { userIdx, perfumeIdx, priority } = req.swagger.params['body'].value;
   Wishlist.createWishlist({ userIdx, perfumeIdx, priority })
-    .then(function (response) {
-      console.log('catch')
-      console.log(response)
+    .then(function () {
       utils.writeJson(res, utils.respondWithCode(200, {message: '위시 리스트에 성공적으로 추가했습니다.'}));
     })
     .catch(function (response) {
-      console.log('catch')
-      console.log(response)
       utils.writeJson(res, response);
     });
 };

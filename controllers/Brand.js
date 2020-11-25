@@ -1,7 +1,7 @@
 'use strict';
 
-var utils = require('../utils/writer.js');
-var Brand = require('../service/BrandService');
+const utils = require('../utils/writer.js');
+const Brand = require('../service/BrandService');
 
 module.exports.getBrandList = function getBrandList (req, res, next) {
   Brand.getBrandList()

@@ -233,21 +233,20 @@ paths:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Brand"
-  /brand/{brand_idx}:
+  /brand/{brandIdx}:
     get:
       tags:
       - "brand"
-      summary: "특정 브랜드 조회"
-      description: "특정 브랜드 조회"
+      summary: "브랜드 조회"
+      description: "브랜드 조회"
       operationId: "getBrandByIdx"
       consumes:
       - "application/json"
       produces:
       - "application/json"
       parameters:
-      - name: "brand_idx"
+      - name: "brandIdx"
         in: "path"
-        description: "브랜드 ID"
         required: true
         type: "integer"
         format: "int64"
@@ -273,15 +272,13 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "brand_idx"
+      - name: "brandIdx"
         in: "path"
-        description: "향료 ID"
         required: true
         type: "integer"
         format: "int64"
       - in: "body"
         name: "body"
-        description: "Updated brand info"
         required: false
         schema:
           $ref: "#/definitions/BrandInfo"
@@ -305,9 +302,8 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "brand_idx"
+      - name: "brandIdx"
         in: "path"
-        description: "브랜드 ID"
         required: true
         type: "integer"
         format: "int64"
