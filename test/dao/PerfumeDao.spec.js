@@ -28,11 +28,10 @@ describe('# perfumeDao Test', () => {
             };
             perfumeDao.create(perfumeObj)
                 .then((result) => {
-                    const flatResult = result.flat();
-                    expect(flatResult.map(it => it.affectedRows).filter(it => it == 1)).to.lengthOf(2);
-                    return perfumeDao.readByPerfumeIdx(flatResult[0].insertId);
-                }).then((result) => {
-                    for ([key, value] in Object.entries(perfumeObj)) {
+                    return perfumeDao.readByPerfumeIdx(result);
+                })
+                .then((result) => {
+                    for ([key, value] of Object.entries(perfumeObj)) {
                         expect(result[key]).eq(value);
                     }
                     done();
@@ -211,7 +210,7 @@ describe('# perfumeDao Test', () => {
             };
             perfumeDao.update(perfumeObj)
                 .then((result) => {
-                    expect(result.flat().map(it => it.affectedRows).filter(it => it == 1)).to.lengthOf(2);
+                    expect(result.flat().filter(it => it == 1)).to.lengthOf(2);
                     return perfumeDao.readByPerfumeIdx(perfumeIdx);
                 }).then((result) => {
                     for ([key, value] in Object.entries(perfumeObj)) {
@@ -236,7 +235,7 @@ describe('# perfumeDao Test', () => {
         it('# success case', (done) => {
             perfumeDao.delete(perfumeIdx)
                 .then((result) => {
-                    expect(result.affectedRows).eq(1);
+                    expect(result).eq(1);
                     return pool.queryParam_Parse('SELECT * FROM perfume_detail WHERE perfume_idx = ?', [perfumeIdx]);
                 })
                 .then((result) => {

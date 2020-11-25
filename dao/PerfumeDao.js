@@ -1,6 +1,6 @@
 const pool = require('../utils/db/pool.js');
 
-const { NotMatchedError } = require('../utils/errors/errors.js');
+const { NotMatchedError, FailedToCreateError } = require('../utils/errors/errors.js');
 
 /**
  * 향수 추가
@@ -10,12 +10,18 @@ const { NotMatchedError } = require('../utils/errors/errors.js');
  */
 const SQL_PERFUME_INSERT = 'INSERT perfume(brand_idx, main_series_idx, name, english_name, image_thumbnail_url) VALUES(?, ?, ?, ?, ?)';
 const SQL_PERFUME_DETAIL_INSERT = 'INSERT perfume_detail(perfume_idx, story, abundance_rate, volume_and_price, image_url) VALUES(?, ?, ?, ?, ?)';
-module.exports.create = ({brandIdx, name, englishName, volumeAndPrice, imageThumbnailUrl, mainSeriesIdx, story, abundanceRate, imageUrl}) => {
+module.exports.create = async ({brandIdx, name, englishName, volumeAndPrice, imageThumbnailUrl, mainSeriesIdx, story, abundanceRate, imageUrl}) => {
     return pool.Transaction(async (connection) => {
         const perfumeResult = await connection.query(SQL_PERFUME_INSERT, [brandIdx, mainSeriesIdx, name, englishName, imageThumbnailUrl]);
+        if(perfumeResult.insertId == 0) {
+            throw new FailedToCreateError();
+        }
         const perfumeIdx = perfumeResult.insertId;
         const perfumeDetailResult = await connection.query(SQL_PERFUME_DETAIL_INSERT, [perfumeIdx, story, abundanceRate, volumeAndPrice, imageUrl]);
-        return [perfumeResult, perfumeDetailResult];
+        if(perfumeDetailResult.affectedRows == 0) {
+            throw new FailedToCreateError();
+        }
+        return perfumeIdx;
     });
 }
 
@@ -115,9 +121,11 @@ const SQL_PERFUME_UPDATE = 'UPDATE perfume SET brand_idx = ?, main_series_idx = 
 const SQL_PERFUME_DETAIL_UPDATE = 'UPDATE perfume_detail SET story = ?, abundance_rate = ?, volume_and_price = ?, image_url = ? WHERE perfume_idx = ?';
 module.exports.update = ({perfumeIdx, name, mainSeriesIdx, brandIdx, englishName, volumeAndPrice, imageThumbnailUrl, story, abundanceRate, imageUrl}) => {
     return pool.Transaction(async (connection) => {
-        return connection.query(SQL_PERFUME_UPDATE, [brandIdx, mainSeriesIdx, name, englishName, imageThumbnailUrl, perfumeIdx]);
+        const { affectedRows } = await connection.query(SQL_PERFUME_UPDATE, [brandIdx, mainSeriesIdx, name, englishName, imageThumbnailUrl, perfumeIdx]);
+        return affectedRows;
     }, async (connection) => {
-        return connection.query(SQL_PERFUME_DETAIL_UPDATE, [story, abundanceRate, volumeAndPrice, imageUrl, perfumeIdx]);
+        const { affectedRows } = await connection.query(SQL_PERFUME_DETAIL_UPDATE, [story, abundanceRate, volumeAndPrice, imageUrl, perfumeIdx]);
+        return affectedRows;
     });
 }
 
@@ -128,6 +136,7 @@ module.exports.update = ({perfumeIdx, name, mainSeriesIdx, brandIdx, englishName
  *   ex) perfume_detail, like_perfume, wishlist, etc
  */
 const SQL_PERFUME_DELETE = 'DELETE FROM perfume WHERE perfume_idx = ?';
-module.exports.delete = (perfumeIdx) => {   
-    return pool.queryParam_Parse(SQL_PERFUME_DELETE, [perfumeIdx]);  
+module.exports.delete = async (perfumeIdx) => {   
+    const { affectedRows } = await pool.queryParam_Parse(SQL_PERFUME_DELETE, [perfumeIdx]);
+    return affectedRows;
 }

@@ -1,7 +1,8 @@
 const pool = require('../utils/db/pool.js');
 
 const {
-    NotMatchedError
+    NotMatchedError,
+    FailedToCreateError,
 } = require('../utils/errors/errors.js');
 
 /**
@@ -9,14 +10,18 @@ const {
  * @param {} param0 
  */
 const SQL_BRAND_INSERT = 'INSERT brand(name, english_name, start_character, image_url, description) VALUES(?, ?, ?, ?, ?)';
-module.exports.create = ({
+module.exports.create = async ({
     name,
     englishName,
     startChar,
     imageUrl,
     description
 }) => {
-    return pool.queryParam_Parse(SQL_BRAND_INSERT, [name, english_name, start_char, image_url, description]);
+    const { insertId } = await pool.queryParam_Parse(SQL_BRAND_INSERT, [name, englishName, startChar, imageUrl, description]);
+    if(insertId == 0) {
+        throw new FailedToCreateError();
+    }
+    return insertId;
 }
 
 /**
@@ -37,7 +42,7 @@ module.exports.read = async (brandIdx) => {
  * 
  */
 const SQL_BRAND_SELECT_ALL = 'SELECT brand_idx as brandIdx , name, start_character as startCharacter, image_url, description FROM brand';
-module.exports.readAll = async () => {
+module.exports.readAll = () => {
     return pool.queryParam_None(SQL_BRAND_SELECT_ALL);
 }
 
@@ -54,7 +59,8 @@ module.exports.update = async ({
     imageUrl,
     description
 }) => {
-    return pool.queryParam_Parse(SQL_BRAND_UPDATE, [name, englishName, startCharacter, imageUrl, description, brandIdx]);
+    const { affectedRows } = await pool.queryParam_Parse(SQL_BRAND_UPDATE, [name, englishName, startCharacter, imageUrl, description, brandIdx]);
+    return affectedRows;
 }
 
 /**
@@ -63,5 +69,6 @@ module.exports.update = async ({
  */
 const SQL_BRAND_DELETE = 'DELETE FROM brand WHERE brand_idx = ?';
 module.exports.delete = async (brandIdx) => {
-    return pool.queryParam_Parse(SQL_BRAND_DELETE, [brandIdx]);
+    const { affectedRows } = await pool.queryParam_Parse(SQL_BRAND_DELETE, [brandIdx]);
+    return affectedRows;
 }

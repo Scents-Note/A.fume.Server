@@ -12,7 +12,7 @@ describe('# brandDao Test', () => {
         it('# success case', (done) => {
             brandDao.create({name: '삽입테스트', englishName: 'insert Test', startChar: 'ㅅ', imageUrl: '', description: 'brand 생성 테스트를 위한 더미데이터입니다.'})
             .then((result) => {
-                expect(result.affectedRows).eq(1);
+                expect(result).gt(0);
                 done();
             });
         });
@@ -57,7 +57,7 @@ describe('# brandDao Test', () => {
         it('# success case', (done) => {
             brandDao.update({brandIdx, name:'변경된 이름', englishName:'modified_name', startCharacter:'ㅂ', imageUrl: 'image_url', description: '변경완료'})
             .then(async (result) => {
-                expect(result.affectedRows).eq(1);
+                expect(result).eq(1);
                 const updated = await brandDao.read(brandIdx);
                 expect(updated.name).eq('변경된 이름');
                 expect(updated.englishName).eq('modified_name');
@@ -80,7 +80,7 @@ describe('# brandDao Test', () => {
         });
         it('# success case', (done) => {
             brandDao.delete(brandIdx).then((result) => {
-                expect(result.affectedRows).eq(1);
+                expect(result).eq(1);
                 done();
             });
         });
