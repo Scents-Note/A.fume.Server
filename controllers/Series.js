@@ -14,6 +14,17 @@ module.exports.deleteSeries = function deleteSeries (req, res, next) {
     });
 };
 
+module.exports.getSeriesByIdx = function getSeriesByIdx (req, res, next) {
+  var seriesIdx = req.swagger.params['seriesIdx'].value;
+  Series.getSeriesByIdx(seriesIdx)
+    .then(function (response) {
+      utils.writeJson(res, response);
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};
+
 module.exports.getSeriesList = function getSeriesList (req, res, next) {
   Series.getSeriesList()
     .then(function (response) {
@@ -24,9 +35,9 @@ module.exports.getSeriesList = function getSeriesList (req, res, next) {
     });
 };
 
-module.exports.insertSeries = function insertSeries (req, res, next) {
+module.exports.postSeries = function postSeries (req, res, next) {
   var body = req.swagger.params['body'].value;
-  Series.insertSeries(body)
+  Series.postSeries(body)
     .then(function (response) {
       utils.writeJson(res, response);
     })
