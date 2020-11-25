@@ -1,5 +1,5 @@
-const pool = require('../util/db/pool.js');
-const {NotMatchedError} = require('../errors/errors.js');
+const pool = require('../utils/db/pool.js');
+const {NotMatchedError, FailedToCreateError} = require('../utils/errors/errors.js');
 
 /**
  * 댓글 작성
