@@ -1,10 +1,10 @@
 'use strict';
 
-var utils = require('../utils/writer.js');
-var Reply = require('../service/ReplyService');
+const utils = require('../utils/writer.js');
+const Reply = require('../service/ReplyService');
 
 module.exports.deleteReply = function deleteReply (req, res, next) {
-  var replyIdx = req.swagger.params['replyIdx'].value;
+  const replyIdx = req.swagger.params['replyIdx'].value;
   Reply.deleteReply(replyIdx)
     .then(function (response) {
       utils.writeJson(res, response);
@@ -15,7 +15,7 @@ module.exports.deleteReply = function deleteReply (req, res, next) {
 };
 
 module.exports.getReplyByIdx = function getReplyByIdx (req, res, next) {
-  var replyIdx = req.swagger.params['replyIdx'].value;
+  const replyIdx = req.swagger.params['replyIdx'].value;
   Reply.getReplyByIdx(replyIdx)
     .then(function (response) {
       utils.writeJson(res, response);
@@ -26,7 +26,7 @@ module.exports.getReplyByIdx = function getReplyByIdx (req, res, next) {
 };
 
 module.exports.getReplyOfReview = function getReplyOfReview (req, res, next) {
-  var reviewIdx = req.swagger.params['reviewIdx'].value;
+  const reviewIdx = req.swagger.params['reviewIdx'].value;
   Reply.getReplyOfReview(reviewIdx)
     .then(function (response) {
       utils.writeJson(res, response);
@@ -36,9 +36,10 @@ module.exports.getReplyOfReview = function getReplyOfReview (req, res, next) {
     });
 };
 
-module.exports.insertReply = function insertReply (req, res, next) {
-  var body = req.swagger.params['body'].value;
-  Reply.insertReply(body)
+module.exports.postReply = function postReply (req, res, next) {
+  const reviewIdx = req.swagger.params['reviewIdx'].value;
+  const {userIdx, content} = req.swagger.params['body'].value;
+  Reply.postReply({reviewIdx, userIdx, content})
     .then(function (response) {
       utils.writeJson(res, response);
     })
@@ -48,9 +49,9 @@ module.exports.insertReply = function insertReply (req, res, next) {
 };
 
 module.exports.updateReply = function updateReply (req, res, next) {
-  var replyIdx = req.swagger.params['replyIdx'].value;
-  var body = req.swagger.params['body'].value;
-  Reply.updateReply(replyIdx,body)
+  const replyIdx = req.swagger.params['replyIdx'].value;
+  const {userIdx, content} = req.swagger.params['body'].value;
+  Reply.updateReply({replyIdx, content})
     .then(function (response) {
       utils.writeJson(res, response);
     })
