@@ -240,7 +240,7 @@ paths:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Brand"
-  /brand/{brand_idx}:
+  /brand/{brandIdx}:
     get:
       tags:
       - "brand"
@@ -252,7 +252,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "brand_idx"
+      - name: "brandIdx"
         in: "path"
         description: "브랜드 ID"
         required: true
@@ -280,7 +280,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "brand_idx"
+      - name: "brandIdx"
         in: "path"
         description: "향료 ID"
         required: true
@@ -312,7 +312,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "brand_idx"
+      - name: "brandIdx"
         in: "path"
         description: "브랜드 ID"
         required: true
@@ -376,7 +376,7 @@ paths:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Ingredient"
-  /ingredient/{ingredient_idx}:
+  /ingredient/{ingredientIdx}:
     get:
       tags:
       - "ingredient"
@@ -388,7 +388,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "ingredient_idx"
+      - name: "ingredientIdx"
         in: "path"
         description: "향료 ID"
         required: true
@@ -416,7 +416,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "ingredient_idx"
+      - name: "ingredientIdx"
         in: "path"
         description: "향료 ID"
         required: true
@@ -448,7 +448,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "ingredient_idx"
+      - name: "ingredientIdx"
         in: "path"
         description: "향료 ID"
         required: true
@@ -512,7 +512,7 @@ paths:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Series"
-  /series/{series_idx}:
+  /series/{seriesIdx}:
     get:
       tags:
       - "series"
@@ -524,7 +524,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "series_idx"
+      - name: "seriesIdx"
         in: "path"
         description: "계열 ID"
         required: true
@@ -552,7 +552,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "series_idx"
+      - name: "seriesIdx"
         in: "path"
         description: "계열 ID"
         required: true
@@ -584,7 +584,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "series_idx"
+      - name: "seriesIdx"
         in: "path"
         description: "계열 ID"
         required: true
@@ -1044,57 +1044,57 @@ definitions:
   SeriesInfo:
     type: "object"
     properties:
-      series_idx:
+      seriesIdx:
         type: "integer"
         format: "int64"
       name:
         type: "string"
-      english_name:
+      englishName:
         type: "string"
       description:
         type: "string"
     example:
       name: "꿀"
-      english_name: "Honey"
+      englishName: "Honey"
       description: "화이트 허니, 허니"
-      series_idx: 1
+      seriesIdx: 1
   IngredientInfo:
     type: "object"
     properties:
-      ingredient_idx:
+      ingredientIdx:
         type: "integer"
         format: "int64"
       name:
         type: "string"
-      english_name:
+      englishName:
         type: "string"
       description:
         type: "string"
     example:
       name: "씨쏠트"
-      english_name: "Sea Salt"
-      ingredient_idx: 1
+      englishName: "Sea Salt"
+      ingredientIdx: 1
       description: "바다 소금"
   BrandInfo:
     type: "object"
     properties:
-      brand_idx:
+      brandIdx:
         type: "integer"
         format: "int64"
       name:
         type: "string"
-      english_name:
+      englishName:
         type: "string"
-      start_character:
+      startCharacter:
         type: "string"
       description:
         type: "string"
     example:
       name: "조말론"
-      english_name: "Jo Malone"
-      start_character: "ㅈ"
+      englishName: "Jo Malone"
+      startCharacter: "ㅈ"
       description: "런던 브랜드"
-      brand_idx: 0
+      brandIdx: 0
   ReplyInfo:
     type: "object"
     properties:
