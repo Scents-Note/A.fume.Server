@@ -200,7 +200,14 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/BrandInfo"
+              allOf:
+              - $ref: "#/definitions/BrandInfo"
+              - type: "object"
+                properties:
+                  brandIdx:
+                    type: "integer"
+                example:
+                  brandIdx: 1
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -254,7 +261,14 @@ paths:
         "200":
           description: "성공"
           schema:
-              $ref: "#/definitions/BrandInfo"
+            allOf:
+            - $ref: "#/definitions/BrandInfo"
+            - type: "object"
+              properties:
+                brandIdx:
+                  type: "integer"
+              example:
+                brandIdx: 1
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -1181,9 +1195,6 @@ definitions:
   BrandInfo:
     type: "object"
     properties:
-      brandIdx:
-        type: "integer"
-        format: "int64"
       name:
         type: "string"
       englishName:
@@ -1192,12 +1203,14 @@ definitions:
         type: "string"
       description:
         type: "string"
+      imageUrl:
+        type: "string"
     example:
-      name: "조말론"
-      englishName: "Jo Malone"
-      startCharacter: "ㅈ"
-      description: "런던 브랜드"
-      brandIdx: 0
+      name: "(테스트)조말론"
+      englishName: "(테스트)Jo Malone"
+      startCharacter: "ㅌ"
+      description: "(테스트)런던 브랜드"
+      imageUrl: "(테스트)"
   ReviewInfo:
     type: "object"
     properties:
