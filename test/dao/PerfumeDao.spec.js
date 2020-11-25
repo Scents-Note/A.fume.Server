@@ -17,14 +17,14 @@ describe('# perfumeDao Test', () => {
         it('# success case', (done) => {
             const perfumeObj = {
                 name: '삽입테스트',
-                main_series_idx: 1,
-                brand_idx: 1,
-                english_name: 'insert Test',
-                volume_and_price: '{}',
-                image_thumbnail_url: 'URL',
+                mainSeriesIdx: 1,
+                brandIdx: 1,
+                englishName: 'insert Test',
+                volumeAndPrice: '{}',
+                imageThumbnailUrl: 'URL',
                 story: '스토리',
-                abundance_rate: 2,
-                image_url: 'image_url'
+                abundanceRate: 2,
+                imageUrl: 'image_url'
             };
             perfumeDao.create(perfumeObj)
                 .then((result) => {
@@ -41,16 +41,16 @@ describe('# perfumeDao Test', () => {
         it('# DuplicatedEntry Error case', (done) => {
             perfumeDao.create({
                     name: '삽입테스트',
-                    main_series_idx: 1,
-                    brand_idx: 1,
-                    english_name: 'insert Test',
-                    volume_and_price: '{}',
-                    image_thumbnail_url: 'URL',
+                    mainSeriesIdx: 1,
+                    brandIdx: 1,
+                    englishName: 'insert Test',
+                    volumeAndPrice: '{}',
+                    imageThumbnailUrl: 'URL',
                     story: '스토리',
-                    abundance_rate: 2,
-                    image_url: 'image_url'
+                    abundanceRate: 2,
+                    imageUrl: 'image_url'
                 })
-                .then((result) => {
+                .then(() => {
                     throw new Error('Must be occur DuplicatedEntryError')
                 }).catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
@@ -63,11 +63,11 @@ describe('# perfumeDao Test', () => {
             it('# success case', (done) => {
                 perfumeDao.readByPerfumeIdx(1).then((result) => {
                     expect(result.name).eq('154 코롱');
-                    expect(result.brand_name).eq('조 말론 런던');
-                    expect(result.series_name).eq('');
+                    expect(result.brandName).eq('조 말론 런던');
+                    expect(result.seriesName).eq('');
                     expect(result.story).eq('조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트, 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다.');
-                    expect(result.abundance_rate).eq(1);
-                    expect(result.volume_and_price).eq('{"30":"95000","100":"190000"}');
+                    expect(result.abundanceRate).eq(1);
+                    expect(result.volumeAndPrice).eq('{"30":"95000","100":"190000"}');
                     done();
                 });
             });
@@ -83,8 +83,8 @@ describe('# perfumeDao Test', () => {
                 perfumeDao.search(filter).then((result) => {
                     expect(result.length).gte(3);
                     result.forEach(it => {
-                        filter.series && filter.series.length > 0 && expect(filter.series.indexOf(it.main_series_name)).to.not.eq(-1);
-                        filter.brands && filter.brands.length > 0 && expect(filter.brands.indexOf(it.brand_name)).to.not.eq(-1);
+                        filter.series && filter.series.length > 0 && expect(filter.series.indexOf(it.mainSeriesName)).to.not.eq(-1);
+                        filter.brands && filter.brands.length > 0 && expect(filter.brands.indexOf(it.brandName)).to.not.eq(-1);
                     })
                     done();
                 });
@@ -103,7 +103,7 @@ describe('# perfumeDao Test', () => {
                 perfumeDao.search(filter).then((result) => {
                     expect(result.length).gte(3);
                     result.forEach(it => {
-                        filter.series && filter.series.length > 0 && expect(filter.series.indexOf(it.main_series_name)).to.not.eq(-1);
+                        filter.series && filter.series.length > 0 && expect(filter.series.indexOf(it.mainSeriesName)).to.not.eq(-1);
                     })
                     done();
                 });
@@ -116,7 +116,7 @@ describe('# perfumeDao Test', () => {
                 perfumeDao.search(filter).then((result) => {
                     expect(result.length).gte(3);
                     result.forEach(it => {
-                        filter.brands && filter.brands.length > 0 && expect(filter.brands.indexOf(it.brand_name)).to.not.eq(-1);
+                        filter.brands && filter.brands.length > 0 && expect(filter.brands.indexOf(it.brandName)).to.not.eq(-1);
                     })
                     done();
                 });
@@ -130,7 +130,7 @@ describe('# perfumeDao Test', () => {
                 perfumeDao.search(filter).then((result) => {
                     expect(result.length).gte(3);
                     result.forEach(it => {
-                        filter.series && filter.series.length > 0 && expect(filter.series.indexOf(it.main_series_name)).to.not.eq(-1);
+                        filter.series && filter.series.length > 0 && expect(filter.series.indexOf(it.mainSeriesName)).to.not.eq(-1);
                     })
                     done();
                 });
@@ -142,8 +142,8 @@ describe('# perfumeDao Test', () => {
                 };
                 perfumeDao.search(filter).then((result) => {
                     expect(result.length).gte(3);
-                    const str1 = result.map(it => it.perfume_idx).join(',');
-                    const str2 = result.sort((a, b) => a.create_time - b.create_time).map(it => it.perfume_idx).join(',');
+                    const str1 = result.map(it => it.perfumeIdx).join(',');
+                    const str2 = result.sort((a, b) => a.createTime - b.createTime).map(it => it.perfumeIdx).join(',');
                     expect(str1).eq(str2);
                     done();
                 });
@@ -155,8 +155,8 @@ describe('# perfumeDao Test', () => {
                 };
                 perfumeDao.search(filter).then((result) => {
                     expect(result.length).gte(3);
-                    const str1 = result.map(it => it.perfume_idx).join(',');
-                    const str2 = result.sort((a, b) => a.like - b.like).map(it => it.perfume_idx).join(',');
+                    const str1 = result.map(it => it.perfumeIdx).join(',');
+                    const str2 = result.sort((a, b) => a.likeCnt - b.likeCnt).map(it => it.perfumeIdx).join(',');
                     expect(str1).eq(str2);
                     done();
                 });
@@ -171,9 +171,9 @@ describe('# perfumeDao Test', () => {
                         expect(result1.length).gte(3);
                         expect(result2.length).gte(3);
                         expect(result3.length).gte(3);
-                        const str1 = result1.map(it => it.perfume_idx).join(',');
-                        const str2 = result2.map(it => it.perfume_idx).join(',');
-                        const str3 = result3.map(it => it.perfume_idx).join(',');
+                        const str1 = result1.map(it => it.perfumeIdx).join(',');
+                        const str2 = result2.map(it => it.perfumeIdx).join(',');
+                        const str3 = result3.map(it => it.perfumeIdx).join(',');
                         expect(str1 == str2 && str1 == str3).eq(false);
                         done();
                     });
@@ -189,30 +189,30 @@ describe('# perfumeDao Test', () => {
     });
 
     describe('# update Test', () => {
-        let perfume_idx;
+        let perfumeIdx;
         before(async () => {
             await pool.queryParam_None('DELETE FROM perfume WHERE name = "수정 테스트"');
             const perfume = await pool.queryParam_Parse('INSERT INTO perfume(brand_idx, main_series_idx, name, english_name, image_thumbnail_url) VALUES(?, ?, ?, ?, ?)', [1, 1, '수정 테스트', 'perfume_delete_test', 'URL']);
-            perfume_idx = perfume.insertId;
-            await pool.queryParam_Parse('INSERT INTO perfume_detail(perfume_idx, story, abundance_rate, volume_and_price, image_url) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE story = ?, abundance_rate = ?, volume_and_price = ?, image_url = ?', [perfume_idx, '향수 수정 스토리', 2, '{}', '이미지 URL', '향수 수정 스토리', 2, '{}', '이미지 URL']);
+            perfumeIdx = perfume.insertId;
+            await pool.queryParam_Parse('INSERT INTO perfume_detail(perfume_idx, story, abundance_rate, volume_and_price, image_url) VALUES(?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE story = ?, abundance_rate = ?, volume_and_price = ?, image_url = ?', [perfumeIdx, '향수 수정 스토리', 2, '{}', '이미지 URL', '향수 수정 스토리', 2, '{}', '이미지 URL']);
         });
         it('# success case', (done) => {
             const perfumeObj = {
-                perfume_idx,
+                perfumeIdx,
                 name: '수정된 이름',
-                main_series_idx: 2,
-                brand_idx: 2,
-                english_name: '수정된 영어이름',
-                volume_and_price: '{}',
-                image_thumbnail_url: '수정된url',
+                mainSeriesIdx: 2,
+                brandIdx: 2,
+                englishName: '수정된 영어이름',
+                volumeAndPrice: '{}',
+                imageThumbnailUrl: '수정된url',
                 story: '수정된스토리',
-                abundance_rate: 2,
+                abundanceRate: 2,
                 image_url: '수정된 이미지'
             };
             perfumeDao.update(perfumeObj)
                 .then((result) => {
                     expect(result.flat().map(it => it.affectedRows).filter(it => it == 1)).to.lengthOf(2);
-                    return perfumeDao.readByPerfumeIdx(perfume_idx);
+                    return perfumeDao.readByPerfumeIdx(perfumeIdx);
                 }).then((result) => {
                     for ([key, value] in Object.entries(perfumeObj)) {
                         expect(result[key]).eq(value);
@@ -221,23 +221,23 @@ describe('# perfumeDao Test', () => {
                 });
         });
         after(async () => {
-            if (!perfume_idx) return;
-            await pool.queryParam_Parse('DELETE FROM perfume WHERE perfume_idx = ?', [perfume_idx]);
+            if (!perfumeIdx) return;
+            await pool.queryParam_Parse('DELETE FROM perfume WHERE perfume_idx = ?', [perfumeIdx]);
         })
     });
     describe('# delete Test', () => {
-        let perfume_idx;
+        let perfumeIdx;
         before(async () => {
             const perfume = await pool.queryParam_Parse('INSERT INTO perfume(brand_idx, main_series_idx, name, english_name, image_thumbnail_url) VALUES(?, ?, ?, ?, ?)', [1, 1, '향수 삭제 테스트', 'perfume_delete_test', 'URL']);
-            perfume_idx = perfume.insertId;
-            await pool.queryParam_Parse('INSERT INTO perfume_detail(perfume_idx, story, abundance_rate,volume_and_price,  image_url) VALUES(?, ?, ?, ?, ?)', [perfume_idx, '향수 삭제 테스트 용', 2, '{}', '이미지 URL']);
+            perfumeIdx = perfume.insertId;
+            await pool.queryParam_Parse('INSERT INTO perfume_detail(perfume_idx, story, abundance_rate,volume_and_price,  image_url) VALUES(?, ?, ?, ?, ?)', [perfumeIdx, '향수 삭제 테스트 용', 2, '{}', '이미지 URL']);
         });
 
         it('# success case', (done) => {
-            perfumeDao.delete(perfume_idx)
+            perfumeDao.delete(perfumeIdx)
                 .then((result) => {
                     expect(result.affectedRows).eq(1);
-                    return pool.queryParam_Parse('SELECT * FROM perfume_detail WHERE perfume_idx = ?', [perfume_idx]);
+                    return pool.queryParam_Parse('SELECT * FROM perfume_detail WHERE perfume_idx = ?', [perfumeIdx]);
                 })
                 .then((result) => {
                     expect(result.length).eq(0);

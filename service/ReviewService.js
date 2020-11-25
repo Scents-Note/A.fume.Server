@@ -12,9 +12,9 @@ exports.getReview = function(reviewIdx) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = {
-  "review_idx" : 0,
-  "perfume_idx" : 0,
-  "user_idx" : 0,
+  "reviewIdx" : 0,
+  "perfumeIdx" : 0,
+  "userIdx" : 0,
   "score" : 2.4,
   "persistance" : "강함",
   "reverberance" : "보통",
@@ -43,9 +43,9 @@ exports.getReviewOfPerfume = function(perfumeIdx) {
   return new Promise(function(resolve, reject) {
     var examples = {};
     examples['application/json'] = [ {
-  "review_idx" : 0,
-  "perfume_idx" : 0,
-  "user_idx" : 0,
+  "reviewIdx" : 0,
+  "perfumeIdx" : 0,
+  "userIdx" : 0,
   "score" : 2.4,
   "persistance" : "강함",
   "reverberance" : "보통",
@@ -54,9 +54,9 @@ exports.getReviewOfPerfume = function(perfumeIdx) {
   "access" : true,
   "content" : "향수 잠시 남기기"
 }, {
-  "review_idx" : 0,
-  "perfume_idx" : 0,
-  "user_idx" : 0,
+  "reviewIdx" : 0,
+  "perfumeIdx" : 0,
+  "userIdx" : 0,
   "score" : 2.4,
   "persistance" : "강함",
   "reverberance" : "보통",
@@ -72,7 +72,6 @@ exports.getReviewOfPerfume = function(perfumeIdx) {
     }
   });
 }
-
 
 /**
  * 향수의 시향기 정보 업데이트
