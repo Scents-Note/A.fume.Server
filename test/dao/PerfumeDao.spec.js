@@ -217,9 +217,6 @@ describe('# perfumeDao Test', () => {
                         expect(result[key]).eq(value);
                     }
                     done();
-                })
-                .catch(error => {
-                    console.log(error)
                 });
         });
         after(async () => {
