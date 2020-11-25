@@ -109,7 +109,7 @@ paths:
       - "application/json"
       parameters:
       - in: "body"
-        name: "Filter"
+        name: "filter"
         description: "검색 필터"
         required: false
         schema:
@@ -169,13 +169,9 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "api_key"
-        in: "header"
-        required: false
-        type: "string"
       - name: "perfumeIdx"
         in: "path"
-        description: "Pet id to delete"
+        description: "perfume id to delete"
         required: true
         type: "integer"
         format: "int64"
@@ -188,7 +184,7 @@ paths:
             WWW_Authenticate:
               type: "string"
         "404":
-          description: "Pet not found"
+          description: "Perfume not found"
       deprecated: true
       x-swagger-router-controller: "Perfume"
   /brand:
@@ -196,18 +192,24 @@ paths:
       tags:
       - "brand"
       summary: "브랜드 전체 조회"
-      description: "브랜드 전체 반환"
+      description: "브랜드 리스트 반환"
       operationId: "getBrandList"
       produces:
       - "application/json"
-      parameters: []
       responses:
         "200":
           description: "성공"
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/BrandInfo"
+              allOf:
+              - $ref: "#/definitions/BrandInfo"
+              - type: "object"
+                properties:
+                  brandIdx:
+                    type: "integer"
+                example:
+                  brandIdx: 1
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -217,8 +219,8 @@ paths:
     post:
       tags:
       - "brand"
-      summary: "향료 삽입"
-      description: "향료 삽입"
+      summary: "브랜드 삽입"
+      description: "브랜드 삽입"
       operationId: "insertBrand"
       consumes:
       - "application/json"
@@ -244,8 +246,8 @@ paths:
     get:
       tags:
       - "brand"
-      summary: "특정 브랜드 조회"
-      description: "특정 브랜드 조회"
+      summary: "브랜드 조회"
+      description: "브랜드 조회"
       operationId: "getBrandByIdx"
       consumes:
       - "application/json"
@@ -254,7 +256,6 @@ paths:
       parameters:
       - name: "brandIdx"
         in: "path"
-        description: "브랜드 ID"
         required: true
         type: "integer"
         format: "int64"
@@ -262,7 +263,14 @@ paths:
         "200":
           description: "성공"
           schema:
-              $ref: "#/definitions/BrandInfo"
+            allOf:
+            - $ref: "#/definitions/BrandInfo"
+            - type: "object"
+              properties:
+                brandIdx:
+                  type: "integer"
+              example:
+                brandIdx: 1
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -282,13 +290,11 @@ paths:
       parameters:
       - name: "brandIdx"
         in: "path"
-        description: "향료 ID"
         required: true
         type: "integer"
         format: "int64"
       - in: "body"
         name: "body"
-        description: "Updated brand info"
         required: false
         schema:
           $ref: "#/definitions/BrandInfo"
@@ -314,7 +320,6 @@ paths:
       parameters:
       - name: "brandIdx"
         in: "path"
-        description: "브랜드 ID"
         required: true
         type: "integer"
         format: "int64"
@@ -646,6 +651,114 @@ paths:
           schema:
             $ref: "#/definitions/ReplyInfo"
         "400":
+          description: "Invalid username/password supplied"
+      x-swagger-router-controller: "Review"
+    put:
+      tags:
+      - "review"
+      summary: "향수의 시향기 정보 업데이트"
+      description: "review 업데이트"
+      operationId: "updateReview"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "reviewIdx"
+        in: "path"
+        description: "시향기 ID"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        description: "review 정보"
+        required: true
+        schema:
+          $ref: "#/definitions/ReviewInfo"
+      responses:
+        "400":
+          description: "Invalid username/password supplied"
+      x-swagger-router-controller: "Review"
+  /review/{reviewIdx}/reply:
+    get:
+      tags:
+      - "reply"
+      summary: "전체 댓글 반환"
+      description: "특정 시향노트에 달린 전체 댓글 가져오기"
+      operationId: "getReplyOfReview"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "reviewIdx"
+        in: "path"
+        description: "시향노트 Idx"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/ReplyInfo"
+        "400":
+          description: "Invalid username/password supplied"
+      x-swagger-router-controller: "Reply"
+  /reply:
+    post:
+      tags:
+      - "reply"
+      summary: "댓글 추가"
+      description : "시향노트에 댓글 추가하기"
+      operationId: "insertReply"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        description: "댓글 정보"
+        required: true
+        schema:
+          $ref: "#/definitions/ReplyInfo"
+      responses:
+        "200":
+          description: "성공"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        "405":
+          description: "Invalid input"
+      x-swagger-router-controller: "Reply"
+  /reply/{replyIdx}:
+    get:
+      tags:
+      - "reply"
+      summary: "댓글 반환"
+      description: "시향노트에 달린 특정 댓글 가져오기"
+      operationId: "getReplyByIdx"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "replyIdx"
+        in: "path"
+        description: "댓글 Idx"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            $ref: "#/definitions/ReplyInfo"
+        "400":
           description: "Invalid ID supplied"
         "401":
           description: "API key is missing or invalid"
@@ -654,6 +767,71 @@ paths:
               type: "string"
         "404":
           description: "Reply not found"
+      x-swagger-router-controller: "Reply"
+    put:
+      tags:
+      - "reply"
+      summary: "댓글 수정"
+      description: "댓글 수정하기"
+      operationId: "updateReply"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "replyIdx"
+        in: "path"
+        description: "댓글 Idx"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/ReplyInfo"
+      responses:
+        "200":
+          description: "성공"
+        "400":
+          description: "Invalid ID supplied"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        "405":
+          description: "Invalid input"
+      deprecated: true
+      x-swagger-router-controller: "Reply"
+    delete:
+      tags:
+      - "reply"
+      summary: "댓글 삭제"
+      description: "댓글 삭제하기"
+      operationId: "deleteReply"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "replyIdx"
+        in: "path"
+        description: "댓글 Idx"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+        "400":
+          description: "Invalid ID supplied"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      deprecated: true
       x-swagger-router-controller: "Reply"
   /user:
     post:
@@ -801,32 +979,127 @@ paths:
         "404":
           description: "User not found"
       x-swagger-router-controller: "User"
-  /user/{userIdx}/wishlist:
+  /wishlist:
     post:
       tags:
       - "wishlist"
       summary: "add wishlist"
       description: "위시 리스트에 추가하기"
-      operationId: "createWishList"
+      operationId: "createWishlist"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/Wishlist"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: "successful operation"
+      x-swagger-router-controller: "Wishlist"
+    put:
+      tags:
+      - "wishlist"
+      summary: "update wishlist"
+      description: "위시 리스트에 수정하기"
+      operationId: "updateWishlist"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/Wishlist"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: "successful operation"
+      x-swagger-router-controller: "Wishlist"
+    delete:
+      tags:
+      - "wishlist"
+      summary: "delete wishlist"
+      description: "위시 리스트에 삭제하기"
+      operationId: "deleteWishlist"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            userIdx: 
+              type: "integer"
+              format: "int64"
+            perfumeIdx:
+              type: "integer"
+              format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: "successful operation"
+      x-swagger-router-controller: "Wishlist"
+  /user/{userIdx}/wishlist:
+    get:
+      tags:
+      - "wishlist"
+      summary: "read user's wishlist"
+      description: "유저가 가지고 있는 위시 리스트 전체 조회하기"
+      operationId: "readWishlistByUser"
       produces:
       - "application/json"
       parameters:
       - name: "userIdx"
         in: "path"
-        description: "유저 ID"
+        description: "name that need to be updated"
         required: true
-        type: "integer"
-        format: "int64"
-      - in: "body"
-        name: "body"
-        description: "Created user object"
-        required: true
-        schema:
-          $ref: "#/definitions/User"
+        type: "string"
       responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Perfume"
         default:
           description: "successful operation"
-      x-swagger-router-controller: "WishList"
+      x-swagger-router-controller: "Wishlist"
+    delete:
+      tags:
+      - "wishlist"
+      summary: "delete user's wishlist"
+      description: "유저가 가지고 있는 위시 리스트 전체 삭제하기"
+      operationId: "deleteWishlistByUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userIdx"
+        in: "path"
+        description: "name that need to be updated"
+        required: true
+        type: "string"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        default:
+          description: "successful operation"
+      x-swagger-router-controller: "Wishlist"
 securityDefinitions:
   perfume_auth:
     type: "oauth2"
@@ -874,7 +1147,7 @@ definitions:
   KeywordInfo:
     type: "object"
     properties:
-      keyword_id:
+      keywordIdx:
         type: "integer"
         format: "int64"
       name:
@@ -889,56 +1162,56 @@ definitions:
   PerfumeInfo:
     type: "object"
     properties:
-      perform_id:
+      perfumeIdx:
         type: "integer"
         format: "int64"
       name:
         type: "string"
-      english_name:
+      englishName:
         type: "string"
-      brand_name:
+      brandName:
         type: "string"
-      image_url:
+      imageUrl:
         type: "string"
     example:
-      main_series: "만다린 오렌지"
-      image_url: "https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554"
+      mainSeries: "만다린 오렌지"
+      imageUrl: "https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554"
       name: "154 코롱"
-      brand_name: "조말론"
-      english_name: "154 Cologne"
-      perform_id: 1
+      brandName: "조말론"
+      englishName: "154 Cologne"
+      perfumeIdx: 1
   Perfume:
     properties:
       like:
         type: "integer"
-      is_like:
+      isLike:
         type: "boolean"
     allOf:
     - $ref: "#/definitions/PerfumeInfo"
     - {}
     example:
       like: 4
-      is_like: true
+      isLike: true
   PerfumeDetailInfo:
     properties:
-      main_series:
+      mainSeries:
         type: "string"
       story:
         type: "string"
-      abudance_rate:
+      abundanceRate:
         type: "string"
         enum:
         - "코롱"
         - "오 드 뜨왈렛"
         - "오 드 퍼퓸"
         - "퍼퓸:"
-      image_url:
+      imageUrl:
         type: "string"
-      volume_and_price:
+      volumeAndPrice:
         type: "array"
         items:
           $ref: "#/definitions/VolumeAndPrice"
-      note_type:
+      noteType:
         type: "integer"
         description: "0은 일반 노트, 1은 single 노트"
       ingredients:
@@ -946,37 +1219,37 @@ definitions:
     example:
       story: "조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트\
         , 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다."
-      volume_and_price:
+      volumeAndPrice:
       - volume: "30"
         price: "90,000"
       - volume: "30"
         price: "90,000"
       - volume: "30"
         price: "90,000"
-      note_type: 0
+      noteType: 0
       ingredients:
         top:
-        - ingredient_id: 1
+        - ingredientIdx: 1
           name: "재료1"
           description: "향긋"
-        - ingredient_id: 5
+        - ingredientIdx: 5
           name: "재료5"
           description: "향긋"
         middle:
-        - ingredient_id: 2
+        - ingredientIdx: 2
           name: "재료2"
           description: "향긋"
-        - ingredient_id: 6
+        - ingredientIdx: 6
           name: "재료6"
           description: "향긋"
         base:
-        - ingredient_id: 3
+        - ingredientIdx: 3
           name: "재료3"
           description: "향긋"
-        - ingredient_id: 4
+        - ingredientIdx: 4
           name: "재료4"
           description: "향긋"
-        - ingredient_id: 7
+        - ingredientIdx: 7
           name: "재료7"
           description: "향긋"
   PerfumeDetail:
@@ -1024,23 +1297,23 @@ definitions:
     - $ref: "#/definitions/PerfumeInfo"
     - $ref: "#/definitions/PerfumeDetailInfo"
     example:
-      score: 5.4000000000000003552713678800500929355621337890625
-      abudance_rate: "오 드 퍼퓸"
+      score: 5.4
+      abundanceRate: "오 드 퍼퓸"
       seasonal:
         봄: 0
-        여름: 0.299999999999999988897769753748434595763683319091796875
-        가을: 0.299999999999999988897769753748434595763683319091796875
-        겨울: 0.40000000000000002220446049250313080847263336181640625
+        여름: 0.3
+        가을: 0.3
+        겨울: 0.4
       reverberance:
-        가벼움: 0.40000000000000002220446049250313080847263336181640625
-        보통: 0.200000000000000011102230246251565404236316680908203125
-        무거움: 0.40000000000000002220446049250313080847263336181640625
+        가벼움: 0.4
+        보통: 0.2
+        무거움: 0.4
       persistance:
-        매우약함: 0.1000000000000000055511151231257827021181583404541015625
-        약함: 0.200000000000000011102230246251565404236316680908203125
-        보통: 0.40000000000000002220446049250313080847263336181640625
-        강함: 0.200000000000000011102230246251565404236316680908203125
-        매우강함: 0.1000000000000000055511151231257827021181583404541015625
+        매우약함: 0.1
+        약함: 0.2
+        보통: 0.4
+        강함: 0.2
+        매우강함: 0.1
   SeriesInfo:
     type: "object"
     properties:
@@ -1078,9 +1351,6 @@ definitions:
   BrandInfo:
     type: "object"
     properties:
-      brandIdx:
-        type: "integer"
-        format: "int64"
       name:
         type: "string"
       englishName:
@@ -1089,29 +1359,57 @@ definitions:
         type: "string"
       description:
         type: "string"
+      imageUrl:
+        type: "string"
     example:
-      name: "조말론"
-      englishName: "Jo Malone"
-      startCharacter: "ㅈ"
-      description: "런던 브랜드"
-      brandIdx: 0
-  ReplyInfo:
+      name: "(테스트)조말론"
+      englishName: "(테스트)Jo Malone"
+      startCharacter: "ㅌ"
+      description: "(테스트)런던 브랜드"
+      imageUrl: "(테스트)"
+  ReviewInfo:
     type: "object"
     properties:
-      reply_idx:
-        type: "integer"
-        format: "int64"
       review_idx:
         type: "integer"
         format: "int64"
-      user_idx:
+      perfumeIdx:
+        type: "integer"
+        format: "int64"
+      userIdx:
         type: "integer"
         format: "int64"
       content:
         type: "string"
     example:
-      review_idx: 0
-      user_idx: 0
+      reviewIdx: 0
+      perfumeIdx: 0
+      userIdx: 0
+      score: 2.4
+      persistance: "강함"
+      reverberance: "보통"
+      seasonal:
+      - "겨울"
+      - "가을"
+      generage: "중성"
+      access: true
+      content: "향수 잠시 남기기"
+  ReplyInfo:
+    type: "object"
+    properties:
+      replyIdx:
+        type: "integer"
+        format: "int64"
+      reviewIdx:
+        type: "integer"
+        format: "int64"
+      userIdx:
+        type: "integer"
+        format: "int64"
+      content:
+        type: "string"
+    example:
+      replyIdx: 0
       content: "저한테도 인생 향수에요~"
   myPerfume:
     properties:
@@ -1152,6 +1450,21 @@ definitions:
       - "쿨한"
       - "멋있는"
       sortby: "인기순"
+  Wishlist:
+    type: "object"
+    properties:
+      userIdx: 
+        type: "integer"
+        format: "int32"
+      perfumeIdx:
+        type: "integer"
+        format: "int32"
+      priority:
+        type: "integer"
+    example:
+      userIdx: 1
+      perfumeIdx: 1
+      priority: 4
   ApiResponse:
     type: "object"
     properties:

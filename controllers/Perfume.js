@@ -38,7 +38,7 @@ module.exports.getPerfumeById = function getPerfumeById (req, res, next) {
 };
 
 module.exports.searchPerfume = function searchPerfume (req, res, next) {
-  var filter = req.swagger.params['Filter'].value;
+  var filter = req.swagger.params['filter'].value;
   Perfume.searchPerfume(filter)
     .then(function (response) {
       utils.writeJson(res, response);
