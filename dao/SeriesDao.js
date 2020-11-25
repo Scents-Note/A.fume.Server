@@ -8,8 +8,9 @@ const {
  * 
  */
 const SQL_SERIES_INSERT = "INSERT INTO series(name, english_name, description) VALUES(?, ?, ?)";
-module.exports.create = ({name, english_name, description}) => {
-    return pool.queryParam_Parse(SQL_SERIES_INSERT, [name, english_name, description]);
+module.exports.create = async ({name, english_name, description}) => {
+    const result = await pool.queryParam_Parse(SQL_SERIES_INSERT, [name, english_name, description]);
+    return result.affectedRows;
 }
 
 
@@ -32,7 +33,8 @@ module.exports.read = async (series_idx) => {
  */
 const SQL_SERIES_SELECT_ALL = "SELECT series_idx, name, english_name FROM series";
 module.exports.readAll = async () => {
-    return pool.queryParam_None(SQL_SERIES_SELECT_ALL);
+    const result = await pool.queryParam_None(SQL_SERIES_SELECT_ALL);
+    return result.length;
 }
 
 
@@ -41,7 +43,8 @@ module.exports.readAll = async () => {
  */
 const SQL_SERIES_UPDATE = "UPDATE series SET name = ?, english_name = ? WHERE series_idx = ?";
 module.exports.update = async ({series_idx, name, english_name}) => {
-    return pool.queryParam_Parse(SQL_SERIES_UPDATE, [name, english_name, series_idx]);
+    const result = await pool.queryParam_Parse(SQL_SERIES_UPDATE, [name, english_name, series_idx]);
+    return result.affectedRows;
 }
 
 
@@ -50,5 +53,6 @@ module.exports.update = async ({series_idx, name, english_name}) => {
  */
 const SQL_SERIES_DELETE = "DELETE FROM series WHERE series_idx = ?";
 module.exports.delete = async (series_idx) => {
-    return pool.queryParam_Parse(SQL_SERIES_DELETE, [series_idx]);   
+    const result = await pool.queryParam_Parse(SQL_SERIES_DELETE, [series_idx]);   
+    return result.affectedRows;
 }

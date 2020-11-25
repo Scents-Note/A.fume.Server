@@ -16,7 +16,7 @@ describe('# seriesDao Test', () => {
         // 성공 케이스
         it(' # success case', (done) => {
             seriesDao.create({name : '테스트 데이터', english_name : 'Test Data', description : '왈라왈라'}).then((result) => {
-                expect(result.affectedRows).eq(1);
+                expect(result).eq(1);
                 done();
             }).catch((err) => {
                 expect(false).true();
@@ -64,7 +64,7 @@ describe('# seriesDao Test', () => {
     describe(' # readAll Test', () => {
         it(' # success case', (done) => {
             seriesDao.readAll().then((result) => {
-                expect(result.length).greaterThan(0);
+                expect(result).greaterThan(0);
                 done();
             }).catch((err) => {
                 expect(false).true();
@@ -81,10 +81,9 @@ describe('# seriesDao Test', () => {
             series_idx = result.insertId;
         });
         it('# success case', (done) => {
-            console.log(series_idx)
             seriesDao.update({series_idx, name:'수정 데이터', english_name:'Update Data'})
             .then((result) => {
-                expect(result.affectedRows).eq(1);
+                expect(result).eq(1);
                 done();
             }).catch((err) => {
                 console.log(err)
@@ -106,7 +105,7 @@ describe('# seriesDao Test', () => {
         });
         it('# success case', (done) => {
             seriesDao.delete(series_idx).then((result) => {
-                expect(result.affectedRows).eq(1);
+                expect(result).eq(1);
                 done();
             }).catch((err) => {
                 expect(false).true();
