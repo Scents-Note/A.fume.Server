@@ -99,7 +99,7 @@ paths:
       deprecated: true
       x-swagger-router-controller: "Perfume"
   /perfume/search:
-    get:
+    post:
       tags:
       - "perfume"
       summary: "향수 검색"

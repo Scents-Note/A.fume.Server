@@ -11,7 +11,8 @@ const { NotMatchedError, FailedToCreateError } = require('../utils/errors/errors
 const SQL_PERFUME_INSERT = 'INSERT perfume(brand_idx, main_series_idx, name, english_name, image_thumbnail_url) VALUES(?, ?, ?, ?, ?)';
 const SQL_PERFUME_DETAIL_INSERT = 'INSERT perfume_detail(perfume_idx, story, abundance_rate, volume_and_price, image_url) VALUES(?, ?, ?, ?, ?)';
 module.exports.create = async ({brandIdx, name, englishName, volumeAndPrice, imageThumbnailUrl, mainSeriesIdx, story, abundanceRate, imageUrl}) => {
-    return pool.Transaction(async (connection) => {
+    volumeAndPrice = JSON.stringify(volumeAndPrice);
+    const result = await pool.Transaction(async (connection) => {
         const perfumeResult = await connection.query(SQL_PERFUME_INSERT, [brandIdx, mainSeriesIdx, name, englishName, imageThumbnailUrl]);
         if(perfumeResult.insertId == 0) {
             throw new FailedToCreateError();
@@ -23,6 +24,7 @@ module.exports.create = async ({brandIdx, name, englishName, volumeAndPrice, ima
         }
         return perfumeIdx;
     });
+    return result[0];
 }
 
 /**
@@ -90,6 +92,9 @@ module.exports.readByPerfumeIdx = async (perfumeIdx) => {
     if(result.length == 0) {
         throw new NotMatchedError();
     }
+    result[0].volumeAndPrice = Object.entries(JSON.parse(result[0].volumeAndPrice)).map(([volume, price]) => {
+        return { volume: parseInt(volume), price: parseInt(price) };
+    });
     return result[0];
 }
 
