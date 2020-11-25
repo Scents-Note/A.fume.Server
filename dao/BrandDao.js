@@ -60,6 +60,9 @@ module.exports.update = async ({
     description
 }) => {
     const { affectedRows } = await pool.queryParam_Parse(SQL_BRAND_UPDATE, [name, englishName, startCharacter, imageUrl, description, brandIdx]);
+    if (affectedRows == 0) {
+        throw new NotMatchedError();
+    }
     return affectedRows;
 }
 
@@ -70,5 +73,8 @@ module.exports.update = async ({
 const SQL_BRAND_DELETE = 'DELETE FROM brand WHERE brand_idx = ?';
 module.exports.delete = async (brandIdx) => {
     const { affectedRows } = await pool.queryParam_Parse(SQL_BRAND_DELETE, [brandIdx]);
+    if (affectedRows == 0) {
+        throw new NotMatchedError();
+    }
     return affectedRows;
 }

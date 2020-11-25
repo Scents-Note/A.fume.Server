@@ -122,9 +122,15 @@ const SQL_PERFUME_DETAIL_UPDATE = 'UPDATE perfume_detail SET story = ?, abundanc
 module.exports.update = ({perfumeIdx, name, mainSeriesIdx, brandIdx, englishName, volumeAndPrice, imageThumbnailUrl, story, abundanceRate, imageUrl}) => {
     return pool.Transaction(async (connection) => {
         const { affectedRows } = await connection.query(SQL_PERFUME_UPDATE, [brandIdx, mainSeriesIdx, name, englishName, imageThumbnailUrl, perfumeIdx]);
+        if (affectedRows == 0) {
+            throw new NotMatchedError();
+        }
         return affectedRows;
     }, async (connection) => {
         const { affectedRows } = await connection.query(SQL_PERFUME_DETAIL_UPDATE, [story, abundanceRate, volumeAndPrice, imageUrl, perfumeIdx]);
+        if (affectedRows == 0) {
+            throw new NotMatchedError();
+        }
         return affectedRows;
     });
 }
@@ -138,5 +144,8 @@ module.exports.update = ({perfumeIdx, name, mainSeriesIdx, brandIdx, englishName
 const SQL_PERFUME_DELETE = 'DELETE FROM perfume WHERE perfume_idx = ?';
 module.exports.delete = async (perfumeIdx) => {   
     const { affectedRows } = await pool.queryParam_Parse(SQL_PERFUME_DELETE, [perfumeIdx]);
+    if (affectedRows == 0) {
+        throw new NotMatchedError();
+    }
     return affectedRows;
 }

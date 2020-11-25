@@ -10,14 +10,14 @@ describe('# wishlistDao Test', () => {
             await pool.queryParam_Parse('DELETE FROM wishlist WHERE perfume_idx = ? AND user_idx = ?', [1, 1]);
         });
         it('# success case', (done) => {
-            wishlistDao.create({perfume_idx: 1, user_idx: 1, priority: 4}).then((result) => {
-                expect(result.affectedRows).eq(1);
+            wishlistDao.create({perfumeIdx: 1, userIdx: 1, priority: 4}).then((result) => {
+                expect(result).gt(0);
                 done();
             });
         });
         it(' # DuplicatedEntryError case', (done) => {
-            wishlistDao.create({perfume_idx: 1, user_idx: 1, priority: 4})
-            .then((result) => {
+            wishlistDao.create({perfumeIdx: 1, userIdx: 1, priority: 4})
+            .then(() => {
                 expect(false).true();
                 done();
             }).catch((err) => {
@@ -42,17 +42,17 @@ describe('# wishlistDao Test', () => {
         });
         describe(' # readByPK Test', () => {
             it('# success case', (done) => {
-                wishlistDao.readByPK({user_idx: 2, perfume_idx: 3})
+                wishlistDao.readByPK({userIdx: 2, perfumeIdx: 3})
                 .then((result) => {
-                    expect(result.user_idx).eq(2);
-                    expect(result.perfume_idx).eq(3);
+                    expect(result.userIdx).eq(2);
+                    expect(result.perfumeIdx).eq(3);
                     expect(result.priority).eq(1);
                     done();
                 });
             });
             it('# Not Matched case', (done) => {
-                wishlistDao.readByPK({user_idx: 1, perfume_idx: 3})
-                .then((result) => {
+                wishlistDao.readByPK({userIdx: 1, perfumeIdx: 3})
+                .then(() => {
                     expect(false).true();
                     done();
                 }).catch((err) => {
@@ -68,9 +68,9 @@ describe('# wishlistDao Test', () => {
             await pool.queryParam_Parse('INSERT INTO wishlist(perfume_idx, user_idx, priority) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE priority = ?', [1, 1, 5, 5]);
         });
         it('# success case', (done) => {
-            wishlistDao.update({perfume_idx: 1, user_idx: 1, priority: 10})
+            wishlistDao.update({perfumeIdx: 1, userIdx: 1, priority: 10})
             .then((result) => {
-                expect(result.affectedRows).eq(1);
+                expect(result).eq(1);
                 done();
             });
         });
@@ -80,18 +80,18 @@ describe('# wishlistDao Test', () => {
     });
     describe('# delete Test', () => {
         before(async () => {
-            await pool.queryParam_Parse('INSERT INTO wishlist(perfume_idx, user_idx, priority) VALUES(?, ?, ?)', [1, 1, 5]);
-            await pool.queryParam_Parse('INSERT INTO wishlist(perfume_idx, user_idx, priority) VALUES(?, ?, ?)', [2, 1, 5]);
-            await pool.queryParam_Parse('INSERT INTO wishlist(perfume_idx, user_idx, priority) VALUES(?, ?, ?)', [3, 1, 5]);
-            await pool.queryParam_Parse('INSERT INTO wishlist(perfume_idx, user_idx, priority) VALUES(?, ?, ?)', [4, 1, 5]);
-            await pool.queryParam_Parse('INSERT INTO wishlist(perfume_idx, user_idx, priority) VALUES(?, ?, ?)', [5, 1, 5]);
-            await pool.queryParam_Parse('INSERT INTO wishlist(perfume_idx, user_idx, priority) VALUES(?, ?, ?)', [6, 1, 5]);
+            await pool.queryParam_Parse('INSERT INTO wishlist(perfume_idx, user_idx, priority) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE priority = ?', [1, 1, 5, 5]);
+            await pool.queryParam_Parse('INSERT INTO wishlist(perfume_idx, user_idx, priority) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE priority = ?', [2, 1, 5, 5]);
+            await pool.queryParam_Parse('INSERT INTO wishlist(perfume_idx, user_idx, priority) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE priority = ?', [3, 1, 5, 5]);
+            await pool.queryParam_Parse('INSERT INTO wishlist(perfume_idx, user_idx, priority) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE priority = ?', [4, 1, 5, 5]);
+            await pool.queryParam_Parse('INSERT INTO wishlist(perfume_idx, user_idx, priority) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE priority = ?', [5, 1, 5, 5]);
+            await pool.queryParam_Parse('INSERT INTO wishlist(perfume_idx, user_idx, priority) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE priority = ?', [6, 1, 5, 5]);
         });
         describe('# delete Test', () => {
             it('# success case', (done) => {
-                wishlistDao.delete({user_idx: 1, perfume_idx: 1})
+                wishlistDao.delete({userIdx: 1, perfumeIdx: 1})
                 .then((result) => {
-                    expect(result.affectedRows).eq(1);
+                    expect(result).eq(1);
                     done();
                 });
             });
@@ -100,7 +100,7 @@ describe('# wishlistDao Test', () => {
             it('# success case(delete by user id)', (done) => {
                 wishlistDao.deleteByUserIdx(1)
                 .then((result) => {
-                    expect(result.affectedRows).eq(5);
+                    expect(result).eq(5);
                     done();
                 });
             });
