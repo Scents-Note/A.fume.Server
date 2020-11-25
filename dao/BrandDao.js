@@ -1,7 +1,8 @@
 const pool = require('../utils/db/pool.js');
 
 const {
-    NotMatchedError
+    NotMatchedError,
+    FailedToCreateError,
 } = require('../utils/errors/errors.js');
 
 /**
@@ -9,23 +10,27 @@ const {
  * @param {} param0 
  */
 const SQL_BRAND_INSERT = 'INSERT brand(name, english_name, start_character, image_url, description) VALUES(?, ?, ?, ?, ?)';
-module.exports.create = ({
+module.exports.create = async ({
     name,
-    english_name,
-    start_char,
-    image_url,
+    englishName,
+    startChar,
+    imageUrl,
     description
 }) => {
-    return pool.queryParam_Parse(SQL_BRAND_INSERT, [name, english_name, start_char, image_url, description]);
+    const { insertId } = await pool.queryParam_Parse(SQL_BRAND_INSERT, [name, englishName, startChar, imageUrl, description]);
+    if(insertId == 0) {
+        throw new FailedToCreateError();
+    }
+    return insertId;
 }
 
 /**
  * 브랜드 세부 조회 
  * 
  */
-const SQL_BRAND_SELECT_BY_IDX = 'SELECT brand_idx, name, english_name, start_character, image_url, description FROM brand WHERE brand_idx = ?';
-module.exports.read = async (brand_idx) => {
-    const result = await pool.queryParam_Parse(SQL_BRAND_SELECT_BY_IDX, [brand_idx]);
+const SQL_BRAND_SELECT_BY_IDX = 'SELECT brand_idx as brandIdx, name, english_name as englishName, start_character as startCharacter, image_url as imageUrl, description FROM brand WHERE brand_idx = ?';
+module.exports.read = async (brandIdx) => {
+    const result = await pool.queryParam_Parse(SQL_BRAND_SELECT_BY_IDX, [brandIdx]);
     if (result.length == 0) {
         throw new NotMatchedError();
     }
@@ -36,8 +41,8 @@ module.exports.read = async (brand_idx) => {
  * 브랜드 전체 목록 조회
  * 
  */
-const SQL_BRAND_SELECT_ALL = 'SELECT brand_idx, name, start_character, image_url, description FROM brand';
-module.exports.readAll = async () => {
+const SQL_BRAND_SELECT_ALL = 'SELECT brand_idx as brandIdx , name, start_character as startCharacter, image_url, description FROM brand';
+module.exports.readAll = () => {
     return pool.queryParam_None(SQL_BRAND_SELECT_ALL);
 }
 
@@ -47,14 +52,15 @@ module.exports.readAll = async () => {
  */
 const SQL_BRAND_UPDATE = 'UPDATE brand SET name = ?, english_name = ?, start_character = ?, image_url = ?, description = ? WHERE brand_idx = ?';
 module.exports.update = async ({
-    brand_idx,
+    brandIdx,
     name,
-    english_name,
-    start_character,
-    image_url,
+    englishName,
+    startCharacter,
+    imageUrl,
     description
 }) => {
-    return pool.queryParam_Parse(SQL_BRAND_UPDATE, [name, english_name, start_character, image_url, description, brand_idx]);
+    const { affectedRows } = await pool.queryParam_Parse(SQL_BRAND_UPDATE, [name, englishName, startCharacter, imageUrl, description, brandIdx]);
+    return affectedRows;
 }
 
 /**
@@ -62,6 +68,7 @@ module.exports.update = async ({
  * 
  */
 const SQL_BRAND_DELETE = 'DELETE FROM brand WHERE brand_idx = ?';
-module.exports.delete = async (brand_idx) => {
-    return pool.queryParam_Parse(SQL_BRAND_DELETE, [brand_idx]);
+module.exports.delete = async (brandIdx) => {
+    const { affectedRows } = await pool.queryParam_Parse(SQL_BRAND_DELETE, [brandIdx]);
+    return affectedRows;
 }

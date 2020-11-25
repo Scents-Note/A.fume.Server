@@ -107,7 +107,7 @@ paths:
       - "application/json"
       parameters:
       - in: "body"
-        name: "Filter"
+        name: "filter"
         description: "검색 필터"
         required: false
         schema:
@@ -167,13 +167,9 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "api_key"
-        in: "header"
-        required: false
-        type: "string"
       - name: "perfumeIdx"
         in: "path"
-        description: "Pet id to delete"
+        description: "perfume id to delete"
         required: true
         type: "integer"
         format: "int64"
@@ -186,7 +182,7 @@ paths:
             WWW_Authenticate:
               type: "string"
         "404":
-          description: "Pet not found"
+          description: "Perfume not found"
       deprecated: true
       x-swagger-router-controller: "Perfume"
   /brand:
@@ -194,11 +190,10 @@ paths:
       tags:
       - "brand"
       summary: "브랜드 전체 조회"
-      description: "브랜드 전체 반환"
+      description: "브랜드 리스트 반환"
       operationId: "getBrandList"
       produces:
       - "application/json"
-      parameters: []
       responses:
         "200":
           description: "성공"
@@ -215,8 +210,8 @@ paths:
     post:
       tags:
       - "brand"
-      summary: "향료 삽입"
-      description: "향료 삽입"
+      summary: "브랜드 삽입"
+      description: "브랜드 삽입"
       operationId: "insertBrand"
       consumes:
       - "application/json"
@@ -891,7 +886,7 @@ definitions:
   KeywordInfo:
     type: "object"
     properties:
-      keyword_id:
+      keywordIdx:
         type: "integer"
         format: "int64"
       name:
@@ -906,56 +901,56 @@ definitions:
   PerfumeInfo:
     type: "object"
     properties:
-      perform_id:
+      performIdx:
         type: "integer"
         format: "int64"
       name:
         type: "string"
-      english_name:
+      englishName:
         type: "string"
-      brand_name:
+      brandName:
         type: "string"
-      image_url:
+      imageUrl:
         type: "string"
     example:
-      main_series: "만다린 오렌지"
-      image_url: "https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554"
+      mainSeries: "만다린 오렌지"
+      imageUrl: "https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554"
       name: "154 코롱"
-      brand_name: "조말론"
-      english_name: "154 Cologne"
-      perform_id: 1
+      brandName: "조말론"
+      englishName: "154 Cologne"
+      performIdx: 1
   Perfume:
     properties:
       like:
         type: "integer"
-      is_like:
+      isLike:
         type: "boolean"
     allOf:
     - $ref: "#/definitions/PerfumeInfo"
     - {}
     example:
       like: 4
-      is_like: true
+      isLike: true
   PerfumeDetailInfo:
     properties:
-      main_series:
+      mainSeries:
         type: "string"
       story:
         type: "string"
-      abudance_rate:
+      abundanceRate:
         type: "string"
         enum:
         - "코롱"
         - "오 드 뜨왈렛"
         - "오 드 퍼퓸"
         - "퍼퓸:"
-      image_url:
+      imageUrl:
         type: "string"
-      volume_and_price:
+      volumeAndPrice:
         type: "array"
         items:
           $ref: "#/definitions/VolumeAndPrice"
-      note_type:
+      noteType:
         type: "integer"
         description: "0은 일반 노트, 1은 single 노트"
       ingredients:
@@ -963,37 +958,37 @@ definitions:
     example:
       story: "조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트\
         , 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다."
-      volume_and_price:
+      volumeAndPrice:
       - volume: "30"
         price: "90,000"
       - volume: "30"
         price: "90,000"
       - volume: "30"
         price: "90,000"
-      note_type: 0
+      noteType: 0
       ingredients:
         top:
-        - ingredient_id: 1
+        - ingredientIdx: 1
           name: "재료1"
           description: "향긋"
-        - ingredient_id: 5
+        - ingredientIdx: 5
           name: "재료5"
           description: "향긋"
         middle:
-        - ingredient_id: 2
+        - ingredientIdx: 2
           name: "재료2"
           description: "향긋"
-        - ingredient_id: 6
+        - ingredientIdx: 6
           name: "재료6"
           description: "향긋"
         base:
-        - ingredient_id: 3
+        - ingredientIdx: 3
           name: "재료3"
           description: "향긋"
-        - ingredient_id: 4
+        - ingredientIdx: 4
           name: "재료4"
           description: "향긋"
-        - ingredient_id: 7
+        - ingredientIdx: 7
           name: "재료7"
           description: "향긋"
   PerfumeDetail:
@@ -1041,87 +1036,87 @@ definitions:
     - $ref: "#/definitions/PerfumeInfo"
     - $ref: "#/definitions/PerfumeDetailInfo"
     example:
-      score: 5.4000000000000003552713678800500929355621337890625
-      abudance_rate: "오 드 퍼퓸"
+      score: 5.4
+      abundanceRate: "오 드 퍼퓸"
       seasonal:
         봄: 0
-        여름: 0.299999999999999988897769753748434595763683319091796875
-        가을: 0.299999999999999988897769753748434595763683319091796875
-        겨울: 0.40000000000000002220446049250313080847263336181640625
+        여름: 0.3
+        가을: 0.3
+        겨울: 0.4
       reverberance:
-        가벼움: 0.40000000000000002220446049250313080847263336181640625
-        보통: 0.200000000000000011102230246251565404236316680908203125
-        무거움: 0.40000000000000002220446049250313080847263336181640625
+        가벼움: 0.4
+        보통: 0.2
+        무거움: 0.4
       persistance:
-        매우약함: 0.1000000000000000055511151231257827021181583404541015625
-        약함: 0.200000000000000011102230246251565404236316680908203125
-        보통: 0.40000000000000002220446049250313080847263336181640625
-        강함: 0.200000000000000011102230246251565404236316680908203125
-        매우강함: 0.1000000000000000055511151231257827021181583404541015625
+        매우약함: 0.1
+        약함: 0.2
+        보통: 0.4
+        강함: 0.2
+        매우강함: 0.1
   SeriesInfo:
     type: "object"
     properties:
-      series_idx:
+      seriesIdx:
         type: "integer"
         format: "int64"
       name:
         type: "string"
-      english_name:
+      englishName:
         type: "string"
       description:
         type: "string"
     example:
       name: "꿀"
-      english_name: "Honey"
+      englishName: "Honey"
       description: "화이트 허니, 허니"
-      series_idx: 1
+      seriesIdx: 1
   IngredientInfo:
     type: "object"
     properties:
-      ingredient_idx:
+      ingredientIdx:
         type: "integer"
         format: "int64"
       name:
         type: "string"
-      english_name:
+      englishName:
         type: "string"
       description:
         type: "string"
     example:
       name: "씨쏠트"
-      english_name: "Sea Salt"
-      ingredient_idx: 1
+      englishName: "Sea Salt"
+      ingredientIdx: 1
       description: "바다 소금"
   BrandInfo:
     type: "object"
     properties:
-      brand_idx:
+      brandIdx:
         type: "integer"
         format: "int64"
       name:
         type: "string"
-      english_name:
+      englishName:
         type: "string"
-      start_character:
+      startCharacter:
         type: "string"
       description:
         type: "string"
     example:
       name: "조말론"
-      english_name: "Jo Malone"
-      start_character: "ㅈ"
+      englishName: "Jo Malone"
+      startCharacter: "ㅈ"
       description: "런던 브랜드"
-      brand_idx: 0
+      brandIdx: 0
   ReviewInfo:
     type: "object"
     properties:
       review_idx:
         type: "integer"
         format: "int64"
-      perfume_idx:
+      perfumeIdx:
         type: "integer"
         format: "int64"
-      user_idx:
+      userIdx:
         type: "integer"
         format: "int64"
       score:
@@ -1141,10 +1136,10 @@ definitions:
       content:
         type: "string"
     example:
-      review_idx: 0
-      perfume_idx: 0
-      user_idx: 0
-      score: 2.399999999999999911182158029987476766109466552734375
+      reviewIdx: 0
+      perfumeIdx: 0
+      userIdx: 0
+      score: 2.4
       persistance: "강함"
       reverberance: "보통"
       seasonal:

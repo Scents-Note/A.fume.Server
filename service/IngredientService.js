@@ -12,11 +12,11 @@ exports.getIngredientList = function() {
     var examples = {};
     examples['application/json'] = [ {
   "name" : "만다린 오렌지",
-  "ingredient_id" : 1,
+  "ingredientIdx" : 1,
   "description" : "상큼하고 새콤한 만다린 오렌지 향이 생기 넘치는 상쾌함을 더합니다"
 }, {
   "name" : "만다린 오렌지",
-  "ingredient_id" : 1,
+  "ingredientIdx" : 1,
   "description" : "상큼하고 새콤한 만다린 오렌지 향이 생기 넘치는 상쾌함을 더합니다"
 } ];
     if (Object.keys(examples).length > 0) {

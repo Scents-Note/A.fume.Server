@@ -26,10 +26,10 @@ exports.getSeriesList = function() {
     var examples = {};
     examples['application/json'] = [ {
   "name" : "우드",
-  "series_id" : 1
+  "seriesIdx" : 1
 }, {
   "name" : "우드",
-  "series_id" : 1
+  "seriesIdx" : 1
 } ];
     if (Object.keys(examples).length > 0) {
       resolve(examples[Object.keys(examples)[0]]);
