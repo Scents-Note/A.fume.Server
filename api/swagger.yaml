@@ -1163,7 +1163,7 @@ definitions:
   PerfumeInfo:
     type: "object"
     properties:
-      performIdx:
+      perfumeIdx:
         type: "integer"
         format: "int64"
       name:
@@ -1180,7 +1180,7 @@ definitions:
       name: "154 코롱"
       brandName: "조말론"
       englishName: "154 Cologne"
-      performIdx: 1
+      perfumeIdx: 1
   Perfume:
     properties:
       like:
