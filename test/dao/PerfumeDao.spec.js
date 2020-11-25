@@ -141,8 +141,8 @@ describe('# perfumeDao Test', () => {
                 };
                 perfumeDao.search(filter).then((result) => {
                     expect(result.length).gte(3);
-                    const str1 = result.map(it => it.perfumeIdx).join(',');
-                    const str2 = result.sort((a, b) => a.createTime - b.createTime).map(it => it.perfumeIdx).join(',');
+                    const str1 = result.map(it => it.createTime).join(',');
+                    const str2 = result.map(it => it.createTime).sort().reverse().join(',');
                     expect(str1).eq(str2);
                     done();
                 });
@@ -154,8 +154,8 @@ describe('# perfumeDao Test', () => {
                 };
                 perfumeDao.search(filter).then((result) => {
                     expect(result.length).gte(3);
-                    const str1 = result.map(it => it.perfumeIdx).join(',');
-                    const str2 = result.sort((a, b) => a.likeCnt - b.likeCnt).map(it => it.perfumeIdx).join(',');
+                    const str1 = result.map(it => it.like).join(',');
+                    const str2 = result.map(it => it.like).sort().reverse().join(',');
                     expect(str1).eq(str2);
                     done();
                 });
@@ -210,13 +210,16 @@ describe('# perfumeDao Test', () => {
             };
             perfumeDao.update(perfumeObj)
                 .then((result) => {
-                    expect(result.flat().filter(it => it == 1)).to.lengthOf(2);
+                    expect(result.filter(it => it == 1)).to.lengthOf(2);
                     return perfumeDao.readByPerfumeIdx(perfumeIdx);
                 }).then((result) => {
                     for ([key, value] in Object.entries(perfumeObj)) {
                         expect(result[key]).eq(value);
                     }
                     done();
+                })
+                .catch(error => {
+                    console.log(error)
                 });
         });
         after(async () => {
