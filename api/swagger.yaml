@@ -221,7 +221,7 @@ paths:
       - "brand"
       summary: "브랜드 삽입"
       description: "브랜드 삽입"
-      operationId: "insertBrand"
+      operationId: "postBrand"
       consumes:
       - "application/json"
       produces:
@@ -229,7 +229,7 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        description: "Insert new brand info"
+        description: "Post new brand info"
         required: false
         schema:
           $ref: "#/definitions/BrandInfo"
@@ -368,7 +368,7 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        description: "Insert new ingredient info"
+        description: "Post new ingredient info"
         required: false
         schema:
           $ref: "#/definitions/IngredientInfo"
@@ -504,7 +504,7 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        description: "Insert new series info"
+        description: "Post new series info"
         required: false
         schema:
           $ref: "#/definitions/SeriesInfo"
@@ -685,7 +685,7 @@ paths:
       - "reply"
       summary: "댓글 추가"
       description : "시향노트에 댓글 추가하기"
-      operationId: "insertReply"
+      operationId: "postReply"
       consumes:
       - "application/json"
       produces:
