@@ -1,5 +1,6 @@
 'use strict';
 
+const perfumeDao = require('../dao/PerfumeDao.js')
 
 /**
  * 향수 정보 추가
@@ -8,10 +9,8 @@
  * body Perfume  (optional)
  * no response value expected for this operation
  **/
-exports.createPerfume = function(body) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
+exports.createPerfume = ({brandIdx, name, englishName, volumeAndPrice, imageThumbnailUrl, mainSeriesIdx, story, abundanceRate, imageUrl}) => {
+  return perfumeDao.create({brandIdx, name, englishName, volumeAndPrice, imageThumbnailUrl, mainSeriesIdx, story, abundanceRate, imageUrl});
 }
 
 
@@ -23,10 +22,8 @@ exports.createPerfume = function(body) {
  * api_key String  (optional)
  * no response value expected for this operation
  **/
-exports.deletePerfume = function(perfumeIdx,api_key) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
+exports.deletePerfume = (perfumeIdx) => {
+  return perfumeDao.delete(perfumeIdx);
 }
 
 
@@ -37,16 +34,16 @@ exports.deletePerfume = function(perfumeIdx,api_key) {
  * perfumeIdx Long ID of perfume to return
  * returns PerfumeDetail
  **/
-exports.getPerfumeById = function(perfumeIdx) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = "";
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+exports.getPerfumeById = (perfumeIdx) => {
+  const perfume = perfumeDao.readByPerfumeIdx(perfumeIdx);
+  // TODO 노트 type 추가
+  // TODO ingredients 추가
+  // TODO score 추가
+  // TODO 계절감 추가
+  // TODO 잔향감 추가
+  // TODO 지속감 추가
+  // TODO 성별감 추가
+  return perfume;
 }
 
 
@@ -57,16 +54,9 @@ exports.getPerfumeById = function(perfumeIdx) {
  * filter Filter 검색 필터 (optional)
  * returns List
  **/
-exports.searchPerfume = function(filter) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [ "", "" ];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+exports.searchPerfume = (filter) => {
+  const {series, brands, keywords, sortBy} = filter;
+  return perfumeDao.search({series, brands, keywords, sortBy});
 }
 
 
@@ -77,9 +67,7 @@ exports.searchPerfume = function(filter) {
  * body Perfume  (optional)
  * no response value expected for this operation
  **/
-exports.updatePerfume = function(body) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
+exports.updatePerfume = ({perfumeIdx, name, mainSeriesIdx, brandIdx, englishName, volumeAndPrice, imageThumbnailUrl, story, abundanceRate, imageUrl}) => {
+  return perfumeDao.update({perfumeIdx, name, mainSeriesIdx, brandIdx, englishName, volumeAndPrice, imageThumbnailUrl, story, abundanceRate, imageUrl});
 }
 

@@ -2,7 +2,7 @@
 swagger: "2.0"
 info:
   description: "향수 정보 서비스 A.fume Server Api 문서"
-  version: "0.0.1"
+  version: 1.0.0
   title: "Swagger A.fume Server"
   termsOfService: "http://swagger.io/terms/"
   contact:
@@ -99,7 +99,7 @@ paths:
       deprecated: true
       x-swagger-router-controller: "Perfume"
   /perfume/search:
-    get:
+    post:
       tags:
       - "perfume"
       summary: "향수 검색"
@@ -360,7 +360,7 @@ paths:
       - "ingredient"
       summary: "향료 삽입"
       description: "향료 삽입"
-      operationId: "insertIngredient"
+      operationId: "postIngredient"
       consumes:
       - "application/json"
       produces:
@@ -381,7 +381,7 @@ paths:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Ingredient"
-  /ingredient/{ingredient_idx}:
+  /ingredient/{ingredientIdx}:
     get:
       tags:
       - "ingredient"
@@ -393,7 +393,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "ingredient_idx"
+      - name: "ingredientIdx"
         in: "path"
         description: "향료 ID"
         required: true
@@ -421,7 +421,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "ingredient_idx"
+      - name: "ingredientIdx"
         in: "path"
         description: "향료 ID"
         required: true
@@ -453,7 +453,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "ingredient_idx"
+      - name: "ingredientIdx"
         in: "path"
         description: "향료 ID"
         required: true
@@ -496,7 +496,7 @@ paths:
       - "series"
       summary: "계열 삽입"
       description: "계열 삽입"
-      operationId: "insertSeries"
+      operationId: "postSeries"
       consumes:
       - "application/json"
       produces:
@@ -517,7 +517,7 @@ paths:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Series"
-  /series/{series_idx}:
+  /series/{seriesIdx}:
     get:
       tags:
       - "series"
@@ -529,7 +529,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "series_idx"
+      - name: "seriesIdx"
         in: "path"
         description: "계열 ID"
         required: true
@@ -557,7 +557,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "series_idx"
+      - name: "seriesIdx"
         in: "path"
         description: "계열 ID"
         required: true
@@ -589,7 +589,7 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "series_idx"
+      - name: "seriesIdx"
         in: "path"
         description: "계열 ID"
         required: true
@@ -1391,20 +1391,6 @@ definitions:
       userIdx:
         type: "integer"
         format: "int64"
-      score:
-        type: "number"
-      persistance:
-        type: "string"
-      reverberance:
-        type: "string"
-      seasonal:
-        type: "array"
-        items:
-          type: "string"
-      generage:
-        type: "string"
-      access:
-        type: "boolean"
       content:
         type: "string"
     example:

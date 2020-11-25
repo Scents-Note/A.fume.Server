@@ -20,7 +20,7 @@ describe('# perfumeDao Test', () => {
                 mainSeriesIdx: 1,
                 brandIdx: 1,
                 englishName: 'insert Test',
-                volumeAndPrice: '{}',
+                volumeAndPrice: {},
                 imageThumbnailUrl: 'URL',
                 story: '스토리',
                 abundanceRate: 2,
@@ -32,7 +32,9 @@ describe('# perfumeDao Test', () => {
                 })
                 .then((result) => {
                     for ([key, value] of Object.entries(perfumeObj)) {
-                        expect(result[key]).eq(value);
+                        if(key == 'volumeAndPrice')
+                            expect(result[key]).to.deep.eq([]);
+                        else expect(result[key]).eq(value);
                     }
                     done();
                 });
@@ -66,7 +68,7 @@ describe('# perfumeDao Test', () => {
                     expect(result.seriesName).eq('');
                     expect(result.story).eq('조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트, 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다.');
                     expect(result.abundanceRate).eq(1);
-                    expect(result.volumeAndPrice).eq('{"30":"95000","100":"190000"}');
+                    expect(result.volumeAndPrice).to.deep.eq([{volume: 30, price: 95000},{volume: 100, price:190000}]);
                     done();
                 });
             });
