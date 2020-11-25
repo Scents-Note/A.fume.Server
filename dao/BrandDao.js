@@ -13,11 +13,11 @@ const SQL_BRAND_INSERT = 'INSERT brand(name, english_name, start_character, imag
 module.exports.create = async ({
     name,
     englishName,
-    startChar,
+    startCharacter,
     imageUrl,
     description
 }) => {
-    const { insertId } = await pool.queryParam_Parse(SQL_BRAND_INSERT, [name, englishName, startChar, imageUrl, description]);
+    const { insertId } = await pool.queryParam_Parse(SQL_BRAND_INSERT, [name, englishName, startCharacter, imageUrl, description]);
     if(insertId == 0) {
         throw new FailedToCreateError();
     }
@@ -41,7 +41,7 @@ module.exports.read = async (brandIdx) => {
  * 브랜드 전체 목록 조회
  * 
  */
-const SQL_BRAND_SELECT_ALL = 'SELECT brand_idx as brandIdx , name, start_character as startCharacter, image_url, description FROM brand';
+const SQL_BRAND_SELECT_ALL = 'SELECT brand_idx as brandIdx , name, start_character as startCharacter, image_url as imageUrl, description FROM brand';
 module.exports.readAll = () => {
     return pool.queryParam_None(SQL_BRAND_SELECT_ALL);
 }

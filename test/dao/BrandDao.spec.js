@@ -10,14 +10,14 @@ describe('# brandDao Test', () => {
             await pool.queryParam_None('DELETE FROM brand WHERE name="삽입테스트"');
         });
         it('# success case', (done) => {
-            brandDao.create({name: '삽입테스트', englishName: 'insert Test', startChar: 'ㅅ', imageUrl: '', description: 'brand 생성 테스트를 위한 더미데이터입니다.'})
+            brandDao.create({name: '삽입테스트', englishName: 'insert Test', startCharacter: 'ㅅ', imageUrl: '', description: 'brand 생성 테스트를 위한 더미데이터입니다.'})
             .then((result) => {
                 expect(result).gt(0);
                 done();
             });
         });
         it('# DuplicatedEntryError case', (done) => {
-            brandDao.create({name: '삽입테스트', englishName: 'insert Test', startChar: 'ㅅ', imageUrl: '', description: ''})
+            brandDao.create({name: '삽입테스트', englishName: 'insert Test', startCharacter: 'ㅅ', imageUrl: '', description: ''})
             .then(() => {
                 expect(false).true();
                 done();

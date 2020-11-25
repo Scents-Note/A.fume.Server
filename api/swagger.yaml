@@ -200,7 +200,14 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/BrandInfo"
+              allOf:
+              - $ref: "#/definitions/BrandInfo"
+              - type: "object"
+                properties:
+                  brandIdx:
+                    type: "integer"
+                example:
+                  brandIdx: 1
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -233,21 +240,20 @@ paths:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Brand"
-  /brand/{brand_idx}:
+  /brand/{brandIdx}:
     get:
       tags:
       - "brand"
-      summary: "특정 브랜드 조회"
-      description: "특정 브랜드 조회"
+      summary: "브랜드 조회"
+      description: "브랜드 조회"
       operationId: "getBrandByIdx"
       consumes:
       - "application/json"
       produces:
       - "application/json"
       parameters:
-      - name: "brand_idx"
+      - name: "brandIdx"
         in: "path"
-        description: "브랜드 ID"
         required: true
         type: "integer"
         format: "int64"
@@ -255,7 +261,14 @@ paths:
         "200":
           description: "성공"
           schema:
-              $ref: "#/definitions/BrandInfo"
+            allOf:
+            - $ref: "#/definitions/BrandInfo"
+            - type: "object"
+              properties:
+                brandIdx:
+                  type: "integer"
+              example:
+                brandIdx: 1
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -273,15 +286,13 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "brand_idx"
+      - name: "brandIdx"
         in: "path"
-        description: "향료 ID"
         required: true
         type: "integer"
         format: "int64"
       - in: "body"
         name: "body"
-        description: "Updated brand info"
         required: false
         schema:
           $ref: "#/definitions/BrandInfo"
@@ -305,9 +316,8 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "brand_idx"
+      - name: "brandIdx"
         in: "path"
-        description: "브랜드 ID"
         required: true
         type: "integer"
         format: "int64"
@@ -1185,9 +1195,6 @@ definitions:
   BrandInfo:
     type: "object"
     properties:
-      brandIdx:
-        type: "integer"
-        format: "int64"
       name:
         type: "string"
       englishName:
@@ -1196,12 +1203,14 @@ definitions:
         type: "string"
       description:
         type: "string"
+      imageUrl:
+        type: "string"
     example:
-      name: "조말론"
-      englishName: "Jo Malone"
-      startCharacter: "ㅈ"
-      description: "런던 브랜드"
-      brandIdx: 0
+      name: "(테스트)조말론"
+      englishName: "(테스트)Jo Malone"
+      startCharacter: "ㅌ"
+      description: "(테스트)런던 브랜드"
+      imageUrl: "(테스트)"
   ReviewInfo:
     type: "object"
     properties:
