@@ -37,7 +37,7 @@ class DuplicatedEntryError extends Error {
 }
 
 class NotMatchedError extends Error {
-    constructor(code = 'GENERIC', status = statusCode.DB_ERROR, ...params) {
+    constructor(code = 'GENERIC', status = statusCode.BAD_REQUEST, ...params) {
         super(...params);
         if (Error.captureStackTrace) {
             Error.captureStackTrace(this, NotMatchedError);
@@ -49,10 +49,10 @@ class NotMatchedError extends Error {
 }
 
 class FailedToCreateError extends Error {
-    constructor(code = 'GENERIC', status = statusCode.DB_ERROR, ...params) {
+    constructor(code = 'GENERIC', status = statusCode.BAD_REQUEST, ...params) {
         super(...params);
         if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, NotMatchedError);
+            Error.captureStackTrace(this, FailedToCreateError);
         }
         this.code = code;
         this.status = status;
