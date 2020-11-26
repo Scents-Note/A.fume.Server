@@ -221,7 +221,7 @@ paths:
       - "brand"
       summary: "브랜드 삽입"
       description: "브랜드 삽입"
-      operationId: "insertBrand"
+      operationId: "postBrand"
       consumes:
       - "application/json"
       produces:
@@ -229,7 +229,7 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        description: "Insert new brand info"
+        description: "Post new brand info"
         required: false
         schema:
           $ref: "#/definitions/BrandInfo"
@@ -368,7 +368,7 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        description: "Insert new ingredient info"
+        description: "Post new ingredient info"
         required: false
         schema:
           $ref: "#/definitions/IngredientInfo"
@@ -504,7 +504,7 @@ paths:
       parameters:
       - in: "body"
         name: "body"
-        description: "Insert new series info"
+        description: "Post new series info"
         required: false
         schema:
           $ref: "#/definitions/SeriesInfo"
@@ -680,6 +680,40 @@ paths:
           description: "Invalid username/password supplied"
       x-swagger-router-controller: "Review"
   /review/{reviewIdx}/reply:
+    post:
+      tags:
+      - "reply"
+      summary: "댓글 추가"
+      description : "시향노트에 댓글 추가하기"
+      operationId: "postReply"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "reviewIdx"
+        in: "path"
+        description: "시향노트 Idx"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "body"
+        in: "body"
+        description: "댓글 정보"
+        required: true
+        schema:
+          $ref: "#/definitions/ReplyInfo"
+      responses:
+        "200":
+          description: "성공"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        "405":
+          description: "Invalid input"
+      x-swagger-router-controller: "Reply"
     get:
       tags:
       - "reply"
@@ -703,38 +737,17 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/ReplyInfo"
+              allOf:
+              - $ref: "#/definitions/Reply"
+              - type: "object"
+                properties:
+                  replyIdx:
+                    type: "integer"
+                    format: "int64"
+                example:
+                  replyIdx: 1
         "400":
           description: "Invalid username/password supplied"
-      x-swagger-router-controller: "Reply"
-  /reply:
-    post:
-      tags:
-      - "reply"
-      summary: "댓글 추가"
-      description : "시향노트에 댓글 추가하기"
-      operationId: "insertReply"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - name: "body"
-        in: "body"
-        description: "댓글 정보"
-        required: true
-        schema:
-          $ref: "#/definitions/ReplyInfo"
-      responses:
-        "200":
-          description: "성공"
-        "401":
-          description: "API key is missing or invalid"
-          headers:
-            WWW_Authenticate:
-              type: "string"
-        "405":
-          description: "Invalid input"
       x-swagger-router-controller: "Reply"
   /reply/{replyIdx}:
     get:
@@ -758,7 +771,7 @@ paths:
         "200":
           description: "성공"
           schema:
-            $ref: "#/definitions/ReplyInfo"
+            $ref: "#/definitions/Reply"
         "400":
           description: "Invalid ID supplied"
         "401":
@@ -803,7 +816,6 @@ paths:
               type: "string"
         "405":
           description: "Invalid input"
-      deprecated: true
       x-swagger-router-controller: "Reply"
     delete:
       tags:
@@ -832,7 +844,6 @@ paths:
           headers:
             WWW_Authenticate:
               type: "string"
-      deprecated: true
       x-swagger-router-controller: "Reply"
   /user:
     post:
@@ -1398,20 +1409,25 @@ definitions:
   ReplyInfo:
     type: "object"
     properties:
-      replyIdx:
-        type: "integer"
-        format: "int64"
-      reviewIdx:
-        type: "integer"
-        format: "int64"
       userIdx:
         type: "integer"
         format: "int64"
       content:
         type: "string"
     example:
-      replyIdx: 0
+      userIdx: 2
       content: "저한테도 인생 향수에요~"
+  Reply:
+    type: "object"
+    properties:
+      userName:
+        type: "string"
+        example: 
+    allOf:
+    - $ref: "#/definitions/ReplyInfo"
+    - {}
+    example:
+      userName: "향린이S2"
   myPerfume:
     properties:
       star:
