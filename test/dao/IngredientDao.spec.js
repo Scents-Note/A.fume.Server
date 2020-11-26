@@ -1,3 +1,6 @@
+const dotenv = require('dotenv');
+dotenv.config({path: './config/.env.test'});
+
 const chai = require('chai');
 const { expect } = chai;
 const ingredientDao = require('../../dao/IngredientDao.js');
@@ -6,7 +9,6 @@ const {
     NotMatchedError
 } = require('../../utils/errors/errors.js');
 const pool = require('../../utils/db/pool.js');
-const { each } = require('../../config/dbConfig.js');
 
 describe('# ingredientDao Test', () => {
     describe(' # create Test', () => {

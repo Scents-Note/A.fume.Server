@@ -1,3 +1,6 @@
+const dotenv = require('dotenv');
+dotenv.config({path: './config/.env.test'});
+
 const chai = require('chai');
 const { expect } = chai;
 const seriesDao = require('../../dao/SeriesDao.js');

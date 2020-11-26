@@ -1,4 +1,13 @@
-const poolPromise = require('../../config/dbConfig.js');
+const mysql = require('promise-mysql');
+const poolPromise = mysql.createPool({
+    host: process.env.MYSQL_HOST_URL,
+    port: process.env.MYSQL_PORT,
+    user: process.env.MYSQL_USER,
+    password: process.env.MYSQL_PWD,
+    database: process.env.MYSQL_DB_NAME,
+    dateStrings: true,
+});
+
 const { DatabaseError, NoReferencedRowError, DuplicatedEntryError } = require('../errors/errors.js');
 
 module.exports = {
