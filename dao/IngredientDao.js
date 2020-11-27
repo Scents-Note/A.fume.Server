@@ -36,7 +36,7 @@ module.exports.read = async (ingredient_idx) => {
     if(result.length == 0) {
         throw new NotMatchedError();
     }
-    return result[0];
+    return result[0].name;
 }
 
 
@@ -45,7 +45,8 @@ module.exports.read = async (ingredient_idx) => {
  */
 const SQL_INGREDIENT_SELECT_ALL = "SELECT ingredient_idx, name, english_name FROM ingredient";
 module.exports.readAll = async () => {
-    return pool.queryParam_None(SQL_INGREDIENT_SELECT_ALL);
+    const result = await pool.queryParam_None(SQL_INGREDIENT_SELECT_ALL);
+    return result.length;
 }
 
 
@@ -55,7 +56,8 @@ module.exports.readAll = async () => {
  */
 const SQL_INGREDIENT_UPDATE = "UPDATE ingredient SET name = ?, english_name = ? WHERE ingredient_idx = ?"
 module.exports.update = async({ingredient_idx, name, english_name}) => {
-    return pool.queryParam_Parse(SQL_INGREDIENT_UPDATE, [name, english_name, ingredient_idx]);
+    const result = await pool.queryParam_Parse(SQL_INGREDIENT_UPDATE, [name, english_name, ingredient_idx]);
+    return result.affectedRows;
 }
 
 
@@ -64,5 +66,6 @@ module.exports.update = async({ingredient_idx, name, english_name}) => {
  */
 const SQL_INGREDIENT_DELETE = "DELETE FROM ingredient WHERE ingredient_idx = ?"
 module.exports.delete = async(ingredient_idx) => {  
-    return pool.queryParam_Parse(SQL_INGREDIENT_DELETE, [ingredient_idx]); 
+    const result = await pool.queryParam_Parse(SQL_INGREDIENT_DELETE, [ingredient_idx]); 
+    return result.affectedRows;
 }

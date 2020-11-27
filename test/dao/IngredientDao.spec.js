@@ -21,7 +21,6 @@ describe('# ingredientDao Test', () => {
         // 성공 케이스
         it(' # success case', (done) => {
             ingredientDao.create({name : '테스트 데이터', english_name : "Test Data", description : "왈라왈라", series_idx}).then((result) => {
-                console.log("result = ", result)
                 expect(result).gt(0)
                 done();
             }).catch((err) => {
@@ -54,7 +53,7 @@ describe('# ingredientDao Test', () => {
         });
         it(' # success case', (done) => {
             ingredientDao.read(ingredient_idx).then((result) => {
-                expect(result.name).eq(name);
+                expect(result).eq(name);
                 done();
             }).catch((err) => {
                 expect(false).true();
@@ -66,7 +65,7 @@ describe('# ingredientDao Test', () => {
     describe(' # readAll Test', () => {
         it(' # success case', (done) => {
             ingredientDao.readAll().then((result) => {
-                expect(result.length).greaterThan(0);
+                expect(result).greaterThan(0);
                 done();
             }).catch((err) => {
                 expect(false).true();
@@ -85,7 +84,7 @@ describe('# ingredientDao Test', () => {
         it('# success case', (done) => {
             ingredientDao.update({ingredient_idx, name:'수정 데이터', english_name:'Update Data'})
             .then((result) => {
-                expect(result.affectedRows).eq(1);
+                expect(result).eq(1);
                 done();
             }).catch((err) => {
                 expect(false).true();
@@ -106,7 +105,7 @@ describe('# ingredientDao Test', () => {
         });
         it('# success case', (done) => {
             ingredientDao.delete(ingredient_idx).then((result) => {
-                expect(result.affectedRows).eq(1);
+                expect(result).eq(1);
                 done();
             }).catch((err) => {
                 expect(false).true();
