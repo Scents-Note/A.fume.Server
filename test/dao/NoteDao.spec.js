@@ -3,7 +3,7 @@ dotenv.config({path: './config/.env.test'});
 
 const chai = require('chai');
 const { expect } = chai;
-const NoteDao = require('../../dao/NoteDao.js');
+const noteDao = require('../../dao/NoteDao.js');
 const {
     DuplicatedEntryError,
     NotMatchedError
@@ -15,11 +15,11 @@ describe('# NoteDao Test', () => {
         let ingredient_idx, perfume_idx
         before(async() => {
             ingredient_idx = (await pool.queryParam_Parse("SELECT ingredient_idx FROM ingredient"))[0].ingredient_idx;
-            perfume_idx = (await pool.queryParam_Parse("SELECT perfume_idx FROM perfume"))[0].perfume_idx;
+            perfume_idx = (await pool.queryParam_Parse("SELECT perfume_idx FROM perfume"))[1].perfume_idx;
         })
         // 성공 케이스
         it(' # success case', (done) => {
-            noteDao.create({ingredient_idx : 1, }).then((result) => {
+            noteDao.create({ingredient_idx, perfume_idx, type: 1}).then((result) => {
                 expect(result).eq(1);
                 done();
             }).catch((err) => {
@@ -29,7 +29,7 @@ describe('# NoteDao Test', () => {
         });
         // 중복 데이터 발생 케이스
         it(' # DuplicatedEntryError case', (done) => {
-            seriesDao.create({name : '테스트 데이터', english_name : 'Test Data', description : '왈라왈라'}).then((result) => {
+            noteDao.create({ingredient_idx, perfume_idx, type: 1}).then((result) => {
                 console.log(result)
                 expect(false).true();
                 done();
@@ -38,13 +38,22 @@ describe('# NoteDao Test', () => {
                 done();
             });
         });
-        // 테스트 데이터 삭제
-        after(async() => {
-            await pool.queryParam_None("DELETE FROM series WHERE name='테스트 데이터'");
-        });
     });
 
     describe(' # read Test', () => {
+        let perfume_idx
+        before(async() => {
+            perfume_idx = (await pool.queryParam_Parse("SELECT perfume_idx FROM perfume"))[0].perfume_idx;
+        })
+        it('# success case', (done) => {
+            noteDao.read(perfume_idx).then((result) => {
+                expect(result.length).gt(0);
+                done();
+            }).catch((err) => {
+                expect(false).true();
+                done();
+            });
+        });
     });
 
     describe(' # create Test', () => {
