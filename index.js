@@ -16,7 +16,7 @@ dotenv.config({path: './config/.env'});
 var options = {
   swaggerUi: path.join(__dirname, '/swagger.json'),
   controllers: path.join(__dirname, './controllers'),
-  useStubs: process.env.NODE_ENV === 'development' // Conditionally turn on stubs (mock mode)
+  useStubs: process.env.NODE_ENV === 'dev' // Conditionally turn on stubs (mock mode)
 };
 
 // The Swagger document (require it, build it programmatically, fetch it from a URL, ...)
@@ -38,10 +38,20 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
   // Serve the Swagger documents and Swagger UI
   app.use(middleware.swaggerUi());
 
+  // error handler
+  app.use(function(err, req, res, next) {
+    // only providing error in development
+    err = process.env.NODE_ENV === 'dev' ? (() => {console.log(err); return err;})() : new Error('Internal Server Error');
+
+    res.writeHead(err.status || 500, {'Content-Type': 'application/json'});
+    const payload = JSON.stringify({ message: err.message }, null, 2);
+    res.write(payload);
+    res.end();
+  });
+
   // Start the server
   http.createServer(app).listen(serverPort, function () {
     console.log('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
     console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
   });
-
 });
