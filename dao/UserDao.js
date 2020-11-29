@@ -5,10 +5,10 @@ const {NotMatchedError, FailedToCreateError} = require('../utils/errors/errors.j
  * 유저 생성
  * 
  */
-const SQL_USER_INSERT = 'INSERT user(name, password, gender, phone, email) VALUES(?,?,?,?,?)';
-module.exports.create = async ({username, password, gender, phone, email}) => {
+const SQL_USER_INSERT = 'INSERT user(name, password, gender, phone, email, birth) VALUES(?,?,?,?,?,?)';
+module.exports.create = async ({username, password, gender, phone, email, birth}) => {
     gender = gender == 'M' ? 1 : 2;
-    const result = await pool.queryParam_Parse(SQL_USER_INSERT, [username, password, gender, phone, email]);
+    const result = await pool.queryParam_Parse(SQL_USER_INSERT, [username, password, gender, phone, email, birth]);
     if(result.insertId == 0) {
         throw new FailedToCreateError();
     }
@@ -19,7 +19,7 @@ module.exports.create = async ({username, password, gender, phone, email}) => {
  * 유저 조회
  * 
  */
-const SQL_USER_SELECT_BY_NAME = 'SELECT user_idx AS userIdx, name AS username, password, gender AS gender, phone, email FROM user WHERE name = ?';
+const SQL_USER_SELECT_BY_NAME = 'SELECT user_idx AS userIdx, name AS username, password, gender AS gender, phone, email, birth FROM user WHERE name = ?';
 module.exports.readByName = async (username) => {
     const result = await pool.queryParam_Parse(SQL_USER_SELECT_BY_NAME, [username]);
     if(result.length == 0) {
@@ -34,10 +34,10 @@ module.exports.readByName = async (username) => {
  * 유저 수정
  * 
  */
-const SQL_USER_UPDATE = 'UPDATE user SET name = ?, password = ?, gender = ?, phone = ?, email = ? WHERE user_idx = ?';
-module.exports.update = async ({userIdx, username, password, gender, phone, email}) => {
+const SQL_USER_UPDATE = 'UPDATE user SET name = ?, password = ?, gender = ?, phone = ?, email = ?, birth = ? WHERE user_idx = ?';
+module.exports.update = async ({userIdx, username, password, gender, phone, birth, email}) => {
     gender = gender == 'M' ? 1 : 2;
-    const { affectedRows } = await pool.queryParam_Parse(SQL_USER_UPDATE, [username, password, gender, phone, email, userIdx]);
+    const { affectedRows } = await pool.queryParam_Parse(SQL_USER_UPDATE, [username, password, gender, phone, email, birth, userIdx]);
     if (affectedRows == 0) {
         throw new NotMatchedError();
     }
