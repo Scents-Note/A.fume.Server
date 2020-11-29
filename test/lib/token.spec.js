@@ -16,13 +16,19 @@ const jwt = require('../../lib/token.js');
 describe('# publish Test', () => {
     it(' # create case', () => {
         const payload = {
-            test: 'test'
+            userIdx: 200,
+            nickname: '쿼카맨2',
+            gender: 'female',
+            phone: '010-2081-38',
+            email: 'hee.youn2@samsung.com',
+            birth: 1995
         };
         const {
             token,
             refreshToken
         } = jwt.publish(payload);
-        expect(token.length).to.not.eq(0);
+        expect(token.length).gt(0);
+        expect(refreshToken.length).gt(0);
     });
 });
 
@@ -30,7 +36,12 @@ describe('# publish Test', () => {
 describe('# create Test', () => {
     it(' # success case', () => {
         const token = jwt.create({
-            test: 'test'
+            userIdx: 200,
+            nickname: '쿼카맨2',
+            gender: 'female',
+            phone: '010-2081-38',
+            email: 'hee.youn2@samsung.com',
+            birth: 1995
         });
         expect(token.length).to.not.eq(0);
     });
@@ -39,7 +50,12 @@ describe('# create Test', () => {
 describe('# verify Test', () => {
     let token;
     const payload = {
-        test: 'test'
+        userIdx: 200,
+        nickname: '쿼카맨2',
+        gender: 'female',
+        phone: '010-2081-38',
+        email: 'hee.youn2@samsung.com',
+        birth: 1995
     };
     before(() => {
         token = jwt.create(payload);
@@ -74,7 +90,12 @@ describe('# verify Test', () => {
 describe('# reissue Test', () => {
     let token, refreshToken;
     const payload = {
-        test: 'test'
+        userIdx: 200,
+        nickname: '쿼카맨2',
+        gender: 'female',
+        phone: '010-2081-38',
+        email: 'hee.youn2@samsung.com',
+        birth: 1995
     };
     before(() => {
         const result = jwt.publish(payload);
