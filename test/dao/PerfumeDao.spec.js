@@ -27,17 +27,18 @@ describe('# perfumeDao Test', () => {
                 imageThumbnailUrl: 'URL',
                 story: '스토리',
                 abundanceRate: 2,
-                imageUrl: 'image_url'
+                imageUrl: 'image_url',
+                releaseDate: '2020-11-29'
             };
             perfumeDao.create(perfumeObj)
                 .then((result) => {
                     return perfumeDao.readByPerfumeIdx(result);
                 })
                 .then((result) => {
+                    delete perfumeObj.imageThumbnailUrl
+                    perfumeObj.volumeAndPrice = [];
                     for ([key, value] of Object.entries(perfumeObj)) {
-                        if(key == 'volumeAndPrice')
-                            expect(result[key]).to.deep.eq([]);
-                        else expect(result[key]).eq(value);
+                        expect(result[key]).to.deep.eq(value);
                     }
                     done();
                 });
@@ -52,7 +53,8 @@ describe('# perfumeDao Test', () => {
                     imageThumbnailUrl: 'URL',
                     story: '스토리',
                     abundanceRate: 2,
-                    imageUrl: 'image_url'
+                    imageUrl: 'image_url',
+                    releaseDate: '2020-11-29'
                 })
                 .then(() => {
                     throw new Error('Must be occur DuplicatedEntryError')
@@ -146,8 +148,8 @@ describe('# perfumeDao Test', () => {
                 };
                 perfumeDao.search(filter).then((result) => {
                     expect(result.length).gte(3);
-                    const str1 = result.map(it => it.createTime).join(',');
-                    const str2 = result.map(it => it.createTime).sort().reverse().join(',');
+                    const str1 = result.map(it => it.releaseDate).join(',');
+                    const str2 = result.map(it => it.releaseDate).sort().reverse().join(',');
                     expect(str1).eq(str2);
                     done();
                 });
@@ -211,15 +213,18 @@ describe('# perfumeDao Test', () => {
                 imageThumbnailUrl: '수정된url',
                 story: '수정된스토리',
                 abundanceRate: 2,
-                image_url: '수정된 이미지'
+                imageUrl: '수정된 이미지',
+                releaseDate: '2020-11-29'
             };
             perfumeDao.update(perfumeObj)
                 .then((result) => {
                     expect(result.filter(it => it == 1)).to.lengthOf(2);
-                    return perfumeDao.readByPerfumeIdx(perfumeIdx);
+                    return perfumeDao.readByPerfumeIdx({perfumeIdx});
                 }).then((result) => {
-                    for ([key, value] in Object.entries(perfumeObj)) {
-                        expect(result[key]).eq(value);
+                    delete perfumeObj.imageThumbnailUrl
+                    perfumeObj.volumeAndPrice = [];
+                    for ([key, value] of Object.entries(perfumeObj)) {
+                        expect(result[key]).to.deep.eq(value);
                     }
                     done();
                 });
