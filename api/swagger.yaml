@@ -151,13 +151,10 @@ paths:
           description: "성공"
           schema:
             $ref: "#/definitions/PerfumeDetail"
-        "400":
-          description: "Invalid ID supplied"
         "401":
-          description: "API key is missing or invalid"
-          headers:
-            WWW_Authenticate:
-              type: "string"
+          description: "Not authenticated"
+        "403":
+          description: "Access token does not have the required scope"
         "404":
           description: "Perfume not found"
       x-swagger-router-controller: "Perfume"
@@ -862,7 +859,14 @@ paths:
         description: "Created user object"
         required: true
         schema:
-          $ref: "#/definitions/User"
+          allOf:
+          - $ref: "#/definitions/User"
+          - type: "object"
+            properties:
+              password:
+                type: "string"
+            example:
+              password: "test"
       responses:
         default:
           description: "successful operation"
@@ -872,15 +876,13 @@ paths:
       tags:
       - "user"
       summary: "Logs user into the system"
-      description: ""
       operationId: "loginUser"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
-      - name: "username"
+      - name: "email"
         in: "query"
-        description: "The user name for login"
+        description: "The user email for login"
         required: true
         type: "string"
       - name: "password"
@@ -913,19 +915,18 @@ paths:
       description: ""
       operationId: "logoutUser"
       produces:
-      - "application/xml"
       - "application/json"
       parameters: []
       responses:
         default:
           description: "successful operation"
       x-swagger-router-controller: "User"
+      deprecated: true
   /user/{userIdx}:
     get:
       tags:
       - "user"
       summary: "Get user by user idx"
-      description: ""
       operationId: "getUserByIdx"
       produces:
       - "application/json"
@@ -942,7 +943,7 @@ paths:
           schema:
             $ref: "#/definitions/User"
         "400":
-          description: "Invalid username supplied"
+          description: "Invalid userIdx supplied"
         "404":
           description: "User not found"
       x-swagger-router-controller: "User"
@@ -1180,16 +1181,16 @@ definitions:
       perfumeIdx: 1
   Perfume:
     properties:
-      like:
+      likeCnt:
         type: "integer"
-      isLike:
+      isLiked:
         type: "boolean"
     allOf:
     - $ref: "#/definitions/PerfumeInfo"
     - {}
     example:
-      like: 4
-      isLike: true
+      likeCnt: 4
+      isLiked: true
   PerfumeDetailInfo:
     properties:
       mainSeries:

@@ -30,6 +30,11 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 
   // Interpret Swagger resources and attach metadata to request - must be first in swagger-tools middleware chain
   app.use(middleware.swaggerMetadata());
+  
+  // Provide the security handlers
+  app.use(middleware.swaggerSecurity({
+    userToken: verifyTokenMiddleware
+  }));
 
   // Validate Swagger requests
   app.use(middleware.swaggerValidator());
