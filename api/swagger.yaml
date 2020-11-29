@@ -38,8 +38,9 @@ tags:
 schemes:
 #- "https"
 - "http"
-#security:
-#- APIKeyHeader: []
+security:
+- APIKeyHeader: []
+- userToken: []
 paths:
   /perfume:
     post:
@@ -1113,49 +1114,34 @@ paths:
           description: "successful operation"
       x-swagger-router-controller: "Wishlist"
 securityDefinitions:
-  perfume_auth:
-    type: "oauth2"
-    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
-    flow: "implicit"
-    scopes:
-      write:perfumes: "modify perfumes in your account"
-      read:perfumes: "read your perfumes"
+  userToken:
+      type: apiKey
+      name: x-access-token
+      in: header
   APIKeyHeader:
-    type: "apiKey"
-    name: "X-API-Key"
-    in: "header"
+    type: apiKey
+    name: X-API-Key
+    in: header
 definitions:
   User:
     type: "object"
     properties:
-      userIdx:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
       email:
         type: "string"
-      password:
+      nickname:
+        type: "string"
+      gender:
         type: "string"
       phone:
         type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
+      birth:
+        type: "string"
     example:
-      firstName: "firstName"
-      lastName: "lastName"
-      password: "password"
-      userStatus: 6
-      phone: "phone"
-      userIdx: 0
-      email: "email"
-      username: "username"
+      email: "hee.youn@samsung.com"
+      nickname: "쿼카맨"
+      gender: "M"
+      phone: "010-2081-3818"
+      birth: "1995-09-29"
   KeywordInfo:
     type: "object"
     properties:

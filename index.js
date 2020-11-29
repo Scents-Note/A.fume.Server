@@ -7,10 +7,12 @@ var fs = require('fs'),
 var app = require('connect')();
 var swaggerTools = require('swagger-tools');
 var jsyaml = require('js-yaml');
-var serverPort = 8080;
+var serverPort = process.env.PORT || 8080;
 
 const dotenv = require('dotenv');
 dotenv.config({path: './config/.env'});
+
+const { verifyTokenMiddleware } = require('./middleware/auth.js');
 
 // swaggerRouter configuration
 var options = {
