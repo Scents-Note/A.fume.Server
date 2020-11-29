@@ -84,6 +84,18 @@ class ExpiredTokenError extends Error {
     }
 }
 
+class WrongPasswordError extends Error {
+    constructor(code = 'GENERIC', status = statusCode.UNAUTHORIZED, ...params) {
+        super(...params);
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, WrongPasswordError);
+        }
+        this.code = code;
+        this.status = status;
+        this.message = '비밀번호가 잘못되었습니다';
+    }
+}
+
 module.exports.DatabaseError = DatabaseError;
 module.exports.NoReferencedRowError = NoReferencedRowError;
 module.exports.DuplicatedEntryError = DuplicatedEntryError;
@@ -91,3 +103,4 @@ module.exports.NotMatchedError = NotMatchedError;
 module.exports.FailedToCreateError = FailedToCreateError;
 module.exports.InvalidTokenError = InvalidTokenError;
 module.exports.ExpiredTokenError = ExpiredTokenError;
+module.exports.LoginFailError = WrongPasswordError;
