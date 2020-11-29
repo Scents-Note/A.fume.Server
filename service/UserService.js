@@ -1,31 +1,31 @@
 'use strict';
 
+const jwt = require('../lib/token.js');
+const crypto = require('../lib/crypto.js');
+const userDao = require('../dao/UserDao.js');
+const { WrongPasswordError } = require('../utils/errors/errors.js');
 
 /**
- * Create user
- * This can only be done by the logged in user.
+ * 유저 회원 가입
  *
  * body User Created user object
  * no response value expected for this operation
  **/
-exports.createUser = function(body) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
+exports.createUser = ({id, nickname, password, gender, phone, email, birth}) => {
+  password = crypto.encrypt(password);
+  return userDao.create({id, nickname, password, gender, phone, email, birth});
 }
 
 
 /**
- * Delete user
+ * 회원 탈퇴
  * This can only be done by the logged in user.
  *
  * userIdx String The Idx that needs to be deleted
  * no response value expected for this operation
  **/
-exports.deleteUser = function(userIdx) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
+exports.deleteUser = (userIdx) => {
+  return userDao.delete(userIdx);
 }
 
 
@@ -36,25 +36,10 @@ exports.deleteUser = function(userIdx) {
  * userIdx Long 유저 ID
  * returns User
  **/
-exports.getUserByIdx = function(userIdx) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "firstName" : "firstName",
-  "lastName" : "lastName",
-  "password" : "password",
-  "userStatus" : 6,
-  "phone" : "phone",
-  "userIdx" : 0,
-  "email" : "email",
-  "username" : "username"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+exports.getUserByIdx = async (userIdx) => {
+  const result = await userDao.readByIdx(userIdx)
+  delete result.password;
+  return result;
 }
 
 
@@ -62,33 +47,28 @@ exports.getUserByIdx = function(userIdx) {
  * Logs user into the system
  * 
  *
- * username String The user name for login
+ * nickname String The user name for login
  * password String The password for login in clear text
  * returns String
  **/
-exports.loginUser = function(username,password) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = "";
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
+exports.loginUser = async (email,password) => {
+  const user = await userDao.readByEmail(email);
+  if(crypto.decrypt(user.password) != password) {
+    throw new WrongPasswordError();
+  }
+  delete user.password;
+  const payload = Object.assign({}, user);
+  return jwt.publish(payload);
 }
 
 
 /**
- * Logs out current logged in user session
+ * 로그아웃 한다.
+ * 발행된 토큰을 무효화 시킨다.
  * 
- *
- * no response value expected for this operation
  **/
-exports.logoutUser = function() {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
+exports.logoutUser = () => {
+  throw "Not Implemented";
 }
 
 
@@ -100,9 +80,7 @@ exports.logoutUser = function() {
  * body User Updated user object
  * no response value expected for this operation
  **/
-exports.updateUser = function(userIdx,body) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
+exports.updateUser = ({userIdx, nickname, password, gender, phone, email, birth}) => {
+  return userDao.update({userIdx, nickname, password, gender, phone, email, birth})
 }
 
