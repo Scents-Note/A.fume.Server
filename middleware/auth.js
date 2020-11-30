@@ -7,6 +7,7 @@ module.exports.verifyTokenMiddleware =  (req, authOrSecDef, token, callback) => 
         if(currentScopes.indexOf('admin') > -1) {
             return callback(new InvalidTokenError());
         }
+        req.middlewareToken = { loginUserIdx: -1 };
         return callback(null);
     }
 
@@ -16,6 +17,6 @@ module.exports.verifyTokenMiddleware =  (req, authOrSecDef, token, callback) => 
     const tokenString = token.split(' ')[1];
 
     const { userIdx } = jwt.verify(tokenString);
-    req.middlewareToken = { userIdx };
+    req.middlewareToken = { loginUserIdx: userIdx };
     return callback(null);
 };
