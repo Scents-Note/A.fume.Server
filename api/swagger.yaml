@@ -110,8 +110,6 @@ paths:
       operationId: "searchPerfume"
       security:
         - userToken: []
-      x-security-scopes:
-        - user
       produces:
       - "application/json"
       parameters:
@@ -144,8 +142,6 @@ paths:
       description: "향수 세부 정보를 반환한다."
       security:
         - userToken: []
-      x-security-scopes:
-        - user
       operationId: "getPerfumeById"
       produces:
       - "application/json"
@@ -1257,6 +1253,7 @@ securityDefinitions:
       type: apiKey
       name: x-access-token
       in: header
+      description: /Bearer {token}/ 를 입력해주시면 됩니다.
   APIKeyHeader:
     type: apiKey
     name: X-API-Key
