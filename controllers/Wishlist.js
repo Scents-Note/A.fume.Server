@@ -37,10 +37,10 @@ module.exports.deleteWishlist = (req, res, next) => {
 };
 
 module.exports.readWishlistByUser = (req, res, next) => {
-  const userIdx = req.swagger.params['userIdx'].value;
-  Wishlist.readWishlistByUser(userIdx)
+  const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
+  Wishlist.readWishlistByUser(loginUserIdx)
     .then(function (response) {
-      utils.writeJson(res, utils.respondWithCode(200, {message: '(임시)유저가 가지고 있는 위시 리스트 조회', data: response}));
+      utils.writeJson(res, utils.respondWithCode(200, {message: '유저가 가지고 있는 위시 리스트 조회', data: response}));
     })
     .catch(function (response) {
       utils.writeJson(res, response);
