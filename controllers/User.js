@@ -3,69 +3,87 @@
 var utils = require('../utils/writer.js');
 var User = require('../service/UserService');
 
-module.exports.createUser = function createUser (req, res, next) {
+module.exports.createUser = (req, res, next) => {
   var body = req.swagger.params['body'].value;
   User.createUser(body)
-    .then(function (response) {
-      utils.writeJson(res, response);
+    .then((response) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '회원가입 성공',
+        data: response
+      }));
     })
-    .catch(function (response) {
+    .catch((response) => {
       utils.writeJson(res, response);
     });
 };
 
-module.exports.deleteUser = function deleteUser (req, res, next) {
-  var userIdx = req.swagger.params['userIdx'].value;
+module.exports.deleteUser = (req, res, next) => {
+  const userIdx = req.swagger.params['userIdx'].value;
   User.deleteUser(userIdx)
-    .then(function (response) {
-      utils.writeJson(res, response);
+    .then((response) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '유저 삭제 성공',
+        data: response
+      }));
     })
-    .catch(function (response) {
+    .catch((response) => {
       utils.writeJson(res, response);
     });
 };
 
-module.exports.getUserByIdx = function getUserByIdx (req, res, next) {
-  var userIdx = req.swagger.params['userIdx'].value;
+module.exports.getUserByIdx = (req, res, next) => {
+  const userIdx = req.swagger.params['userIdx'].value;
   User.getUserByIdx(userIdx)
-    .then(function (response) {
-      utils.writeJson(res, response);
+    .then((response) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '유저 조회 성공',
+        data: response
+      }));
     })
-    .catch(function (response) {
+    .catch((response) => {
       utils.writeJson(res, response);
     });
 };
 
-module.exports.loginUser = function loginUser (req, res, next) {
-  var username = req.swagger.params['username'].value;
-  var password = req.swagger.params['password'].value;
-  User.loginUser(username,password)
-    .then(function (response) {
-      utils.writeJson(res, response);
+module.exports.loginUser = (req, res, next) => {
+  const email = req.swagger.params['email'].value;
+  const password = req.swagger.params['password'].value;
+  User.loginUser(email, password)
+    .then((response) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '로그인',
+        data: response
+      }));
     })
-    .catch(function (response) {
+    .catch((response) => {
       utils.writeJson(res, response);
     });
 };
 
-module.exports.logoutUser = function logoutUser (req, res, next) {
+module.exports.logoutUser = (req, res, next) => {
   User.logoutUser()
-    .then(function (response) {
+    .then((response) => {
       utils.writeJson(res, response);
     })
-    .catch(function (response) {
+    .catch((response) => {
       utils.writeJson(res, response);
     });
 };
 
-module.exports.updateUser = function updateUser (req, res, next) {
-  var userIdx = req.swagger.params['userIdx'].value;
-  var body = req.swagger.params['body'].value;
-  User.updateUser(userIdx,body)
-    .then(function (response) {
-      utils.writeJson(res, response);
+module.exports.updateUser = (req, res, next) => {
+  const userIdx = req.swagger.params['userIdx'].value;
+  const body = req.swagger.params['body'].value;
+  const payload = Object.assign(body, {
+    userIdx
+  });
+  User.updateUser(payload)
+    .then((response) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '유저 수정 성공',
+        data: response
+      }));
     })
-    .catch(function (response) {
+    .catch((response) => {
       utils.writeJson(res, response);
     });
 };

@@ -105,6 +105,10 @@ paths:
       summary: "향수 검색"
       description: "검색 조건에 해당하는 향수를 반환한다."
       operationId: "searchPerfume"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       produces:
       - "application/json"
       parameters:
@@ -135,6 +139,10 @@ paths:
       - "perfume"
       summary: "향수 세부 정보 조회"
       description: "향수 세부 정보를 반환한다."
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       operationId: "getPerfumeById"
       produces:
       - "application/json"
@@ -150,13 +158,10 @@ paths:
           description: "성공"
           schema:
             $ref: "#/definitions/PerfumeDetail"
-        "400":
-          description: "Invalid ID supplied"
         "401":
-          description: "API key is missing or invalid"
-          headers:
-            WWW_Authenticate:
-              type: "string"
+          description: "Not authenticated"
+        "403":
+          description: "Access token does not have the required scope"
         "404":
           description: "Perfume not found"
       x-swagger-router-controller: "Perfume"
@@ -988,7 +993,14 @@ paths:
         description: "Created user object"
         required: true
         schema:
-          $ref: "#/definitions/User"
+          allOf:
+          - $ref: "#/definitions/User"
+          - type: "object"
+            properties:
+              password:
+                type: "string"
+            example:
+              password: "test"
       responses:
         default:
           description: "successful operation"
@@ -998,15 +1010,13 @@ paths:
       tags:
       - "user"
       summary: "Logs user into the system"
-      description: ""
       operationId: "loginUser"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
-      - name: "username"
+      - name: "email"
         in: "query"
-        description: "The user name for login"
+        description: "The user email for login"
         required: true
         type: "string"
       - name: "password"
@@ -1039,19 +1049,18 @@ paths:
       description: ""
       operationId: "logoutUser"
       produces:
-      - "application/xml"
       - "application/json"
       parameters: []
       responses:
         default:
           description: "successful operation"
       x-swagger-router-controller: "User"
+      deprecated: true
   /user/{userIdx}:
     get:
       tags:
       - "user"
       summary: "Get user by user idx"
-      description: ""
       operationId: "getUserByIdx"
       produces:
       - "application/json"
@@ -1068,7 +1077,7 @@ paths:
           schema:
             $ref: "#/definitions/User"
         "400":
-          description: "Invalid username supplied"
+          description: "Invalid userIdx supplied"
         "404":
           description: "User not found"
       x-swagger-router-controller: "User"
@@ -1192,21 +1201,18 @@ paths:
         default:
           description: "successful operation"
       x-swagger-router-controller: "Wishlist"
-  /user/{userIdx}/wishlist:
     get:
       tags:
       - "wishlist"
       summary: "read user's wishlist"
       description: "유저가 가지고 있는 위시 리스트 전체 조회하기"
       operationId: "readWishlistByUser"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       produces:
       - "application/json"
-      parameters:
-      - name: "userIdx"
-        in: "path"
-        description: "name that need to be updated"
-        required: true
-        type: "string"
       responses:
         "200":
           description: "successful operation"
@@ -1217,6 +1223,7 @@ paths:
         default:
           description: "successful operation"
       x-swagger-router-controller: "Wishlist"
+  /user/{userIdx}/wishlist:
     delete:
       tags:
       - "wishlist"
@@ -1240,49 +1247,34 @@ paths:
           description: "successful operation"
       x-swagger-router-controller: "Wishlist"
 securityDefinitions:
-  perfume_auth:
-    type: "oauth2"
-    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
-    flow: "implicit"
-    scopes:
-      write:perfumes: "modify perfumes in your account"
-      read:perfumes: "read your perfumes"
+  userToken:
+      type: apiKey
+      name: x-access-token
+      in: header
   APIKeyHeader:
-    type: "apiKey"
-    name: "X-API-Key"
-    in: "header"
+    type: apiKey
+    name: X-API-Key
+    in: header
 definitions:
   User:
     type: "object"
     properties:
-      userIdx:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
       email:
         type: "string"
-      password:
+      nickname:
+        type: "string"
+      gender:
         type: "string"
       phone:
         type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
+      birth:
+        type: "string"
     example:
-      firstName: "firstName"
-      lastName: "lastName"
-      password: "password"
-      userStatus: 6
-      phone: "phone"
-      userIdx: 0
-      email: "email"
-      username: "username"
+      email: "hee.youn@samsung.com"
+      nickname: "쿼카맨"
+      gender: "M"
+      phone: "010-2081-3818"
+      birth: "1995-09-29"
   KeywordInfo:
     type: "object"
     properties:
@@ -1321,16 +1313,16 @@ definitions:
       perfumeIdx: 1
   Perfume:
     properties:
-      like:
+      likeCnt:
         type: "integer"
-      isLike:
+      isLiked:
         type: "boolean"
     allOf:
     - $ref: "#/definitions/PerfumeInfo"
     - {}
     example:
-      like: 4
-      isLike: true
+      likeCnt: 4
+      isLiked: true
   PerfumeDetailInfo:
     properties:
       mainSeries:
