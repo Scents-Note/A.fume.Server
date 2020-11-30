@@ -1140,13 +1140,17 @@ paths:
       summary: "add wishlist"
       description: "위시 리스트에 추가하기"
       operationId: "createWishlist"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       produces:
       - "application/json"
       parameters:
       - in: "body"
         name: "body"
         required: true
-        schema:
+        schema: 
           $ref: "#/definitions/Wishlist"
       responses:
         "200":
@@ -1162,6 +1166,10 @@ paths:
       summary: "update wishlist"
       description: "위시 리스트에 수정하기"
       operationId: "updateWishlist"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       produces:
       - "application/json"
       parameters:
@@ -1623,16 +1631,12 @@ definitions:
   Wishlist:
     type: "object"
     properties:
-      userIdx: 
-        type: "integer"
-        format: "int32"
       perfumeIdx:
         type: "integer"
         format: "int32"
       priority:
         type: "integer"
     example:
-      userIdx: 1
       perfumeIdx: 1
       priority: 4
   ApiResponse:
