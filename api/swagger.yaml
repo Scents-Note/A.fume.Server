@@ -105,6 +105,10 @@ paths:
       summary: "향수 검색"
       description: "검색 조건에 해당하는 향수를 반환한다."
       operationId: "searchPerfume"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       produces:
       - "application/json"
       parameters:
@@ -135,6 +139,10 @@ paths:
       - "perfume"
       summary: "향수 세부 정보 조회"
       description: "향수 세부 정보를 반환한다."
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       operationId: "getPerfumeById"
       produces:
       - "application/json"
@@ -150,13 +158,10 @@ paths:
           description: "성공"
           schema:
             $ref: "#/definitions/PerfumeDetail"
-        "400":
-          description: "Invalid ID supplied"
         "401":
-          description: "API key is missing or invalid"
-          headers:
-            WWW_Authenticate:
-              type: "string"
+          description: "Not authenticated"
+        "403":
+          description: "Access token does not have the required scope"
         "404":
           description: "Perfume not found"
       x-swagger-router-controller: "Perfume"
@@ -605,18 +610,54 @@ paths:
               type: "string"
       x-swagger-router-controller: "Series"
   /perfume/{perfumeIdx}/review:
-    get:
+    post:
       tags:
       - "review"
-      summary: "향수의 시향기 정보 가져오기"
-      description: "review 반환"
-      operationId: "getReviewOfPerfume"
+      summary: 시향노트 추가"
+      description: "특정 향수에 시향노트 추가하기"
+      operationId: "postReview"
+      consumes:
+      - "application/json"
       produces:
       - "application/json"
       parameters:
       - name: "perfumeIdx"
         in: "path"
-        description: "향수 ID"
+        description: "향수 Idx"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "body"
+        in: "body"
+        description: "시향노트 정보"
+        required: true
+        schema:
+          $ref: "#/definitions/ReviewInfo"
+      responses:
+        "200":
+          description: "성공"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        "405":
+          description: "Invalid input"
+      x-swagger-router-controller: "Review"
+    get:
+      tags:
+      - "review"
+      summary: "전체 시향노트 반환(별점순)"
+      description: "특정 향수에 달린 전체 시향노트 별점순으로 가져오기"
+      operationId: "getReviewOfPerfume"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "perfumeIdx"
+        in: "path"
+        description: "향수 Idx"
         required: true
         type: "integer"
         format: "int64"
@@ -626,23 +667,33 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/ReviewInfo"
+              allOf:
+              - $ref: "#/definitions/ReviewInfo"
+              - type: "object"
+                properties:
+                  replyIdx:
+                    type: "integer"
+                    format: "int64"
+                example:
+                  reviewIdx: 1
         "400":
           description: "Invalid username/password supplied"
       x-swagger-router-controller: "Review"
-  /review/{reviewIdx}:
+  /perfume/{perfumeIdx}/review/recent:
     get:
       tags:
       - "review"
-      summary: "시향기 정보 가져오기"
-      description: "review 정보를 반환"
-      operationId: "getReview"
+      summary: "전체 시향노트 반환(최신순)"
+      description: "특정 향수에 달린 전체 시향노트 최신순으로 가져오기"
+      operationId: "getReviewOfPerfume"
+      consumes:
+      - "application/json"
       produces:
       - "application/json"
       parameters:
-      - name: "reviewIdx"
+      - name: "perfumeIdx"
         in: "path"
-        description: "리뷰 ID"
+        description: "향수 Idx"
         required: true
         type: "integer"
         format: "int64"
@@ -650,34 +701,115 @@ paths:
         "200":
           description: "successful operation"
           schema:
-            $ref: "#/definitions/ReviewInfo"
+            type: "array"
+            items:
+              allOf:
+              - $ref: "#/definitions/ReviewInfo"
+              - type: "object"
+                properties:
+                  replyIdx:
+                    type: "integer"
+                    format: "int64"
+                example:
+                  reviewIdx: 1
         "400":
           description: "Invalid username/password supplied"
       x-swagger-router-controller: "Review"
-    put:
+  /review/{reviewIdx}:
+    get:
       tags:
       - "review"
-      summary: "향수의 시향기 정보 업데이트"
-      description: "review 업데이트"
-      operationId: "updateReview"
+      summary: "시향노트 반환"
+      description: "특정 시향노트 가져오기"
+      operationId: "getReviewByIdx"
+      consumes:
+      - "application/json"
       produces:
       - "application/json"
       parameters:
       - name: "reviewIdx"
         in: "path"
-        description: "시향기 ID"
+        description: "시향노트 Idx"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            $ref: "#/definitions/ReviewInfo"
+        "400":
+          description: "Invalid ID supplied"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        "404":
+          description: "Review not found"
+      x-swagger-router-controller: "Review"
+    put:
+      tags:
+      - "review"
+      summary: "시향노트 수정"
+      description: "시향노트 수정하기"
+      operationId: "updateReview"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "reviewIdx"
+        in: "path"
+        description: "시향노트 Idx"
         required: true
         type: "integer"
         format: "int64"
       - in: "body"
         name: "body"
-        description: "review 정보"
-        required: true
+        required: false
         schema:
           $ref: "#/definitions/ReviewInfo"
       responses:
+        "200":
+          description: "성공"
         "400":
-          description: "Invalid username/password supplied"
+          description: "Invalid ID supplied"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        "405":
+          description: "Invalid input"
+      x-swagger-router-controller: "Review"
+    delete:
+      tags:
+      - "review"
+      summary: "시향노트 삭제"
+      description: "댓글 삭제하기"
+      operationId: "deleteReview"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "reviewIdx"
+        in: "path"
+        description: "시향노트 Idx"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+        "400":
+          description: "Invalid ID supplied"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
       x-swagger-router-controller: "Review"
   /review/{reviewIdx}/reply:
     post:
@@ -861,7 +993,14 @@ paths:
         description: "Created user object"
         required: true
         schema:
-          $ref: "#/definitions/User"
+          allOf:
+          - $ref: "#/definitions/User"
+          - type: "object"
+            properties:
+              password:
+                type: "string"
+            example:
+              password: "test"
       responses:
         default:
           description: "successful operation"
@@ -871,15 +1010,13 @@ paths:
       tags:
       - "user"
       summary: "Logs user into the system"
-      description: ""
       operationId: "loginUser"
       produces:
-      - "application/xml"
       - "application/json"
       parameters:
-      - name: "username"
+      - name: "email"
         in: "query"
-        description: "The user name for login"
+        description: "The user email for login"
         required: true
         type: "string"
       - name: "password"
@@ -912,19 +1049,18 @@ paths:
       description: ""
       operationId: "logoutUser"
       produces:
-      - "application/xml"
       - "application/json"
       parameters: []
       responses:
         default:
           description: "successful operation"
       x-swagger-router-controller: "User"
+      deprecated: true
   /user/{userIdx}:
     get:
       tags:
       - "user"
       summary: "Get user by user idx"
-      description: ""
       operationId: "getUserByIdx"
       produces:
       - "application/json"
@@ -941,7 +1077,7 @@ paths:
           schema:
             $ref: "#/definitions/User"
         "400":
-          description: "Invalid username supplied"
+          description: "Invalid userIdx supplied"
         "404":
           description: "User not found"
       x-swagger-router-controller: "User"
@@ -1065,21 +1201,18 @@ paths:
         default:
           description: "successful operation"
       x-swagger-router-controller: "Wishlist"
-  /user/{userIdx}/wishlist:
     get:
       tags:
       - "wishlist"
       summary: "read user's wishlist"
       description: "유저가 가지고 있는 위시 리스트 전체 조회하기"
       operationId: "readWishlistByUser"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       produces:
       - "application/json"
-      parameters:
-      - name: "userIdx"
-        in: "path"
-        description: "name that need to be updated"
-        required: true
-        type: "string"
       responses:
         "200":
           description: "successful operation"
@@ -1090,6 +1223,7 @@ paths:
         default:
           description: "successful operation"
       x-swagger-router-controller: "Wishlist"
+  /user/{userIdx}/wishlist:
     delete:
       tags:
       - "wishlist"
@@ -1113,49 +1247,34 @@ paths:
           description: "successful operation"
       x-swagger-router-controller: "Wishlist"
 securityDefinitions:
-  perfume_auth:
-    type: "oauth2"
-    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
-    flow: "implicit"
-    scopes:
-      write:perfumes: "modify perfumes in your account"
-      read:perfumes: "read your perfumes"
+  userToken:
+      type: apiKey
+      name: x-access-token
+      in: header
   APIKeyHeader:
-    type: "apiKey"
-    name: "X-API-Key"
-    in: "header"
+    type: apiKey
+    name: X-API-Key
+    in: header
 definitions:
   User:
     type: "object"
     properties:
-      userIdx:
-        type: "integer"
-        format: "int64"
-      username:
-        type: "string"
-      firstName:
-        type: "string"
-      lastName:
-        type: "string"
       email:
         type: "string"
-      password:
+      nickname:
+        type: "string"
+      gender:
         type: "string"
       phone:
         type: "string"
-      userStatus:
-        type: "integer"
-        format: "int32"
-        description: "User Status"
+      birth:
+        type: "string"
     example:
-      firstName: "firstName"
-      lastName: "lastName"
-      password: "password"
-      userStatus: 6
-      phone: "phone"
-      userIdx: 0
-      email: "email"
-      username: "username"
+      email: "hee.youn@samsung.com"
+      nickname: "쿼카맨"
+      gender: "M"
+      phone: "010-2081-3818"
+      birth: "1995-09-29"
   KeywordInfo:
     type: "object"
     properties:
@@ -1194,16 +1313,16 @@ definitions:
       perfumeIdx: 1
   Perfume:
     properties:
-      like:
+      likeCnt:
         type: "integer"
-      isLike:
+      isLiked:
         type: "boolean"
     allOf:
     - $ref: "#/definitions/PerfumeInfo"
     - {}
     example:
-      like: 4
-      isLike: true
+      likeCnt: 4
+      isLiked: true
   PerfumeDetailInfo:
     properties:
       mainSeries:
@@ -1271,7 +1390,7 @@ definitions:
         description: "점수 평균 값"
         minimum: 0
         maximum: 5
-      persistance:
+      longevity:
         type: "object"
         properties:
           약함:
@@ -1280,7 +1399,7 @@ definitions:
             type: "integer"
           강함:
             type: "integer"
-      reverberance:
+      sillage:
         type: "object"
         properties:
           가벼움:
@@ -1316,11 +1435,11 @@ definitions:
         여름: 0.3
         가을: 0.3
         겨울: 0.4
-      reverberance:
+      sillage:
         가벼움: 0.4
         보통: 0.2
         무거움: 0.4
-      persistance:
+      longevity:
         매우약함: 0.1
         약함: 0.2
         보통: 0.4
@@ -1382,30 +1501,68 @@ definitions:
   ReviewInfo:
     type: "object"
     properties:
-      review_idx:
-        type: "integer"
-        format: "int64"
-      perfumeIdx:
-        type: "integer"
-        format: "int64"
       userIdx:
+        description: "회원 고유 번호"
         type: "integer"
         format: "int64"
+      score:
+        description: "평점"
+        type: "number"
+        minimum: 0
+        maximum: 5
       content:
+        description: "내용"
+        type: "string"  
+      longevity:
+        description: "지속력"
         type: "string"
+        enum:
+        - "매우 약함"
+        - "약함"
+        - "보통"
+        - "강함"
+        - "매우 강함"
+      sillage:
+        description: "잔향감"
+        type: "string"
+        enum:
+        - "가벼움"
+        - "보통"
+        - "무거움"
+      seasonal:
+        description: "계절감"
+        type: "array"
+        items:
+          type: "string"
+          enum:
+            - "봄"
+            - "여름"
+            - "가을"
+            - "겨울"        
+      gender:
+        description: "성별감"
+        type: "string"
+        enum:
+        - "남성"
+        - "중성"
+        - "여성"
+      access: 
+        description: "시향노트 공유 여부"
+        type: "string"
+        enum:
+        - "true"
+        - "false"
     example:
-      reviewIdx: 0
-      perfumeIdx: 0
       userIdx: 0
-      score: 2.4
-      persistance: "강함"
-      reverberance: "보통"
+      score: 2
+      longevity: "강함"
+      sillage: "보통"
       seasonal:
       - "겨울"
       - "가을"
-      generage: "중성"
-      access: true
-      content: "향수 잠시 남기기"
+      gender: "중성"
+      access: "true"
+      content: "시향노트 내용"
   ReplyInfo:
     type: "object"
     properties:
@@ -1420,14 +1577,14 @@ definitions:
   Reply:
     type: "object"
     properties:
-      userName:
+      nickname:
         type: "string"
         example: 
     allOf:
     - $ref: "#/definitions/ReplyInfo"
     - {}
     example:
-      userName: "향린이S2"
+      nickname: "향린이S2"
   myPerfume:
     properties:
       star:
