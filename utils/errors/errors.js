@@ -103,4 +103,4 @@ module.exports.NotMatchedError = NotMatchedError;
 module.exports.FailedToCreateError = FailedToCreateError;
 module.exports.InvalidTokenError = InvalidTokenError;
 module.exports.ExpiredTokenError = ExpiredTokenError;
-module.exports.LoginFailError = WrongPasswordError;
+module.exports.WrongPasswordError = WrongPasswordError;

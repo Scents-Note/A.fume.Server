@@ -74,8 +74,11 @@ paths:
       tags:
       - "perfume"
       summary: "향수 정보 업데이트"
-      description: ""
       operationId: "updatePerfume"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
       consumes:
       - "application/json"
       produces:
@@ -1016,26 +1019,15 @@ paths:
       parameters:
       - name: "email"
         in: "query"
-        description: "The user email for login"
         required: true
         type: "string"
       - name: "password"
         in: "query"
-        description: "The password for login in clear text"
         required: true
         type: "string"
       responses:
         "200":
           description: "successful operation"
-          headers:
-            X-Rate-Limit:
-              type: "integer"
-              format: "int32"
-              description: "calls per hour allowed by the user"
-            X-Expires-After:
-              type: "string"
-              format: "date-time"
-              description: "date in UTC when token expires"
           schema:
             type: "string"
         "400":
@@ -1075,7 +1067,14 @@ paths:
         "200":
           description: "successful operation"
           schema:
-            $ref: "#/definitions/User"
+            allOf:
+            - $ref: "#/definitions/User"
+            - type: "object"
+              properties:
+                userIdx:
+                  type: "integer"
+              example:
+                userIdx: 1
         "400":
           description: "Invalid userIdx supplied"
         "404":
@@ -1100,7 +1099,14 @@ paths:
         description: "Updated user object"
         required: true
         schema:
-          $ref: "#/definitions/User"
+          allOf:
+          - $ref: "#/definitions/User"
+          - type: "object"
+            properties:
+              userIdx:
+                type: "integer"
+            example:
+              userIdx: 1
       responses:
         "400":
           description: "Invalid user supplied"
@@ -1175,24 +1181,13 @@ paths:
     delete:
       tags:
       - "wishlist"
-      summary: "delete wishlist"
-      description: "위시 리스트에 삭제하기"
-      operationId: "deleteWishlist"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        required: true
-        schema:
-          type: "object"
-          properties:
-            userIdx: 
-              type: "integer"
-              format: "int64"
-            perfumeIdx:
-              type: "integer"
-              format: "int64"
+      summary: "delete user's wishlist"
+      description: "유저가 가지고 있는 위시 리스트 전체 삭제하기"
+      operationId: "deleteWishlistByUser"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       responses:
         "200":
           description: "successful operation"
@@ -1223,19 +1218,22 @@ paths:
         default:
           description: "successful operation"
       x-swagger-router-controller: "Wishlist"
-  /user/{userIdx}/wishlist:
+  /wishlist/{perfumeIdx}:
     delete:
       tags:
       - "wishlist"
-      summary: "delete user's wishlist"
-      description: "유저가 가지고 있는 위시 리스트 전체 삭제하기"
-      operationId: "deleteWishlistByUser"
+      summary: "delete wishlist"
+      description: "위시 리스트에 삭제하기"
+      operationId: "deleteWishlist"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       produces:
       - "application/json"
       parameters:
-      - name: "userIdx"
+      - name: "perfumeIdx"
         in: "path"
-        description: "name that need to be updated"
         required: true
         type: "string"
       responses:
@@ -1608,22 +1606,20 @@ definitions:
         type: "array"
         items:
           type: "string"
-      sortby:
+      sortBy:
         type: "string"
     example:
       series:
-      - "계열1"
-      - "계열2"
-      - "계열3"
+      - 플로럴
+      - 오리엔탈
+      - 시트러스
       brands:
-      - "브랜드 이름1"
-      - "브랜드 이름2"
-      - "브랜드 이름3"
+      - 조 말론 런던
+      - 르 라보
+      - 딥디크 파리스
       keywords:
-      - "달달한"
-      - "쿨한"
-      - "멋있는"
-      sortby: "인기순"
+      - 구현전
+      sortBy: 인기순
   Wishlist:
     type: "object"
     properties:

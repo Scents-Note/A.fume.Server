@@ -1,11 +1,14 @@
 const jwt = require('../lib/token');
-const { InvalidTokenError } = require('../utils/errors/errors');
+const { InvalidTokenError, UnAuthorizedError } = require('../utils/errors/errors');
 
 module.exports.verifyTokenMiddleware =  (req, authOrSecDef, token, callback) => {
     const currentScopes = req.swagger.operation["x-security-scopes"] || [];
     req.middlewareToken = {};
     if(!token) {
         if(currentScopes.indexOf('admin') > -1) {
+            return callback(new UnAuthorizedError());
+        }
+        if(currentScopes.indexOf('user') > -1) {
             return callback(new InvalidTokenError());
         }
         return callback(null);
