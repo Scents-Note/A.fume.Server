@@ -68,7 +68,12 @@ module.exports.search = async ({userIdx = -1, series = [], brands = [], keywords
                 break;
         }
     }
-    return pool.queryParam_None(SQL_PERFUME_SELECT_BY_FILTER + condition + orderBy);
+    const result = await pool.queryParam_Parse(SQL_PERFUME_SELECT_BY_FILTER + condition + orderBy, [userIdx]);
+    result.map(it => {
+        it.isLiked = it.isLiked == 1;
+        return it;
+    })
+    return result;
 }
 
 /**
@@ -97,6 +102,7 @@ module.exports.readByPerfumeIdx = async ({ userIdx, perfumeIdx }) => {
     result[0].volumeAndPrice = Object.entries(JSON.parse(result[0].volumeAndPrice)).map(([volume, price]) => {
         return { volume: parseInt(volume), price: parseInt(price) };
     });
+    result[0].isLiked = result[0].isLiked == 1;
     return result[0];
 }
 
@@ -116,8 +122,13 @@ const SQL_WISHLIST_PERFUME = 'SELECT ' +
 'INNER JOIN series s ON p.main_series_idx = s.series_idx ' +
 'WHERE w.user_idx = ? ' +
 'ORDER BY w.priority DESC';
-module.exports.readAllOfWishlist = (userIdx) => {
-    return pool.queryParam_Parse(SQL_WISHLIST_PERFUME, [userIdx]);
+module.exports.readAllOfWishlist = async (userIdx) => {
+    const result = await pool.queryParam_Parse(SQL_WISHLIST_PERFUME, [userIdx, userIdx]);
+    result.map(it => {
+        it.isLiked = it.isLiked == 1;
+        return it;
+    })
+    return result;
 }
 
 /**
