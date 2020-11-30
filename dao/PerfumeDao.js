@@ -39,7 +39,7 @@ const SQL_PERFUME_SELECT_BY_FILTER = 'SELECT p.perfume_idx as perfumeIdx, p.main
 'FROM perfume p ' +
 'INNER JOIN brand b ON p.brand_idx = b.brand_idx ' + 
 'INNER JOIN series s ON p.main_series_idx = s.series_idx ';
-module.exports.search = ({series = [], brands = [], keywords = [], sortBy}) => {
+module.exports.search = async ({userIdx = -1, series = [], brands = [], keywords = [], sortBy}) => {
     let condition = '';
     let orderBy = '';
     if(series.length + brands.length + keywords.length > 0) {
@@ -89,8 +89,8 @@ const SQL_PERFUME_SELECT_BY_PERFUME_IDX = 'SELECT p.perfume_idx as perfumeIdx, p
 'INNER JOIN brand b ON p.brand_idx = b.brand_idx ' +
 'INNER JOIN series s ON p.main_series_idx = s.series_idx ' +
 'WHERE p.perfume_idx = ?';
-module.exports.readByPerfumeIdx = async (perfumeIdx) => {
-    const result = await pool.queryParam_Parse(SQL_PERFUME_SELECT_BY_PERFUME_IDX, [perfumeIdx]);
+module.exports.readByPerfumeIdx = async ({ userIdx, perfumeIdx }) => {
+    const result = await pool.queryParam_Parse(SQL_PERFUME_SELECT_BY_PERFUME_IDX, [userIdx, perfumeIdx]);
     if(result.length == 0) {
         throw new NotMatchedError();
     }

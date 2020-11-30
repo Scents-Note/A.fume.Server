@@ -32,7 +32,7 @@ describe('# perfumeDao Test', () => {
             };
             perfumeDao.create(perfumeObj)
                 .then((result) => {
-                    return perfumeDao.readByPerfumeIdx(result);
+                    return perfumeDao.readByPerfumeIdx({perfumeIdx: result});
                 })
                 .then((result) => {
                     delete perfumeObj.imageThumbnailUrl
@@ -67,7 +67,7 @@ describe('# perfumeDao Test', () => {
     describe('# read Test', () => {
         describe('# read by perfume_idx Test', () => {
             it('# success case', (done) => {
-                perfumeDao.readByPerfumeIdx(1).then((result) => {
+                perfumeDao.readByPerfumeIdx({perfumeIdx: 1}).then((result) => {
                     expect(result.name).eq('154 코롱');
                     expect(result.brandName).eq('조 말론 런던');
                     expect(result.seriesName).eq('');

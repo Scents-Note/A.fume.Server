@@ -34,8 +34,8 @@ exports.deletePerfume = (perfumeIdx) => {
  * perfumeIdx Long ID of perfume to return
  * returns PerfumeDetail
  **/
-exports.getPerfumeById = (perfumeIdx) => {
-  const perfume = perfumeDao.readByPerfumeIdx(perfumeIdx);
+exports.getPerfumeById = ({userIdx, perfumeIdx}) => {
+  const perfume = perfumeDao.readByPerfumeIdx({userIdx, perfumeIdx});
   // TODO 노트 type 추가
   // TODO ingredients 추가
   // TODO score 추가
@@ -54,9 +54,9 @@ exports.getPerfumeById = (perfumeIdx) => {
  * filter Filter 검색 필터 (optional)
  * returns List
  **/
-exports.searchPerfume = (filter) => {
+exports.searchPerfume = ({userIdx, filter}) => {
   const {series, brands, keywords, sortBy} = filter;
-  return perfumeDao.search({series, brands, keywords, sortBy});
+  return perfumeDao.search({userIdx, series, brands, keywords, sortBy});
 }
 
 
