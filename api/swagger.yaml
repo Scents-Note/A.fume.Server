@@ -38,9 +38,8 @@ tags:
 schemes:
 #- "https"
 - "http"
-security:
-- APIKeyHeader: []
-- userToken: []
+#security:
+#- APIKeyHeader: []
 paths:
   /perfume:
     post:
@@ -106,6 +105,10 @@ paths:
       summary: "향수 검색"
       description: "검색 조건에 해당하는 향수를 반환한다."
       operationId: "searchPerfume"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       produces:
       - "application/json"
       parameters:
@@ -136,6 +139,10 @@ paths:
       - "perfume"
       summary: "향수 세부 정보 조회"
       description: "향수 세부 정보를 반환한다."
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       operationId: "getPerfumeById"
       produces:
       - "application/json"
@@ -1067,21 +1074,18 @@ paths:
         default:
           description: "successful operation"
       x-swagger-router-controller: "Wishlist"
-  /user/{userIdx}/wishlist:
     get:
       tags:
       - "wishlist"
       summary: "read user's wishlist"
       description: "유저가 가지고 있는 위시 리스트 전체 조회하기"
       operationId: "readWishlistByUser"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       produces:
       - "application/json"
-      parameters:
-      - name: "userIdx"
-        in: "path"
-        description: "name that need to be updated"
-        required: true
-        type: "string"
       responses:
         "200":
           description: "successful operation"
@@ -1092,6 +1096,7 @@ paths:
         default:
           description: "successful operation"
       x-swagger-router-controller: "Wishlist"
+  /user/{userIdx}/wishlist:
     delete:
       tags:
       - "wishlist"
