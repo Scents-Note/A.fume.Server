@@ -581,6 +581,10 @@ paths:
       summary: "계열 삽입"
       description: "계열 삽입"
       operationId: "postSeries"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
       consumes:
       - "application/json"
       produces:
@@ -636,6 +640,10 @@ paths:
       summary: "계열 수정"
       description: "계열 수정"
       operationId: "putSeries"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
       consumes:
       - "application/json"
       produces:
@@ -668,6 +676,10 @@ paths:
       summary: "계열 삭제"
       description: "계열 삭제"
       operationId: "deleteSeries"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
       consumes:
       - "application/json"
       produces:
