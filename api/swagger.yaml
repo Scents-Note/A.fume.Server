@@ -38,8 +38,8 @@ tags:
 schemes:
 #- "https"
 - "http"
-#security:
-#- APIKeyHeader: []
+# security:
+# - APIKeyHeader: []
 paths:
   /perfume:
     post:

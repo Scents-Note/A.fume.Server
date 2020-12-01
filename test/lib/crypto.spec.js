@@ -5,7 +5,7 @@ dotenv.config({
 
 const chai = require('chai');
 const { expect } = chai;
-const { encrypt, decrypt } = require('../../lib/encrypt.js');
+const { encrypt, decrypt } = require('../../lib/crypto.js');
 
 describe('# encrypt and decrypt Test', () => {
     it(' # success case', async () => {
