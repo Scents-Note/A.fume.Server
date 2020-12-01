@@ -28,6 +28,8 @@ tags:
   description: "시향기"
 - name: "reply"
   description: "댓글"
+- name: "keyword"
+  description: "키워드"
 - name: "wishlist"
   description: "위시리스트"
 - name: "user"
@@ -671,7 +673,7 @@ paths:
               - $ref: "#/definitions/ReviewInfo"
               - type: "object"
                 properties:
-                  replyIdx:
+                  reviewIdx:
                     type: "integer"
                     format: "int64"
                 example:
@@ -685,7 +687,7 @@ paths:
       - "review"
       summary: "전체 시향노트 반환(최신순)"
       description: "특정 향수에 달린 전체 시향노트 최신순으로 가져오기"
-      operationId: "getReviewOfPerfume"
+      operationId: "getReviewOfPerfumeByRecent"
       consumes:
       - "application/json"
       produces:
@@ -707,7 +709,7 @@ paths:
               - $ref: "#/definitions/ReviewInfo"
               - type: "object"
                 properties:
-                  replyIdx:
+                  reviewIdx:
                     type: "integer"
                     format: "int64"
                 example:
@@ -787,7 +789,7 @@ paths:
       tags:
       - "review"
       summary: "시향노트 삭제"
-      description: "댓글 삭제하기"
+      description: "시향노트 삭제하기"
       operationId: "deleteReview"
       consumes:
       - "application/json"
