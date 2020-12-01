@@ -433,6 +433,10 @@ paths:
       summary: "향료 삽입"
       description: "향료 삽입"
       operationId: "postIngredient"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
       consumes:
       - "application/json"
       produces:
@@ -488,6 +492,10 @@ paths:
       summary: "향료 수정"
       description: "향료 수정"
       operationId: "putIngredient"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
       consumes:
       - "application/json"
       produces:
@@ -520,6 +528,10 @@ paths:
       summary: "향료 삭제"
       description: "향료 삭제"
       operationId: "deleteIngredient"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
       consumes:
       - "application/json"
       produces:
