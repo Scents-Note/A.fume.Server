@@ -248,16 +248,22 @@ paths:
         "200":
           description: "성공"
           schema:
-            type: "array"
-            items:
-              allOf:
-              - $ref: "#/definitions/BrandInfo"
-              - type: "object"
-                properties:
-                  brandIdx:
-                    type: "integer"
-                example:
-                  brandIdx: 1
+            type: object
+            properties:
+              message:
+                type: string
+                example: 브랜드 조회 성공
+              data:
+                type: "array"
+                items:
+                  allOf:
+                  - $ref: "#/definitions/BrandInfo"
+                  - type: "object"
+                    properties:
+                      brandIdx:
+                        type: "integer"
+                    example:
+                      brandIdx: 1
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -303,6 +309,7 @@ paths:
           headers:
             WWW_Authenticate:
               type: "string"
+      deprecated: true
       x-swagger-router-controller: "Brand"
   /brand/{brandIdx}:
     get:
@@ -327,14 +334,20 @@ paths:
         "200":
           description: "성공"
           schema:
-            allOf:
-            - $ref: "#/definitions/BrandInfo"
-            - type: "object"
-              properties:
-                brandIdx:
-                  type: "integer"
-              example:
-                brandIdx: 1
+            type: object
+            properties:
+              message:
+                type: string
+                example: 브랜드 세부 조회 성공
+              data:
+                allOf:
+                - $ref: "#/definitions/BrandInfo"
+                - type: "object"
+                  properties:
+                    brandIdx:
+                      type: "integer"
+                  example:
+                    brandIdx: 1
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -374,6 +387,7 @@ paths:
           headers:
             WWW_Authenticate:
               type: "string"
+      deprecated: true
       x-swagger-router-controller: "Brand"
     delete:
       tags:
@@ -403,6 +417,7 @@ paths:
           headers:
             WWW_Authenticate:
               type: "string"
+      deprecated: true
       x-swagger-router-controller: "Brand"
   /ingredient:
     get:
