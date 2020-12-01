@@ -1091,6 +1091,10 @@ paths:
       summary: "키워드 추가"
       description : "특정 향수에 키워드 추가하기"
       operationId: "postKeyword"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       consumes:
       - "application/json"
       produces:
@@ -1923,13 +1927,12 @@ definitions:
   ApiResponse:
     type: "object"
     properties:
-      code:
-        type: "integer"
-        format: "int32"
-      type:
-        type: "string"
       message:
         type: "string"
+        example: 메세지
+      data:
+        type: "string"
+        example: 0
   PerfumeDetailInfo_ingredients:
     type: "object"
     properties:
