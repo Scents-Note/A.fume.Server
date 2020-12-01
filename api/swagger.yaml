@@ -921,6 +921,10 @@ paths:
       summary: "댓글 추가"
       description : "시향노트에 댓글 추가하기"
       operationId: "postReply"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       consumes:
       - "application/json"
       produces:
