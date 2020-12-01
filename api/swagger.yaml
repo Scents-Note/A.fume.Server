@@ -50,33 +50,6 @@ paths:
       summary: "향수 정보 추가"
       description: "향수 정보를 추가한다."
       operationId: "createPerfume"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
-      parameters:
-      - in: "body"
-        name: "body"
-        required: false
-        schema:
-          $ref: "#/definitions/Perfume"
-      responses:
-        "400":
-          description: "Invalid ID supplied"
-        "401":
-          description: "API key is missing or invalid"
-          headers:
-            WWW_Authenticate:
-              type: "string"
-        "405":
-          description: "Invalid input"
-      deprecated: true
-      x-swagger-router-controller: "Perfume"
-    put:
-      tags:
-      - "perfume"
-      summary: "향수 정보 업데이트"
-      operationId: "updatePerfume"
       security:
         - userToken: []
       x-security-scopes:
@@ -92,6 +65,18 @@ paths:
         schema:
           $ref: "#/definitions/Perfume"
       responses:
+        "200":
+          description: "성공"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: string
+                example: 향수 추가 성공
+              data:
+                type: integer
+                example: 1
+                description: 향수 perfumeIdx
         "400":
           description: "Invalid ID supplied"
         "401":
@@ -123,11 +108,17 @@ paths:
           $ref: "#/definitions/Filter"
       responses:
         "200":
-          description: "성공"
+          description: 성공
           schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Perfume"
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 검색 성공
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/Perfume"
         "400":
           description: "Invalid tag value"
         "401":
@@ -150,7 +141,6 @@ paths:
       parameters:
       - name: "perfumeIdx"
         in: "path"
-        description: "ID of perfume to return"
         required: true
         type: "integer"
         format: "int64"
@@ -158,7 +148,13 @@ paths:
         "200":
           description: "성공"
           schema:
-            $ref: "#/definitions/PerfumeDetail"
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 세부 조회 성공
+              data:
+                $ref: "#/definitions/PerfumeDetail"
         "401":
           description: "Not authenticated"
         "403":
@@ -166,22 +162,68 @@ paths:
         "404":
           description: "Perfume not found"
       x-swagger-router-controller: "Perfume"
-    delete:
+    put:
       tags:
       - "perfume"
-      summary: "Deletes a perfume"
-      description: ""
-      operationId: "deletePerfume"
+      summary: "향수 정보 업데이트"
+      operationId: "updatePerfume"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - "application/json"
       produces:
       - "application/json"
       parameters:
       - name: "perfumeIdx"
         in: "path"
-        description: "perfume id to delete"
+        required: true
+        type: "integer"
+        format: "int64"
+      - in: "body"
+        name: "body"
+        required: false
+        schema:
+          $ref: "#/definitions/Perfume"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        "400":
+          description: "Invalid ID supplied"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        "405":
+          description: "Invalid input"
+      deprecated: true
+      x-swagger-router-controller: "Perfume"
+    delete:
+      tags:
+      - "perfume"
+      summary: "Deletes a perfume"
+      operationId: "deletePerfume"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      produces:
+      - "application/json"
+      parameters:
+      - name: "perfumeIdx"
+        in: "path"
         required: true
         type: "integer"
         format: "int64"
       responses:
+        "200":
+          description: "성공"
+          schema:
+            $ref: "#/definitions/ApiResponse"
         "400":
           description: "Invalid ID supplied"
         "401":
@@ -1462,14 +1504,11 @@ definitions:
   PerfumeInfo:
     type: "object"
     properties:
-      perfumeIdx:
-        type: "integer"
-        format: "int64"
       name:
         type: "string"
       englishName:
         type: "string"
-      brandName:
+      brandIdx:
         type: "string"
       imageUrl:
         type: "string"
@@ -1477,21 +1516,30 @@ definitions:
       mainSeries: "만다린 오렌지"
       imageUrl: "https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554"
       name: "154 코롱"
-      brandName: "조말론"
+      brandIdx: 1
       englishName: "154 Cologne"
       perfumeIdx: 1
   Perfume:
     properties:
+      perfumeIdx:
+        type: "integer"
       likeCnt:
         type: "integer"
       isLiked:
         type: "boolean"
+      brandName:
+        type: "string"
+      mainSeriesName:
+        type: "string"
     allOf:
     - $ref: "#/definitions/PerfumeInfo"
     - {}
     example:
+      perfumeIdx: 1
       likeCnt: 4
       isLiked: true
+      brandName: "딥디크 파리스"
+      mainSeriesName: "플로럴"
   PerfumeDetailInfo:
     properties:
       mainSeries:
@@ -1596,6 +1644,12 @@ definitions:
     allOf:
     - $ref: "#/definitions/PerfumeInfo"
     - $ref: "#/definitions/PerfumeDetailInfo"
+    - type: "object"
+      properties:
+        perfumeIdx:
+          type: "integer"
+      example:
+        perfumeIdx: 1
     example:
       score: 5.4
       abundanceRate: "오 드 퍼퓸"
