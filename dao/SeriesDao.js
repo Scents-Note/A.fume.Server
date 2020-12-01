@@ -44,6 +44,7 @@ module.exports.readAll = async () => {
 const SQL_SERIES_UPDATE = "UPDATE series SET name = ?, english_name = ? WHERE series_idx = ?";
 module.exports.update = async ({series_idx, name, english_name}) => {
     const result = await pool.queryParam_Parse(SQL_SERIES_UPDATE, [name, english_name, series_idx]);
+    console.log(result)
     return result.affectedRows;
 }
 
