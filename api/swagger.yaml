@@ -270,6 +270,10 @@ paths:
       summary: "브랜드 삽입"
       description: "브랜드 삽입"
       operationId: "postBrand"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
       consumes:
       - "application/json"
       produces:
@@ -284,6 +288,16 @@ paths:
       responses:
         "200":
           description: "성공"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 브랜드 추가 성공
+              data:
+                type: integer
+                example: 1
+                description: 브랜드 brandIdx
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -297,6 +311,8 @@ paths:
       summary: "브랜드 조회"
       description: "브랜드 조회"
       operationId: "getBrandByIdx"
+      security:
+        - userToken: []
       consumes:
       - "application/json"
       produces:
@@ -331,6 +347,10 @@ paths:
       summary: "브랜드 수정"
       description: "브랜드 수정"
       operationId: "putBrand"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
       consumes:
       - "application/json"
       produces:
@@ -361,6 +381,10 @@ paths:
       summary: "브랜드 삭제"
       description: "브랜드 삭제"
       operationId: "deleteBrand"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
       consumes:
       - "application/json"
       produces:
