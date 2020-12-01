@@ -10,6 +10,7 @@ module.exports.create = async({ingredient_idx, perfume_idx, type}) => {
     return result.affectedRows;
 }
 
+
 /**
  * 향수 정보로 노트 전체 조회
  */
