@@ -11,6 +11,7 @@ var serverPort = process.env.PORT || 8080;
 
 const dotenv = require('dotenv');
 dotenv.config({path: './config/.env'});
+console.log(`ENV: ${process.env.NODE_ENV}`)
 
 const { verifyTokenMiddleware } = require('./middleware/auth.js');
 

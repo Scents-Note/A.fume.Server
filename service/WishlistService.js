@@ -1,6 +1,7 @@
 'use strict';
 
 const wishlistDao = require('../dao/WishlistDao.js');
+const perfumeDao = require('../dao/perfumeDao.js');
 
 /**
  * add wishlist
@@ -43,7 +44,7 @@ exports.deleteWishlist = ({perfumeIdx, userIdx}) => {
  * 위시 리스트에 포함된 향수 리스트 반환
  **/
 exports.readWishlistByUser = (userIdx) => {
-  return wishlistDao.readByUserIdx(userIdx)
+  return perfumeDao.readAllOfWishlist(userIdx);
 };
 
 /**

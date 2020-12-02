@@ -30,7 +30,7 @@ module.exports.getBrandByIdx = (req, res, next) => {
     });
 };
 
-module.exports.insertBrand = (req, res, next) => {
+module.exports.postBrand = (req, res, next) => {
   const {
     name,
     englishName,
@@ -46,7 +46,7 @@ module.exports.insertBrand = (req, res, next) => {
       description
     }).then((response) => {
       utils.writeJson(res, utils.respondWithCode(200, {
-        message: '브랜드 삽입 성공',
+        message: '브랜드 추가 성공',
         data: response
       }));
     })

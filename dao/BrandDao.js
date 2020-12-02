@@ -41,7 +41,7 @@ module.exports.read = async (brandIdx) => {
  * 브랜드 전체 목록 조회
  * 
  */
-const SQL_BRAND_SELECT_ALL = 'SELECT brand_idx as brandIdx , name, start_character as startCharacter, image_url as imageUrl, description FROM brand';
+const SQL_BRAND_SELECT_ALL = 'SELECT brand_idx as brandIdx, name, english_name as englishName, start_character as startCharacter, image_url as imageUrl, description FROM brand';
 module.exports.readAll = () => {
     return pool.queryParam_None(SQL_BRAND_SELECT_ALL);
 }

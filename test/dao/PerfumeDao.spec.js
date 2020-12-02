@@ -32,7 +32,7 @@ describe('# perfumeDao Test', () => {
             };
             perfumeDao.create(perfumeObj)
                 .then((result) => {
-                    return perfumeDao.readByPerfumeIdx(result);
+                    return perfumeDao.readByPerfumeIdx({perfumeIdx: result});
                 })
                 .then((result) => {
                     delete perfumeObj.imageThumbnailUrl
@@ -67,10 +67,10 @@ describe('# perfumeDao Test', () => {
     describe('# read Test', () => {
         describe('# read by perfume_idx Test', () => {
             it('# success case', (done) => {
-                perfumeDao.readByPerfumeIdx(1).then((result) => {
+                perfumeDao.readByPerfumeIdx({perfumeIdx: 1}).then((result) => {
                     expect(result.name).eq('154 코롱');
                     expect(result.brandName).eq('조 말론 런던');
-                    expect(result.seriesName).eq('');
+                    expect(result.seriesName).eq('꿀');
                     expect(result.story).eq('조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트, 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다.');
                     expect(result.abundanceRate).eq(1);
                     expect(result.volumeAndPrice).to.deep.eq([{volume: 30, price: 95000},{volume: 100, price:190000}]);
