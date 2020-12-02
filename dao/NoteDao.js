@@ -4,9 +4,13 @@ const { NotMatchedError, FailedToCreateError } = require('../utils/errors/errors
 /**
  * 노트 생성
  */
-const SQL_NOTE_INSERT = "INSERT INTO note(ingredient_idx, perfume_idx, type) VALUES (?, ?, ?)"
-module.exports.create = async({ingredient_idx, perfume_idx, type}) => {
-    const result = await pool.queryParam_Parse(SQL_NOTE_INSERT, [ingredient_idx, perfume_idx, type]);
+const SQL_NOTE_INSERT = "INSERT INTO note(ingredient_idx, perfume_idx, type) " + 
+"VALUES ((SELECT ingredient_idx FROM ingredient WHERE name = ?), (SELECT perfume_idx FROM perfume WHERE name = ?), ?)"
+module.exports.create = async({ingredientName, perfumeName, type}) => {
+    const result = await pool.queryParam_Parse(SQL_NOTE_INSERT, [ingredientName, perfumeName, type]);
+    if(result.affectedRows == 0){
+        throw new FailedToCreateError();
+    }
     return result.affectedRows;
 }
 
@@ -28,20 +32,14 @@ module.exports.read = async (perfume_idx) => {
 /**
  * 노트 타입 업데이트
  */
-const SQL_NOTE_TYPE_UPDATE = "UPDATE note SET type = ? WHERE perfume_idx = ? AND ingredient_idx = ?";
-module.exports.updateType = async ({ingredient_idx, type, perfume_idx}) => {
-    const result = await pool.queryParam_Parse(SQL_NOTE_TYPE_UPDATE, [type, perfume_idx, ingredient_idx]);
-    return result.affectedRows;
-}
 
-
-/**
- * 노트 재료 업데이트
- */
-const SQL_NOTE_INGREDIENT_UPDATE = "UPDATE note SET ingredient_idx = ? WHERE perfume_idx = ? AND type = ?";
-module.exports.updateIngredient = async ({ingredient_idx, type, perfume_idx}) => {
-    const result = await pool.queryParam_Parse(SQL_NOTE_INGREDIENT_UPDATE, [ingredient_idx, perfume_idx, type]);
-    return result.affectedRows;
+const SQL_NOTE_TYPE_UPDATE = "UPDATE note SET type = ? WHERE perfume_idx = (SELECT perfume_idx FROM perfume WHERE name = ?) AND ingredient_idx = (SELECT ingredient_idx FROM ingredient WHERE name = ?)";
+module.exports.updateType = async ({type, perfumeName, ingredientName}) => {
+    const {affectedRows} = await pool.queryParam_Parse(SQL_NOTE_TYPE_UPDATE, [type, perfumeName, ingredientName]);
+    if (affectedRows == 0) {
+        throw new NotMatchedError();
+    }
+    return affectedRows;
 }
 
 
@@ -50,6 +48,9 @@ module.exports.updateIngredient = async ({ingredient_idx, type, perfume_idx}) =>
  */
 const SQL_NOTE_DELETE = "DELETE FROM note WHERE perfume_idx = ? AND ingredient_idx = ?";
 module.exports.delete = async (perfume_idx, ingredient_idx) => {
-    const result = await pool.queryParam_Parse(SQL_NOTE_DELETE, [perfume_idx, ingredient_idx]);   
-    return result.affectedRows;
+    const {affectedRows} = await pool.queryParam_Parse(SQL_NOTE_DELETE, [perfume_idx, ingredient_idx]);   
+    if (affectedRows == 0) {
+        throw new NotMatchedError();
+    }
+    return affectedRows;
 }
