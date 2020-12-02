@@ -40,8 +40,8 @@ tags:
 schemes:
 #- "https"
 - "http"
-#security:
-#- APIKeyHeader: []
+# security:
+# - APIKeyHeader: []
 paths:
   /perfume:
     post:
@@ -435,7 +435,14 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/IngredientInfo"
+              allOf:
+                - $ref: "#/definitions/IngredientInfo"
+                - type: "object"
+                  properties:
+                    ingredientIdx:
+                      type: "integer"
+                  example:
+                    ingredientIdx: 333
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -494,7 +501,14 @@ paths:
         "200":
           description: "성공"
           schema:
-            $ref: "#/definitions/IngredientInfo"
+            allOf:
+            - $ref: "#/definitions/IngredientInfo"
+            - type: "object"
+              properties:
+                ingredientIdx:
+                  type: "integer"
+              example:
+                ingredientIdx: 333
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -583,7 +597,14 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/SeriesInfo"
+              allOf:
+                - $ref: "#/definitions/SeriesInfo"
+                - type: "object"
+                  properties:
+                    seriesIdx:
+                      type: "integer"
+                  example:
+                    seriesIdx: 222
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -1754,9 +1775,6 @@ definitions:
   SeriesInfo:
     type: "object"
     properties:
-      seriesIdx:
-        type: "integer"
-        format: "int64"
       name:
         type: "string"
       englishName:
@@ -1767,13 +1785,9 @@ definitions:
       name: "꿀"
       englishName: "Honey"
       description: "화이트 허니, 허니"
-      seriesIdx: 1
   IngredientInfo:
     type: "object"
     properties:
-      ingredientIdx:
-        type: "integer"
-        format: "int64"
       name:
         type: "string"
       englishName:
@@ -1783,7 +1797,6 @@ definitions:
     example:
       name: "씨쏠트"
       englishName: "Sea Salt"
-      ingredientIdx: 1
       description: "바다 소금"
   BrandInfo:
     type: "object"

@@ -30,12 +30,13 @@ module.exports.create = async ({name, english_name, description, series_idx}) =>
  * 재료 조회
  * 
  */
-const SQL_INGREDIENT_SELECT_BY_IDX = "SELECT ingredient_idx, name, english_name FROM ingredient WHERE ingredient_idx = ?";
+const SQL_INGREDIENT_SELECT_BY_IDX = "SELECT ingredient_idx as ingredientIdx, name, english_name as englishName FROM ingredient WHERE ingredient_idx = ?";
 module.exports.read = async (ingredient_idx) => {
     const result = await pool.queryParam_Parse(SQL_INGREDIENT_SELECT_BY_IDX, [ingredient_idx]);
     if(result.length == 0) {
         throw new NotMatchedError();
     }
+    // console.log(result);
     return result[0].name;
 }
 
@@ -43,7 +44,7 @@ module.exports.read = async (ingredient_idx) => {
 /**
  * 재료 전체 조회
  */
-const SQL_INGREDIENT_SELECT_ALL = "SELECT ingredient_idx, name, english_name FROM ingredient";
+const SQL_INGREDIENT_SELECT_ALL = "SELECT ingredient_idx as ingredientIdx, name, english_name as englishName FROM ingredient";
 module.exports.readAll = async () => {
     const result = await pool.queryParam_None(SQL_INGREDIENT_SELECT_ALL);
     return result.length;

@@ -18,7 +18,7 @@ module.exports.create = async ({name, english_name, description}) => {
  * 계열 조회
  * 
  */
-const SQL_SERIES_SELECT_BY_IDX = "SELECT series_idx, name, english_name FROM series WHERE series_idx = ?";
+const SQL_SERIES_SELECT_BY_IDX = "SELECT series_idx as seriesIdx, name, english_name as englishName FROM series WHERE series_idx = ?";
 module.exports.read = async (series_idx) => {
     const result = await pool.queryParam_Parse(SQL_SERIES_SELECT_BY_IDX, [series_idx]);
     if(result.length == 0) {
@@ -31,7 +31,7 @@ module.exports.read = async (series_idx) => {
 /**
  * 계열 전체 조회
  */
-const SQL_SERIES_SELECT_ALL = "SELECT series_idx, name, english_name FROM series";
+const SQL_SERIES_SELECT_ALL = "SELECT series_idx as seriesIdx, name, english_name as englishName FROM series";
 module.exports.readAll = async () => {
     const result = await pool.queryParam_None(SQL_SERIES_SELECT_ALL);
     return result.length;
@@ -44,6 +44,7 @@ module.exports.readAll = async () => {
 const SQL_SERIES_UPDATE = "UPDATE series SET name = ?, english_name = ? WHERE series_idx = ?";
 module.exports.update = async ({series_idx, name, english_name}) => {
     const result = await pool.queryParam_Parse(SQL_SERIES_UPDATE, [name, english_name, series_idx]);
+    console.log(result)
     return result.affectedRows;
 }
 
