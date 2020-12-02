@@ -5,8 +5,8 @@ const Ingredient = require('../service/IngredientService');
 
 
 module.exports.postIngredient = function postIngredient (req, res, next) {
-  const body = req.swagger.params['body'].value;
-  Ingredient.postIngredient(body)
+  const {name, englishName, description, seriesName} = req.swagger.params['body'].value;
+  Ingredient.postIngredient({name, englishName, description, seriesName})
     .then(function (response) {
       utils.writeJson(res, utils.respondWithCode(200, {
         message: 'ingredient post 성공',
@@ -47,8 +47,8 @@ module.exports.getIngredientList = function getIngredientList (req, res, next) {
 
 module.exports.putIngredient = function putIngredient (req, res, next) {
   const ingredientIdx = req.swagger.params['ingredientIdx'].value;
-  const body = req.swagger.params['body'].value;
-  Ingredient.putIngredient(ingredientIdx,body)
+  const {name, englishName, description} = req.swagger.params['body'].value;
+  Ingredient.putIngredient({ingredientIdx, name, englishName, description})
     .then(function (response) {
       utils.writeJson(res, utils.respondWithCode(200, {
         message: 'ingredient put 성공',

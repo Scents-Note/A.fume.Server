@@ -53,7 +53,7 @@ describe('# ingredientDao Test', () => {
         });
         it(' # success case', (done) => {
             ingredientDao.read(ingredient_idx).then((result) => {
-                expect(result).eq(name);
+                expect(result.name).eq(name);
                 done();
             }).catch((err) => {
                 expect(false).true();
@@ -65,7 +65,7 @@ describe('# ingredientDao Test', () => {
     describe(' # readAll Test', () => {
         it(' # success case', (done) => {
             ingredientDao.readAll().then((result) => {
-                expect(result).greaterThan(0);
+                expect(result.length).greaterThan(0);
                 done();
             }).catch((err) => {
                 expect(false).true();

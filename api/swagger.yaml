@@ -385,7 +385,14 @@ paths:
         description: "Post new ingredient info"
         required: false
         schema:
-          $ref: "#/definitions/IngredientInfo"
+          allOf:
+            - $ref: "#/definitions/IngredientInfo"
+            - type: "object"
+              properties:
+                seriesName:
+                  type: "string"
+              example:
+                seriesName : "우디"
       responses:
         "200":
           description: "성공"
