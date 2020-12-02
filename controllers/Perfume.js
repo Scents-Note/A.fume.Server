@@ -5,6 +5,7 @@ const Perfume = require('../service/PerfumeService');
 
 module.exports.createPerfume = (req, res, next) => {
   const body = req.swagger.params['body'].value;
+  body.imageThumbnailUrl = body.imageUrl;
   Perfume.createPerfume(body)
     .then((response) => {
       utils.writeJson(res, utils.respondWithCode(200, {
