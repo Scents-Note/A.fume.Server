@@ -18,7 +18,7 @@ describe('# seriesDao Test', () => {
         });
         // 성공 케이스
         it(' # success case', (done) => {
-            seriesDao.create({name : '테스트 데이터', english_name : 'Test Data', description : '왈라왈라'}).then((result) => {
+            seriesDao.create({name : '테스트 데이터', englishName : 'Test Data', description : '왈라왈라'}).then((result) => {
                 expect(result).eq(1);
                 done();
             }).catch((err) => {
@@ -28,7 +28,7 @@ describe('# seriesDao Test', () => {
         });
         // 중복 데이터 발생 케이스
         it(' # DuplicatedEntryError case', (done) => {
-            seriesDao.create({name : '테스트 데이터', english_name : 'Test Data', description : '왈라왈라'}).then((result) => {
+            seriesDao.create({name : '테스트 데이터', englishName : 'Test Data', description : '왈라왈라'}).then((result) => {
                 console.log(result)
                 expect(false).true();
                 done();
@@ -44,14 +44,14 @@ describe('# seriesDao Test', () => {
     });
 
     describe('# read Test', () => {
-        let series_idx;
+        let seriesIdx;
         before(async () => {
             await pool.queryParam_Parse("INSERT series(name, english_name) VALUES(?, ?)", ["읽기 데이터", "Test Data"]);
             const result = await pool.queryParam_Parse("SELECT series_idx FROM series WHERE name = ?", ["읽기 데이터"]);
-            series_idx = result[0].series_idx;
+            seriesIdx = result[0].series_idx;
         });
         it('# success case', (done) => {
-            seriesDao.read(series_idx).then((result) => {
+            seriesDao.read(seriesIdx).then((result) => {
                 expect(result.name).eq('읽기 데이터');
                 done();
             }).catch((err) => {
@@ -60,14 +60,14 @@ describe('# seriesDao Test', () => {
             });
         });
         after(async() => {
-            await pool.queryParam_None(`DELETE FROM series WHERE series_idx=${series_idx}`);
+            await pool.queryParam_None(`DELETE FROM series WHERE series_idx=${seriesIdx}`);
         });
     });
 
     describe(' # readAll Test', () => {
         it(' # success case', (done) => {
             seriesDao.readAll().then((result) => {
-                expect(result).greaterThan(0);
+                expect(result.length).greaterThan(0);
                 done();
             }).catch((err) => {
                 expect(false).true();
@@ -77,14 +77,14 @@ describe('# seriesDao Test', () => {
     });
 
     describe('# update Test', () => {
-        let series_idx;
+        let seriesIdx;
         before(async () => {
             await pool.queryParam_None("DELETE FROM series WHERE name='테스트 데이터'");
             const result = await pool.queryParam_None("INSERT INTO series(name, english_name) VALUES('테스트 데이터','Test Data')");
-            series_idx = result.insertId;
+            seriesIdx = result.insertId;
         });
         it('# success case', (done) => {
-            seriesDao.update({series_idx, name:'수정 데이터', english_name:'Update Data'})
+            seriesDao.update({seriesIdx, name:'수정 데이터', english_name:'Update Data'})
             .then((result) => {
                 expect(result).eq(1);
                 done();
@@ -95,19 +95,19 @@ describe('# seriesDao Test', () => {
             });
         });
         after(async () => {
-            await pool.queryParam_None(`DELETE FROM series WHERE series_idx=${series_idx}`);
+            await pool.queryParam_None(`DELETE FROM series WHERE series_idx=${seriesIdx}`);
         });
     });
     
     describe('# delete Test', () => {
-        let series_idx;
+        let seriesidx;
         before(async () => {
             await pool.queryParam_None("DELETE FROM series WHERE name='삭제테스트'");
             const result = await pool.queryParam_None("INSERT series(name, english_name) values('삭제 데이터','Delete Data')");
-            series_idx = result.insertId;
+            seriesIdx = result.insertId;
         });
         it('# success case', (done) => {
-            seriesDao.delete(series_idx).then((result) => {
+            seriesDao.delete(seriesIdx).then((result) => {
                 expect(result).eq(1);
                 done();
             }).catch((err) => {
@@ -116,8 +116,8 @@ describe('# seriesDao Test', () => {
             });
         });
         after(async () => {
-            if(!series_idx) return;
-            await pool.queryParam_None(`DELETE FROM series WHERE series_idx=${series_idx}`);
+            if(!seriesIdx) return;
+            await pool.queryParam_None(`DELETE FROM series WHERE series_idx=${seriesIdx}`);
         });
     });
 });
