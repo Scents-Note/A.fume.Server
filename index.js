@@ -11,7 +11,13 @@ var jsyaml = require('js-yaml');
 var serverPort = process.env.PORT || 8080;
 
 const dotenv = require('dotenv');
-dotenv.config({path: './config/.env'});
+const envMap = {
+  'prd': './config/.env',
+  'dev': './config/.env.dev',
+  'tst': './config/.env.test',
+};
+
+dotenv.config({path: envMap[process.env.NODE_ENV || 'dev']});
 console.log(`ENV: ${process.env.NODE_ENV}`)
 
 const { verifyTokenMiddleware } = require('./middleware/auth.js');

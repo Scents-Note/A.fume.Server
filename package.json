@@ -4,9 +4,9 @@
   "description": "향수 정보 서비스 A.fume Server Api 문서",
   "main": "index.js",
   "scripts": {
-    "prestart": "npm install",
+    "_prestart": "npm install",
     "start": "node index.js",
-    "test": "mocha --recursive"
+    "test": "mocha --recursive --exit"
   },
   "keywords": [
     "swagger"
@@ -17,6 +17,7 @@
     "chai": "^4.2.0",
     "connect": "^3.2.0",
     "dotenv": "^8.2.0",
+    "ip": "^1.1.5",
     "js-yaml": "^3.3.0",
     "jsonwebtoken": "^8.5.1",
     "promise-mysql": "^4.1.3",
