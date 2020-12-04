@@ -13,8 +13,7 @@ var serverPort = process.env.PORT || 8080;
 const dotenv = require('dotenv');
 const envMap = {
   'prd': './config/.env',
-  'dev': './config/.env.dev',
-  'tst': './config/.env.test',
+  'dev': './config/.env.dev'
 };
 
 dotenv.config({path: envMap[process.env.NODE_ENV || 'dev']});
