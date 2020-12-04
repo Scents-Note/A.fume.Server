@@ -3,6 +3,7 @@
 var fs = require('fs'),
     path = require('path'),
     http = require('http');
+const ip = require('ip');
 
 var app = require('connect')();
 var swaggerTools = require('swagger-tools');
@@ -59,7 +60,8 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 
   // Start the server
   http.createServer(app).listen(serverPort, function () {
-    console.log('Your server is listening on port %d (http://localhost:%d)', serverPort, serverPort);
-    console.log('Swagger-ui is available on http://localhost:%d/docs', serverPort);
+    const localIpAddress = ip.address();
+    console.log('Your server is listening on port %d (http://%s:%d)', serverPort, localIpAddress, serverPort);
+    console.log('Swagger-ui is available on http://%s:%d/docs', localIpAddress, serverPort);
   });
 });
