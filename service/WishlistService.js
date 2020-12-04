@@ -1,7 +1,7 @@
 'use strict';
 
 const wishlistDao = require('../dao/WishlistDao.js');
-const perfumeDao = require('../dao/perfumeDao.js');
+const perfumeDao = require('../dao/PerfumeDao.js');
 
 /**
  * add wishlist

@@ -1,6 +1,6 @@
 'use strict';
 
-const replyDao = require('../dao/replyDao.js');
+const replyDao = require('../dao/ReplyDao.js');
 
 /**
  * 댓글 삭제
