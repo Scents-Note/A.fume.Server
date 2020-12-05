@@ -3,9 +3,6 @@
 var fs = require('fs'),
     path = require('path'),
     http = require('http');
-const ip = require('ip');
-const localIpAddress = ip.address();
-
 var app = require('connect')();
 var swaggerTools = require('swagger-tools');
 var jsyaml = require('js-yaml');
@@ -16,9 +13,10 @@ const envMap = {
   'prd': './config/.env',
   'dev': './config/.env.dev'
 };
-
 dotenv.config({path: envMap[process.env.NODE_ENV || 'dev']});
 console.log(`ENV: ${process.env.NODE_ENV}`)
+
+const localIpAddress = process.env.SERVER_IP || 'localhost';
 
 const { verifyTokenMiddleware } = require('./middleware/auth.js');
 
