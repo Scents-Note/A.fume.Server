@@ -17,7 +17,6 @@
     "chai": "^4.2.0",
     "connect": "^3.2.0",
     "dotenv": "^8.2.0",
-    "ip": "^1.1.5",
     "js-yaml": "^3.3.0",
     "jsonwebtoken": "^8.5.1",
     "promise-mysql": "^4.1.3",
