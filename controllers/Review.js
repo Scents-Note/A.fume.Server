@@ -10,7 +10,7 @@ module.exports.getReview = function getReview (req, res, next) {
       utils.writeJson(res, response);
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -21,7 +21,7 @@ module.exports.getReviewOfPerfume = function getReviewOfPerfume (req, res, next)
       utils.writeJson(res, response);
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -33,6 +33,6 @@ module.exports.updateReview = function updateReview (req, res, next) {
       utils.writeJson(res, response);
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };

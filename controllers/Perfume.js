@@ -44,7 +44,7 @@ module.exports.searchPerfume = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -57,7 +57,7 @@ module.exports.updatePerfume = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -70,6 +70,6 @@ module.exports.deletePerfume = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };

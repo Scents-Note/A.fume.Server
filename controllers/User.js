@@ -13,7 +13,7 @@ module.exports.createUser = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -27,7 +27,7 @@ module.exports.deleteUser = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -41,7 +41,7 @@ module.exports.getUserByIdx = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -56,8 +56,8 @@ module.exports.loginUser = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
-    });
+      utils.writeJson(res, {message: response.message});
+    })
 };
 
 module.exports.logoutUser = (req, res, next) => {
@@ -66,7 +66,7 @@ module.exports.logoutUser = (req, res, next) => {
       utils.writeJson(res, response);
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -84,6 +84,6 @@ module.exports.updateUser = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
