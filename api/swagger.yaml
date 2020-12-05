@@ -237,6 +237,45 @@ paths:
           description: "Perfume not found"
       deprecated: true
       x-swagger-router-controller: "Perfume"
+  /perfume/{perfumeIdx}/like:
+    put:
+      tags:
+      - "perfume"
+      summary: "향수 좋아요"
+      description: "향수 좋아요 상태를 반환한다."
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      operationId: "likePerfume"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "perfumeIdx"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 세부 조회 성공
+              data:
+                type: boolean
+                example: true
+                description: 요청 이후 좋아요 상태
+        "401":
+          description: "Not authenticated"
+        "403":
+          description: "Access token does not have the required scope"
+        "404":
+          description: "Perfume not found"
+      x-swagger-router-controller: "Perfume"
   /brand:
     get:
       tags:

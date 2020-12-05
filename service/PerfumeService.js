@@ -3,6 +3,11 @@
 const perfumeDao = require('../dao/PerfumeDao.js');
 const noteDao = require('../dao/NoteDao.js');
 const reviewDao = require('../dao/ReviewDao.js');
+const likeDao = require('../dao/LikeDao.js');
+const {
+  NotMatchedError,
+  FailedToCreateError
+} = require('../utils/errors/errors.js');
 
 /**
  * 향수 정보 추가
@@ -11,8 +16,28 @@ const reviewDao = require('../dao/ReviewDao.js');
  * body Perfume  (optional)
  * no response value expected for this operation
  **/
-exports.createPerfume = ({brandIdx, name, englishName, volumeAndPrice, imageThumbnailUrl, mainSeriesIdx, story, abundanceRate, imageUrl}) => {
-  return perfumeDao.create({brandIdx, name, englishName, volumeAndPrice, imageThumbnailUrl, mainSeriesIdx, story, abundanceRate, imageUrl});
+exports.createPerfume = ({
+  brandIdx,
+  name,
+  englishName,
+  volumeAndPrice,
+  imageThumbnailUrl,
+  mainSeriesIdx,
+  story,
+  abundanceRate,
+  imageUrl
+}) => {
+  return perfumeDao.create({
+    brandIdx,
+    name,
+    englishName,
+    volumeAndPrice,
+    imageThumbnailUrl,
+    mainSeriesIdx,
+    story,
+    abundanceRate,
+    imageUrl
+  });
 }
 
 
@@ -35,27 +60,35 @@ const genderArr = ['male', 'neutral', 'female'];
 const noteTypeArr = ['top', 'middle', 'base', 'single'];
 
 function makeZeroMap(arr) {
-  return arr.reduce((prev, cur) => {prev[cur] = 0; return prev},{});
+  return arr.reduce((prev, cur) => {
+    prev[cur] = 0;
+    return prev
+  }, {});
 }
 
 function makeInitMap(arr, initFunc) {
-  return arr.reduce((prev, cur) => {prev[cur] = initFunc(); return prev},{});
+  return arr.reduce((prev, cur) => {
+    prev[cur] = initFunc();
+    return prev
+  }, {});
 }
 
 function updateCount(obj, prop) {
-  if(!prop) return;
+  if (!prop) return;
   obj[prop] = obj[prop] + 1;
 }
 
-function normalize(obj){
+function normalize(obj) {
   const result = {};
   const entries = Object.entries(obj);
-  const total = entries.reduce((prev, cur) => { return prev + cur[1]; }, 0);
+  const total = entries.reduce((prev, cur) => {
+    return prev + cur[1];
+  }, 0);
   for (const [key, value] of entries) {
-    if(total == 0){
+    if (total == 0) {
       result[key] = 0;
       continue;
-    } 
+    }
     result[key] = parseFloat((parseFloat(value) / total).toFixed(2));
   }
   return result;
@@ -68,8 +101,14 @@ function normalize(obj){
  * perfumeIdx Long ID of perfume to return
  * returns PerfumeDetail
  **/
-exports.getPerfumeById = async ({userIdx, perfumeIdx}) => {
-  const perfume = await perfumeDao.readByPerfumeIdx({userIdx, perfumeIdx});
+exports.getPerfumeById = async ({
+  userIdx,
+  perfumeIdx
+}) => {
+  const perfume = await perfumeDao.readByPerfumeIdx({
+    userIdx,
+    perfumeIdx
+  });
 
   let notes = await noteDao.read(perfumeIdx);
   notes = notes.map(it => {
@@ -81,7 +120,9 @@ exports.getPerfumeById = async ({userIdx, perfumeIdx}) => {
     delete cur.type;
     prev[type].push(cur);
     return prev;
-  }, makeInitMap(noteTypeArr, () => { return []; }));
+  }, makeInitMap(noteTypeArr, () => {
+    return [];
+  }));
 
   let noteType;
   if (ingredients.single.length == notes.length) {
@@ -95,9 +136,10 @@ exports.getPerfumeById = async ({userIdx, perfumeIdx}) => {
   }
   perfume.noteType = noteType;
   perfume.ingredients = ingredients;
-  
+
   let reviews = await reviewDao.readAll(perfumeIdx);
-  let sum = 0, cnt = 0;
+  let sum = 0,
+    cnt = 0;
   let seasonal = makeZeroMap(seasonalArr);
   let sillage = makeZeroMap(sillageArr);
   let longevity = makeZeroMap(longevityArr);
@@ -109,18 +151,18 @@ exports.getPerfumeById = async ({userIdx, perfumeIdx}) => {
     it.gender = genderArr[it.gender - 1];
     return it;
   })
-  
-  for(const review of reviews) {
+
+  for (const review of reviews) {
     if (review.score) {
       sum += review.score;
-      cnt ++;
+      cnt++;
       updateCount(longevity, review.longevity);
       updateCount(sillage, review.sillage);
       updateCount(seasonal, review.seasonal);
       updateCount(gender, review.gender);
     }
   }
-  
+
   longevity = normalize(longevity);
   sillage = normalize(sillage);
   seasonal = normalize(seasonal);
@@ -141,9 +183,23 @@ exports.getPerfumeById = async ({userIdx, perfumeIdx}) => {
  * filter Filter 검색 필터 (optional)
  * returns List
  **/
-exports.searchPerfume = ({userIdx, filter}) => {
-  const {series, brands, keywords, sortBy} = filter;
-  return perfumeDao.search({userIdx, series, brands, keywords, sortBy});
+exports.searchPerfume = ({
+  userIdx,
+  filter
+}) => {
+  const {
+    series,
+    brands,
+    keywords,
+    sortBy
+  } = filter;
+  return perfumeDao.search({
+    userIdx,
+    series,
+    brands,
+    keywords,
+    sortBy
+  });
 }
 
 
@@ -154,7 +210,68 @@ exports.searchPerfume = ({userIdx, filter}) => {
  * body Perfume  (optional)
  * no response value expected for this operation
  **/
-exports.updatePerfume = ({perfumeIdx, name, mainSeriesIdx, brandIdx, englishName, volumeAndPrice, imageThumbnailUrl, story, abundanceRate, imageUrl}) => {
-  return perfumeDao.update({perfumeIdx, name, mainSeriesIdx, brandIdx, englishName, volumeAndPrice, imageThumbnailUrl, story, abundanceRate, imageUrl});
+exports.updatePerfume = ({
+  perfumeIdx,
+  name,
+  mainSeriesIdx,
+  brandIdx,
+  englishName,
+  volumeAndPrice,
+  imageThumbnailUrl,
+  story,
+  abundanceRate,
+  imageUrl
+}) => {
+  return perfumeDao.update({
+    perfumeIdx,
+    name,
+    mainSeriesIdx,
+    brandIdx,
+    englishName,
+    volumeAndPrice,
+    imageThumbnailUrl,
+    story,
+    abundanceRate,
+    imageUrl
+  });
 }
 
+/**
+ * 향수 좋아요
+ * 
+ *
+ * no response value expected for this operation
+ **/
+exports.likePerfume = ({
+  perfumeIdx,
+  userIdx
+}) => {
+  return new Promise((resolve, reject) => {
+    let isExist = false;
+    likeDao.read({
+      perfumeIdx,
+      userIdx
+    })
+    .then(res => {
+      isExist = true;
+      return likeDao.delete({
+        perfumeIdx,
+        userIdx
+      });
+    })
+    .catch(err => {
+      isExist = false;
+      if (err instanceof NotMatchedError) {  
+        return likeDao.create({
+          perfumeIdx,
+          userIdx
+        });
+      }
+      reject(new FailedToCreateError());
+    }).then(() => {
+      resolve(!isExist);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}

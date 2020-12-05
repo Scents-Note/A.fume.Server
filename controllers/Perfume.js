@@ -61,6 +61,21 @@ module.exports.updatePerfume = (req, res, next) => {
     });
 };
 
+module.exports.likePerfume = (req, res, next) => {
+  const perfumeIdx = req.swagger.params['perfumeIdx'].value;
+  const loginUserIdx = req.middlewareToken.loginUserIdx;
+  Perfume.likePerfume({perfumeIdx, userIdx: loginUserIdx})
+    .then((result) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '향수 좋아요',
+        data: result
+      }));
+    })
+    .catch((response) => {
+      utils.writeJson(res, {message: response.message});
+    });
+};
+
 module.exports.deletePerfume = (req, res, next) => {
   const perfumeIdx = req.swagger.params['perfumeIdx'].value;
   Perfume.deletePerfume(perfumeIdx)
