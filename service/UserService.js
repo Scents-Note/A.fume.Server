@@ -8,8 +8,8 @@ const { WrongPasswordError } = require('../utils/errors/errors.js');
 /**
  * 유저 회원 가입
  *
- * body User Created user object
- * no response value expected for this operation
+ * @param {Object} User
+ * @returns {Promise}
  **/
 exports.createUser = ({id, nickname, password, gender, phone, email, birth}) => {
   password = crypto.encrypt(password);
@@ -19,10 +19,9 @@ exports.createUser = ({id, nickname, password, gender, phone, email, birth}) => 
 
 /**
  * 회원 탈퇴
- * This can only be done by the logged in user.
  *
- * userIdx String The Idx that needs to be deleted
- * no response value expected for this operation
+ * @param {number} userIdx
+ * @returns {Promise}
  **/
 exports.deleteUser = (userIdx) => {
   return userDao.delete(userIdx);
@@ -30,11 +29,10 @@ exports.deleteUser = (userIdx) => {
 
 
 /**
- * Get user by user idx
- * 
+ * 유저 조회
  *
- * userIdx Long 유저 ID
- * returns User
+ * @param {number} userIdx
+ * @returns {Promise<User>}
  **/
 exports.getUserByIdx = async (userIdx) => {
   const result = await userDao.readByIdx(userIdx)
@@ -42,14 +40,18 @@ exports.getUserByIdx = async (userIdx) => {
   return result;
 }
 
+/**
+ * @typedef LoginToken
+ * @property {string} token 로그인 토큰
+ * @property {string} refreshToken 토큰 갱신을 위한 토큰
+ */
 
 /**
- * Logs user into the system
+ * 로그인
  * 
- *
- * nickname String The user name for login
- * password String The password for login in clear text
- * returns String
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<LoginToken>} - 토큰 정보
  **/
 exports.loginUser = async (email,password) => {
   const user = await userDao.readByEmail(email);
@@ -63,9 +65,9 @@ exports.loginUser = async (email,password) => {
 
 
 /**
- * 로그아웃 한다.
- * 발행된 토큰을 무효화 시킨다.
+ * 로그아웃
  * 
+ * @returns
  **/
 exports.logoutUser = () => {
   throw "Not Implemented";

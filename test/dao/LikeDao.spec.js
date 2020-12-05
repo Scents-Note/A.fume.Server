@@ -13,14 +13,14 @@ describe('# likeDao Test', () => {
             await pool.queryParam_Parse("DELETE FROM like_perfume WHERE user_idx = ? AND perfume_idx = ?", [1,1]);
         });
         it('# success case', (done) => {
-            likeDao.create({userIdx: 1, perfumeIdx:1})
+            likeDao.create(1, 1)
             .then((result) => {
                 expect(result).gt(0);
                 done();
             });
         });
         it('# DuplicatedEntryError case', (done) => {
-            likeDao.create({userIdx: 1, perfumeIdx:1})
+            likeDao.create(1, 1)
             .then(() => {
                 expect(false).true();
                 done();
@@ -36,7 +36,7 @@ describe('# likeDao Test', () => {
             await pool.queryParam_Parse('INSERT IGNORE like_perfume(user_idx, perfume_idx) VALUES(?, ?)', [1,1]);
         });
         it('# success case', (done) => {
-            likeDao.read({userIdx: 1, perfumeIdx:1})
+            likeDao.read(1, 1)
             .then((result) => {
                 expect(result.userIdx).eq(1);
                 expect(result.perfumeIdx).eq(1);
@@ -45,7 +45,7 @@ describe('# likeDao Test', () => {
         });
         
         it('# fail case', (done) => {
-            likeDao.read({userIdx: -1, perfumeIdx:1})
+            likeDao.read(-1, 1)
             .then((result) => {
                 expect(false).true();
                 done();
@@ -63,10 +63,10 @@ describe('# likeDao Test', () => {
 
     describe('# delete Test', () => {
         before(async () => {
-            await pool.queryParam_Parse('INSERT IGNORE like_perfume(user_idx, perfume_idx) VALUES(?, ?)', [1,1]);
+                await pool.queryParam_Parse('INSERT IGNORE like_perfume(user_idx, perfume_idx) VALUES(?, ?)', [1,1]);
         });
         it('# success case', (done) => {
-            likeDao.delete({userIdx:1, perfumeIdx:1}).then((result) => {
+            likeDao.delete(1, 1).then((result) => {
                 expect(result).eq(1);
                 done();
             });

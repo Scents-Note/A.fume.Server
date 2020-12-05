@@ -1,6 +1,14 @@
 const jwt = require('../lib/token');
 const { InvalidTokenError, UnAuthorizedError } = require('../utils/errors/errors');
 
+/**
+ * 로그인 토큰을 읽어서 userIdx를 req.middlewareToken에 추가
+ * 
+ * @param {*} req 
+ * @param {*} authOrSecDef 
+ * @param {*} token 
+ * @param {*} callback 
+ */
 module.exports.verifyTokenMiddleware =  (req, authOrSecDef, token, callback) => {
     const currentScopes = req.swagger.operation["x-security-scopes"] || [];
     req.middlewareToken = {};

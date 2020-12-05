@@ -4,9 +4,9 @@ const brandDao = require('../dao/BrandDao.js');
 
 /**
  * 브랜드 전체 조회
- * 브랜드 리스트 반환
  *
- * returns List
+ * @param {number} brandIdx
+ * @returns {Promise<Brand[]>}
  **/
 exports.getBrandList = () => {
   return brandDao.readAll();
@@ -14,9 +14,9 @@ exports.getBrandList = () => {
 
 /**
  * 브랜드 조회
- * 브랜드 객체 반환
  *
- * returns Object
+ * @param {number} brandIdx
+ * @returns {Promise<Brand>}
  **/
 exports.getBrandByIdx = (brandIdx) => {
   return brandDao.read(brandIdx);
@@ -24,9 +24,9 @@ exports.getBrandByIdx = (brandIdx) => {
 
 /**
  * 브랜드 삽입
- * 생성된 brandIdx 반환
  *
- * returns List
+ * @param {Object} Brand
+ * @returns {Promise}
  **/
 exports.insertBrand = ({
   name,
@@ -47,7 +47,8 @@ exports.insertBrand = ({
 /**
  * 브랜드 수정
  *
- * no response value expected for this operation
+ * @param {Object} Brand
+ * @returns {Promise}
  **/
 exports.putBrand = ({
   brandIdx,
@@ -70,7 +71,8 @@ exports.putBrand = ({
 /**
  * 브랜드 삭제
  *
- * no response value expected for this operation
+ * @param {number} brandIdx
+ * @returns {Promise}
  **/
 exports.deleteBrand = (brandIdx) => {
   return brandDao.delete(brandIdx);

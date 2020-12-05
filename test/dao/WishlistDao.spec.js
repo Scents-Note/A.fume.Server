@@ -13,13 +13,13 @@ describe('# wishlistDao Test', () => {
             await pool.queryParam_Parse('DELETE FROM wishlist WHERE perfume_idx = ? AND user_idx = ?', [1, 1]);
         });
         it('# success case', (done) => {
-            wishlistDao.create({perfumeIdx: 1, userIdx: 1, priority: 4}).then((result) => {
+            wishlistDao.create(1, 1, 4).then((result) => {
                 expect(result).gt(0);
                 done();
             });
         });
         it(' # DuplicatedEntryError case', (done) => {
-            wishlistDao.create({perfumeIdx: 1, userIdx: 1, priority: 4})
+            wishlistDao.create(1, 1, 4)
             .then(() => {
                 expect(false).true();
                 done();
@@ -45,7 +45,7 @@ describe('# wishlistDao Test', () => {
         });
         describe(' # readByPK Test', () => {
             it('# success case', (done) => {
-                wishlistDao.readByPK({userIdx: 2, perfumeIdx: 3})
+                wishlistDao.readByPK(3, 2)
                 .then((result) => {
                     expect(result.userIdx).eq(2);
                     expect(result.perfumeIdx).eq(3);
@@ -54,7 +54,7 @@ describe('# wishlistDao Test', () => {
                 });
             });
             it('# Not Matched case', (done) => {
-                wishlistDao.readByPK({userIdx: 1, perfumeIdx: 3})
+                wishlistDao.readByPK(3, 1)
                 .then(() => {
                     expect(false).true();
                     done();
@@ -71,7 +71,7 @@ describe('# wishlistDao Test', () => {
             await pool.queryParam_Parse('INSERT INTO wishlist(perfume_idx, user_idx, priority) VALUES(?, ?, ?) ON DUPLICATE KEY UPDATE priority = ?', [1, 1, 5, 5]);
         });
         it('# success case', (done) => {
-            wishlistDao.update({perfumeIdx: 1, userIdx: 1, priority: 10})
+            wishlistDao.update(1, 1, 10)
             .then((result) => {
                 expect(result).eq(1);
                 done();
@@ -92,7 +92,7 @@ describe('# wishlistDao Test', () => {
         });
         describe('# delete Test', () => {
             it('# success case', (done) => {
-                wishlistDao.delete({userIdx: 1, perfumeIdx: 1})
+                wishlistDao.delete(1, 1)
                 .then((result) => {
                     expect(result).eq(1);
                     done();

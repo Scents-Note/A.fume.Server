@@ -21,7 +21,7 @@ module.exports.createPerfume = (req, res, next) => {
 module.exports.getPerfumeById = (req, res, next) => {
   const perfumeIdx = req.swagger.params['perfumeIdx'].value;
   const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
-  Perfume.getPerfumeById({perfumeIdx, userIdx: loginUserIdx})
+  Perfume.getPerfumeById(perfumeIdx, loginUserIdx)
     .then((response) => {
       utils.writeJson(res, utils.respondWithCode(200, {
         message: '향수 조회 성공',
@@ -34,9 +34,9 @@ module.exports.getPerfumeById = (req, res, next) => {
 };
 
 module.exports.searchPerfume = (req, res, next) => {
-  const filter = req.swagger.params['filter'].value;
+  const {series, brands, keywords, sortBy} = req.swagger.params['filter'].value;
   const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
-  Perfume.searchPerfume({filter, userIdx: loginUserIdx})
+  Perfume.searchPerfume({series, brands, keywords}, sortBy, loginUserIdx)
     .then((response) => {
       utils.writeJson(res, utils.respondWithCode(200, {
         message: '향수 검색 성공',
