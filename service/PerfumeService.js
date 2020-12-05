@@ -4,6 +4,8 @@ const perfumeDao = require('../dao/PerfumeDao.js');
 const noteDao = require('../dao/NoteDao.js');
 const reviewDao = require('../dao/ReviewDao.js');
 const likeDao = require('../dao/LikeDao.js');
+const searchHistoryDao = require('../dao/SearchHistoryDao.js');
+
 const {
   NotMatchedError,
   FailedToCreateError
@@ -172,6 +174,8 @@ exports.getPerfumeById = async ({
   perfume.sillage = sillage;
   perfume.longevity = longevity;
   perfume.gender = gender;
+
+  if(userIdx > 0) searchHistoryDao.create(userIdx, perfumeIdx);
   return perfume;
 }
 
