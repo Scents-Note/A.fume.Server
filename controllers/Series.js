@@ -13,7 +13,7 @@ module.exports.postSeries = function postSeries (req, res, next) {
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -27,7 +27,7 @@ module.exports.getSeriesByIdx = function getSeriesByIdx (req, res, next) {
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -41,7 +41,7 @@ module.exports.getSeriesList = function getSeriesList (req, res, next) {
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -55,7 +55,7 @@ module.exports.putSeries = function putSeries (req, res, next) {
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -68,6 +68,6 @@ module.exports.deleteSeries = function deleteSeries (req, res, next) {
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };

@@ -14,7 +14,7 @@ module.exports.postIngredient = function postIngredient (req, res, next) {
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -28,7 +28,7 @@ module.exports.getIngredientByIdx = function getIngredientByIdx (req, res, next)
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -41,7 +41,7 @@ module.exports.getIngredientList = function getIngredientList (req, res, next) {
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -56,7 +56,7 @@ module.exports.putIngredient = function putIngredient (req, res, next) {
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -70,6 +70,6 @@ module.exports.deleteIngredient = function deleteIngredient (req, res, next) {
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };

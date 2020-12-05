@@ -1,13 +1,17 @@
 const pool = require('../utils/db/pool.js');
 const {NotMatchedError, FailedToCreateError} = require('../utils/errors/errors.js');
 
+const genderMap = {
+    '남자': 1,
+    '여자': 2,
+}
 /**
  * 유저 생성
  * 
  */
 const SQL_USER_INSERT = 'INSERT user(nickname, password, gender, phone, email, birth) VALUES(?,?,?,?,?,?)';
 module.exports.create = async ({nickname, password, gender, phone, email, birth}) => {
-    gender = gender == 'male' ? 1 : 2;
+    gender = genderMap[gender] || 0;
     const result = await pool.queryParam_Parse(SQL_USER_INSERT, [nickname, password, gender, phone, email, birth]);
     if(result.insertId == 0) {
         throw new FailedToCreateError();
@@ -19,7 +23,7 @@ module.exports.create = async ({nickname, password, gender, phone, email, birth}
  * 유저 조회
  * 
  */
-const SQL_USER_SELECT_BY_EMAIL = 'SELECT user_idx AS userIdx, nickname, password, IF(gender = 1, "male", "female") AS gender, phone, email, birth FROM user WHERE email = ?';
+const SQL_USER_SELECT_BY_EMAIL = 'SELECT user_idx AS userIdx, nickname, password, IF(gender = 1, "남자", "여자") AS gender, phone, email, birth FROM user WHERE email = ?';
 module.exports.readByEmail = async (email) => {
     const result = await pool.queryParam_Parse(SQL_USER_SELECT_BY_EMAIL, [email]);
     if(result.length == 0) {
@@ -33,7 +37,7 @@ module.exports.readByEmail = async (email) => {
  * 유저 조회
  * 
  */
-const SQL_USER_SELECT_BY_IDX = 'SELECT user_idx AS userIdx, nickname, password, IF(gender = 1, "male", "female") AS gender, phone, email, birth FROM user WHERE user_idx = ?';
+const SQL_USER_SELECT_BY_IDX = 'SELECT user_idx AS userIdx, nickname, password, IF(gender = 1, "남자", "여자") AS gender, phone, email, birth FROM user WHERE user_idx = ?';
 module.exports.readByIdx = async (userIdx) => {
     const result = await pool.queryParam_Parse(SQL_USER_SELECT_BY_IDX, [userIdx]);
     if(result.length == 0) {
@@ -49,7 +53,7 @@ module.exports.readByIdx = async (userIdx) => {
  */
 const SQL_USER_UPDATE = 'UPDATE user SET nickname = ?, password = ?, gender = ?, phone = ?, email = ?, birth = ? WHERE user_idx = ?';
 module.exports.update = async ({userIdx, nickname, password, gender, phone, birth, email}) => {
-    gender = gender == 'male' ? 1 : 2;
+    gender = genderMap[gender] || 0;
     const { affectedRows } = await pool.queryParam_Parse(SQL_USER_UPDATE, [nickname, password, gender, phone, email, birth, userIdx]);
     if (affectedRows == 0) {
         throw new NotMatchedError();
