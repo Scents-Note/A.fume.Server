@@ -1,5 +1,5 @@
 const pool = require('../utils/db/pool.js');
-const { NotMatchedError, FailedToCreateError } = require('../utils/errors/errors.js');
+const { NotMatchedError, FailedToCreateError, InvalidInputError } = require('../utils/errors/errors.js');
 
 /**
  * 시향기 작성
@@ -27,6 +27,10 @@ module.exports.create = async ({perfumeIdx, userIdx, score, longevity, sillage, 
         case '매우 강함':
             longevity = 5;
             break;
+        case null:
+            break;
+        default:
+            throw new InvalidInputError();
     };
     // 잔향감
     switch(sillage){
@@ -39,6 +43,10 @@ module.exports.create = async ({perfumeIdx, userIdx, score, longevity, sillage, 
         case '무거움':
             sillage = 3;
             break;
+        case null:
+            break;
+        default:
+            throw new InvalidInputError();
     };
     // 계절감
     seasonal = seasonal.map(season => {
@@ -55,6 +63,10 @@ module.exports.create = async ({perfumeIdx, userIdx, score, longevity, sillage, 
             case "겨울":
                 season = "4";
                 break;
+            case null:
+                break;
+            default:
+                throw new InvalidInputError();
         };
         return season
     });
@@ -70,6 +82,10 @@ module.exports.create = async ({perfumeIdx, userIdx, score, longevity, sillage, 
         case '여성':
             gender = 3;
             break;
+        case null:
+            break;
+        default:
+            throw new InvalidInputError();
     };
     // 공유 여부
     access = access? 1 : 0;
@@ -159,7 +175,7 @@ module.exports.read = async (reviewIdx) => {
         it.access = it.access == 1;
         return it;
     });
-    console.log(result[0])
+    //console.log(result[0])
     return result[0];
 
 }
@@ -245,7 +261,7 @@ module.exports.readAllByUser = async (userIdx) => {
         it.access = it.access == 1;
         return it;
     })
-    console.log(result)
+    //console.log(result)
     return result;
 }
 
@@ -430,7 +446,7 @@ module.exports.update = async ({score, longevity, sillage, seasonal, gender, acc
      */
     // 지속력
     switch(longevity){
-        case '매우약함' : 
+        case '매우 약함' : 
             longevity = 1;
             break;
         case '약함':
@@ -445,6 +461,10 @@ module.exports.update = async ({score, longevity, sillage, seasonal, gender, acc
         case '매우 강함':
             longevity = 5;
             break;
+        case null:
+            break;
+        default:
+            throw new InvalidInputError();
     };
     // 잔향감
     switch(sillage){
@@ -457,6 +477,10 @@ module.exports.update = async ({score, longevity, sillage, seasonal, gender, acc
         case '무거움':
             sillage = 3;
             break;
+        case null:
+            break;
+        default:
+            throw new InvalidInputError();
     };
     // 계절감
     seasonal = seasonal.map(season => {
@@ -473,6 +497,10 @@ module.exports.update = async ({score, longevity, sillage, seasonal, gender, acc
             case "겨울":
                 season = "4";
                 break;
+            case null:
+                break;
+            default:
+                throw new InvalidInputError();
         };
         return season
     });
@@ -488,6 +516,10 @@ module.exports.update = async ({score, longevity, sillage, seasonal, gender, acc
         case '여성':
             gender = 3;
             break;
+        case null:
+            break;
+        default:
+            throw new InvalidInputError();
     };
     // 공유 여부
     access = access? 1 : 0;

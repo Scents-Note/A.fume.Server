@@ -60,6 +60,18 @@ class FailedToCreateError extends Error {
     }
 }
 
+class InvalidInputError extends Error {
+    constructor(code = 'GENERIC', status = statusCode.BAD_REQUEST, ...params) {
+        super(...params);
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, InvalidInputError);
+        }
+        this.code = code;
+        this.status = status;
+        this.message = '유효하지않은 값을 입력했습니다.';
+    }
+}
+
 class InvalidTokenError extends Error {
     constructor(code = 'GENERIC', status = statusCode.UNAUTHORIZED, ...params) {
         super(...params);
@@ -113,6 +125,7 @@ module.exports.NoReferencedRowError = NoReferencedRowError;
 module.exports.DuplicatedEntryError = DuplicatedEntryError;
 module.exports.NotMatchedError = NotMatchedError;
 module.exports.FailedToCreateError = FailedToCreateError;
+module.exports.InvalidInputError = InvalidInputError;
 module.exports.InvalidTokenError = InvalidTokenError;
 module.exports.ExpiredTokenError = ExpiredTokenError;
 module.exports.WrongPasswordError = WrongPasswordError;
