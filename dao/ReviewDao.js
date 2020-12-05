@@ -6,8 +6,74 @@ const { NotMatchedError, FailedToCreateError } = require('../utils/errors/errors
  * 
  */
 const SQL_REVIEW_INSERT = `INSERT review(perfume_idx, user_idx, score, longevity, sillage, seasonal, gender, access, content) VALUES(?,?,?,?,?,?,?,?,?)`;
-module.exports.create = async ({perfume_idx, user_idx, score, longevity, sillage, seasonal, gender, access, content}) => {
-    return pool.queryParam_Parse(SQL_REVIEW_INSERT, [perfume_idx, user_idx, score, longevity, sillage, seasonal, gender, access, content]);
+module.exports.create = async ({perfumeIdx, userIdx, score, longevity, sillage, seasonal, gender, access, content}) => {
+    /**
+     * input data 변환
+     */
+    // 지속력
+    switch(longevity){
+        case '매우약함' : 
+            longevity = 1;
+            break;
+        case '약함':
+            longevity = 2;
+            break;
+        case '보통':
+            longevity = 3;
+            break;
+        case '강함':
+            longevity = 4;
+            break;
+        case '매우 강함':
+            longevity = 5;
+            break;
+    };
+    // 잔향감
+    switch(sillage){
+        case '가벼움' : 
+            sillage = 1;
+            break;
+        case '보통':
+            sillage = 2;
+            break;
+        case '무거움':
+            sillage = 3;
+            break;
+    };
+    // 계절감
+    seasonal = seasonal.map(season => {
+        switch(season){
+            case "봄" : 
+                season = "1";
+                break;
+            case "여름":
+                season = "2";
+                break;
+            case "가을":
+                season = "3";
+                break;
+            case "겨울":
+                season = "4";
+                break;
+        };
+        return season
+    });
+    seasonal = seasonal.join('|');  //배열 요소 join해서 문자열로 DB에 저장
+    // 성별감
+    switch(gender){
+        case '남성' : 
+            gender = 1;
+            break;
+        case '중성':
+            gender = 2;
+            break;
+        case '여성':
+            gender = 3;
+            break;
+    };
+    // 공유 여부
+    access = access? 1 : 0;
+    return pool.queryParam_Parse(SQL_REVIEW_INSERT, [perfumeIdx, userIdx, score, longevity, sillage, seasonal, gender, access, content]);
 }
 
 /**
@@ -16,10 +82,15 @@ module.exports.create = async ({perfume_idx, user_idx, score, longevity, sillage
  */
 const SQL_REVIEW_SELECT_BY_IDX = `SELECT p.image_thumbnail_url as imageUrl, b.english_name as brandName, p.name, score, content, longevity, sillage, seasonal, gender, access FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx WHERE review_idx = ?`;
 module.exports.read = async (reviewIdx) => {
+    
     const result = await pool.queryParam_Parse(SQL_REVIEW_SELECT_BY_IDX, [reviewIdx]);
     if(result.length == 0) {
         throw new NotMatchedError();
     }
+    
+    /**
+     * output data(result) 변환
+     */
     result.map(it => {
         // 지속력
         switch(it.longevity){
@@ -52,25 +123,30 @@ module.exports.read = async (reviewIdx) => {
                 break;
         };
         // 계절감
-        switch(it.seasonal){
-            case 1 : 
-                it.seasonal = '봄';
-                break;
-            case 2:
-                it.seasonal = '여름';
-                break;
-            case 3:
-                it.seasonal = '가을';
-                break;
-            case 4:
-                it.seasonal = '겨울';
-                break;
-        };
+        if (it.seasonal != null) {
+            it.seasonal = it.seasonal.split('|');
+            it.seasonal = it.seasonal.map(season => {
+                switch(season){
+                    case "1": 
+                        season = "봄";
+                        break;
+                    case "2":
+                        season = "여름";
+                        break;
+                    case "3":
+                        season = "가을";
+                        break;
+                    case "4":
+                        season = "겨울";
+                        break;
+                };
+                return season;
+            });
+        }
         // 성별감
         switch(it.gender){
             case 1 : 
                 it.gender = '남성';
-                break;
                 break;
             case 2:
                 it.gender = '중성';
@@ -82,7 +158,8 @@ module.exports.read = async (reviewIdx) => {
         // 공유 여부
         it.access = it.access == 1;
         return it;
-    })
+    });
+    console.log(result[0])
     return result[0];
 
 }
@@ -94,7 +171,12 @@ module.exports.read = async (reviewIdx) => {
  */
 const SQL_REVIEW_SELECT_BY_USER = `SELECT review_idx as reviewIdx, b.english_name as brandName, p.name, rv.score, rv.content, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx WHERE user_idx = ?`;
 module.exports.readAllByUser = async (userIdx) => {
+
     let result = await pool.queryParam_Parse(SQL_REVIEW_SELECT_BY_USER, [userIdx]); 
+
+    /**
+     * output data(result) 변환
+     */
     result.map(it => {
         // 지속력
         switch(it.longevity){
@@ -127,25 +209,30 @@ module.exports.readAllByUser = async (userIdx) => {
                 break;
         };
         // 계절감
-        switch(it.seasonal){
-            case 1 : 
-                it.seasonal = '봄';
-                break;
-            case 2:
-                it.seasonal = '여름';
-                break;
-            case 3:
-                it.seasonal = '가을';
-                break;
-            case 4:
-                it.seasonal = '겨울';
-                break;
+        if (it.seasonal != null) {
+            it.seasonal = it.seasonal.split('|');
+            it.seasonal = it.seasonal.map(season => {
+                switch(season){
+                    case "1": 
+                        season = "봄";
+                        break;
+                    case "2":
+                        season = "여름";
+                        break;
+                    case "3":
+                        season = "가을";
+                        break;
+                    case "4":
+                        season = "겨울";
+                        break;
+                };
+                return season;
+            });
         };
         // 성별감
         switch(it.gender){
             case 1 : 
                 it.gender = '남성';
-                break;
                 break;
             case 2:
                 it.gender = '중성';
@@ -158,6 +245,7 @@ module.exports.readAllByUser = async (userIdx) => {
         it.access = it.access == 1;
         return it;
     })
+    console.log(result)
     return result;
 }
 
@@ -168,8 +256,13 @@ module.exports.readAllByUser = async (userIdx) => {
  */
 const SQL_REVIEW_SELECT_ALL_BY_SCORE = `SELECT review_idx, (DATE_FORMAT(now(), '%Y') - u.birth + 1) as age, u.gender, rv.content, rv.score, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, 
 u.nickname, rv.create_time as createTime FROM review rv JOIN user u ON rv.user_idx = u.user_idx WHERE perfume_idx = ? ORDER BY score desc, rv.create_time desc`;
-module.exports.readAll = async (perfumeIdx) => {
+module.exports.readAllOrderByScore = async (perfumeIdx) => {
+
     let result = await pool.queryParam_Parse(SQL_REVIEW_SELECT_ALL_BY_SCORE, [perfumeIdx]);
+    
+    /**
+     * output data(result) 변환
+     */
     result.map(it => {
         // 지속력
         switch(it.longevity){
@@ -202,25 +295,30 @@ module.exports.readAll = async (perfumeIdx) => {
                 break;
         };
         // 계절감
-        switch(it.seasonal){
-            case 1 : 
-                it.seasonal = '봄';
-                break;
-            case 2:
-                it.seasonal = '여름';
-                break;
-            case 3:
-                it.seasonal = '가을';
-                break;
-            case 4:
-                it.seasonal = '겨울';
-                break;
+        if (it.seasonal != null) {
+            it.seasonal = it.seasonal.split('|');
+            it.seasonal = it.seasonal.map(season => {
+                switch(season){
+                    case "1": 
+                        season = "봄";
+                        break;
+                    case "2":
+                        season = "여름";
+                        break;
+                    case "3":
+                        season = "가을";
+                        break;
+                    case "4":
+                        season = "겨울";
+                        break;
+                };
+                return season;
+            });
         };
         // 성별감
         switch(it.gender){
             case 1 : 
                 it.gender = '남성';
-                break;
                 break;
             case 2:
                 it.gender = '중성';
@@ -243,7 +341,12 @@ module.exports.readAll = async (perfumeIdx) => {
  */
 const SQL_REVIEW_SELECT_ALL_BY_RECENT = `SELECT review_idx, (DATE_FORMAT(now(), '%Y') - u.birth + 1) as age, u.gender, rv.content, rv.score, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, u.nickname, rv.create_time as createTime FROM review rv JOIN user u ON rv.user_idx = u.user_idx WHERE perfume_idx = ? ORDER BY rv.create_time desc`;
 module.exports.readAllOrderByRecent = async (perfumeIdx) => {
+    
     let result = await pool.queryParam_Parse(SQL_REVIEW_SELECT_ALL_BY_RECENT, [perfumeIdx]);
+    
+    /**
+     * output data(result) 변환
+     */
     result.map(it => {
         // 지속력
         switch(it.longevity){
@@ -276,25 +379,30 @@ module.exports.readAllOrderByRecent = async (perfumeIdx) => {
                 break;
         };
         // 계절감
-        switch(it.seasonal){
-            case 1 : 
-                it.seasonal = '봄';
-                break;
-            case 2:
-                it.seasonal = '여름';
-                break;
-            case 3:
-                it.seasonal = '가을';
-                break;
-            case 4:
-                it.seasonal = '겨울';
-                break;
+        if (it.seasonal != null) {
+            it.seasonal = it.seasonal.split('|');
+            it.seasonal = it.seasonal.map(season => {
+                switch(season){
+                    case "1": 
+                        season = "봄";
+                        break;
+                    case "2":
+                        season = "여름";
+                        break;
+                    case "3":
+                        season = "가을";
+                        break;
+                    case "4":
+                        season = "겨울";
+                        break;
+                };
+                return season;
+            });
         };
         // 성별감
         switch(it.gender){
             case 1 : 
                 it.gender = '남성';
-                break;
                 break;
             case 2:
                 it.gender = '중성';
@@ -317,6 +425,72 @@ module.exports.readAllOrderByRecent = async (perfumeIdx) => {
  */
 const SQL_REVIEW_UPDATE = `UPDATE review SET score = ?, longevity = ?, sillage = ?, seasonal = ?, gender = ?, access = ?, content = ?  WHERE review_idx = ?`;
 module.exports.update = async ({score, longevity, sillage, seasonal, gender, access, content, reviewIdx}) => {
+    /**
+     * input data 변환
+     */
+    // 지속력
+    switch(longevity){
+        case '매우약함' : 
+            longevity = 1;
+            break;
+        case '약함':
+            longevity = 2;
+            break;
+        case '보통':
+            longevity = 3;
+            break;
+        case '강함':
+            longevity = 4;
+            break;
+        case '매우 강함':
+            longevity = 5;
+            break;
+    };
+    // 잔향감
+    switch(sillage){
+        case '가벼움' : 
+            sillage = 1;
+            break;
+        case '보통':
+            sillage = 2;
+            break;
+        case '무거움':
+            sillage = 3;
+            break;
+    };
+    // 계절감
+    seasonal = seasonal.map(season => {
+        switch(season){
+            case "봄" : 
+                season = "1";
+                break;
+            case "여름":
+                season = "2";
+                break;
+            case "가을":
+                season = "3";
+                break;
+            case "겨울":
+                season = "4";
+                break;
+        };
+        return season
+    });
+    seasonal = seasonal.join('|');  //배열 요소 join해서 문자열로 DB에 저장
+    // 성별감
+    switch(gender){
+        case '남성' : 
+            gender = 1;
+            break;
+        case '중성':
+            gender = 2;
+            break;
+        case '여성':
+            gender = 3;
+            break;
+    };
+    // 공유 여부
+    access = access? 1 : 0;
     return pool.queryParam_Parse(SQL_REVIEW_UPDATE, [score, longevity, sillage, seasonal, gender, access, content, reviewIdx]);
 }
 
