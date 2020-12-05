@@ -474,16 +474,22 @@ paths:
         "200":
           description: "성공"
           schema:
-            type: "array"
-            items:
-              allOf:
-                - $ref: "#/definitions/IngredientInfo"
-                - type: "object"
-                  properties:
-                    ingredientIdx:
-                      type: "integer"
-                  example:
-                    ingredientIdx: 333
+            type: "object"
+            properties:
+              message:
+                type: string
+                example: "ingredient 목록 조회 성공"
+              data:
+                type: "array"
+                items:
+                  allOf:
+                    - $ref: "#/definitions/IngredientInfo"
+                    - type: "object"
+                      properties:
+                        ingredientIdx:
+                          type: "integer"
+                      example:
+                        ingredientIdx: 333
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -521,12 +527,23 @@ paths:
       responses:
         "200":
           description: "성공"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: ingredient 추가 성공
+              data:
+                type: integer
+                example: 133
+                description: ingredient idx
         "401":
           description: "API key is missing or invalid"
           headers:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Ingredient"
+      deprecated: true
   /ingredient/{ingredientIdx}:
     get:
       tags:
@@ -549,14 +566,20 @@ paths:
         "200":
           description: "성공"
           schema:
-            allOf:
-            - $ref: "#/definitions/IngredientInfo"
-            - type: "object"
-              properties:
-                ingredientIdx:
-                  type: "integer"
-              example:
-                ingredientIdx: 333
+            type: object
+            properties:
+              message:
+                type: string
+                example: ingredient 개별 조회 성공
+              date :
+                allOf:
+                - $ref: "#/definitions/IngredientInfo"
+                - type: "object"
+                  properties:
+                    ingredientIdx:
+                      type: "integer"
+                  example:
+                    ingredientIdx: 333
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -593,12 +616,23 @@ paths:
       responses:
         "200":
           description: "성공"
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+                example: ingredient 수정 성공
+              data:
+                type: integer
+                example: 133
+                description: ingredient idx
         "401":
           description: "API key is missing or invalid"
           headers:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Ingredient"
+      deprecated: true
     delete:
       tags:
       - "ingredient"
@@ -623,12 +657,23 @@ paths:
       responses:
         "200":
           description: "성공"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: ingredient 삭제 성공
+              data:
+                type: integer
+                example: 133
+                description: ingredient idx
         "401":
           description: "API key is missing or invalid"
           headers:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Ingredient"
+      deprecated: true
   /series:
     get:
       tags:
@@ -643,16 +688,22 @@ paths:
         "200":
           description: "성공"
           schema:
-            type: "array"
-            items:
-              allOf:
-                - $ref: "#/definitions/SeriesInfo"
-                - type: "object"
-                  properties:
-                    seriesIdx:
-                      type: "integer"
-                  example:
-                    seriesIdx: 222
+            type: object
+            properties:
+              message:
+                type: string
+                example: series 목록 조회 성공
+              data:
+                type: "array"
+                items:
+                  allOf:
+                    - $ref: "#/definitions/SeriesInfo"
+                    - type: "object"
+                      properties:
+                        seriesIdx:
+                          type: "integer"
+                      example:
+                        seriesIdx: 222
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -683,12 +734,23 @@ paths:
       responses:
         "200":
           description: "성공"
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+                example: series 추가 성공
+              data:
+                type: integer
+                example: 122
+                description: series idx
         "401":
           description: "API key is missing or invalid"
           headers:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Series"
+      deprecated: true
   /series/{seriesIdx}:
     get:
       tags:
@@ -711,7 +773,13 @@ paths:
         "200":
           description: "성공"
           schema:
-            $ref: "#/definitions/SeriesInfo"
+            type: object
+            properties:
+              message:
+                type: string
+                example : series 개별 조회 성공
+              data:
+                  $ref : "#/definitions/SeriesInfo"
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -748,12 +816,23 @@ paths:
       responses:
         "200":
           description: "성공"
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+                example: series 수정 성공
+              data:
+                type: integer
+                example: 122
+                description: series idx
         "401":
           description: "API key is missing or invalid"
           headers:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Series"
+      deprecated: true
     delete:
       tags:
       - "series"
@@ -778,12 +857,23 @@ paths:
       responses:
         "200":
           description: "성공"
-        "401":
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: series 삭제 성공
+              data:
+                type: integer
+                example: 122
+                description: series idx
+        "401":  
           description: "API key is missing or invalid"
           headers:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Series"
+      deprecated: true
   /perfume/{perfumeIdx}/review:
     post:
       tags:

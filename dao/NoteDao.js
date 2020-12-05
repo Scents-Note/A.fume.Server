@@ -32,7 +32,6 @@ module.exports.read = async (perfume_idx) => {
 /**
  * 노트 타입 업데이트
  */
-
 const SQL_NOTE_TYPE_UPDATE = "UPDATE note SET type = ? WHERE perfume_idx = (SELECT perfume_idx FROM perfume WHERE name = ?) AND ingredient_idx = (SELECT ingredient_idx FROM ingredient WHERE name = ?)";
 module.exports.updateType = async ({type, perfumeName, ingredientName}) => {
     const {affectedRows} = await pool.queryParam_Parse(SQL_NOTE_TYPE_UPDATE, [type, perfumeName, ingredientName]);
