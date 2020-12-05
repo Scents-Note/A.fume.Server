@@ -51,8 +51,7 @@ module.exports.putIngredient = function putIngredient (req, res, next) {
   Ingredient.putIngredient({ingredientIdx, name, englishName, description})
     .then(function (response) {
       utils.writeJson(res, utils.respondWithCode(200, {
-        message: 'ingredient put 성공',
-        data: response
+        message: 'ingredient put 성공'
       }));
     })
     .catch(function (response) {
@@ -65,8 +64,7 @@ module.exports.deleteIngredient = function deleteIngredient (req, res, next) {
   Ingredient.deleteIngredient(ingredientIdx)
     .then(function (response) {
       utils.writeJson(res, utils.respondWithCode(200, {
-        message: 'ingredient delete 성공',
-        data: response
+        message: 'ingredient delete 성공'
       }));
     })
     .catch(function (response) {

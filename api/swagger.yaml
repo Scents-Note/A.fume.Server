@@ -22,6 +22,8 @@ tags:
   description: "계열"
 - name: "ingredient"
   description: "향료"
+- name: "note"
+  description: "노트"
 - name: "brand"
   description: "브랜드"
 - name: "review"
@@ -583,10 +585,6 @@ paths:
               message: 
                 type: string
                 example: ingredient 수정 성공
-              data:
-                type: integer
-                example: 133
-                description: ingredient idx
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -624,10 +622,6 @@ paths:
               message:
                 type: string
                 example: ingredient 삭제 성공
-              data:
-                type: integer
-                example: 133
-                description: ingredient idx
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -783,10 +777,6 @@ paths:
               message: 
                 type: string
                 example: series 수정 성공
-              data:
-                type: integer
-                example: 122
-                description: series idx
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -824,16 +814,91 @@ paths:
               message:
                 type: string
                 example: series 삭제 성공
-              data:
-                type: integer
-                example: 122
-                description: series idx
         "401":  
           description: "API key is missing or invalid"
           headers:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Series"
+      deprecated: true
+  /note:
+    post:
+      tags:
+      - "note"
+      summary: "note 삽입"
+      description: "note 삽입"
+      operationId: "postNote"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Post new series info"
+        required: false
+        schema:
+          $ref: "#/definitions/NoteInfo"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+                example: note 추가 성공
+              data:
+                type: integer
+                example: 122
+                description: perfume idx
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Note"
+      deprecated: true
+    put:
+      tags:
+      - "note"
+      summary: "note 수정"
+      description: "note 수정"
+      operationId: "putNote"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Updated note info"
+        required: false
+        schema:
+          $ref: "#/definitions/NoteInfo"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+                example: note 수정 성공
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Note"
       deprecated: true
   /perfume/{perfumeIdx}/review:
     post:
@@ -1955,6 +2020,19 @@ definitions:
       name: "씨쏠트"
       englishName: "Sea Salt"
       description: "바다 소금"
+  NoteInfo:
+    type: object
+    properties:
+      ingredientName:
+        type: string
+      perfumeName:
+        type: string
+      type: 
+        type: integer
+    example:
+      ingredientName: 씨쏠트
+      perfumeName: 154 코롱
+      type: 4
   BrandInfo:
     type: "object"
     properties:
