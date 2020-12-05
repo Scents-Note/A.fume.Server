@@ -3,8 +3,6 @@
 var fs = require('fs'),
     path = require('path'),
     http = require('http');
-const ip = require('ip');
-
 var app = require('connect')();
 var swaggerTools = require('swagger-tools');
 var jsyaml = require('js-yaml');
@@ -15,9 +13,10 @@ const envMap = {
   'prd': './config/.env',
   'dev': './config/.env.dev'
 };
-
 dotenv.config({path: envMap[process.env.NODE_ENV || 'dev']});
 console.log(`ENV: ${process.env.NODE_ENV}`)
+
+const localIpAddress = process.env.SERVER_IP || 'localhost';
 
 const { verifyTokenMiddleware } = require('./middleware/auth.js');
 
@@ -30,6 +29,7 @@ var options = {
 
 // The Swagger document (require it, build it programmatically, fetch it from a URL, ...)
 var spec = fs.readFileSync(path.join(__dirname,'api/swagger.yaml'), 'utf8');
+spec = spec.replace('{SERVER_URL}', localIpAddress).replace('{SERVER_PORT}', serverPort);
 var swaggerDoc = jsyaml.safeLoad(spec);
 
 // Initialize the Swagger middleware
@@ -65,7 +65,6 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 
   // Start the server
   http.createServer(app).listen(serverPort, function () {
-    const localIpAddress = ip.address();
     console.log('Your server is listening on port %d (http://%s:%d)', serverPort, localIpAddress, serverPort);
     console.log('Swagger-ui is available on http://%s:%d/docs', localIpAddress, serverPort);
   });
