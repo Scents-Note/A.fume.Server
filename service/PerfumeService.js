@@ -13,10 +13,9 @@ const {
 
 /**
  * 향수 정보 추가
- * 향수 정보를 추가한다.
  *
- * body Perfume  (optional)
- * no response value expected for this operation
+ * @param {Object} Perfume
+ * @returns {Promise}
  **/
 exports.createPerfume = ({
   brandIdx,
@@ -44,12 +43,10 @@ exports.createPerfume = ({
 
 
 /**
- * Deletes a perfume
- * 
+ * 향수 삭제
  *
- * perfumeIdx Long Pet id to delete
- * api_key String  (optional)
- * no response value expected for this operation
+ * @param {number} perfumeIdx
+ * @returns {Promise}
  **/
 exports.deletePerfume = (perfumeIdx) => {
   return perfumeDao.delete(perfumeIdx);
@@ -98,19 +95,13 @@ function normalize(obj) {
 
 /**
  * 향수 세부 정보 조회
- * 향수 세부 정보를 반환한다.
  *
- * perfumeIdx Long ID of perfume to return
- * returns PerfumeDetail
+ * @param {number} perfumeIdx
+ * @param {number} userIdx
+ * @returns {Promise<Perfume>}
  **/
-exports.getPerfumeById = async ({
-  userIdx,
-  perfumeIdx
-}) => {
-  const perfume = await perfumeDao.readByPerfumeIdx({
-    userIdx,
-    perfumeIdx
-  });
+exports.getPerfumeById = async (perfumeIdx, userIdx) => {
+  const perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx, userIdx);
 
   let notes = await noteDao.read(perfumeIdx);
   notes = notes.map(it => {
@@ -140,8 +131,7 @@ exports.getPerfumeById = async ({
   perfume.ingredients = ingredients;
 
   let reviews = await reviewDao.readAll(perfumeIdx);
-  let sum = 0,
-    cnt = 0;
+  let sum = 0, cnt = 0;
   let seasonal = makeZeroMap(seasonalArr);
   let sillage = makeZeroMap(sillageArr);
   let longevity = makeZeroMap(longevityArr);
@@ -175,44 +165,28 @@ exports.getPerfumeById = async ({
   perfume.longevity = longevity;
   perfume.gender = gender;
 
-  if(userIdx > 0) searchHistoryDao.create(userIdx, perfumeIdx);
+  if (userIdx > 0) searchHistoryDao.create(userIdx, perfumeIdx);
   return perfume;
 }
 
 
 /**
  * 향수 검색
- * 검색 조건에 해당하는 향수를 반환한다.
  *
- * filter Filter 검색 필터 (optional)
- * returns List
+ * @param {number} userIdx
+ * @param {Object} Filter
+ * @returns {Promise<Perfume[]>}
  **/
-exports.searchPerfume = ({
-  userIdx,
-  filter
-}) => {
-  const {
-    series,
-    brands,
-    keywords,
-    sortBy
-  } = filter;
-  return perfumeDao.search({
-    userIdx,
-    series,
-    brands,
-    keywords,
-    sortBy
-  });
+exports.searchPerfume = (filter, sortBy, userIdx) => {
+  return perfumeDao.search(filter, sortBy, userIdx);
 }
 
 
 /**
  * 향수 정보 업데이트
- * 
  *
- * body Perfume  (optional)
- * no response value expected for this operation
+ * @param {Object} Perfume
+ * @returns {Promise}
  **/
 exports.updatePerfume = ({
   perfumeIdx,
@@ -243,33 +217,22 @@ exports.updatePerfume = ({
 /**
  * 향수 좋아요
  * 
- *
- * no response value expected for this operation
+ * @param {number} perfumeIdx
+ * @param {number} userIdx
+ * @returns {Promise}
  **/
-exports.likePerfume = ({
-  perfumeIdx,
-  userIdx
-}) => {
+exports.likePerfume = (perfumeIdx, userIdx) => {
   return new Promise((resolve, reject) => {
     let isExist = false;
-    likeDao.read({
-      perfumeIdx,
-      userIdx
-    })
+    likeDao.read(perfumeIdx, userIdx)
     .then(res => {
       isExist = true;
-      return likeDao.delete({
-        perfumeIdx,
-        userIdx
-      });
+      return likeDao.delete(perfumeIdx,  userIdx);
     })
     .catch(err => {
       isExist = false;
       if (err instanceof NotMatchedError) {  
-        return likeDao.create({
-          perfumeIdx,
-          userIdx
-        });
+        return likeDao.create(perfumeIdx,  userIdx);
       }
       reject(new FailedToCreateError());
     }).then(() => {

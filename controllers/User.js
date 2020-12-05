@@ -1,10 +1,10 @@
 'use strict';
 
-var utils = require('../utils/writer.js');
-var User = require('../service/UserService');
+const utils = require('../utils/writer.js');
+const User = require('../service/UserService');
 
 module.exports.createUser = (req, res, next) => {
-  var body = req.swagger.params['body'].value;
+  const body = req.swagger.params['body'].value;
   User.createUser(body)
     .then((response) => {
       utils.writeJson(res, utils.respondWithCode(200, {
