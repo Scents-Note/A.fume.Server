@@ -89,14 +89,19 @@ module.exports.create = async ({perfumeIdx, userIdx, score, longevity, sillage, 
     };
     // 공유 여부
     access = access? 1 : 0;
-    return pool.queryParam_Parse(SQL_REVIEW_INSERT, [perfumeIdx, userIdx, score, longevity, sillage, seasonal, gender, access, content]);
+    
+    const result = await pool.queryParam_Parse(SQL_REVIEW_INSERT, [perfumeIdx, userIdx, score, longevity, sillage, seasonal, gender, access, content]);
+    if (result.affectedRows == 0) {
+        throw new FailedToCreateError();
+    }
+    return result;
 }
 
 /**
  * 시향기 조회
  * 
  */
-const SQL_REVIEW_SELECT_BY_IDX = `SELECT p.image_thumbnail_url as imageUrl, b.english_name as brandName, p.name, score, content, longevity, sillage, seasonal, gender, access FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx WHERE review_idx = ?`;
+const SQL_REVIEW_SELECT_BY_IDX = `SELECT p.image_thumbnail_url as imageUrl, b.english_name as brandName, p.name, rv.score, rv.content, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, u.user_idx, u.nickname FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx JOIN user u ON rv.user_idx = u.user_idx WHERE review_idx = ?`;
 module.exports.read = async (reviewIdx) => {
     
     const result = await pool.queryParam_Parse(SQL_REVIEW_SELECT_BY_IDX, [reviewIdx]);
@@ -177,7 +182,6 @@ module.exports.read = async (reviewIdx) => {
     });
     //console.log(result[0])
     return result[0];
-
 }
 
 /**
@@ -523,7 +527,12 @@ module.exports.update = async ({score, longevity, sillage, seasonal, gender, acc
     };
     // 공유 여부
     access = access? 1 : 0;
-    return pool.queryParam_Parse(SQL_REVIEW_UPDATE, [score, longevity, sillage, seasonal, gender, access, content, reviewIdx]);
+    //return pool.queryParam_Parse(SQL_REVIEW_UPDATE, [score, longevity, sillage, seasonal, gender, access, content, reviewIdx]);
+    const result = await pool.queryParam_Parse(SQL_REVIEW_UPDATE, [score, longevity, sillage, seasonal, gender, access, content, reviewIdx]);
+    if (result.affectedRows == 0) {
+        throw new NotMatchedError();
+    }
+    return result;
 }
 
 /**
@@ -531,5 +540,9 @@ module.exports.update = async ({score, longevity, sillage, seasonal, gender, acc
  */
 const SQL_REVIEW_DELETE = `DELETE FROM review WHERE review_idx = ?`;
 module.exports.delete = async (reviewIdx) => {
-    return pool.queryParam_Parse(SQL_REVIEW_DELETE, [reviewIdx]);   
+    const { affectedRows } = pool.queryParam_Parse(SQL_REVIEW_DELETE, [reviewIdx]);   
+    if (affectedRows == 0) {
+        throw new NotMatchedError();
+    }
+    return affectedRows;
 }

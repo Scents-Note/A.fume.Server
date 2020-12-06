@@ -879,7 +879,7 @@ paths:
       - "review"
       summary: "전체 시향노트 반환(별점순)"
       description: "특정 향수에 달린 전체 시향노트 별점순으로 가져오기"
-      operationId: "getReviewOfPerfume"
+      operationId: "getReviewOfPerfumeByScore"
       consumes:
       - "application/json"
       produces:
