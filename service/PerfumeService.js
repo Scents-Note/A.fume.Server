@@ -242,3 +242,13 @@ exports.likePerfume = (perfumeIdx, userIdx) => {
     });
   });
 }
+
+/**
+ * 유저의 최근 검색한 향수 조회
+ *
+ * @param {number} userIdx
+ * @returns {Promise<Perfume[]>}
+ **/
+exports.recentSearch = (userIdx) => {
+  return perfumeDao.recentSearchPerfumeList(userIdx);
+};

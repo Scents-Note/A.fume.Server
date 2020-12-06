@@ -131,6 +131,40 @@ paths:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Perfume"
+  /perfume/recentSearch:
+    get:
+      tags:
+      - perfume
+      summary: 최근 검색한 향수 조회
+      description: 최근에 검색한 향수를 조회한다.
+      operationId: recentSearch
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      produces:
+      - application/json
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 검색 성공
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/Perfume"
+        400:
+          description: Invalid tag value
+        401:
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+      x-swagger-router-controller: Perfume
   /perfume/{perfumeIdx}:
     get:
       tags:
