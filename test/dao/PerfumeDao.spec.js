@@ -181,6 +181,13 @@ describe('# perfumeDao Test', () => {
                 done();
             });
         });
+
+        it('# recent search perfume List', (done) => {
+            perfumeDao.recentSearchPerfumeList(1).then((result) => {
+                expect(result.length).gte(3);
+                done();
+            });
+        })
     });
 
     describe('# update Test', () => {

@@ -23,7 +23,7 @@ const SQL_PERFUME_SELECT_BY_PERFUME_IDX = 'SELECT p.perfume_idx as perfumeIdx, p
 'INNER JOIN brand b ON p.brand_idx = b.brand_idx ' +
 'INNER JOIN series s ON p.main_series_idx = s.series_idx ' +
 'WHERE p.perfume_idx = ?';
-const SQL_WISHLIST_PERFUME = 'SELECT ' +
+const SQL_WISHLIST_PERFUME_SELECT = 'SELECT ' +
 'p.perfume_idx as perfumeIdx, p.main_series_idx as mainSeriesIdx, p.brand_idx as brandIdx, p.name, p.english_name as englishName, p.image_thumbnail_url as imageUrl, p.release_date as releaseDate, ' +
 'b.name as brandName, ' +
 's.name as mainSeriesName, ' +
@@ -35,6 +35,19 @@ const SQL_WISHLIST_PERFUME = 'SELECT ' +
 'INNER JOIN series s ON p.main_series_idx = s.series_idx ' +
 'WHERE w.user_idx = ? ' +
 'ORDER BY w.priority DESC';
+const SQL_RECENT_SEARCH_PERFUME_SELECT = 'SELECT ' +
+'p.perfume_idx as perfumeIdx, p.main_series_idx as mainSeriesIdx, p.brand_idx as brandIdx, p.name, p.english_name as englishName, p.image_thumbnail_url as imageUrl, p.release_date as releaseDate, ' +
+'b.name as brandName, ' +
+'s.name as mainSeriesName, ' +
+'(SELECT COUNT(*) FROM like_perfume lp WHERE lp.perfume_idx = p.perfume_idx) as likeCnt, ' +
+'(SELECT COUNT(*) FROM like_perfume lp WHERE lp.perfume_idx = p.perfume_idx AND lp.user_idx = ?) as isLiked ' +
+'FROM search_history sh ' +
+'INNER JOIN perfume p ON sh.perfume_idx = p.perfume_idx ' +
+'INNER JOIN brand b ON p.brand_idx = b.brand_idx ' +
+'INNER JOIN series s ON p.main_series_idx = s.series_idx ' +
+'WHERE sh.user_idx = ? ' +
+'ORDER BY sh.create_time DESC ' +
+'LIMIT 10 ';
 const SQL_PERFUME_UPDATE = 'UPDATE perfume SET brand_idx = ?, main_series_idx = ?, name = ?, english_name = ?, image_thumbnail_url = ?, release_date = ? WHERE perfume_idx = ?';
 const SQL_PERFUME_DETAIL_UPDATE = 'UPDATE perfume_detail SET story = ?, abundance_rate = ?, volume_and_price = ?, image_url = ? WHERE perfume_idx = ?';
 const SQL_PERFUME_DELETE = 'DELETE FROM perfume WHERE perfume_idx = ?';
@@ -133,7 +146,22 @@ module.exports.readByPerfumeIdx = async (perfumeIdx, userIdx = -1) => {
  * @returns {Promise<Perfume[]>} perfumeList
  */
 module.exports.readAllOfWishlist = async (userIdx) => {
-    const result = await pool.queryParam_Parse(SQL_WISHLIST_PERFUME, [userIdx, userIdx]);
+    const result = await pool.queryParam_Parse(SQL_WISHLIST_PERFUME_SELECT, [userIdx, userIdx]);
+    result.map(it => {
+        it.isLiked = it.isLiked == 1;
+        return it;
+    })
+    return result;
+};
+
+/**
+ * 최근에 검색한 향수 조회
+ * 
+ * @param {number} userIdx
+ * @returns {Promise<Perfume[]>}
+ */
+module.exports.recentSearchPerfumeList = async (userIdx) => {
+    const result = await pool.queryParam_Parse(SQL_RECENT_SEARCH_PERFUME_SELECT, [userIdx, userIdx]);
     result.map(it => {
         it.isLiked = it.isLiked == 1;
         return it;

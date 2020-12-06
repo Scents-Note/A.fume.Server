@@ -64,10 +64,24 @@ module.exports.updatePerfume = (req, res, next) => {
 module.exports.likePerfume = (req, res, next) => {
   const perfumeIdx = req.swagger.params['perfumeIdx'].value;
   const loginUserIdx = req.middlewareToken.loginUserIdx;
-  Perfume.likePerfume({perfumeIdx, userIdx: loginUserIdx})
+  Perfume.likePerfume(perfumeIdx, loginUserIdx)
     .then((result) => {
       utils.writeJson(res, utils.respondWithCode(200, {
         message: '향수 좋아요',
+        data: result
+      }));
+    })
+    .catch((response) => {
+      utils.writeJson(res, {message: response.message});
+    });
+};
+
+module.exports.recentSearch = (req, res, next) => {
+  const loginUserIdx = req.middlewareToken.loginUserIdx;
+  Perfume.recentSearch(loginUserIdx)
+    .then((result) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '최근 검색한 향수 조회',
         data: result
       }));
     })
