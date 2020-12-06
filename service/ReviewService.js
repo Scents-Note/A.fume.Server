@@ -1,89 +1,77 @@
 'use strict';
 
-
-/**
- * 시향기 정보 가져오기
- * review 정보를 반환
- *
- * reviewIdx Long 리뷰 ID
- * returns ReviewInfo
- **/
-exports.getReview = function(reviewIdx) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = {
-  "reviewIdx" : 0,
-  "perfumeIdx" : 0,
-  "userIdx" : 0,
-  "score" : 2.4,
-  "persistance" : "강함",
-  "reverberance" : "보통",
-  "seasonal" : [ "겨울", "가을" ],
-  "generage" : "중성",
-  "access" : true,
-  "content" : "향수 잠시 남기기"
-};
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
-}
+const reviewDao = require('../dao/ReviewDao.js');
 
 
 /**
- * 향수의 시향기 정보 가져오기
- * review 반환
+ * 시향노트 삭제
+ * 댓글 삭제하기
  *
- * perfumeIdx Long 향수 ID
- * returns List
- **/
-exports.getReviewOfPerfume = function(perfumeIdx) {
-  return new Promise(function(resolve, reject) {
-    var examples = {};
-    examples['application/json'] = [ {
-  "reviewIdx" : 0,
-  "perfumeIdx" : 0,
-  "userIdx" : 0,
-  "score" : 2.4,
-  "persistance" : "강함",
-  "reverberance" : "보통",
-  "seasonal" : [ "겨울", "가을" ],
-  "generage" : "중성",
-  "access" : true,
-  "content" : "향수 잠시 남기기"
-}, {
-  "reviewIdx" : 0,
-  "perfumeIdx" : 0,
-  "userIdx" : 0,
-  "score" : 2.4,
-  "persistance" : "강함",
-  "reverberance" : "보통",
-  "seasonal" : [ "겨울", "가을" ],
-  "generage" : "중성",
-  "access" : true,
-  "content" : "향수 잠시 남기기"
-} ];
-    if (Object.keys(examples).length > 0) {
-      resolve(examples[Object.keys(examples)[0]]);
-    } else {
-      resolve();
-    }
-  });
-}
-
-/**
- * 향수의 시향기 정보 업데이트
- * review 업데이트
- *
- * reviewIdx Long 시향기 ID
- * body ReviewInfo review 정보
+ * reviewIdx Long 시향노트 Idx
  * no response value expected for this operation
  **/
-exports.updateReview = function(reviewIdx,body) {
-  return new Promise(function(resolve, reject) {
-    resolve();
-  });
-}
+exports.deleteReview = (reviewIdx) => {
+  return reviewDao.delete(reviewIdx);
+};
 
+
+/**
+ * 시향노트 반환
+ * 특정 시향노트 가져오기
+ *
+ * reviewIdx Long 시향노트 Idx
+ * returns ReviewInfo
+ **/
+exports.getReviewByIdx = (reviewIdx) => {
+  return reviewDao.read(reviewIdx);
+};
+
+
+/**
+ * 전체 시향노트 반환(별점순)
+ * 특정 향수에 달린 전체 시향노트 별점순으로 가져오기
+ *
+ * perfumeIdx Long 향수 Idx
+ * returns List
+ **/
+exports.getReviewOfPerfumeByScore = (perfumeIdx) => {
+  return reviewDao.readAllOrderByScore(perfumeIdx);
+};
+
+
+/**
+ * 전체 시향노트 반환(최신순)
+ * 특정 향수에 달린 전체 시향노트 최신순으로 가져오기
+ *
+ * perfumeIdx Long 향수 Idx
+ * returns List
+ **/
+exports.getReviewOfPerfumeByRecent = (perfumeIdx) => {
+  return reviewDao.readAllOrderByRecent(perfumeIdx);
+};
+
+
+/**
+ * 시향노트 추가\"
+ * 특정 향수에 시향노트 추가하기
+ *
+ * perfumeIdx Long 향수 Idx
+ * body ReviewInfo 시향노트 정보
+ * no response value expected for this operation
+ **/
+exports.postReview = function({perfumeIdx, userIdx, score, longevity, sillage, seasonal, gender, access, content}) {
+  return reviewDao.create({perfumeIdx, userIdx, score, longevity, sillage, seasonal, gender, access, content});
+};
+
+
+/**
+ * 시향노트 수정
+ * 시향노트 수정하기
+ *
+ * reviewIdx Long 시향노트 Idx
+ * body ReviewInfo  (optional)
+ * no response value expected for this operation
+ **/
+exports.updateReview = ({reviewIdx, score, longevity, sillage, seasonal, gender, access, content}) => {
+  return reviewDao.update({reviewIdx, score, longevity, sillage, seasonal, gender, access, content});
+};
