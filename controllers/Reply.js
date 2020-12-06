@@ -10,7 +10,7 @@ module.exports.deleteReply = function deleteReply (req, res, next) {
       utils.writeJson(res, response);
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -21,7 +21,7 @@ module.exports.getReplyByIdx = function getReplyByIdx (req, res, next) {
       utils.writeJson(res, response);
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -32,7 +32,7 @@ module.exports.getReplyOfReview = function getReplyOfReview (req, res, next) {
       utils.writeJson(res, response);
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -44,7 +44,7 @@ module.exports.postReply = function postReply (req, res, next) {
       utils.writeJson(res, response);
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -56,6 +56,6 @@ module.exports.updateReply = function updateReply (req, res, next) {
       utils.writeJson(res, response);
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };

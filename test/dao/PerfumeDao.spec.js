@@ -32,7 +32,7 @@ describe('# perfumeDao Test', () => {
             };
             perfumeDao.create(perfumeObj)
                 .then((result) => {
-                    return perfumeDao.readByPerfumeIdx({perfumeIdx: result});
+                    return perfumeDao.readByPerfumeIdx(result);
                 })
                 .then((result) => {
                     delete perfumeObj.imageThumbnailUrl
@@ -67,7 +67,7 @@ describe('# perfumeDao Test', () => {
     describe('# read Test', () => {
         describe('# read by perfume_idx Test', () => {
             it('# success case', (done) => {
-                perfumeDao.readByPerfumeIdx({perfumeIdx: 1}).then((result) => {
+                perfumeDao.readByPerfumeIdx(1).then((result) => {
                     expect(result.name).eq('154 코롱');
                     expect(result.brandName).eq('조 말론 런던');
                     expect(result.seriesName).eq('꿀');
@@ -84,9 +84,8 @@ describe('# perfumeDao Test', () => {
                 const filter = {
                     series: ['플로럴', '우디', '시트러스'],
                     brands: ['조 말론 런던', '르 라보', '딥디크 파리스'],
-                    sortBy: 'recent'
                 };
-                perfumeDao.search(filter).then((result) => {
+                perfumeDao.search(filter, 'recent').then((result) => {
                     expect(result.length).gte(3);
                     result.forEach(it => {
                         filter.series && filter.series.length > 0 && expect(filter.series.indexOf(it.mainSeriesName)).to.not.eq(-1);
@@ -131,9 +130,8 @@ describe('# perfumeDao Test', () => {
             it('# success case (series & order by like) ', (done) => {
                 const filter = {
                     series: ['우디'],
-                    sortBy: 'like'
                 };
-                perfumeDao.search(filter).then((result) => {
+                perfumeDao.search(filter, 'like').then((result) => {
                     expect(result.length).gte(3);
                     result.forEach(it => {
                         filter.series && filter.series.length > 0 && expect(filter.series.indexOf(it.mainSeriesName)).to.not.eq(-1);
@@ -143,10 +141,7 @@ describe('# perfumeDao Test', () => {
             });
 
             it('# success case (order by recent)', (done) => {
-                const filter = {
-                    sortBy: 'recent'
-                };
-                perfumeDao.search(filter).then((result) => {
+                perfumeDao.search({}, 'recent').then((result) => {
                     expect(result.length).gte(3);
                     const str1 = result.map(it => it.releaseDate).join(',');
                     const str2 = result.map(it => it.releaseDate).sort().reverse().join(',');
@@ -156,10 +151,7 @@ describe('# perfumeDao Test', () => {
             });
 
             it('# success case (order by like) ', (done) => {
-                const filter = {
-                    sortBy: 'like'
-                };
-                perfumeDao.search(filter).then((result) => {
+                perfumeDao.search({}, 'like').then((result) => {
                     expect(result.length).gte(3);
                     const str1 = result.map(it => it.like).join(',');
                     const str2 = result.map(it => it.like).sort().reverse().join(',');
@@ -169,10 +161,7 @@ describe('# perfumeDao Test', () => {
             });
 
             it('# success case (order by random) ', (done) => {
-                const filter = {
-                    sortBy: 'random'
-                };
-                Promise.all([perfumeDao.search(filter), perfumeDao.search(filter), perfumeDao.search(filter)])
+                Promise.all([perfumeDao.search({}, 'random'), perfumeDao.search({}, 'random'), perfumeDao.search({}, 'random')])
                     .then(([result1, result2, result3]) => {
                         expect(result1.length).gte(3);
                         expect(result2.length).gte(3);
@@ -192,6 +181,13 @@ describe('# perfumeDao Test', () => {
                 done();
             });
         });
+
+        it('# recent search perfume List', (done) => {
+            perfumeDao.recentSearchPerfumeList(1).then((result) => {
+                expect(result.length).gte(3);
+                done();
+            });
+        })
     });
 
     describe('# update Test', () => {
@@ -219,7 +215,7 @@ describe('# perfumeDao Test', () => {
             perfumeDao.update(perfumeObj)
                 .then((result) => {
                     expect(result.filter(it => it == 1)).to.lengthOf(2);
-                    return perfumeDao.readByPerfumeIdx({perfumeIdx});
+                    return perfumeDao.readByPerfumeIdx(perfumeIdx);
                 }).then((result) => {
                     delete perfumeObj.imageThumbnailUrl
                     perfumeObj.volumeAndPrice = [];

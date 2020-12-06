@@ -26,7 +26,7 @@ module.exports.getBrandByIdx = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -51,7 +51,7 @@ module.exports.postBrand = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -78,7 +78,7 @@ module.exports.putBrand = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -91,6 +91,6 @@ module.exports.deleteBrand = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };

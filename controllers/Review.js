@@ -28,7 +28,7 @@ module.exports.getReviewByIdx = function getReviewByIdx (req, res, next) {
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -56,7 +56,7 @@ module.exports.getReviewOfPerfumeByRecent = function getReviewOfPerfumeByRecent 
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -71,7 +71,7 @@ module.exports.updateReview = function updateReview (req, res, next) {
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 

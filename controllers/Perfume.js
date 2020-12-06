@@ -21,7 +21,7 @@ module.exports.createPerfume = (req, res, next) => {
 module.exports.getPerfumeById = (req, res, next) => {
   const perfumeIdx = req.swagger.params['perfumeIdx'].value;
   const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
-  Perfume.getPerfumeById({perfumeIdx, userIdx: loginUserIdx})
+  Perfume.getPerfumeById(perfumeIdx, loginUserIdx)
     .then((response) => {
       utils.writeJson(res, utils.respondWithCode(200, {
         message: '향수 조회 성공',
@@ -34,9 +34,9 @@ module.exports.getPerfumeById = (req, res, next) => {
 };
 
 module.exports.searchPerfume = (req, res, next) => {
-  const filter = req.swagger.params['filter'].value;
+  const {series, brands, keywords, sortBy} = req.swagger.params['filter'].value;
   const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
-  Perfume.searchPerfume({filter, userIdx: loginUserIdx})
+  Perfume.searchPerfume({series, brands, keywords}, sortBy, loginUserIdx)
     .then((response) => {
       utils.writeJson(res, utils.respondWithCode(200, {
         message: '향수 검색 성공',
@@ -44,7 +44,7 @@ module.exports.searchPerfume = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -57,7 +57,36 @@ module.exports.updatePerfume = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
+    });
+};
+
+module.exports.likePerfume = (req, res, next) => {
+  const perfumeIdx = req.swagger.params['perfumeIdx'].value;
+  const loginUserIdx = req.middlewareToken.loginUserIdx;
+  Perfume.likePerfume(perfumeIdx, loginUserIdx)
+    .then((result) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '향수 좋아요',
+        data: result
+      }));
+    })
+    .catch((response) => {
+      utils.writeJson(res, {message: response.message});
+    });
+};
+
+module.exports.recentSearch = (req, res, next) => {
+  const loginUserIdx = req.middlewareToken.loginUserIdx;
+  Perfume.recentSearch(loginUserIdx)
+    .then((result) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '최근 검색한 향수 조회',
+        data: result
+      }));
+    })
+    .catch((response) => {
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -70,6 +99,6 @@ module.exports.deletePerfume = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };

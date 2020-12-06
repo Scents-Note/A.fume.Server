@@ -22,6 +22,8 @@ tags:
   description: "계열"
 - name: "ingredient"
   description: "향료"
+- name: "note"
+  description: "노트"
 - name: "brand"
   description: "브랜드"
 - name: "review"
@@ -129,6 +131,40 @@ paths:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Perfume"
+  /perfume/recentSearch:
+    get:
+      tags:
+      - perfume
+      summary: 최근 검색한 향수 조회
+      description: 최근에 검색한 향수를 조회한다.
+      operationId: recentSearch
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      produces:
+      - application/json
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 검색 성공
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/Perfume"
+        400:
+          description: Invalid tag value
+        401:
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+      x-swagger-router-controller: Perfume
   /perfume/{perfumeIdx}:
     get:
       tags:
@@ -236,6 +272,45 @@ paths:
         "404":
           description: "Perfume not found"
       deprecated: true
+      x-swagger-router-controller: "Perfume"
+  /perfume/{perfumeIdx}/like:
+    put:
+      tags:
+      - "perfume"
+      summary: "향수 좋아요"
+      description: "향수 좋아요 상태를 반환한다."
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      operationId: "likePerfume"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "perfumeIdx"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 세부 조회 성공
+              data:
+                type: boolean
+                example: true
+                description: 요청 이후 좋아요 상태
+        "401":
+          description: "Not authenticated"
+        "403":
+          description: "Access token does not have the required scope"
+        "404":
+          description: "Perfume not found"
       x-swagger-router-controller: "Perfume"
   /brand:
     get:
@@ -583,10 +658,6 @@ paths:
               message: 
                 type: string
                 example: ingredient 수정 성공
-              data:
-                type: integer
-                example: 133
-                description: ingredient idx
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -624,10 +695,6 @@ paths:
               message:
                 type: string
                 example: ingredient 삭제 성공
-              data:
-                type: integer
-                example: 133
-                description: ingredient idx
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -783,10 +850,6 @@ paths:
               message: 
                 type: string
                 example: series 수정 성공
-              data:
-                type: integer
-                example: 122
-                description: series idx
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -824,16 +887,91 @@ paths:
               message:
                 type: string
                 example: series 삭제 성공
-              data:
-                type: integer
-                example: 122
-                description: series idx
         "401":  
           description: "API key is missing or invalid"
           headers:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Series"
+      deprecated: true
+  /note:
+    post:
+      tags:
+      - "note"
+      summary: "note 삽입"
+      description: "note 삽입"
+      operationId: "postNote"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Post new series info"
+        required: false
+        schema:
+          $ref: "#/definitions/NoteInfo"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+                example: note 추가 성공
+              data:
+                type: integer
+                example: 122
+                description: perfume idx
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Note"
+      deprecated: true
+    put:
+      tags:
+      - "note"
+      summary: "note 수정"
+      description: "note 수정"
+      operationId: "putNote"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Updated note info"
+        required: false
+        schema:
+          $ref: "#/definitions/NoteInfo"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+                example: note 수정 성공
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+      x-swagger-router-controller: "Note"
       deprecated: true
   /perfume/{perfumeIdx}/review:
     post:
@@ -1702,9 +1840,9 @@ definitions:
     example:
       email: "hee.youn@samsung.com"
       nickname: "쿼카맨"
-      gender: "M"
+      gender: "남자"
       phone: "010-2081-3818"
-      birth: "1995-09-29"
+      birth: "1995"
   KeywordInfo:
     type: "object"
     properties:
@@ -1955,6 +2093,19 @@ definitions:
       name: "씨쏠트"
       englishName: "Sea Salt"
       description: "바다 소금"
+  NoteInfo:
+    type: object
+    properties:
+      ingredientName:
+        type: string
+      perfumeName:
+        type: string
+      type: 
+        type: integer
+    example:
+      ingredientName: 씨쏠트
+      perfumeName: 154 코롱
+      type: 4
   BrandInfo:
     type: "object"
     properties:
