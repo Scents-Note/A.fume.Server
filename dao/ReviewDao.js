@@ -540,9 +540,9 @@ module.exports.update = async ({score, longevity, sillage, seasonal, gender, acc
  */
 const SQL_REVIEW_DELETE = `DELETE FROM review WHERE review_idx = ?`;
 module.exports.delete = async (reviewIdx) => {
-    const { affectedRows } = pool.queryParam_Parse(SQL_REVIEW_DELETE, [reviewIdx]);   
-    if (affectedRows == 0) {
+    const result = pool.queryParam_Parse(SQL_REVIEW_DELETE, [reviewIdx]);   
+    if (result.affectedRows == 0) {
         throw new NotMatchedError();
     }
-    return affectedRows;
+    return result;
 }
