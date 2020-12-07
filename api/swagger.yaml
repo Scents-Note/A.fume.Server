@@ -1004,6 +1004,12 @@ paths:
       responses:
         "200":
           description: "성공"
+          schema:
+            type: "object"
+            properties:
+              message: 
+                type: "string"
+                example: "시향노트 추가 성공"
         "401":
           description: "API key is missing or invalid"
           headers:
@@ -1012,6 +1018,7 @@ paths:
         "405":
           description: "Invalid input"
       x-swagger-router-controller: "Review"
+  /perfume/{perfumeIdx}/review/score:
     get:
       tags:
       - "review"
@@ -1031,19 +1038,38 @@ paths:
         format: "int64"
       responses:
         "200":
-          description: "successful operation"
+          description: "성공"
           schema:
-            type: "array"
-            items:
-              allOf:
-              - $ref: "#/definitions/ReviewInfo"
-              - type: "object"
-                properties:
-                  reviewIdx:
-                    type: "integer"
-                    format: "int64"
-                example:
-                  reviewIdx: 1
+            type: "object"
+            properties:
+              message: 
+                type: "string"
+                example: "특정 향수의 시향노트 목록 별점순 조회 성공"
+              data:
+                type: "array"
+                items:
+                  allOf:
+                  - $ref: "#/definitions/ReviewInfo"
+                  - type: "object"
+                    properties: 
+                      reviewIdx:
+                        type: "integer"
+                        format: "int64"
+                      age:
+                        type: "integer"
+                        format: "int64"
+                      userGender: 
+                        type: "string"
+                      nickname:
+                        type: "string"
+                      createTime:
+                        type: "string"
+                    example:
+                      reviewIdx: 339
+                      userGender: "여자"
+                      age: 25
+                      nickname: "담담"
+                      createTime: "2020-12-07 00:11:41"     
         "400":
           description: "Invalid username/password supplied"
       x-swagger-router-controller: "Review"
@@ -1067,19 +1093,38 @@ paths:
         format: "int64"
       responses:
         "200":
-          description: "successful operation"
+          description: "성공"
           schema:
-            type: "array"
-            items:
-              allOf:
-              - $ref: "#/definitions/ReviewInfo"
-              - type: "object"
-                properties:
-                  reviewIdx:
-                    type: "integer"
-                    format: "int64"
-                example:
-                  reviewIdx: 1
+            type: "object"
+            properties:
+              message: 
+                type: "string"
+                example: "특정 향수의 시향노트 목록 최신순 조회 성공"
+              data:
+                type: "array"
+                items:
+                  allOf:
+                  - $ref: "#/definitions/ReviewInfo"
+                  - type: "object"
+                    properties: 
+                      reviewIdx:
+                        type: "integer"
+                        format: "int64"
+                      age:
+                        type: "integer"
+                        format: "int64"
+                      userGender: 
+                        type: "string"
+                      nickname:
+                        type: "string"
+                      createTime:
+                        type: "string"
+                    example:
+                      reviewIdx: 339
+                      age: 26
+                      userGender: "여자"
+                      nickname: "홍길동"
+                      createTime: "2020-12-07 00:11:41"     
         "400":
           description: "Invalid username/password supplied"
       x-swagger-router-controller: "Review"
@@ -1105,7 +1150,36 @@ paths:
         "200":
           description: "성공"
           schema:
-            $ref: "#/definitions/ReviewInfo"
+            type: "object"
+            properties:
+              message: 
+                type: "string"
+                example: "시향노트 조회 성공"
+              data:
+                allOf:
+                - $ref: "#/definitions/ReviewInfo"
+                - type: "object"
+                  properties: 
+                    imageUrl:
+                      type: "string"
+                    brandName: 
+                      type: "string"
+                    name:
+                      type: "string"
+                    userIdx:
+                      type: "integer"
+                      format: "int64"
+                    nickname:
+                      type: "string"
+                    createTime:
+                      type: "string"
+                  example:
+                    imageUrl: ""
+                    brandName: "Jo Malone"
+                    name: "154 코롱"
+                    userIdx: 339
+                    nickname: "홍길동"
+                    createTime: "2020-12-07 00:11:41"  
         "400":
           description: "Invalid ID supplied"
         "401":
@@ -1145,6 +1219,12 @@ paths:
       responses:
         "200":
           description: "성공"
+          schema:
+            type: "object"
+            properties:
+              message: 
+                type: "string"
+                example: "시향노트 수정 성공"
         "400":
           description: "Invalid ID supplied"
         "401":
@@ -1179,6 +1259,12 @@ paths:
       responses:
         "200":
           description: "성공"
+          schema:
+            type: "object"
+            properties:
+              message: 
+                type: "string"
+                example: "시향노트 삭제 성공"
         "400":
           description: "Invalid ID supplied"
         "401":
