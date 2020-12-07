@@ -26,6 +26,17 @@ exports.getReviewByIdx = (reviewIdx) => {
   return reviewDao.read(reviewIdx);
 };
 
+/**
+ * 내가 쓴 시향기 전체 조회
+ *  = 마이퍼퓸 조회
+ *
+ * userIdx Long 유저 Idx
+ * returns List
+ **/
+exports.getReviewByUser = (userIdx) => {
+  return reviewDao.readAllByUser(userIdx);
+};
+
 
 /**
  * 전체 시향노트 반환(별점순)

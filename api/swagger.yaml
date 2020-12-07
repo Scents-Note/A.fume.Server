@@ -1273,6 +1273,64 @@ paths:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Review"
+  /myperfume:
+    get:
+      tags:
+      - "review"
+      summary: "마이퍼퓸 반환"
+      description: "나의 시향노트 목록 가져오기"
+      operationId: "getReviewByUser"
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: string
+                example: "마이퍼퓸 조회 성공"
+              data:
+                type: "array"
+                items:
+                  allOf:
+                  - $ref: "#/definitions/ReviewInfo"
+                  - type: "object"
+                    properties:
+                      reviewIdx:
+                        type: "integer"
+                        format: "int64"
+                      imageUrl:
+                        type: "string"
+                      brandName:
+                        type: "string"
+                      name:
+                        type: "string"
+                      createTime:
+                        type: "string"
+                    example:
+                      reviewIdx: 349
+                      imageUrl: ""
+                      brandName: "JoMalone"
+                      name: "넥타린 블로썸 앤 허니 코롱"
+                      createTime: "2020-12-07 00:11:41" 
+        "400":
+          description: "Invalid ID supplied"
+        "401":
+          description: "API key is missing or invalid"
+          headers:
+            WWW_Authenticate:
+              type: "string"
+        "404":
+          description: "Review not found"
+      x-swagger-router-controller: "Review"
   /review/{reviewIdx}/reply:
     post:
       tags:
