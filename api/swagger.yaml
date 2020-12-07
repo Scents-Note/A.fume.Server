@@ -977,7 +977,7 @@ paths:
     post:
       tags:
       - "review"
-      summary: 시향노트 추가"
+      summary: "시향노트 추가"
       description: "특정 향수에 시향노트 추가하기"
       operationId: "postReview"
       security:
@@ -2214,14 +2214,10 @@ definitions:
   ReviewInfo:
     type: "object"
     properties:
-      userIdx:
-        description: "회원 고유 번호"
-        type: "integer"
-        format: "int64"
       score:
-        description: "평점"
+        description: "별점"
         type: "number"
-        minimum: 0
+        minimum: 1
         maximum: 5
       content:
         description: "내용"
@@ -2261,12 +2257,11 @@ definitions:
         - "여성"
       access: 
         description: "시향노트 공유 여부"
-        type: "string"
+        type: "boolean"
         enum:
-        - "true"
-        - "false"
+        - true
+        - false
     example:
-      userIdx: 0
       score: 2
       longevity: "강함"
       sillage: "보통"
@@ -2274,7 +2269,7 @@ definitions:
       - "겨울"
       - "가을"
       gender: "중성"
-      access: "true"
+      access: true
       content: "시향노트 내용"
   ReplyInfo:
     type: "object"
@@ -2298,14 +2293,6 @@ definitions:
     - {}
     example:
       nickname: "향린이S2"
-  myPerfume:
-    properties:
-      star:
-        type: "integer"
-        example: 5
-    allOf:
-    - $ref: "#/definitions/PerfumeInfo"
-    - {}
   Filter:
     type: "object"
     properties:

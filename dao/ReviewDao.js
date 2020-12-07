@@ -101,7 +101,7 @@ module.exports.create = async ({perfumeIdx, userIdx, score, longevity, sillage, 
  * 시향기 조회
  * 
  */
-const SQL_REVIEW_SELECT_BY_IDX = `SELECT p.image_thumbnail_url as imageUrl, b.english_name as brandName, p.name, rv.score, rv.content, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, u.user_idx, u.nickname FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx JOIN user u ON rv.user_idx = u.user_idx WHERE review_idx = ?`;
+const SQL_REVIEW_SELECT_BY_IDX = `SELECT p.image_thumbnail_url as imageUrl, b.english_name as brandName, p.name, rv.score, rv.content, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, rv.create_time as createTime, u.user_idx as userIdx, u.nickname FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx JOIN user u ON rv.user_idx = u.user_idx WHERE review_idx = ?`;
 module.exports.read = async (reviewIdx) => {
     
     const result = await pool.queryParam_Parse(SQL_REVIEW_SELECT_BY_IDX, [reviewIdx]);
@@ -189,7 +189,7 @@ module.exports.read = async (reviewIdx) => {
  *  = 마이퍼퓸 조회
  * 
  */
-const SQL_REVIEW_SELECT_BY_USER = `SELECT review_idx as reviewIdx, b.english_name as brandName, p.name, rv.score, rv.content, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx WHERE user_idx = ?`;
+const SQL_REVIEW_SELECT_BY_USER = `SELECT review_idx as reviewIdx, p.image_thumbnail_url as imageUrl, b.english_name as brandName, p.name, rv.score, rv.content, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, rv.create_time as createTime FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx WHERE user_idx = ?`;
 module.exports.readAllByUser = async (userIdx) => {
 
     let result = await pool.queryParam_Parse(SQL_REVIEW_SELECT_BY_USER, [userIdx]); 
@@ -265,7 +265,6 @@ module.exports.readAllByUser = async (userIdx) => {
         it.access = it.access == 1;
         return it;
     })
-    //console.log(result)
     return result;
 }
 
@@ -274,7 +273,7 @@ module.exports.readAllByUser = async (userIdx) => {
  * 별점이 없는 시향기들은 맨 후반부에 출력됨. 
  * 1차 정렬 기준은 별점순, 만약 별점이 같거나 없는 경우는 최신 순으로 해당부분만 2차 정렬됨.
  */
-const SQL_REVIEW_SELECT_ALL_BY_SCORE = `SELECT review_idx, (DATE_FORMAT(now(), '%Y') - u.birth + 1) as age, u.gender as userGender, rv.content, rv.score, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, 
+const SQL_REVIEW_SELECT_ALL_BY_SCORE = `SELECT review_idx as reviewIdx, (DATE_FORMAT(now(), '%Y') - u.birth + 1) as age, u.gender as userGender, rv.content, rv.score, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, 
 u.nickname, rv.create_time as createTime FROM review rv JOIN user u ON rv.user_idx = u.user_idx WHERE perfume_idx = ? ORDER BY score desc, rv.create_time desc`;
 module.exports.readAllOrderByScore = async (perfumeIdx) => {
 
@@ -368,7 +367,7 @@ module.exports.readAllOrderByScore = async (perfumeIdx) => {
  * 특정 상품의 시향기 전체 조회(최신 순 정렬)
  * 
  */
-const SQL_REVIEW_SELECT_ALL_BY_RECENT = `SELECT review_idx, (DATE_FORMAT(now(), '%Y') - u.birth + 1) as age, u.gender as userGender, rv.content, rv.score, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, u.nickname, rv.create_time as createTime FROM review rv JOIN user u ON rv.user_idx = u.user_idx WHERE perfume_idx = ? ORDER BY rv.create_time desc`;
+const SQL_REVIEW_SELECT_ALL_BY_RECENT = `SELECT review_idx as reviewIdx, (DATE_FORMAT(now(), '%Y') - u.birth + 1) as age, u.gender as userGender, rv.content, rv.score, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, u.nickname, rv.create_time as createTime FROM review rv JOIN user u ON rv.user_idx = u.user_idx WHERE perfume_idx = ? ORDER BY rv.create_time desc`;
 module.exports.readAllOrderByRecent = async (perfumeIdx) => {
     
     let result = await pool.queryParam_Parse(SQL_REVIEW_SELECT_ALL_BY_RECENT, [perfumeIdx]);
