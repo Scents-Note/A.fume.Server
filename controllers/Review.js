@@ -46,6 +46,20 @@ module.exports.getReviewOfPerfumeByScore = function getReviewOfPerfumeByScore (r
     });
 };
 
+module.exports.getReviewByUser = function getReviewByUser (req, res, next) {
+  const userIdx = req.middlewareToken.loginUserIdx;
+  Review.getReviewByUser(userIdx)
+    .then((response) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '마이퍼퓸 조회 성공',
+        data: response
+      }));
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};
+
 module.exports.getReviewOfPerfumeByRecent = function getReviewOfPerfumeByRecent (req, res, next) {
   var perfumeIdx = req.swagger.params['perfumeIdx'].value;
   Review.getReviewOfPerfumeByRecent(perfumeIdx)
