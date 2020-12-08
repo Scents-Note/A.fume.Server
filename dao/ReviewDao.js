@@ -2,7 +2,7 @@ const pool = require('../utils/db/pool.js');
 const { NotMatchedError, FailedToCreateError, InvalidInputError } = require('../utils/errors/errors.js');
 
 /**
- * 시향기 작성
+ * 시향노트 작성
  * 
  */
 const SQL_REVIEW_INSERT = `INSERT review(perfume_idx, user_idx, score, longevity, sillage, seasonal, gender, access, content) VALUES(?,?,?,?,?,?,?,?,?)`;
@@ -98,7 +98,7 @@ module.exports.create = async ({perfumeIdx, userIdx, score, longevity, sillage, 
 }
 
 /**
- * 시향기 조회
+ * 시향노트 조회
  * 
  */
 const SQL_REVIEW_SELECT_BY_IDX = `SELECT p.image_thumbnail_url as imageUrl, b.english_name as brandName, p.name, rv.score, rv.content, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, rv.create_time as createTime, u.user_idx as userIdx, u.nickname FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx JOIN user u ON rv.user_idx = u.user_idx WHERE review_idx = ?`;
@@ -185,7 +185,7 @@ module.exports.read = async (reviewIdx) => {
 }
 
 /**
- * 내가 쓴 시향기 전체 조회
+ * 내가 쓴 시향노트 전체 조회
  *  = 마이퍼퓸 조회
  * 
  */
@@ -269,7 +269,7 @@ module.exports.readAllByUser = async (userIdx) => {
 }
 
 /**
- * 특정 상품의 시향기 전체 조회(인기순 정렬, 디폴트)
+ * 특정 상품의 시향노트 전체 조회(인기순 정렬, 디폴트)
  * 좋아요 개수가 0인 시향노트들은 맨 후반부에 출력됨. 
  * 1차 정렬 기준은 좋아요 개수순, 만약 좋아요 개수가 같거나 없는 경우는 최신 순으로 해당부분만 2차 정렬됨.
  */
@@ -286,10 +286,10 @@ module.exports.readAllOrderByLike = async (perfumeIdx) => {
         // 유저 성별
         switch(it.userGender){
             case 1 : 
-                it.userGender = '여성';
+                it.userGender = '남성';
                 break;
             case 2:
-                it.userGender = '남성';
+                it.userGender = '여성';
                 break;
         };
         // 지속력
@@ -364,12 +364,12 @@ module.exports.readAllOrderByLike = async (perfumeIdx) => {
 }
 
 /**
- * 특정 상품의 시향기 전체 조회(별점 순 정렬)
- * 별점이 없는 시향기들은 맨 후반부에 출력됨. 
+ * 특정 상품의 시향노트 전체 조회(별점 순 정렬)
+ * 별점이 없는 시향노트들은 맨 후반부에 출력됨. 
  * 1차 정렬 기준은 별점순, 만약 별점이 같거나 없는 경우는 최신 순으로 해당부분만 2차 정렬됨.
  */
-const SQL_REVIEW_SELECT_ALL_BY_SCORE = `SELECT review_idx as reviewIdx, (DATE_FORMAT(now(), '%Y') - u.birth + 1) as age, u.gender as userGender, rv.content, rv.score, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, 
-u.nickname, rv.create_time as createTime FROM review rv JOIN user u ON rv.user_idx = u.user_idx WHERE perfume_idx = ? ORDER BY score desc, rv.create_time desc`;
+const SQL_REVIEW_SELECT_ALL_BY_SCORE = `SELECT rv.review_idx as reviewIdx, (DATE_FORMAT(now(), '%Y') - u.birth + 1) as age, u.gender as userGender, count(l.user_idx) as likeCount, rv.content, rv.score, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, 
+u.nickname, rv.create_time as createTime FROM review rv JOIN user u ON rv.user_idx = u.user_idx LEFT JOIN like_review l ON rv.review_idx = l.review_idx WHERE perfume_idx = ? GROUP BY rv.review_idx ORDER BY score desc, rv.create_time desc`;
 module.exports.readAllOrderByScore = async (perfumeIdx) => {
 
     let result = await pool.queryParam_Parse(SQL_REVIEW_SELECT_ALL_BY_SCORE, [perfumeIdx]);
@@ -381,10 +381,10 @@ module.exports.readAllOrderByScore = async (perfumeIdx) => {
         // 유저 성별
         switch(it.userGender){
             case 1 : 
-                it.userGender = '여성';
+                it.userGender = '남성';
                 break;
             case 2:
-                it.userGender = '남성';
+                it.userGender = '여성';
                 break;
         };
         // 지속력
@@ -459,10 +459,10 @@ module.exports.readAllOrderByScore = async (perfumeIdx) => {
 }
 
 /**
- * 특정 상품의 시향기 전체 조회(최신 순 정렬)
+ * 특정 상품의 시향노트 전체 조회(최신 순 정렬)
  * 
  */
-const SQL_REVIEW_SELECT_ALL_BY_RECENT = `SELECT review_idx as reviewIdx, (DATE_FORMAT(now(), '%Y') - u.birth + 1) as age, u.gender as userGender, rv.content, rv.score, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, u.nickname, rv.create_time as createTime FROM review rv JOIN user u ON rv.user_idx = u.user_idx WHERE perfume_idx = ? ORDER BY rv.create_time desc`;
+const SQL_REVIEW_SELECT_ALL_BY_RECENT = `SELECT rv.review_idx as reviewIdx, (DATE_FORMAT(now(), '%Y') - u.birth + 1) as age, u.gender as userGender, count(l.user_idx) as likeCount, rv.content, rv.score, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, u.nickname, rv.create_time as createTime FROM review rv JOIN user u ON rv.user_idx = u.user_idx LEFT JOIN like_review l ON rv.review_idx = l.review_idx WHERE perfume_idx = ? GROUP BY rv.review_idx ORDER BY rv.create_time desc`;
 module.exports.readAllOrderByRecent = async (perfumeIdx) => {
     
     let result = await pool.queryParam_Parse(SQL_REVIEW_SELECT_ALL_BY_RECENT, [perfumeIdx]);
@@ -474,10 +474,10 @@ module.exports.readAllOrderByRecent = async (perfumeIdx) => {
         // 유저 성별
         switch(it.userGender){
             case 1 : 
-                it.userGender = '여성';
+                it.userGender = '남성';
                 break;
             case 2:
-                it.userGender = '남성';
+                it.userGender = '여성';
                 break;
         };
         // 지속력
@@ -552,7 +552,7 @@ module.exports.readAllOrderByRecent = async (perfumeIdx) => {
 }
 
 /**
- * 시향기 수정
+ * 시향노트 수정
  * 
  */
 const SQL_REVIEW_UPDATE = `UPDATE review SET score = ?, longevity = ?, sillage = ?, seasonal = ?, gender = ?, access = ?, content = ?  WHERE review_idx = ?`;
@@ -648,7 +648,7 @@ module.exports.update = async ({score, longevity, sillage, seasonal, gender, acc
 }
 
 /**
- * 시향기 삭제
+ * 시향노트 삭제
  */
 const SQL_REVIEW_DELETE = `DELETE FROM review WHERE review_idx = ?`;
 module.exports.delete = async (reviewIdx) => {
