@@ -32,6 +32,20 @@ module.exports.getReviewByIdx = function getReviewByIdx (req, res, next) {
     });
 };
 
+module.exports.getReviewOfPerfumeByLike = function getReviewOfPerfumeByLike (req, res, next) {
+  var perfumeIdx = req.swagger.params['perfumeIdx'].value;
+  Review.getReviewOfPerfumeByLike(perfumeIdx)
+    .then((response) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '특정 향수의 시향노트 목록 인기순 조회 성공',
+        data: response
+      }));
+    })
+    .catch(function (response) {
+      utils.writeJson(res, response);
+    });
+};
+
 module.exports.getReviewOfPerfumeByScore = function getReviewOfPerfumeByScore (req, res, next) {
   var perfumeIdx = req.swagger.params['perfumeIdx'].value;
   Review.getReviewOfPerfumeByScore(perfumeIdx)

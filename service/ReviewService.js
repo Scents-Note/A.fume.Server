@@ -37,6 +37,17 @@ exports.getReviewByUser = (userIdx) => {
   return reviewDao.readAllByUser(userIdx);
 };
 
+/**
+ * 전체 시향노트 반환(인기순)
+ * 특정 향수에 달린 전체 시향노트 별점순으로 가져오기
+ *
+ * perfumeIdx Long 향수 Idx
+ * returns List
+ **/
+exports.getReviewOfPerfumeByLike = (perfumeIdx) => {
+  return reviewDao.readAllOrderByLike(perfumeIdx);
+};
+
 
 /**
  * 전체 시향노트 반환(별점순)

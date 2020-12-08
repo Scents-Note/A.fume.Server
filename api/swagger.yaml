@@ -1018,6 +1018,64 @@ paths:
         "405":
           description: "Invalid input"
       x-swagger-router-controller: "Review"
+    get:
+      tags:
+      - "review"
+      summary: "전체 시향노트 반환(인기순)"
+      description: "특정 향수에 달린 전체 시향노트 좋아요 개수 순으로 가져오기"
+      operationId: "getReviewOfPerfumeByLike"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "perfumeIdx"
+        in: "path"
+        description: "향수 Idx"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            type: "object"
+            properties:
+              message: 
+                type: "string"
+                example: "특정 향수의 시향노트 목록 인기순 조회 성공"
+              data:
+                type: "array"
+                items:
+                  allOf:
+                  - $ref: "#/definitions/ReviewInfo"
+                  - type: "object"
+                    properties: 
+                      reviewIdx:
+                        type: "integer"
+                        format: "int64"
+                      likeCount:
+                        type: "integer"
+                        format: "int64"
+                      age:
+                        type: "integer"
+                        format: "int64"
+                      userGender: 
+                        type: "string"
+                      nickname:
+                        type: "string"
+                      createTime:
+                        type: "string"
+                    example:
+                      reviewIdx: 339
+                      likeCount: 3
+                      userGender: "여자"
+                      age: 25
+                      nickname: "담담"
+                      createTime: "2020-12-07 00:11:41"     
+        "400":
+          description: "Invalid username/password supplied"
+      x-swagger-router-controller: "Review"
   /perfume/{perfumeIdx}/review/score:
     get:
       tags:

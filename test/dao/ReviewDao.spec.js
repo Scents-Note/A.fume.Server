@@ -53,6 +53,21 @@ describe('# reviewDao Test', () => {
         });
     });
 
+    describe('# readAll Test', () => {
+        let perfumeIdx = 1;
+        it('# success case', (done) => {
+            reviewDao.readAllOrderByLike(perfumeIdx).then((result) => {
+                //console.log(result)
+                expect(result.length).greaterThan(0);
+                done();
+            }).catch((err) => {
+                console.log(err)
+                expect(false).true();
+                done();
+            });
+        });
+    });
+
     describe('# readAllOrderByScore Test', () => {
         let perfumeIdx = 1;
         it('# success case', (done) => {
