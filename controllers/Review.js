@@ -88,7 +88,7 @@ module.exports.getReviewOfPerfumeByRecent = function getReviewOfPerfumeByRecent 
     });
 };
 
-module.exports.updateReview = function updateReview (req, res, next) {
+module.exports.updateReview =  (req, res, next) => {
   var reviewIdx = req.swagger.params['reviewIdx'].value;
   const userIdx = req.middlewareToken.loginUserIdx;
   var {score, longevity, sillage, seasonal, gender, access, content} = req.swagger.params['body'].value;
@@ -105,7 +105,8 @@ module.exports.updateReview = function updateReview (req, res, next) {
 
 module.exports.deleteReview = (req, res, next) => {
   const reviewIdx = req.swagger.params['reviewIdx'].value;
-  Review.deleteReview(reviewIdx)
+  const userIdx = req.middlewareToken.loginUserIdx;
+  Review.deleteReview({reviewIdx, userIdx})
     .then(() => {
       utils.writeJson(res, utils.respondWithCode(200, {
         message: '시향노트 삭제 성공'

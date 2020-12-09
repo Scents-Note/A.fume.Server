@@ -1,7 +1,7 @@
 'use strict';
 
 const reviewDao = require('../dao/ReviewDao.js');
-const { NotMatchedError,FailedToCreateError} = require('../utils/errors/errors.js');
+const { NotMatchedError, FailedToCreateError, UnAuthorizedError} = require('../utils/errors/errors.js');
 
 /**
  * 시향노트 삭제
@@ -10,8 +10,21 @@ const { NotMatchedError,FailedToCreateError} = require('../utils/errors/errors.j
  * reviewIdx Long 시향노트 Idx
  * no response value expected for this operation
  **/
-exports.deleteReview = (reviewIdx) => {
-  return reviewDao.delete(reviewIdx);
+exports.deleteReview = ({reviewIdx, userIdx}) => {
+  return new Promise((resolve, reject) => {
+    reviewDao.read(reviewIdx)
+    .then(res => {
+      if (res.userIdx != userIdx){
+        reject(new UnAuthorizedError());
+      }
+      return reviewDao.delete(reviewIdx);
+    }).then(() => {
+      resolve();
+    }).catch(err => {
+      console.log(err)
+      reject(err);
+    });
+  });
 };
 
 
@@ -81,7 +94,7 @@ exports.getReviewOfPerfumeByRecent = (perfumeIdx) => {
  * body ReviewInfo 시향노트 정보
  * no response value expected for this operation
  **/
-exports.postReview = function({perfumeIdx, userIdx, score, longevity, sillage, seasonal, gender, access, content}) {
+exports.postReview = ({perfumeIdx, userIdx, score, longevity, sillage, seasonal, gender, access, content}) => {
   return reviewDao.create({perfumeIdx, userIdx, score, longevity, sillage, seasonal, gender, access, content});
 };
 
@@ -94,8 +107,21 @@ exports.postReview = function({perfumeIdx, userIdx, score, longevity, sillage, s
  * body ReviewInfo  (optional)
  * no response value expected for this operation
  **/
-exports.updateReview = ({reviewIdx, score, longevity, sillage, seasonal, gender, access, content}) => {
-  return reviewDao.update({reviewIdx, score, longevity, sillage, seasonal, gender, access, content});
+exports.updateReview = ({reviewIdx, userIdx, score, longevity, sillage, seasonal, gender, access, content}) => {
+  return new Promise((resolve, reject) => {
+    reviewDao.read(reviewIdx)
+    .then(res => {
+      if (res.userIdx != userIdx){
+        reject(new UnAuthorizedError());
+      }
+      return reviewDao.update({reviewIdx, score, longevity, sillage, seasonal, gender, access, content});
+    }).then(() => {
+      resolve();
+    }).catch(err => {
+      console.log(err)
+      reject(err);
+    });
+  });
 };
 
 /**

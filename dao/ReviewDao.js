@@ -265,6 +265,9 @@ module.exports.readAllByUser = async (userIdx) => {
         it.access = it.access == 1;
         return it;
     })
+    if (result.length == 0) {
+        throw new NotMatchedError();
+    }
     return result;
 }
 
@@ -373,6 +376,9 @@ module.exports.readAllOrderByLike = async (perfumeIdx) => {
         //console.log(it)
         return it;
     })
+    if (result.length == 0) {
+        throw new NotMatchedError();
+    }
     return result;
 }
 
@@ -481,6 +487,9 @@ module.exports.readAllOrderByScore = async (perfumeIdx) => {
         //console.log(it)
         return it;
     })
+    if (result.length == 0) {
+        throw new NotMatchedError();
+    }
     return result;
 }
 
@@ -587,6 +596,9 @@ module.exports.readAllOrderByRecent = async (perfumeIdx) => {
         //console.log(it)
         return it;
     })
+    if (result.length == 0) {
+        throw new NotMatchedError();
+    }
     return result;
 }
 
