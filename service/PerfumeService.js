@@ -5,6 +5,7 @@ const noteDao = require('../dao/NoteDao.js');
 const reviewDao = require('../dao/ReviewDao.js');
 const likeDao = require('../dao/LikeDao.js');
 const searchHistoryDao = require('../dao/SearchHistoryDao.js');
+const userDao = require('../dao/UserDao.js');
 
 const {
   NotMatchedError,
@@ -251,4 +252,20 @@ exports.likePerfume = (perfumeIdx, userIdx) => {
  **/
 exports.recentSearch = (userIdx) => {
   return perfumeDao.recentSearchPerfumeList(userIdx);
+};
+
+/**
+ * 유저 연령대 및 성별에 따른 향수 추천
+ *
+ * @param {number} userIdx
+ * @returns {Promise<Perfume[]>}
+ **/
+exports.recommendByUser = async (userIdx) => {
+  const user = await userDao.readByIdx(userIdx);
+  const today = new Date();
+  const age = today.getFullYear() - user.birth + 1;
+  const ageQuantize = parseInt(age / 10) * 10;
+  const startYear = today.getFullYear() - ageQuantize - 8;
+  const endYear = today.getFullYear() - ageQuantize + 1;
+  return perfumeDao.recommendPerfumeByAgeAndGender(userIdx, user.gender, startYear, endYear);
 };

@@ -188,6 +188,14 @@ describe('# perfumeDao Test', () => {
                 done();
             });
         })
+
+        it('# recommend perfume by age and gender', (done) => {
+            perfumeDao.recommendPerfumeByAgeAndGender(1, '남자', 0, 2020).then((result) => {
+                console.log(result);
+                expect(result.length).gte(3);
+                done();
+            });
+        });
     });
 
     describe('# update Test', () => {
