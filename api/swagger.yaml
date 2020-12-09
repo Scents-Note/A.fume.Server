@@ -1052,6 +1052,63 @@ paths:
         "405":
           description: "Invalid input"
       x-swagger-router-controller: "Review"
+    get:
+      tags:
+      - "review"
+      summary: "전체 시향노트 반환(인기순)"
+      description: "특정 향수에 달린 전체 시향노트 좋아요 개수 순으로 가져오기"
+      operationId: "getReviewOfPerfumeByLike"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "perfumeIdx"
+        in: "path"
+        description: "향수 Idx"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            type: "object"
+            properties:
+              message: 
+                type: "string"
+                example: "특정 향수의 시향노트 목록 인기순 조회 성공"
+              data:
+                type: "array"
+                items:
+                  allOf:
+                  - $ref: "#/definitions/ReviewInfo"
+                  - type: "object"
+                    properties: 
+                      reviewIdx:
+                        type: "integer"
+                        format: "int64"
+                      likeCount:
+                        type: "integer"
+                        format: "int64"
+                      age:
+                        type: "string"
+                      userGender: 
+                        type: "string"
+                      nickname:
+                        type: "string"
+                      createTime:
+                        type: "string"
+                    example:
+                      reviewIdx: 339
+                      likeCount: 3
+                      userGender: "여자"
+                      age: "20대 중반"
+                      nickname: "담담"
+                      createTime: "2020-12-07 00:11:41"     
+        "400":
+          description: "Invalid username/password supplied"
+      x-swagger-router-controller: "Review"
   /perfume/{perfumeIdx}/review/score:
     get:
       tags:
@@ -1089,9 +1146,11 @@ paths:
                       reviewIdx:
                         type: "integer"
                         format: "int64"
-                      age:
+                      likeCount:
                         type: "integer"
                         format: "int64"
+                      age:
+                        type: "string"
                       userGender: 
                         type: "string"
                       nickname:
@@ -1100,8 +1159,9 @@ paths:
                         type: "string"
                     example:
                       reviewIdx: 339
+                      likeCount: 5
                       userGender: "여자"
-                      age: 25
+                      age: "20대 중반"
                       nickname: "담담"
                       createTime: "2020-12-07 00:11:41"     
         "400":
@@ -1144,9 +1204,11 @@ paths:
                       reviewIdx:
                         type: "integer"
                         format: "int64"
-                      age:
+                      likeCount:
                         type: "integer"
                         format: "int64"
+                      age:
+                        type: "string"
                       userGender: 
                         type: "string"
                       nickname:
@@ -1155,7 +1217,8 @@ paths:
                         type: "string"
                     example:
                       reviewIdx: 339
-                      age: 26
+                      likeCount: 5
+                      age: '20대 중반'
                       userGender: "여자"
                       nickname: "홍길동"
                       createTime: "2020-12-07 00:11:41"     
@@ -1306,6 +1369,44 @@ paths:
           headers:
             WWW_Authenticate:
               type: "string"
+      x-swagger-router-controller: "Review"
+  /review/{reviewIdx}/like:
+    put:
+      tags:
+      - "review"
+      summary: " 시향노트 좋아요"
+      description: "시향노트 좋아요 상태 변경하기."
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      operationId: "likeReview"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "reviewIdx"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "시향노트 좋아요 상태 변경 성공"
+              data:
+                type: "boolean"
+                example: true
+        "401":
+          description: "Not authenticated"
+        "403":
+          description: "Access token does not have the required scope"
+        "404":
+          description: "Review Like not found"
       x-swagger-router-controller: "Review"
   /myperfume:
     get:
