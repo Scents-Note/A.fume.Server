@@ -283,6 +283,19 @@ module.exports.readAllOrderByLike = async (perfumeIdx) => {
      * output data(result) 변환
      */
     result.map(it => {
+        //유저 나이대
+        let age_units = it.age % 10;
+        let age_tens = it.age - age_units
+        let age_range;
+        if (age_units < 4){
+            age_range = '초반'
+        } else if (age_units < 7){
+            age_range = '중반'
+        } else {
+            age_range = '후반'
+        }
+        it.age = String(age_tens) + '대 ' + age_range
+
         // 유저 성별
         switch(it.userGender){
             case 1 : 
@@ -378,6 +391,19 @@ module.exports.readAllOrderByScore = async (perfumeIdx) => {
      * output data(result) 변환
      */
     result.map(it => {
+        //유저 나이대
+        let age_units = it.age % 10;
+        let age_tens = it.age - age_units
+        let age_range;
+        if (age_units < 4){
+            age_range = '초반'
+        } else if (age_units < 7){
+            age_range = '중반'
+        } else {
+            age_range = '후반'
+        }
+        it.age = String(age_tens) + '대 ' + age_range
+
         // 유저 성별
         switch(it.userGender){
             case 1 : 
@@ -471,6 +497,19 @@ module.exports.readAllOrderByRecent = async (perfumeIdx) => {
      * output data(result) 변환
      */
     result.map(it => {
+        //유저 나이대
+        let age_units = it.age % 10;
+        let age_tens = it.age - age_units 
+        let age_range;
+        if (age_units < 4){
+            age_range = '초반'
+        } else if (age_units < 7){
+            age_range = '중반'
+        } else {
+            age_range = '후반'
+        }
+        it.age = String(age_tens) + '대 ' + age_range
+
         // 유저 성별
         switch(it.userGender){
             case 1 : 

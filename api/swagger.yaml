@@ -1092,8 +1092,7 @@ paths:
                         type: "integer"
                         format: "int64"
                       age:
-                        type: "integer"
-                        format: "int64"
+                        type: "string"
                       userGender: 
                         type: "string"
                       nickname:
@@ -1104,7 +1103,7 @@ paths:
                       reviewIdx: 339
                       likeCount: 3
                       userGender: "여자"
-                      age: 25
+                      age: "20대 중반"
                       nickname: "담담"
                       createTime: "2020-12-07 00:11:41"     
         "400":
@@ -1151,8 +1150,7 @@ paths:
                         type: "integer"
                         format: "int64"
                       age:
-                        type: "integer"
-                        format: "int64"
+                        type: "string"
                       userGender: 
                         type: "string"
                       nickname:
@@ -1163,7 +1161,7 @@ paths:
                       reviewIdx: 339
                       likeCount: 5
                       userGender: "여자"
-                      age: 25
+                      age: "20대 중반"
                       nickname: "담담"
                       createTime: "2020-12-07 00:11:41"     
         "400":
@@ -1210,8 +1208,7 @@ paths:
                         type: "integer"
                         format: "int64"
                       age:
-                        type: "integer"
-                        format: "int64"
+                        type: "string"
                       userGender: 
                         type: "string"
                       nickname:
@@ -1221,7 +1218,7 @@ paths:
                     example:
                       reviewIdx: 339
                       likeCount: 5
-                      age: 26
+                      age: '20대 중반'
                       userGender: "여자"
                       nickname: "홍길동"
                       createTime: "2020-12-07 00:11:41"     
