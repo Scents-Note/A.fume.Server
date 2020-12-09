@@ -90,6 +90,20 @@ module.exports.recentSearch = (req, res, next) => {
     });
 };
 
+module.exports.recommendByUser = (req, res, next) => {
+  const loginUserIdx = req.middlewareToken.loginUserIdx;
+  Perfume.recommendByUser(loginUserIdx)
+    .then((result) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '최근 검색한 향수 조회',
+        data: result
+      }));
+    })
+    .catch((response) => {
+      utils.writeJson(res, {message: response.message});
+    });
+};
+
 module.exports.deletePerfume = (req, res, next) => {
   const perfumeIdx = req.swagger.params['perfumeIdx'].value;
   Perfume.deletePerfume(perfumeIdx)
