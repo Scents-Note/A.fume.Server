@@ -14,7 +14,7 @@ module.exports.postReview = function postReview (req, res, next) {
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -42,7 +42,7 @@ module.exports.getReviewOfPerfumeByLike = function getReviewOfPerfumeByLike (req
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -56,7 +56,7 @@ module.exports.getReviewOfPerfumeByScore = function getReviewOfPerfumeByScore (r
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -70,7 +70,7 @@ module.exports.getReviewByUser = function getReviewByUser (req, res, next) {
       }));
     })
     .catch(function (response) {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
     });
 };
 
@@ -112,6 +112,21 @@ module.exports.deleteReview = (req, res, next) => {
       }));
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      utils.writeJson(res, {message: response.message});
+    });
+};
+
+module.exports.likeReview = (req, res, next) => {
+  const reviewIdx = req.swagger.params['reviewIdx'].value;
+  const userIdx = req.middlewareToken.loginUserIdx;
+  Review.likeReview(reviewIdx, userIdx)
+    .then((result) => {
+      utils.writeJson(res, utils.respondWithCode(200, {
+        message: '시향노트 좋아요 상태 변경 성공',
+        data: result
+      }));
+    })
+    .catch((response) => {
+      utils.writeJson(res, {message: response.message});
     });
 };

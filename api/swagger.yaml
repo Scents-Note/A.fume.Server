@@ -1339,6 +1339,44 @@ paths:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Review"
+  /review/{reviewIdx}/like:
+    put:
+      tags:
+      - "review"
+      summary: " 시향노트 좋아요"
+      description: "시향노트 좋아요 상태 변경하기."
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      operationId: "likeReview"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "reviewIdx"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "성공"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "시향노트 좋아요 상태 변경 성공"
+              data:
+                type: "boolean"
+                example: true
+        "401":
+          description: "Not authenticated"
+        "403":
+          description: "Access token does not have the required scope"
+        "404":
+          description: "Review Like not found"
+      x-swagger-router-controller: "Review"
   /myperfume:
     get:
       tags:

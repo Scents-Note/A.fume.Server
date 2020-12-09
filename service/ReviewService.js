@@ -1,7 +1,7 @@
 'use strict';
 
 const reviewDao = require('../dao/ReviewDao.js');
-
+const { NotMatchedError,FailedToCreateError} = require('../utils/errors/errors.js');
 
 /**
  * 시향노트 삭제
@@ -97,3 +97,31 @@ exports.postReview = function({perfumeIdx, userIdx, score, longevity, sillage, s
 exports.updateReview = ({reviewIdx, score, longevity, sillage, seasonal, gender, access, content}) => {
   return reviewDao.update({reviewIdx, score, longevity, sillage, seasonal, gender, access, content});
 };
+
+/**
+ * 향수 좋아요
+ * 
+ * reviewIdx Long 시향노트 Idx
+ * returns Boolean
+ **/
+exports.likeReview = (reviewIdx, userIdx) => {
+  return new Promise((resolve, reject) => {
+    let isLiked = false;
+    reviewDao.readLike({reviewIdx, userIdx})
+    .then(res => {
+      isLiked = true;
+      return reviewDao.deleteLike({reviewIdx,  userIdx});
+    })
+    .catch(err => {
+      isLiked = false;
+      if (err instanceof NotMatchedError) {  
+        return reviewDao.createLike({reviewIdx,  userIdx});
+      }
+      reject(new FailedToCreateError());
+    }).then(() => {
+      resolve(!isLiked);
+    }).catch(err => {
+      reject(err);
+    });
+  });
+}

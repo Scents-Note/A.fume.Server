@@ -658,3 +658,42 @@ module.exports.delete = async (reviewIdx) => {
     }
     return result;
 }
+
+/**
+ * 시향노트 좋아요 생성
+ * 
+ */
+const SQL_LIKE_REVIEW_INSERT = `INSERT like_review(user_idx, review_idx) VALUES(?, ?)`;
+module.exports.createLike = async ({userIdx, reviewIdx}) => {
+    const result = await pool.queryParam_Parse(SQL_LIKE_REVIEW_INSERT, [userIdx, reviewIdx]);
+    if(result.affectedRows == 0){
+        throw new FailedToCreateError();
+    }
+    return result;
+};
+
+/**
+ * 시향노트 좋아요 조회
+ * 
+ */
+const SQL_LIKE_REVIEW_READ = `SELECT user_idx as userIdx, review_idx as reviewIdx FROM like_review WHERE user_idx = ? AND review_idx = ?`;
+module.exports.readLike = async ({userIdx, reviewIdx}) => {
+    const result = await pool.queryParam_Parse(SQL_LIKE_REVIEW_READ, [userIdx, reviewIdx]);
+    if(result.length == 0) {
+        throw new NotMatchedError();
+    }
+    return result[0];
+};
+
+/**
+ * 시향노트 좋아요 취소
+ * 
+ */
+const SQL_LIKE_REVIEW_DELETE = `DELETE FROM like_review WHERE user_idx = ? AND review_idx = ?`;
+module.exports.deleteLike = async ({userIdx, reviewIdx}) => {
+    const result = await pool.queryParam_Parse(SQL_LIKE_REVIEW_DELETE, [userIdx, reviewIdx]);
+    if (result.affectedRows == 0) {
+        throw new NotMatchedError();
+    }
+    return result;
+};
