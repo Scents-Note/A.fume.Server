@@ -165,6 +165,40 @@ paths:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Perfume
+  /perfume/recommend:
+    get:
+      tags:
+      - perfume
+      summary: 유저 기반 향수 추천
+      description: 유저 연령, 성별에 따른 향수를 추천해준다.
+      operationId: recommendByUser
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      produces:
+      - application/json
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 검색 성공
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/Perfume"
+        400:
+          description: Invalid tag value
+        401:
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+      x-swagger-router-controller: Perfume
   /perfume/{perfumeIdx}:
     get:
       tags:
