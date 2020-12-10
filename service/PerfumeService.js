@@ -84,13 +84,21 @@ function normalize(obj) {
   const total = entries.reduce((prev, cur) => {
     return prev + cur[1];
   }, 0);
-  for (const [key, value] of entries) {
-    if (total == 0) {
-      result[key] = 0;
-      continue;
-    }
-    result[key] = parseFloat((parseFloat(value) / total).toFixed(2));
+  if(total == 0) {
+    return entries.map(it => { return 0; });
   }
+  let remain = 100;
+  let maxKey = 0;
+  let max = 0;
+  for(const [key, value] of entries) {
+    result[key] = parseInt((parseFloat(value) / total) * 100);
+    remain -= result[key];
+    if (max < value) {
+      max = value;
+      maxKey = key;
+    }
+  }
+  result[maxKey] += remain;
   return result;
 }
 
