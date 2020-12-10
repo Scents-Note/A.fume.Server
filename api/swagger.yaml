@@ -1974,27 +1974,27 @@ definitions:
           veryWeak:
             type: number
             minimum: 0
-            maximum: 1
+            maximum: 100
             description: 매우 약함
           weak:
             type: number
             minimum: 0
-            maximum: 1
+            maximum: 100
             description: 약함
           medium:
             type: number
             minimum: 0
-            maximum: 1
+            maximum: 100
             description: 보통
           strong:
             type: number
             minimum: 0
-            maximum: 1
+            maximum: 100
             description: 강함
           veryStrong:
             type: number
             minimum: 0
-            maximum: 1
+            maximum: 100
             description: 매우 강함
       sillage:
         type: object
@@ -2003,17 +2003,17 @@ definitions:
           light:
             type: number
             minimum: 0
-            maximum: 1
+            maximum: 100
             description: 약함
           normal:
             type: number
             minimum: 0
-            maximum: 1
+            maximum: 100
             description: 보통
           heavy:
             type: number
             minimum: 0
-            maximum: 1
+            maximum: 100
             description: 강함
       seasonal:
         type: object
@@ -2021,22 +2021,22 @@ definitions:
           spring:
             type: number
             minimum: 0
-            maximum: 1
+            maximum: 100
             description: 봄
           summer:
             type: number
             minimum: 0
-            maximum: 1
+            maximum: 100
             description: 여름
           fall:
             type: number
             minimum: 0
-            maximum: 1
+            maximum: 100
             description: 가을
           winter:
             type: number
             minimum: 0
-            maximum: 1
+            maximum: 100
             description: 겨울
       keywords:
         type: "array"
@@ -2062,19 +2062,19 @@ definitions:
       abundanceRate: "오 드 퍼퓸"
       seasonal:
         spring: 0
-        summer: 0.3
-        fall: 0.3
-        winter: 0.4
+        summer: 30
+        fall: 30
+        winter: 40
       sillage:
-        light: 0.4
-        medium: 0.2
-        heavy: 0.4
+        light: 40
+        medium: 20
+        heavy: 40
       longevity:
-        veryWeak: 0.1
-        weak: 0.1
-        normal: 0.2
-        strong: 0.2
-        veryStrong: 0.1
+        veryWeak: 10
+        weak: 10
+        normal: 20
+        strong: 20
+        veryStrong: 10
       noteType: 0
       ingredients:
         top:
