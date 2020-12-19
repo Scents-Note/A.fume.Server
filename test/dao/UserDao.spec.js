@@ -13,14 +13,14 @@ describe('# userDao Test', () => {
             await pool.queryParam_Parse('DELETE FROM user WHERE email = ?', ['createTest@afume.com']);
         });
         it('# success case', (done) => {
-            userDao.create({nickname: '생성 테스트', password: 'hashed', gender: '남자', phone: '010-2081-3818', email: 'createTest@afume.com', birth: '1995'})
+            userDao.create({nickname: '생성 테스트', password: 'hashed', gender: '남자', phone: '010-2081-3818', email: 'createTest@afume.com', birth: '1995', role: 1})
             .then((result) => {
                 expect(result).gt(0);
                 done();
             });
         });
         it(' # DuplicatedEntryError case', (done) => {
-            userDao.create({nickname: '생성 테스트', password: 'hashed', gender: '남자', phone: '010-2081-3818', email: 'createTest@afume.com', birth: '1995'})
+            userDao.create({nickname: '생성 테스트', password: 'hashed', gender: '남자', phone: '010-2081-3818', email: 'createTest@afume.com', birth: '1995', role: 1})
             .then(() => {
                 expect(false).true();
                 done();
@@ -81,10 +81,10 @@ describe('# userDao Test', () => {
     describe('# update Test', () => {
         let userIdx;
         before(async () => {            
-            userIdx = await userDao.create({nickname: '수정 테스트', password: 'hashed', gender: '남자', phone: '010-2081-3818', email: 'updateTest@afume.com', birth: '1995'});
+            userIdx = await userDao.create({nickname: '수정 테스트', password: 'hashed', gender: '남자', phone: '010-2081-3818', email: 'updateTest@afume.com', birth: '1995', role: 1});
         });
         it('# success case', (done) => {
-            userDao.update({userIdx, nickname: '수정 테스트(完)', password: '변경', gender: '여자', phone: '010-1234-1234', email: 'updateTest@afume.com', birth: '1995'})
+            userDao.update({userIdx, nickname: '수정 테스트(完)', password: '변경', gender: '여자', phone: '010-1234-1234', email: 'updateTest@afume.com', birth: '1995', role: 0})
             .then((result) => {
                 expect(result).eq(1);
                 done();
@@ -97,7 +97,7 @@ describe('# userDao Test', () => {
     describe('# delete Test', () => {
         let userIdx;
         before(async () => {            
-            userIdx = await userDao.create({nickname: '삭제 테스트', password: 'hashed', gender: '남자', phone: '010-2081-3818', email: 'deleteTest@afume.com', birth: '1995'});
+            userIdx = await userDao.create({nickname: '삭제 테스트', password: 'hashed', gender: '남자', phone: '010-2081-3818', email: 'deleteTest@afume.com', birth: '1995', role: 0});
         });
         describe('# delete Test', () => {
             it('# success case', (done) => {

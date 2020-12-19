@@ -2116,11 +2116,15 @@ definitions:
         type: "string"
       birth:
         type: "string"
+      role:
+        type: string
+        required: false
     example:
       email: "hee.youn@samsung.com"
       nickname: "쿼카맨"
       gender: "남자"
       phone: "010-2081-3818"
+      role: 0
       birth: "1995"
   KeywordInfo:
     type: "object"
