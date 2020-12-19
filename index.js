@@ -4,7 +4,9 @@ var fs = require('fs'),
     path = require('path'),
     http = require('http');
 const express = require('express');
-var app = express();
+const cookieParser = require('cookie-parser');
+const app = express();
+app.use(cookieParser());
 var swaggerTools = require('swagger-tools');
 var jsyaml = require('js-yaml');
 var serverPort = process.env.PORT || 8080;
