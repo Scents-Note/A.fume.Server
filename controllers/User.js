@@ -85,3 +85,17 @@ module.exports.updateUser = (req, res, next) => {
       res.status(response.status || 500).json({ message: response.message });
     });
 };
+
+module.exports.authUser = (req, res, next) => {
+  const token = req.cookies.w_auth || req.body.token;
+  User.authUser(token)
+  .then((response) => {
+    res.status(200).json({
+      message: '권한 조회',
+      data: response
+    })
+  })
+  .catch((response) => {
+    res.status(response.status || 500).json({ message: response.message });
+  })
+}
