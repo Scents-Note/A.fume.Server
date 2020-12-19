@@ -1,18 +1,17 @@
 'use strict';
 
-const utils = require('../utils/writer.js');
 const Brand = require('../service/BrandService');
 
 module.exports.getBrandList = (req, res, next) => {
   Brand.getBrandList()
     .then((response) => {
-      utils.writeJson(res, utils.respondWithCode(200, {
+      res.status(200).json({
         message: '브랜드 조회 성공',
         data: response
-      }));
+      });
     })
     .catch((response) => {
-      utils.writeJson(res, response);
+      res.status(response.status || 500).json({ message: response.message });
     });
 };
 
@@ -20,13 +19,13 @@ module.exports.getBrandByIdx = (req, res, next) => {
   const brandIdx = req.swagger.params['brandIdx'].value;
   Brand.getBrandByIdx(brandIdx)
     .then((response) => {
-      utils.writeJson(res, utils.respondWithCode(200, {
+      res.status(200).json({
         message: '브랜드 조회 성공',
         data: response
-      }));
+      });
     })
     .catch((response) => {
-      utils.writeJson(res, {message: response.message});
+      res.status(response.status || 500).json({ message: response.message });
     });
 };
 
@@ -45,13 +44,13 @@ module.exports.postBrand = (req, res, next) => {
       imageUrl,
       description
     }).then((response) => {
-      utils.writeJson(res, utils.respondWithCode(200, {
+      res.status(200).json({
         message: '브랜드 추가 성공',
         data: response
-      }));
+      });
     })
     .catch((response) => {
-      utils.writeJson(res, {message: response.message});
+      res.status(response.status || 500).json({ message: response.message });
     });
 };
 
@@ -73,12 +72,12 @@ module.exports.putBrand = (req, res, next) => {
       description
     })
     .then(() => {
-      utils.writeJson(res, utils.respondWithCode(200, {
+      res.status(200).json({
         message: '브랜드 수정 성공'
-      }));
+      })  ;
     })
     .catch((response) => {
-      utils.writeJson(res, {message: response.message});
+      res.status(response.status || 500).json({message: response.message});
     });
 };
 
@@ -86,11 +85,11 @@ module.exports.deleteBrand = (req, res, next) => {
   const brandIdx = req.swagger.params['brandIdx'].value;
   Brand.deleteBrand(brandIdx)
     .then(() => {
-      utils.writeJson(res, utils.respondWithCode(200, {
+      res.status(200).json({
         message: '브랜드 삭제 성공'
-      }));
+      });
     })
     .catch((response) => {
-      utils.writeJson(res, {message: response.message});
+      res.status(response.status || 500).json({message: response.message});
     });
 };
