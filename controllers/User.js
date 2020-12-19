@@ -2,8 +2,9 @@
 
 const User = require('../service/UserService');
 
-module.exports.createUser = (req, res, next) => {
+module.exports.registerUser = (req, res, next) => {
   const body = req.swagger.params['body'].value;
+  body.role = 0;
   User.createUser(body)
     .then(() => {
       res.status(200).json({
@@ -48,6 +49,7 @@ module.exports.loginUser = (req, res, next) => {
   const password = req.swagger.params['password'].value;
   User.loginUser(email, password)
     .then((response) => {
+      res.cookie('w_auth', response.token, { expires: new Date(Date.now() + 900000), httpOnly: true });
       res.status(200).json({
         message: '로그인 성공',
         data: response

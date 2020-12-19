@@ -1805,51 +1805,49 @@ paths:
             WWW_Authenticate:
               type: "string"
       x-swagger-router-controller: "Keyword"
-  /user:
+  /user/register:
     post:
       tags:
-      - "user"
-      summary: "Create user"
-      description: "This can only be done by the logged in user."
-      operationId: "createUser"
+      - user
+      description: 사용자 회원 가입
+      operationId: registerUser
       produces:
-      - "application/xml"
-      - "application/json"
+      - application/json
       parameters:
-      - in: "body"
-        name: "body"
-        description: "Created user object"
+      - in: body
+        name: body
+        description: Created user object
         required: true
         schema:
           allOf:
           - $ref: "#/definitions/User"
-          - type: "object"
+          - type: object
             properties:
               password:
-                type: "string"
+                type: string
             example:
-              password: "test"
+              password: test
       responses:
         default:
-          description: "successful operation"
-      x-swagger-router-controller: "User"
+          description: successful operation
+      x-swagger-router-controller: User
   /user/login:
     get:
       tags:
-      - "user"
-      summary: "Logs user into the system"
-      operationId: "loginUser"
+      - user
+      description: 로그인
+      operationId: loginUser
       produces:
-      - "application/json"
+      - application/json
       parameters:
-      - name: "email"
-        in: "query"
+      - name: email
+        in: query
         required: true
-        type: "string"
-      - name: "password"
-        in: "query"
+        type: string
+      - name: password
+        in: query
         required: true
-        type: "string"
+        type: string
       responses:
         200:
           description: success
@@ -1870,23 +1868,21 @@ paths:
                     type: string
                     description: token 재발급 용 
                     example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZWZyZXNoVG9rZW4iOnsidXNlcklkeCI6MSwibmlja25hbWUiOiLsnKTtnazshLEiLCJnZW5kZXIiOiJtYWxlIiwicGhvbmUiOiIwMTAtMjA4MS0zOCIsImVtYWlsIjoiaGVlLnlvdW5Ac2Ftc3VuZy5jb20iLCJiaXJ0aCI6MTk5NX0sImlhdCI6MTYwNzAwNTc1MiwiZXhwIjoxNjA4NzMzNzUyLCJpc3MiOiJhZnVtZS1qYWNrcG90In0.ePRhCLytxo-FlKLsxE84TvPee8G3C4LbsdUNBQ-OcF8
-        "400":
-          description: "Invalid username/password supplied"
-      x-swagger-router-controller: "User"
+        400:
+          description: Invalid username/password supplied
+      x-swagger-router-controller: User
   /user/logout:
     get:
       tags:
-      - "user"
-      summary: "Logs out current logged in user session"
-      description: ""
-      operationId: "logoutUser"
+      - user
+      operationId: logoutUser
       produces:
-      - "application/json"
+      - application/json
       parameters: []
       responses:
         default:
-          description: "successful operation"
-      x-swagger-router-controller: "User"
+          description: successful operation
+      x-swagger-router-controller: User
       deprecated: true
   /user/auth:
     post:
@@ -1924,88 +1920,86 @@ paths:
   /user/{userIdx}:
     get:
       tags:
-      - "user"
-      summary: "Get user by user idx"
-      operationId: "getUserByIdx"
+      - user
+      operationId: getUserByIdx
       produces:
-      - "application/json"
+      - application/json
       parameters:
-      - name: "userIdx"
-        in: "path"
-        description: "유저 ID"
+      - name: userIdx
+        in: path
         required: true
-        type: "integer"
-        format: "int64"
+        type: integer
+        format: int64
       responses:
-        "200":
-          description: "successful operation"
+        200:
+          description: successful operation
           schema:
             allOf:
             - $ref: "#/definitions/User"
-            - type: "object"
+            - type: object
               properties:
                 userIdx:
-                  type: "integer"
+                  type: integer
               example:
                 userIdx: 1
-        "400":
-          description: "Invalid userIdx supplied"
-        "404":
-          description: "User not found"
-      x-swagger-router-controller: "User"
+        400:
+          description: Invalid userIdx supplied
+        404:
+          description: User not found
+      x-swagger-router-controller: User
     put:
       tags:
-      - "user"
-      summary: "Updated user"
-      description: "This can only be done by the logged in user."
-      operationId: "updateUser"
+      - user
+      summary: Updated user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
       produces:
-      - "application/json"
+      - application/json
       parameters:
-      - name: "userIdx"
-        in: "path"
-        description: "name that need to be updated"
+      - name: userIdx
+        in: path
+        description: name that need to be updated
         required: true
-        type: "string"
-      - in: "body"
-        name: "body"
-        description: "Updated user object"
+        type: string
+      - in: body
+        name: body
+        description: Updated user object
         required: true
         schema:
           allOf:
           - $ref: "#/definitions/User"
-          - type: "object"
+          - type: object
             properties:
               userIdx:
-                type: "integer"
+                type: integer
             example:
               userIdx: 1
       responses:
-        "400":
-          description: "Invalid user supplied"
-        "404":
-          description: "User not found"
-      x-swagger-router-controller: "User"
+        400:
+          description: Invalid user supplied
+        404:
+          description: User not found
+      x-swagger-router-controller: User
     delete:
       tags:
-      - "user"
-      summary: "Delete user"
-      description: "This can only be done by the logged in user."
-      operationId: "deleteUser"
+      - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
       produces:
-      - "application/json"
+      - application/json
       parameters:
-      - name: "userIdx"
-        in: "path"
-        description: "The Idx that needs to be deleted"
+      - name: userIdx
+        in: path
+        description: The Idx that needs to be deleted
         required: true
-        type: "string"
+        type: string
       responses:
-        "400":
-          description: "Invalid username supplied"
-        "404":
-          description: "User not found"
-      x-swagger-router-controller: "User"
+        400:
+          description: Invalid username supplied
+        404:
+          description: User not found
+      x-swagger-router-controller: User
   /wishlist:
     post:
       tags:
@@ -2137,27 +2131,27 @@ securityDefinitions:
     in: header
 definitions:
   User:
-    type: "object"
+    type: object
     properties:
       email:
-        type: "string"
+        type: string
       nickname:
-        type: "string"
+        type: string
       gender:
-        type: "string"
+        type: string
       phone:
-        type: "string"
+        type: string
       birth:
-        type: "string"
+        type: string
       role:
         type: integer
     example:
-      email: "hee.youn@samsung.com"
-      nickname: "쿼카맨"
-      gender: "남자"
-      phone: "010-2081-3818"
+      email: hee.youn@samsung.com
+      nickname: 쿼카맨
+      gender: 남자
+      phone: 010-2081-3818
       role: 0
-      birth: "1995"
+      birth: 1995
   KeywordInfo:
     type: "object"
     properties:
