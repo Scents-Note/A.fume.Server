@@ -23,7 +23,7 @@ console.log(`ENV: ${process.env.NODE_ENV}`)
 
 app.use(cookieParser());
 
-const allowList = [process.env.WEB_SERVER_ORIGIN]
+const allowList = process.env.CORS_ALLOW_LIST.split(',').map(it => { return it.trim(); });
 const corsOptionsDelegate = function (req, callback) {
   const corsOptions = { origin: allowList.indexOf(req.header('Origin')) !== -1  };
   callback(null, corsOptions);
