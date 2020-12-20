@@ -1,10 +1,10 @@
 const pool = require('../utils/db/pool.js');
 const {NotMatchedError, FailedToCreateError} = require('../utils/errors/errors.js');
 
-const SQL_USER_INSERT = 'INSERT user(nickname, password, gender, phone, email, birth) VALUES(?,?,?,?,?,?)';
-const SQL_USER_SELECT_BY_EMAIL = 'SELECT user_idx AS userIdx, nickname, password, IF(gender = 1, "남자", "여자") AS gender, phone, email, birth FROM user WHERE email = ?';
-const SQL_USER_SELECT_BY_IDX = 'SELECT user_idx AS userIdx, nickname, password, IF(gender = 1, "남자", "여자") AS gender, phone, email, birth FROM user WHERE user_idx = ?';
-const SQL_USER_UPDATE = 'UPDATE user SET nickname = ?, password = ?, gender = ?, phone = ?, email = ?, birth = ? WHERE user_idx = ?';
+const SQL_USER_INSERT = 'INSERT user(nickname, password, gender, phone, email, birth, role) VALUES(?,?,?,?,?,?,?)';
+const SQL_USER_SELECT_BY_EMAIL = 'SELECT user_idx AS userIdx, nickname, password, IF(gender = 1, "남자", "여자") AS gender, phone, email, birth, role FROM user WHERE email = ?';
+const SQL_USER_SELECT_BY_IDX = 'SELECT user_idx AS userIdx, nickname, password, IF(gender = 1, "남자", "여자") AS gender, phone, email, birth, role FROM user WHERE user_idx = ?';
+const SQL_USER_UPDATE = 'UPDATE user SET nickname = ?, password = ?, gender = ?, phone = ?, email = ?, birth = ?, role = ? WHERE user_idx = ?';
 const SQL_USER_DELETE = 'DELETE FROM user WHERE user_idx = ?';
 
 const genderMap = {
@@ -18,9 +18,9 @@ const genderMap = {
  * @param {Object} User
  * @returns {Promise}
  */
-module.exports.create = async ({nickname, password, gender, phone, email, birth}) => {
+module.exports.create = async ({nickname, password, gender, phone, email, birth, role}) => {
     gender = genderMap[gender] || 0;
-    const result = await pool.queryParam_Parse(SQL_USER_INSERT, [nickname, password, gender, phone, email, birth]);
+    const result = await pool.queryParam_Parse(SQL_USER_INSERT, [nickname, password, gender, phone, email, birth, role]);
     if(result.insertId == 0) {
         throw new FailedToCreateError();
     }
@@ -63,9 +63,9 @@ module.exports.readByIdx = async (userIdx) => {
  * @param {Object} User
  * @return {Promise}
  */
-module.exports.update = async ({userIdx, nickname, password, gender, phone, birth, email}) => {
+module.exports.update = async ({userIdx, nickname, password, gender, phone, birth, email, role}) => {
     gender = genderMap[gender] || 0;
-    const { affectedRows } = await pool.queryParam_Parse(SQL_USER_UPDATE, [nickname, password, gender, phone, email, birth, userIdx]);
+    const { affectedRows } = await pool.queryParam_Parse(SQL_USER_UPDATE, [nickname, password, gender, phone, email, birth, role, userIdx]);
     if (affectedRows == 0) {
         throw new NotMatchedError();
     }

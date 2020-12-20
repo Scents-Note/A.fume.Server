@@ -1,6 +1,5 @@
 'use strict';
 
-const utils = require('../utils/writer.js');
 const Wishlist = require('../service/WishlistService');
 
 module.exports.createWishlist = (req, res, next) => {
@@ -11,7 +10,7 @@ module.exports.createWishlist = (req, res, next) => {
       utils.writeJson(res, utils.respondWithCode(200, {message: '위시 리스트에 성공적으로 추가했습니다.'}));
     })
     .catch((response) => {
-      utils.writeJson(res, {message: response.message});
+      res.status(response.status || 500).json({ message: response.message });
     });
 };
 
@@ -23,7 +22,7 @@ module.exports.updateWishlist = (req, res, next) => {
       utils.writeJson(res, utils.respondWithCode(200, {message: '위시 리스트에 성공적으로 수정했습니다.'}));
     })
     .catch((response) => {
-      utils.writeJson(res, {message: response.message});
+      res.status(response.status || 500).json({ message: response.message });
     });
 };
 
@@ -35,7 +34,7 @@ module.exports.deleteWishlist = (req, res, next) => {
       utils.writeJson(res, utils.respondWithCode(200, {message: '위시 리스트에 성공적으로 삭제했습니다.'}));
     })
     .catch((response) => {
-      utils.writeJson(res, {message: response.message});
+      res.status(response.status || 500).json({ message: response.message });
     });
 };
 
@@ -46,7 +45,7 @@ module.exports.readWishlistByUser = (req, res, next) => {
       utils.writeJson(res, utils.respondWithCode(200, {message: '유저가 가지고 있는 위시 리스트 조회', data: response}));
     })
     .catch((response) => {
-      utils.writeJson(res, {message: response.message});
+      res.status(response.status || 500).json({ message: response.message });
     });
 };
 
@@ -57,6 +56,6 @@ module.exports.deleteWishlistByUser = (req, res, next) => {
       utils.writeJson(res, utils.respondWithCode(200, {message: '유저가 가지고 있는 위시 리스트 삭제했습니다', data: response}));
     })
     .catch((response) => {
-      utils.writeJson(res, {message: response.message});
+      res.status(response.status || 500).json({ message: response.message });
     });
 };

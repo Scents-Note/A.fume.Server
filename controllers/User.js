@@ -1,19 +1,18 @@
 'use strict';
 
-const utils = require('../utils/writer.js');
 const User = require('../service/UserService');
 
-module.exports.createUser = (req, res, next) => {
+module.exports.registerUser = (req, res, next) => {
   const body = req.swagger.params['body'].value;
+  body.role = 0;
   User.createUser(body)
-    .then((response) => {
-      utils.writeJson(res, utils.respondWithCode(200, {
+    .then(() => {
+      res.status(200).json({
         message: '회원가입 성공',
-        data: response
-      }));
+      });
     })
     .catch((response) => {
-      utils.writeJson(res, {message: response.message});
+      res.status(response.status || 500).json({ message: response.message });
     });
 };
 
@@ -21,13 +20,13 @@ module.exports.deleteUser = (req, res, next) => {
   const userIdx = req.swagger.params['userIdx'].value;
   User.deleteUser(userIdx)
     .then((response) => {
-      utils.writeJson(res, utils.respondWithCode(200, {
+      res.status(200).json({
         message: '유저 삭제 성공',
         data: response
-      }));
+      });
     })
     .catch((response) => {
-      utils.writeJson(res, {message: response.message});
+      res.status(response.status || 500).json({ message: response.message });
     });
 };
 
@@ -35,13 +34,13 @@ module.exports.getUserByIdx = (req, res, next) => {
   const userIdx = req.swagger.params['userIdx'].value;
   User.getUserByIdx(userIdx)
     .then((response) => {
-      utils.writeJson(res, utils.respondWithCode(200, {
+      res.status(200).json({
         message: '유저 조회 성공',
         data: response
-      }));
+      });
     })
     .catch((response) => {
-      utils.writeJson(res, {message: response.message});
+      res.status(response.status || 500).json({ message: response.message });
     });
 };
 
@@ -50,23 +49,24 @@ module.exports.loginUser = (req, res, next) => {
   const password = req.swagger.params['password'].value;
   User.loginUser(email, password)
     .then((response) => {
-      utils.writeJson(res, utils.respondWithCode(200, {
-        message: '로그인',
+      res.cookie('w_auth', response.token, { expires: new Date(Date.now() + 900000), httpOnly: true });
+      res.status(200).json({
+        message: '로그인 성공',
         data: response
-      }));
+      });
     })
     .catch((response) => {
-      utils.writeJson(res, {message: response.message});
+      res.status(response.status || 500).json({ message: response.message });
     })
 };
 
 module.exports.logoutUser = (req, res, next) => {
   User.logoutUser()
     .then((response) => {
-      utils.writeJson(res, response);
+      res.status(200).json(response);
     })
     .catch((response) => {
-      utils.writeJson(res, {message: response.message});
+      res.status(response.status || 500).json({ message: response.message });
     });
 };
 
@@ -78,12 +78,26 @@ module.exports.updateUser = (req, res, next) => {
   });
   User.updateUser(payload)
     .then((response) => {
-      utils.writeJson(res, utils.respondWithCode(200, {
+      res.status(200).json({
         message: '유저 수정 성공',
         data: response
-      }));
+      });
     })
     .catch((response) => {
-      utils.writeJson(res, {message: response.message});
+      res.status(response.status || 500).json({ message: response.message });
     });
 };
+
+module.exports.authUser = (req, res, next) => {
+  const token = req.cookies.w_auth || req.body.token;
+  User.authUser(token)
+  .then((response) => {
+    res.status(200).json({
+      message: '권한 조회',
+      data: response
+    })
+  })
+  .catch((response) => {
+    res.status(response.status || 500).json({ message: response.message });
+  })
+}

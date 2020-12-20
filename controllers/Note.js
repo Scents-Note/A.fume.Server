@@ -1,6 +1,5 @@
 'use strict';
 
-const utils = require('../utils/writer.js');
 const Note = require('../service/NoteService');
 
 module.exports.postNote = (req, res, next) => {
@@ -14,13 +13,13 @@ module.exports.postNote = (req, res, next) => {
         perfumeName,
         type
     }).then((response) => {
-        utils.writeJson(res, utils.respondWithCode(200, {
+        res.status(200).json({
             message: '노트 추가 성공',
             data: response
-        }));
+        });
     })
     .catch((response) => {
-        utils.writeJson(res, response);
+        res.status(response.status || 500).json({message: response.message});
     });
 };
 
@@ -35,11 +34,11 @@ module.exports.putNote = (req, res, next) => {
         perfumeName,
         type
     }).then((response) => {
-        utils.writeJson(res, utils.respondWithCode(200, {
+        res.status(200).json({
             message: '노트 수정 성공'
-        }));
+        });
     })
     .catch((response) => {
-        utils.writeJson(res, response);
+        res.status(response.status || 500).json({message: response.message});
     });
-}
+};
