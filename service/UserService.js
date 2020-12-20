@@ -41,6 +41,28 @@ exports.getUserByIdx = async (userIdx) => {
 }
 
 /**
+ * 유저 권한 조회
+ *
+ * @param {string} token
+ * @returns {Promise<User>}
+ **/
+exports.authUser = (token) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const payload = jwt.verify(token);
+      userDao.readByIdx(payload.userIdx)
+      .then(user => {
+        resolve({ isAuth: true, isAdmin: user.role==1 });
+      }).catch(err => {
+        resolve({ isAuth: false, isAdmin: false});
+      });
+    } catch(err) {
+      resolve({ isAuth: false, isAdmin: false });
+    };
+  });
+}
+
+/**
  * @typedef LoginToken
  * @property {string} token 로그인 토큰
  * @property {string} refreshToken 토큰 갱신을 위한 토큰
