@@ -1813,6 +1813,10 @@ paths:
       operationId: registerUser
       produces:
       - application/json
+      - application/x-www-urlencoded
+      consumes:
+      - application/json
+      - application/x-www-urlencoded
       parameters:
       - in: body
         name: body
@@ -2142,7 +2146,7 @@ definitions:
       phone:
         type: string
       birth:
-        type: string
+        type: integer
       role:
         type: integer
     example:
