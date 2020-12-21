@@ -11,9 +11,9 @@ const { WrongPasswordError } = require('../utils/errors/errors.js');
  * @param {Object} User
  * @returns {Promise}
  **/
-exports.createUser = ({id, nickname, password, gender, phone, email, birth}) => {
+exports.createUser = ({id, nickname, password, gender, phone, email, birth, role}) => {
   password = crypto.encrypt(password);
-  return userDao.create({id, nickname, password, gender, phone, email, birth});
+  return userDao.create({id, nickname, password, gender, phone, email, birth, role});
 }
 
 
