@@ -5,11 +5,13 @@ var fs = require('fs'),
     http = require('http');
 const express = require('express');
 const cookieParser = require('cookie-parser');
-const app = express();
-app.use(cookieParser());
+const cors = require('cors');
+
 var swaggerTools = require('swagger-tools');
 var jsyaml = require('js-yaml');
 var serverPort = process.env.PORT || 8080;
+
+const app = express();
 
 const dotenv = require('dotenv');
 const envMap = {
@@ -18,6 +20,16 @@ const envMap = {
 };
 dotenv.config({path: envMap[process.env.NODE_ENV || 'dev']});
 console.log(`ENV: ${process.env.NODE_ENV}`)
+
+app.use(cookieParser());
+
+const allowList = process.env.CORS_ALLOW_LIST.split(',').map(it => { return it.trim(); });
+const corsOptionsDelegate = function (req, callback) {
+  const corsOptions = { origin: allowList.indexOf(req.header('Origin')) !== -1  };
+  callback(null, corsOptions);
+}
+
+app.use(cors(corsOptionsDelegate));
 
 const localIpAddress = process.env.SERVER_IP || 'localhost';
 
