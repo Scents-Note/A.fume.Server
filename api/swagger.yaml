@@ -1836,7 +1836,7 @@ paths:
           description: successful operation
       x-swagger-router-controller: User
   /user/login:
-    get:
+    post:
       tags:
       - user
       description: 로그인
@@ -1844,14 +1844,17 @@ paths:
       produces:
       - application/json
       parameters:
-      - name: email
-        in: query
-        required: true
-        type: string
-      - name: password
-        in: query
-        required: true
-        type: string
+      - name: body
+        in: body
+        schema:
+          type: object
+          properties:
+            email:
+              type: string
+              example: hee.youn@samsung.com
+            password:
+              type: string
+              example: test
       responses:
         200:
           description: success
@@ -1864,6 +1867,10 @@ paths:
               data:
                 type: object
                 properties:
+                  userIdx:
+                    type: string
+                    description: userIdx
+                    example: 0
                   token:
                     type: string
                     description: login용 userToken
