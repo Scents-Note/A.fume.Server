@@ -45,8 +45,7 @@ module.exports.getUserByIdx = (req, res, next) => {
 };
 
 module.exports.loginUser = (req, res, next) => {
-  const email = req.swagger.params['email'].value;
-  const password = req.swagger.params['password'].value;
+  const { email, password} = req.body;
   User.loginUser(email, password)
     .then((response) => {
       res.cookie('w_auth', response.token, { expires: new Date(Date.now() + 900000), httpOnly: true });

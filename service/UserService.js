@@ -82,7 +82,7 @@ exports.loginUser = async (email,password) => {
   }
   delete user.password;
   const payload = Object.assign({}, user);
-  return jwt.publish(payload);
+  return Object.assign({userIdx: user.userIdx}, jwt.publish(payload));
 }
 
 
