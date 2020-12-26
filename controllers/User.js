@@ -100,3 +100,17 @@ module.exports.authUser = (req, res, next) => {
     res.status(response.status || 500).json({ message: response.message });
   })
 }
+
+module.exports.validateEmail = (req, res, next) => {
+  const { email } = req.query;
+  User.validateEmail(email)
+  .then((response) => {
+    res.status(200).json({
+      message: 'Email 중복 체크',
+      data: response
+    })
+  })
+  .catch((response) => {
+    res.status(response.status || 500).json({ message: response.message });
+  })
+}

@@ -3,7 +3,7 @@
 const jwt = require('../lib/token.js');
 const crypto = require('../lib/crypto.js');
 const userDao = require('../dao/UserDao.js');
-const { WrongPasswordError } = require('../utils/errors/errors.js');
+const { WrongPasswordError, NotMatchedError } = require('../utils/errors/errors.js');
 
 /**
  * 유저 회원 가입
@@ -109,3 +109,20 @@ exports.updateUser = ({userIdx, nickname, password, gender, phone, email, birth}
   return userDao.update({userIdx, nickname, password, gender, phone, email, birth})
 }
 
+/**
+ * Email 중복 체크
+ *
+ * @param {string} Email
+ * @returns {boolean}
+ **/
+exports.validateEmail = async (email) => {
+  try {
+    await userDao.readByEmail(email)
+    return false;
+  } catch(err) {
+    if(err instanceof NotMatchedError) {
+      return true;
+    }
+    throw err;
+  }
+}
