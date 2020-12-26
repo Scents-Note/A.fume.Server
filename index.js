@@ -1,15 +1,16 @@
 'use strict';
 
-var fs = require('fs'),
+const fs = require('fs'),
     path = require('path'),
     http = require('http');
+
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 
-var swaggerTools = require('swagger-tools');
-var jsyaml = require('js-yaml');
-var serverPort = process.env.PORT || 8080;
+const swaggerTools = require('swagger-tools');
+const jsyaml = require('js-yaml');
+const serverPort = process.env.PORT || 8080;
 
 const app = express();
 
@@ -25,7 +26,7 @@ app.use(cookieParser());
 
 const allowList = process.env.CORS_ALLOW_LIST.split(',').map(it => { return it.trim(); });
 const corsOptionsDelegate = function (req, callback) {
-  const corsOptions = { origin: allowList.indexOf(req.header('Origin')) !== -1  };
+  const corsOptions = { origin: allowList.indexOf(req.header('Origin')) !== -1, credentials: true };
   callback(null, corsOptions);
 }
 
@@ -43,9 +44,9 @@ var options = {
 };
 
 // The Swagger document (require it, build it programmatically, fetch it from a URL, ...)
-var spec = fs.readFileSync(path.join(__dirname,'api/swagger.yaml'), 'utf8');
+let spec = fs.readFileSync(path.join(__dirname,'api/swagger.yaml'), 'utf8');
 spec = spec.replace('{SERVER_URL}', localIpAddress).replace('{SERVER_PORT}', serverPort);
-var swaggerDoc = jsyaml.safeLoad(spec);
+const swaggerDoc = jsyaml.safeLoad(spec);
 
 // Initialize the Swagger middleware
 swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
