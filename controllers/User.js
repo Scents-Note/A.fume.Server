@@ -1,6 +1,7 @@
 'use strict';
 
 const User = require('../service/UserService');
+const { OK, CONFLICT, INTERNAL_SERVER_ERROR } = require('../utils/statusCode.js');
 
 module.exports.registerUser = (req, res, next) => {
   const body = req.swagger.params['body'].value;
@@ -104,12 +105,20 @@ module.exports.validateEmail = (req, res, next) => {
   const { email } = req.query;
   User.validateEmail(email)
   .then((response) => {
-    res.status(200).json({
-      message: 'Email 중복 체크',
-      data: response
-    })
+    if(response) {
+      res.status(OK).json({
+        message: 'Email 중복 체크: 사용 가능',
+        data: response
+      })
+    } else {
+      res.status(CONFLICT).json({
+        message: 'Email 중복 체크: 사용 불가능',
+        data: response
+      })
+    }
+    
   })
   .catch((response) => {
-    res.status(response.status || 500).json({ message: response.message });
+    res.status(response.status || INTERNAL_SERVER_ERROR).json({ message: response.message });
   })
 }
