@@ -52,7 +52,8 @@ exports.authUser = (token) => {
       const payload = jwt.verify(token);
       userDao.readByIdx(payload.userIdx)
       .then(user => {
-        resolve({ isAuth: true, isAdmin: user.role==1 });
+        delete user.password;
+        resolve(Object.assign({ isAuth: true, isAdmin: user.role==1 }, user));
       }).catch(err => {
         resolve({ isAuth: false, isAdmin: false});
       });
