@@ -86,7 +86,6 @@ exports.loginUser = async (email,password) => {
   return Object.assign({userIdx: user.userIdx}, jwt.publish(payload));
 }
 
-
 /**
  * 로그아웃
  * 
@@ -96,14 +95,11 @@ exports.logoutUser = () => {
   throw "Not Implemented";
 }
 
-
 /**
- * Updated user
- * This can only be done by the logged in user.
+ * 유저 정보 수정
  *
- * userIdx String name that need to be updated
- * body User Updated user object
- * no response value expected for this operation
+ * @param {Object} User
+ * @returns {}
  **/
 exports.updateUser = ({userIdx, nickname, password, gender, phone, email, birth}) => {
   return userDao.update({userIdx, nickname, password, gender, phone, email, birth})

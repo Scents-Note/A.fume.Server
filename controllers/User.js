@@ -48,7 +48,6 @@ module.exports.loginUser = (req, res, next) => {
   const { email, password} = req.body;
   User.loginUser(email, password)
     .then((response) => {
-      res.cookie('w_auth', response.token, { expires: new Date(Date.now() + 900000), httpOnly: true });
       res.status(200).json({
         message: '로그인 성공',
         data: response
@@ -88,7 +87,7 @@ module.exports.updateUser = (req, res, next) => {
 };
 
 module.exports.authUser = (req, res, next) => {
-  const token = req.cookies.w_auth || req.body.token;
+  const { token } = req.body;
   User.authUser(token)
   .then((response) => {
     res.status(200).json({
