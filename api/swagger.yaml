@@ -131,6 +131,64 @@ paths:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Perfume
+  /perfume/search/all:
+    get:
+      tags:
+      - perfume
+      summary: 향수 검색
+      operationId: searchPerfumeAll
+      security:
+        - userToken: []
+      produces:
+      - application/json
+      parameters:
+      - name: brand
+        in: query
+        type: string
+        description: 브랜드이름을 delimiter(&)로 연결
+        required: false
+      - name: series
+        in: query
+        type: string
+        description: 계열 이름을 delimiter(&)로 연결
+        required: false
+      - name: keyword
+        in: query
+        type: string
+        description: 키워드를 delimiter(&)로 연결
+        required: false
+      - name: sort
+        in: query
+        type: string
+        enum:
+        - like_asc
+        - recent_asc
+        - random_asc
+        - like_desc
+        - recent_desc
+        - random_desc
+        required: false
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 검색 성공
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Perfume'
+        400:
+          description: Invalid tag value
+        401:
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+      x-swagger-router-controller: Perfume
   /perfume/recentSearch:
     get:
       tags:
@@ -2576,6 +2634,13 @@ definitions:
           type: string
       sortBy:
         type: string
+        enum:
+        - like_asc
+        - recent_asc
+        - random_asc
+        - like_desc
+        - recent_desc
+        - random_desc
     example:
       series:
       - 플로럴
@@ -2587,7 +2652,7 @@ definitions:
       - 딥디크 파리스
       keywords:
       - 구현전
-      sortBy: 인기순
+      sortBy: recent_asc
   Wishlist:
     type: object
     properties:

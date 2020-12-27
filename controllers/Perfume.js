@@ -48,6 +48,24 @@ module.exports.searchPerfume = (req, res, next) => {
     });
 };
 
+module.exports.searchPerfumeAll = (req, res, next) => {
+  let {series, brand, keyword, sort} = req.query;
+  const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
+  series = (series && series.split('&')) || [];
+  brand = (brand && brand.split('&')) || [];
+  keyword = (keyword && keyword.split('&')) || [];
+  Perfume.searchPerfume({series, brands: brand, keywords: keyword}, sort, loginUserIdx)
+    .then((response) => {
+      res.status(OK).json({
+        message: '향수 검색 성공',
+        data: response
+      });
+    })
+    .catch((response) => {
+      res.status(response.status || INTERNAL_SERVER_ERROR).json({message: response.message});
+    });
+};
+
 module.exports.updatePerfume = (req, res, next) => {
   const body = req.swagger.params['body'].value;
   Perfume.updatePerfume(body)
