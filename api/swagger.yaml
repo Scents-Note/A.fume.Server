@@ -145,17 +145,17 @@ paths:
       - name: brand
         in: query
         type: string
-        description: 브랜드이름을 delimiter(&)로 연결
+        description: 브랜드이름을 delimiter(%)로 연결
         required: false
       - name: series
         in: query
         type: string
-        description: 계열 이름을 delimiter(&)로 연결
+        description: 계열 이름을 delimiter(%)로 연결
         required: false
       - name: keyword
         in: query
         type: string
-        description: 키워드를 delimiter(&)로 연결
+        description: 키워드를 delimiter(%)로 연결
         required: false
       - name: sort
         in: query

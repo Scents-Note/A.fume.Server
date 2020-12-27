@@ -51,9 +51,9 @@ module.exports.searchPerfume = (req, res, next) => {
 module.exports.searchPerfumeAll = (req, res, next) => {
   let {series, brand, keyword, sort} = req.query;
   const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
-  series = (series && series.split('&')) || [];
-  brand = (brand && brand.split('&')) || [];
-  keyword = (keyword && keyword.split('&')) || [];
+  series = (series && series.split('%')) || [];
+  brand = (brand && brand.split('%')) || [];
+  keyword = (keyword && keyword.split('%')) || [];
   Perfume.searchPerfume({series, brands: brand, keywords: keyword}, sort, loginUserIdx)
     .then((response) => {
       res.status(OK).json({
