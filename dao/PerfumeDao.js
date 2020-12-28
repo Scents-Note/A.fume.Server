@@ -102,11 +102,11 @@ module.exports.create = async ({brandIdx, name, englishName, volumeAndPrice, ima
  * 향수 검색
  * 
  * @param {Object} Filter - series, brands, keywords
- * @param {string} sortBy - like, recent, random
+ * @param {string} sort - 정렬 조건
  * @param {number} [userIdx=-1]
  * @returns {Promise<Perfume[]>} perfumeList
  */
-module.exports.search = async ({ series = [], brands = [], keywords = []}, sortBy = 'recent', userIdx = -1) => {
+module.exports.search = async ({ series = [], brands = [], keywords = []}, sort = 'recent_asc', userIdx = -1) => {
     let condition = '';
     let orderBy = '';
     if(series.length + brands.length + keywords.length > 0) {
@@ -122,18 +122,30 @@ module.exports.search = async ({ series = [], brands = [], keywords = []}, sortB
         }
         condition = 'WHERE ' + conditions.join(' AND ');
     }
-    if(sortBy) {
-        switch(sortBy){
+    if(sort) {
+        let [key, ascending] = sort.split('_');
+        switch(key) {
             case 'like':
-                orderBy = ' ORDER BY likeCnt DESC';
+                key = 'likeCnt';
                 break;
             case 'recent':
-                orderBy = ' ORDER BY p.release_date DESC';
+                key = 'p.release_date';
                 break;
             case 'random':
-                orderBy = ' ORDER BY RAND()';
+                key = 'RAND()';
                 break;
         }
+        switch(ascending) {
+            case 'desc':
+            case 'dsc':
+                ascending = 'DESC';
+                break;
+            case 'asc':
+            default:
+                ascending = 'ASC';
+                break;
+        }
+        orderBy = ` ORDER BY ${key} ${ascending}`;
     }
     const result = await pool.queryParam_Parse(SQL_PERFUME_SELECT_BY_FILTER + condition + orderBy, [userIdx]);
     result.map(it => {

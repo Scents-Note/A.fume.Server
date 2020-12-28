@@ -3,8 +3,12 @@
 const Brand = require('../service/BrandService');
 const { OK, INTERNAL_SERVER_ERROR } = require('../utils/statusCode.js');
 
-module.exports.getBrandList = (req, res, next) => {
-  Brand.getBrandList()
+module.exports.searchBrandAll = (req, res, next) => {
+  let { pagingIndex, pagingSize, sort } = req.query
+  pagingIndex = parseInt(pagingIndex) || 1;
+  pagingSize = parseInt(pagingSize) || 10;
+  sort = sort || 'createdAt_desc';
+  Brand.getBrandList(pagingIndex, pagingSize, sort)
     .then((response) => {
       res.status(OK).json({
         message: '브랜드 조회 성공',

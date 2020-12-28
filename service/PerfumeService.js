@@ -182,14 +182,14 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
 /**
  * 향수 검색
  *
- * @param {number} userIdx
  * @param {Object} Filter
+ * @param {string} sort
+ * @param {number} userIdx
  * @returns {Promise<Perfume[]>}
  **/
-exports.searchPerfume = (filter, sortBy, userIdx) => {
-  return perfumeDao.search(filter, sortBy, userIdx);
+exports.searchPerfume = (filter, sort, userIdx) => {
+  return perfumeDao.search(filter, sort, userIdx);
 }
-
 
 /**
  * 향수 정보 업데이트

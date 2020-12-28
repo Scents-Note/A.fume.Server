@@ -1,21 +1,15 @@
-const pool = require('../utils/db/pool.js');
-
 const {
     NotMatchedError,
-    FailedToCreateError,
 } = require('../utils/errors/errors.js');
 
-const SQL_BRAND_INSERT = 'INSERT brand(name, english_name, start_character, image_url, description) VALUES(?, ?, ?, ?, ?)';
-const SQL_BRAND_SELECT_BY_IDX = 'SELECT brand_idx as brandIdx, name, english_name as englishName, start_character as startCharacter, image_url as imageUrl, description FROM brand WHERE brand_idx = ?';
-const SQL_BRAND_SELECT_ALL = 'SELECT brand_idx as brandIdx, name, english_name as englishName, start_character as startCharacter, image_url as imageUrl, description FROM brand';
-const SQL_BRAND_UPDATE = 'UPDATE brand SET name = ?, english_name = ?, start_character = ?, image_url = ?, description = ? WHERE brand_idx = ?';
-const SQL_BRAND_DELETE = 'DELETE FROM brand WHERE brand_idx = ?';
+const { Brand } = require('../models');
 
 /**
  * 브랜드 생성
  * 
  * @param {Object} brand
  * @param {Promise}
+ * @returns {integer} brandIdx
  */
 module.exports.create = async ({
     name,
@@ -24,11 +18,8 @@ module.exports.create = async ({
     imageUrl,
     description
 }) => {
-    const { insertId } = await pool.queryParam_Parse(SQL_BRAND_INSERT, [name, englishName, startCharacter, imageUrl, description]);
-    if(insertId == 0) {
-        throw new FailedToCreateError();
-    }
-    return insertId;
+    const brand = await Brand.create({name, englishName, startCharacter, imageUrl, description})
+    return brand.dataValues.brandIdx;
 };
 
 /**
@@ -38,20 +29,20 @@ module.exports.create = async ({
  * @returns {Promise<Brand>}
  */
 module.exports.read = async (brandIdx) => {
-    const result = await pool.queryParam_Parse(SQL_BRAND_SELECT_BY_IDX, [brandIdx]);
-    if (result.length == 0) {
-        throw new NotMatchedError();
-    }
-    return result[0];
+    const brand = await Brand.findOne({where: {brandIdx}});
+    return brand;
 };
 
 /**
  * 브랜드 전체 목록 조회
  * 
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @param {array} order
  * @returns {Promise<Brand[]>}
  */
-module.exports.readAll = () => {
-    return pool.queryParam_None(SQL_BRAND_SELECT_ALL);
+module.exports.readAll = async (pagingIndex, pagingSize, order) => {
+    return await Brand.findAll({ offset: (pagingIndex - 1) * pagingSize, limit: pagingSize, order});
 };
 
 /**
@@ -68,7 +59,8 @@ module.exports.update = async ({
     imageUrl,
     description
 }) => {
-    const { affectedRows } = await pool.queryParam_Parse(SQL_BRAND_UPDATE, [name, englishName, startCharacter, imageUrl, description, brandIdx]);
+    const result = await Brand.update({name, englishName, startCharacter, imageUrl, description}, { where: {brandIdx} });
+    let affectedRows = result[0];
     if (affectedRows == 0) {
         throw new NotMatchedError();
     }
@@ -81,10 +73,6 @@ module.exports.update = async ({
  * @param {number} brandIdx
  * @returns {Promise}
  */
-module.exports.delete = async (brandIdx) => {
-    const { affectedRows } = await pool.queryParam_Parse(SQL_BRAND_DELETE, [brandIdx]);
-    if (affectedRows == 0) {
-        throw new NotMatchedError();
-    }
-    return affectedRows;
+module.exports.delete = (brandIdx) => {
+    return Brand.destroy({ where: { brandIdx }});
 };

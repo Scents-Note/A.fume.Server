@@ -131,6 +131,64 @@ paths:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Perfume
+  /perfume/search/all:
+    get:
+      tags:
+      - perfume
+      summary: 향수 검색
+      operationId: searchPerfumeAll
+      security:
+        - userToken: []
+      produces:
+      - application/json
+      parameters:
+      - name: brand
+        in: query
+        type: string
+        description: 브랜드이름을 delimiter(%)로 연결
+        required: false
+      - name: series
+        in: query
+        type: string
+        description: 계열 이름을 delimiter(%)로 연결
+        required: false
+      - name: keyword
+        in: query
+        type: string
+        description: 키워드를 delimiter(%)로 연결
+        required: false
+      - name: sort
+        in: query
+        type: string
+        enum:
+        - like_asc
+        - recent_asc
+        - random_asc
+        - like_desc
+        - recent_desc
+        - random_desc
+        required: false
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 검색 성공
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Perfume'
+        400:
+          description: Invalid tag value
+        401:
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+      x-swagger-router-controller: Perfume
   /perfume/recentSearch:
     get:
       tags:
@@ -347,40 +405,6 @@ paths:
           description: Perfume not found
       x-swagger-router-controller: Perfume
   /brand:
-    get:
-      tags:
-      - brand
-      summary: 브랜드 전체 조회
-      description: 브랜드 리스트 반환
-      operationId: getBrandList
-      produces:
-      - application/json
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: 브랜드 조회 성공
-              data:
-                type: array
-                items:
-                  allOf:
-                  - $ref: '#/definitions/BrandInfo'
-                  - type: object
-                    properties:
-                      brandIdx:
-                        type: integer
-                    example:
-                      brandIdx: 1
-        401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-      x-swagger-router-controller: Brand
     post:
       tags:
       - brand
@@ -421,6 +445,61 @@ paths:
             WWW_Authenticate:
               type: string
       deprecated: true
+      x-swagger-router-controller: Brand
+  /brand/search/all:
+    get:
+      tags:
+      - brand
+      summary: 브랜드 전체 조회
+      description: 브랜드 리스트 반환
+      operationId: searchBrandAll
+      produces:
+      - application/json
+      parameters:
+      - name: sort
+        in: query
+        type: string
+        enum:
+        - name_asc
+        - name_desc
+        - englishName_asc
+        - englishName_desc
+        - createdAt_asc
+        - createdAt_desc
+        required: false
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 브랜드 조회 성공
+              data:
+                type: array
+                items:
+                  allOf:
+                  - $ref: '#/definitions/BrandInfo'
+                  - type: object
+                    properties:
+                      brandIdx:
+                        type: integer
+                    example:
+                      brandIdx: 1
+        401:
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
       x-swagger-router-controller: Brand
   /brand/{brandIdx}:
     get:
@@ -2576,6 +2655,13 @@ definitions:
           type: string
       sortBy:
         type: string
+        enum:
+        - like_asc
+        - recent_asc
+        - random_asc
+        - like_desc
+        - recent_desc
+        - random_desc
     example:
       series:
       - 플로럴
@@ -2587,7 +2673,7 @@ definitions:
       - 딥디크 파리스
       keywords:
       - 구현전
-      sortBy: 인기순
+      sortBy: recent_asc
   Wishlist:
     type: object
     properties:
