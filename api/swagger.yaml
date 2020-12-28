@@ -405,40 +405,6 @@ paths:
           description: Perfume not found
       x-swagger-router-controller: Perfume
   /brand:
-    get:
-      tags:
-      - brand
-      summary: 브랜드 전체 조회
-      description: 브랜드 리스트 반환
-      operationId: getBrandList
-      produces:
-      - application/json
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: 브랜드 조회 성공
-              data:
-                type: array
-                items:
-                  allOf:
-                  - $ref: '#/definitions/BrandInfo'
-                  - type: object
-                    properties:
-                      brandIdx:
-                        type: integer
-                    example:
-                      brandIdx: 1
-        401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-      x-swagger-router-controller: Brand
     post:
       tags:
       - brand
@@ -479,6 +445,61 @@ paths:
             WWW_Authenticate:
               type: string
       deprecated: true
+      x-swagger-router-controller: Brand
+  /brand/search/all:
+    get:
+      tags:
+      - brand
+      summary: 브랜드 전체 조회
+      description: 브랜드 리스트 반환
+      operationId: searchBrandAll
+      produces:
+      - application/json
+      parameters:
+      - name: sort
+        in: query
+        type: string
+        enum:
+        - name_asc
+        - name_desc
+        - englishName_asc
+        - englishName_desc
+        - createdAt_asc
+        - createdAt_desc
+        required: false
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 브랜드 조회 성공
+              data:
+                type: array
+                items:
+                  allOf:
+                  - $ref: '#/definitions/BrandInfo'
+                  - type: object
+                    properties:
+                      brandIdx:
+                        type: integer
+                    example:
+                      brandIdx: 1
+        401:
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
       x-swagger-router-controller: Brand
   /brand/{brandIdx}:
     get:

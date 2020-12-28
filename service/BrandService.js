@@ -3,13 +3,31 @@
 const brandDao = require('../dao/BrandDao.js');
 
 /**
- * 브랜드 전체 조회
+ * 브랜드 검색
  *
- * @param {number} brandIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @param {string} sort
  * @returns {Promise<Brand[]>}
  **/
-exports.getBrandList = () => {
-  return brandDao.readAll();
+exports.getBrandList = (pagingIndex, pagingSize, sort) => {
+  let order = [];
+  if(sort) {
+    let [key, ascending] = sort.split('_');
+    ascending = ascending || 'desc';
+    switch(ascending) {
+        case 'desc':
+        case 'dsc':
+            ascending = 'DESC';
+            break;
+        case 'asc':
+        default:
+            ascending = 'ASC';
+            break;
+    }
+    order.push([key, ascending]);
+  }
+  return brandDao.readAll(pagingIndex, pagingSize, order);
 };
 
 /**
