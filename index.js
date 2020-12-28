@@ -22,6 +22,9 @@ const envMap = {
 dotenv.config({path: envMap[process.env.NODE_ENV || 'dev']});
 console.log(`ENV: ${process.env.NODE_ENV}`)
 
+const sequelize = require('./models').sequelize;
+sequelize.sync();
+
 app.use(cookieParser());
 
 const allowList = process.env.CORS_ALLOW_LIST.split(',').map(it => { return it.trim(); });
