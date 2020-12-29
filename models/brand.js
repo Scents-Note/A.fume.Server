@@ -5,7 +5,6 @@ module.exports = (sequelize,DataTypes)=>{
             autoIncrement: true,
             allowNull: false,
             primaryKey: true,
-            field: 'brand_idx',
             unique: true
         },
         name: {
@@ -16,18 +15,15 @@ module.exports = (sequelize,DataTypes)=>{
         englishName: {
             type: DataTypes.STRING,
             allowNull: false,
-            field: 'english_name'
         },
         startCharacter: {
             type: DataTypes.CHAR(1),
             allowNull: false,
             comment: '첫글자 카테고리',
-            field: 'start_character'
         },
         imageUrl: {
             type: DataTypes.STRING,
             allowNull: false,
-            field: 'image_url'
         },
         description: {
             type: DataTypes.STRING,
@@ -35,5 +31,6 @@ module.exports = (sequelize,DataTypes)=>{
         },
     }, {
         timestamps:true,
+        underscored: true,
     });
 };

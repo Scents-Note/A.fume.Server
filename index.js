@@ -23,7 +23,7 @@ dotenv.config({path: envMap[process.env.NODE_ENV || 'dev']});
 console.log(`ENV: ${process.env.NODE_ENV}`)
 
 const sequelize = require('./models').sequelize;
-sequelize.sync();
+sequelize.sync({force: true});
 
 app.use(cookieParser());
 
