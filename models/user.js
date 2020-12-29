@@ -1,3 +1,5 @@
+const Sequelize = require('sequelize');
+
 module.exports = (sequelize,DataTypes)=>{
     return sequelize.define('user', {
         userIdx: {
@@ -5,11 +7,11 @@ module.exports = (sequelize,DataTypes)=>{
             autoIncrement: true,
             allowNull: false,
             primaryKey: true,
-            field: 'user_idx'
         },
         email: {
             type: DataTypes.STRING,
-            allowNull: false
+            allowNull: false,
+            unique: true
         },
         nickname: {
             type: DataTypes.STRING,
@@ -32,13 +34,19 @@ module.exports = (sequelize,DataTypes)=>{
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        role: {
+        grade: {
             type: DataTypes.INTEGER,
             allowNull: false,
-            comment: '0: USER, 1: ADMIN',
+            comment: '0: USER, 1: 게시판 운영자 9: 시스템 관리자',
             defaultValue: 0
         },
+        accessTime: {
+            type: DataTypes.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+            allowNull: false,
+        }
     }, {
         timestamps:true,
+        underscored: true,
     });
 };

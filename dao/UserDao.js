@@ -1,16 +1,6 @@
-const pool = require('../utils/db/pool.js');
-const {NotMatchedError, FailedToCreateError} = require('../utils/errors/errors.js');
+const { NotMatchedError } = require('../utils/errors/errors.js');
 
-const SQL_USER_INSERT = 'INSERT user(nickname, password, gender, phone, email, birth, role) VALUES(?,?,?,?,?,?,?)';
-const SQL_USER_SELECT_BY_EMAIL = 'SELECT user_idx AS userIdx, nickname, password, IF(gender = 1, "남자", "여자") AS gender, phone, email, birth, role FROM user WHERE email = ?';
-const SQL_USER_SELECT_BY_IDX = 'SELECT user_idx AS userIdx, nickname, password, IF(gender = 1, "남자", "여자") AS gender, phone, email, birth, role FROM user WHERE user_idx = ?';
-const SQL_USER_UPDATE = 'UPDATE user SET nickname = ?, password = ?, gender = ?, phone = ?, email = ?, birth = ?, role = ? WHERE user_idx = ?';
-const SQL_USER_DELETE = 'DELETE FROM user WHERE user_idx = ?';
-
-const genderMap = {
-    '남자': 1,
-    '여자': 2,
-}
+const { sequelize, User } = require('../models');
 
 /**
  * 유저 생성
@@ -18,13 +8,10 @@ const genderMap = {
  * @param {Object} User
  * @returns {Promise}
  */
-module.exports.create = async ({nickname, password, gender, phone, email, birth, role}) => {
-    gender = genderMap[gender] || 0;
-    const result = await pool.queryParam_Parse(SQL_USER_INSERT, [nickname, password, gender, phone, email, birth, role]);
-    if(result.insertId == 0) {
-        throw new FailedToCreateError();
-    }
-    return result.insertId;
+module.exports.create = async ({nickname, password, gender, phone, email, birth, grade, accessTime}) => {
+    accessTime = accessTime || sequelize.literal('CURRENT_TIMESTAMP');
+    const { dataValues } = await User.create({ nickname, password, gender, phone, email, birth, grade, accessTime });
+    return dataValues.userIdx;
 };
 
 /**
@@ -34,12 +21,11 @@ module.exports.create = async ({nickname, password, gender, phone, email, birth,
  * @returns {Promise<User>}
  */
 module.exports.readByEmail = async (email) => {
-    const result = await pool.queryParam_Parse(SQL_USER_SELECT_BY_EMAIL, [email]);
-    if(result.length == 0) {
+    const result = await User.findOne({ where: { email }});
+    if (!result) {
         throw new NotMatchedError();
     }
-    const res = result[0];
-    return res;
+    return result.dataValues;
 };
 
 /**
@@ -49,12 +35,11 @@ module.exports.readByEmail = async (email) => {
  * @returns {Promise}
  */
 module.exports.readByIdx = async (userIdx) => {
-    const result = await pool.queryParam_Parse(SQL_USER_SELECT_BY_IDX, [userIdx]);
-    if(result.length == 0) {
+    const result = await User.findOne({ where: { userIdx }});
+    if (!result) {
         throw new NotMatchedError();
     }
-    const res = result[0];
-    return res;
+    return result.dataValues;
 };
 
 /**
@@ -63,9 +48,25 @@ module.exports.readByIdx = async (userIdx) => {
  * @param {Object} User
  * @return {Promise}
  */
-module.exports.update = async ({userIdx, nickname, password, gender, phone, birth, email, role}) => {
-    gender = genderMap[gender] || 0;
-    const { affectedRows } = await pool.queryParam_Parse(SQL_USER_UPDATE, [nickname, password, gender, phone, email, birth, role, userIdx]);
+module.exports.update = async ({userIdx, nickname, password, gender, phone, birth, email, grade}) => {
+    const result = await User.update({ nickname, password, gender, phone, email, birth, grade }, { where: { userIdx } });
+    const affectedRows = result[0];
+    if (affectedRows == 0) {
+        throw new NotMatchedError();
+    }
+    return affectedRows;
+};
+
+/**
+ * 유저 access Time 갱신
+ * 
+ * @param {number} userIdx
+ * @return {Promise}
+ */
+module.exports.updateAccessTime = async (userIdx) => {
+    const accessTime = sequelize.literal('CURRENT_TIMESTAMP');
+    const result = await User.update({ accessTime }, { where: { userIdx }, silent: true });
+    const affectedRows = result[0];
     if (affectedRows == 0) {
         throw new NotMatchedError();
     }
@@ -78,10 +79,6 @@ module.exports.update = async ({userIdx, nickname, password, gender, phone, birt
  * @param {number} userIdx
  * @return {Promise}
  */
-module.exports.delete = async (userIdx) => {   
-    const { affectedRows } = await pool.queryParam_Parse(SQL_USER_DELETE, [userIdx]); 
-    if (affectedRows == 0) {
-        throw new NotMatchedError();
-    }
-    return affectedRows;
+module.exports.delete = (userIdx) => {   
+    return User.destroy({ where: { userIdx } });
 };

@@ -29,8 +29,11 @@ module.exports.create = async ({
  * @returns {Promise<Brand>}
  */
 module.exports.read = async (brandIdx) => {
-    const brand = await Brand.findOne({where: {brandIdx}});
-    return brand;
+    const result = await Brand.findOne({where: {brandIdx}});
+    if(!result) {
+        throw new NotMatchedError();
+    }
+    return result.dataValues;
 };
 
 /**
@@ -60,7 +63,7 @@ module.exports.update = async ({
     description
 }) => {
     const result = await Brand.update({name, englishName, startCharacter, imageUrl, description}, { where: {brandIdx} });
-    let affectedRows = result[0];
+    const affectedRows = result[0];
     if (affectedRows == 0) {
         throw new NotMatchedError();
     }
