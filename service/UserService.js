@@ -11,9 +11,9 @@ const { WrongPasswordError, NotMatchedError } = require('../utils/errors/errors.
  * @param {Object} User
  * @returns {Promise}
  **/
-exports.createUser = ({id, nickname, password, gender, phone, email, birth, role}) => {
+exports.createUser = ({id, nickname, password, gender, phone, email, birth, grade}) => {
   password = crypto.encrypt(password);
-  return userDao.create({id, nickname, password, gender, phone, email, birth, role});
+  return userDao.create({id, nickname, password, gender, phone, email, birth, grade});
 }
 
 
@@ -53,7 +53,7 @@ exports.authUser = (token) => {
       userDao.readByIdx(payload.userIdx)
       .then(user => {
         delete user.password;
-        resolve(Object.assign({ isAuth: true, isAdmin: user.role==1 }, user));
+        resolve(Object.assign({ isAuth: true, isAdmin: user.grade >= 1 }, user));
       }).catch(err => {
         resolve({ isAuth: false, isAdmin: false});
       });
@@ -83,6 +83,7 @@ exports.loginUser = async (email,password) => {
   }
   delete user.password;
   const payload = Object.assign({}, user);
+  userDao.updateAccessTime(user.userIdx);
   return Object.assign({userIdx: user.userIdx}, jwt.publish(payload));
 }
 
@@ -101,8 +102,8 @@ exports.logoutUser = () => {
  * @param {Object} User
  * @returns {}
  **/
-exports.updateUser = ({userIdx, nickname, password, gender, phone, email, birth}) => {
-  return userDao.update({userIdx, nickname, password, gender, phone, email, birth})
+exports.updateUser = ({userIdx, nickname, password, gender, phone, email, birth, grade}) => {
+  return userDao.update({userIdx, nickname, password, gender, phone, email, birth, grade})
 }
 
 /**

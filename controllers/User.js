@@ -3,9 +3,15 @@
 const User = require('../service/UserService');
 const { OK, CONFLICT, INTERNAL_SERVER_ERROR } = require('../utils/statusCode.js');
 
+const genderMap = {
+  '남자': 1,
+  '여자': 2,
+};
+
 module.exports.registerUser = (req, res, next) => {
   const body = req.swagger.params['body'].value;
-  body.role = 0;
+  body.grade = 0;
+  body.gender = genderMap[body.gender] || 0;
   User.createUser(body)
     .then(() => {
       res.status(OK).json({
@@ -13,6 +19,7 @@ module.exports.registerUser = (req, res, next) => {
       });
     })
     .catch((response) => {
+      console.log(response);
       res.status(response.status || INTERNAL_SERVER_ERROR).json({ message: response.message });
     });
 };
@@ -72,6 +79,7 @@ module.exports.logoutUser = (req, res, next) => {
 module.exports.updateUser = (req, res, next) => {
   const userIdx = req.swagger.params['userIdx'].value;
   const body = req.swagger.params['body'].value;
+  body.gender = genderMap[body.gender] || 0;
   const payload = Object.assign(body, {
     userIdx
   });
