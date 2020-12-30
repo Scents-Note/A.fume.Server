@@ -9,7 +9,9 @@ const { Brand } = require('../../models');
 describe('# brandDao Test', () => {
     before(async () => {
         const sequelize = require('../../models').sequelize
+        await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
         await sequelize.sync({force: true});
+        await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
         await Brand.create({brandIdx: 1, name: '조 말론 런던', startCharacter: 'ㅈ', englishName: 'Jo Malone', imageUrl: '', description:'런던 브랜드'});
         await Brand.create({brandIdx: 2, name: '르 라보', startCharacter: 'ㄹ', englishName: 'Le Labo', imageUrl: '', description: `2006년 뉴욕에서 탄생한 핸드 메이드 퍼퓸 하우르 르 라보를 소개합니다.
         르 라보는 향수를 만드는 실험실을 테마로 하며, 핸드메이드 퍼퓸과 홈 컬렉션, 바디 컬렉션을 선보입니다.
@@ -21,8 +23,7 @@ describe('# brandDao Test', () => {
         
         르 라보는 향수를 만들어 내거나 새로운 매장을 여는 모든 과정 하나 하나에 심혈을 기울입니다.
         르 라보의 가장 중요한 미션은 우리의 작품과 그 아름다움을 세상에 공유하는 것입니다. 이것은 단순히 제품을 판매하는 차원이 아니라, 르 라보에서 감각적인 경험과 추억, 새로운 관점을 제공하는 것입니다.
-        이것은 하나의 새로운 라이프 스타일입니다.`})
-        
+        이것은 하나의 새로운 라이프 스타일입니다.`});
     });
     describe('# create Test', () => {
         before(async () => {

@@ -13,9 +13,20 @@ const sequelize = new Sequelize(
 );
 
 const db = {}; 
+
+db.User = require('./user')(sequelize, Sequelize);
+db.Brand = require('./brand')(sequelize, Sequelize);
+db.Series = require('./series')(sequelize, Sequelize);
+db.Perfume = require('./perfume')(sequelize, Sequelize); 
+db.PerfumeDetail = require('./perfumeDetail')(sequelize, Sequelize); 
+
+for(const key in db) {
+    const value = db[key];
+    if(!value.associate) continue;
+    value.associate(db);
+}
+
 db.sequelize = sequelize; 
 db.Sequelize = Sequelize; 
-db.User = require('./user')(sequelize, Sequelize); 
-db.Brand = require('./brand')(sequelize, Sequelize); 
 
 module.exports = db;

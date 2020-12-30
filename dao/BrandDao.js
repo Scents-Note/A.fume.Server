@@ -44,8 +44,8 @@ module.exports.read = async (brandIdx) => {
  * @param {array} order
  * @returns {Promise<Brand[]>}
  */
-module.exports.readAll = async (pagingIndex, pagingSize, order) => {
-    return await Brand.findAll({ offset: (pagingIndex - 1) * pagingSize, limit: pagingSize, order});
+module.exports.readAll = (pagingIndex, pagingSize, order) => {
+    return Brand.findAll({ offset: (pagingIndex - 1) * pagingSize, limit: pagingSize, order}, {raw: true, nest: true});
 };
 
 /**
