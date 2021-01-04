@@ -35,7 +35,7 @@ module.exports.readByEmail = async (email) => {
  * @returns {Promise}
  */
 module.exports.readByIdx = async (userIdx) => {
-    const result = await User.findOne({ where: { userIdx }});
+    const result = await User.findByPk(userIdx);
     if (!result) {
         throw new NotMatchedError();
     }

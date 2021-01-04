@@ -29,7 +29,7 @@ module.exports.create = async ({
  * @returns {Promise<Brand>}
  */
 module.exports.read = async (brandIdx) => {
-    const result = await Brand.findOne({where: {brandIdx}});
+    const result = await Brand.findByPk(brandIdx);
     if(!result) {
         throw new NotMatchedError();
     }
@@ -44,8 +44,12 @@ module.exports.read = async (brandIdx) => {
  * @param {array} order
  * @returns {Promise<Brand[]>}
  */
-module.exports.readAll = (pagingIndex, pagingSize, order) => {
-    return Brand.findAll({ offset: (pagingIndex - 1) * pagingSize, limit: pagingSize, order}, {raw: true, nest: true});
+module.exports.readAll = async (pagingIndex, pagingSize, order) => {
+    return Brand.findAll({ 
+        offset: (pagingIndex - 1) * pagingSize, 
+        limit: pagingSize, 
+        order
+    });
 };
 
 /**
@@ -62,8 +66,7 @@ module.exports.update = async ({
     imageUrl,
     description
 }) => {
-    const result = await Brand.update({name, englishName, startCharacter, imageUrl, description}, { where: {brandIdx} });
-    const affectedRows = result[0];
+    const [ affectedRows ] = await Brand.update({name, englishName, startCharacter, imageUrl, description}, { where: {brandIdx} });
     if (affectedRows == 0) {
         throw new NotMatchedError();
     }

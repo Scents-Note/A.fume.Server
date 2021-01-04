@@ -1,18 +1,17 @@
 const dotenv = require('dotenv');
-dotenv.config({path: './config/.env.tst'});
+dotenv.config({path: './config/.env.test'});
 
 const chai = require('chai');
 const { expect } = chai;
 const userDao = require('../../dao/UserDao.js');
 const { NotMatchedError } = require('../../utils/errors/errors.js');
-const { User } = require('../../models');
+const { User, sequelize } = require('../../models');
 
 describe('# userDao Test', () => {
     before(async () => {
-        const sequelize = require('../../models').sequelize
-        await sequelize.sync({ force: true });
-        await User.create({userIdx: 1, nickname: '쿼카맨', password: 'dummy', gender: 1, phone: '010-2081-3818', email: 'heesung6701@naver.com', birth: '1995', grade: 1});
-    })
+        await sequelize.sync();
+        await User.upsert({userIdx: 1, nickname: '쿼카맨', password: 'dummy', gender: 1, phone: '010-2081-3818', email: 'heesung6701@naver.com', birth: '1995', grade: 1});
+    });
     describe('# create Test', () => {
         before(async () => {
             await User.destroy({where: { email: 'createTest@afume.com' }});

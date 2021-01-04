@@ -4,16 +4,13 @@ dotenv.config({path: './config/.env.test'});
 const chai = require('chai');
 const { expect } = chai;
 const brandDao = require('../../dao/BrandDao.js');
-const { Brand } = require('../../models');
+const { Brand, sequelize } = require('../../models');
 
 describe('# brandDao Test', () => {
     before(async () => {
-        const sequelize = require('../../models').sequelize
-        await sequelize.query('SET FOREIGN_KEY_CHECKS = 0');
-        await sequelize.sync({force: true});
-        await sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
-        await Brand.create({brandIdx: 1, name: '조 말론 런던', startCharacter: 'ㅈ', englishName: 'Jo Malone', imageUrl: '', description:'런던 브랜드'});
-        await Brand.create({brandIdx: 2, name: '르 라보', startCharacter: 'ㄹ', englishName: 'Le Labo', imageUrl: '', description: `2006년 뉴욕에서 탄생한 핸드 메이드 퍼퓸 하우르 르 라보를 소개합니다.
+        await sequelize.sync();
+        await Brand.upsert({brandIdx: 1, name: '조 말론 런던', startCharacter: 'ㅈ', englishName: 'Jo Malone', imageUrl: '', description:'런던 브랜드'});
+        await Brand.upsert({brandIdx: 2, name: '르 라보', startCharacter: 'ㄹ', englishName: 'Le Labo', imageUrl: '', description: `2006년 뉴욕에서 탄생한 핸드 메이드 퍼퓸 하우르 르 라보를 소개합니다.
         르 라보는 향수를 만드는 실험실을 테마로 하며, 핸드메이드 퍼퓸과 홈 컬렉션, 바디 컬렉션을 선보입니다.
         르 라보의 퍼퓸 컬렉션은 재능 있고 독창적인 조향사들과의 작업으로 만들어집니다.
         
