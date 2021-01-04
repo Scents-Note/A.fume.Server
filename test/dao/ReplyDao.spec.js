@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-dotenv.config({path: './config/.env.tst'});
+dotenv.config({path: './config/.env.test'});
 
 const chai = require('chai');
 const should = chai.should();

@@ -15,11 +15,7 @@ const serverPort = process.env.PORT || 8080;
 const app = express();
 
 const dotenv = require('dotenv');
-const envMap = {
-  'prd': './config/.env',
-  'dev': './config/.env.dev'
-};
-dotenv.config({path: envMap[process.env.NODE_ENV || 'dev']});
+dotenv.config();
 console.log(`ENV: ${process.env.NODE_ENV}`)
 
 const sequelize = require('./models').sequelize;

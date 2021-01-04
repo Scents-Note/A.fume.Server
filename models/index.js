@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize(
-    process.env.MYSQL_DB_NAME,
+const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/../config/config.js')[env];
     process.env.MYSQL_USER,
     process.env.MYSQL_PWD,
     {
@@ -12,6 +12,7 @@ const sequelize = new Sequelize(
     }
 );
 
+const sequelize = new Sequelize(config.database, config.username, config.password, config);
 const db = {}; 
 
 db.User = require('./user')(sequelize, Sequelize);
