@@ -1,7 +1,10 @@
-const Sequelize = require('sequelize');
-
-module.exports = (sequelize,DataTypes)=>{
-    return sequelize.define('user', {
+'use strict';
+const {
+    Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+    class User extends Model { };
+    User.init( {
         userIdx: {
             type: DataTypes.INTEGER,
             autoIncrement: true,
@@ -42,11 +45,14 @@ module.exports = (sequelize,DataTypes)=>{
         },
         accessTime: {
             type: DataTypes.DATE,
-            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+            defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: false,
         }
     }, {
-        timestamps:true,
+        modelName: 'User',
+        timestamps: true,
         underscored: true,
+        sequelize,
     });
+    return User;
 };
