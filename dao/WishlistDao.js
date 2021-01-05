@@ -1,16 +1,10 @@
 const pool = require('../utils/db/pool.js');
 
 const {
-    NotMatchedError, FailedToCreateError
+    NotMatchedError
 } = require('../utils/errors/errors.js');
 
-const SQL_WISHLIST_INSERT = 'INSERT wishlist(user_idx, perfume_idx, priority) VALUES(?,?,?);'
-const SQL_WISHLIST_SELECT_BY_USER_IDX = 'SELECT user_idx as UserIdx, perfume_idx as perfumeIdx, priority FROM wishlist WHERE user_idx = ?;'
-const SQL_WISHLIST_SELECT_BY_PK = 'SELECT user_idx as userIdx, perfume_idx as perfumeIdx, priority FROM wishlist WHERE user_idx = ? AND perfume_idx = ?;'
-const SQL_WISHLIST_UPDATE = 'UPDATE wishlist SET priority = ? WHERE perfume_idx = ? AND user_idx = ?'
-const SQL_WISHLIST_DELETE_BY_USER_IDX = 'DELETE FROM wishlist WHERE user_idx = ?'
-const SQL_WISHLIST_DELETE = 'DELETE FROM wishlist WHERE user_idx = ? AND perfume_idx = ?;'
-
+const { sequelize, Wishlist } = require('../models');
 /**
  * 위시리스트 등록
  * 
@@ -20,11 +14,8 @@ const SQL_WISHLIST_DELETE = 'DELETE FROM wishlist WHERE user_idx = ? AND perfume
  * @returns {Promise}
  */
 module.exports.create = async (perfumeIdx, userIdx, priority) => {
-    const { affectedRows } = await pool.queryParam_Parse(SQL_WISHLIST_INSERT, [userIdx, perfumeIdx, priority]);
-    if(affectedRows == 0) {
-        throw new FailedToCreateError();
-    }
-    return affectedRows;
+    const wishlist = await Wishlist.create({perfumeIdx, userIdx, priority});
+    return wishlist.dataValues;
 }
 
 /**
@@ -34,7 +25,7 @@ module.exports.create = async (perfumeIdx, userIdx, priority) => {
  * @returns {Promise<WishList[]>}
  */
 module.exports.readByUserIdx = (userIdx) => {
-    return pool.queryParam_Parse(SQL_WISHLIST_SELECT_BY_USER_IDX, [userIdx]);
+    return Wishlist.findAll({ where: { userIdx } });
 }
 
 /**
@@ -45,11 +36,11 @@ module.exports.readByUserIdx = (userIdx) => {
  * @returns {Promise<WishList[]>}
  */
 module.exports.readByPK = async (perfumeIdx, userIdx) => {
-    const result = await pool.queryParam_Parse(SQL_WISHLIST_SELECT_BY_PK, [userIdx, perfumeIdx]);
-    if (result.length == 0) {
+    const result = await Wishlist.findOne({ where: { userIdx, perfumeIdx } });
+    if (!result) {
         throw new NotMatchedError();
     }
-    return result[0];
+    return result.dataValues;
 }
 
 /**
@@ -61,7 +52,7 @@ module.exports.readByPK = async (perfumeIdx, userIdx) => {
  * @returns {Promise}
  */
 module.exports.update = async (perfumeIdx, userIdx, priority) => {
-    const { affectedRows } = await pool.queryParam_Parse(SQL_WISHLIST_UPDATE, [priority, perfumeIdx, userIdx]);
+    const [ affectedRows ] = await Wishlist.update({ priority }, { where: { perfumeIdx, userIdx }});
     if (affectedRows == 0) {
         throw new NotMatchedError();
     }
@@ -74,12 +65,8 @@ module.exports.update = async (perfumeIdx, userIdx, priority) => {
  * @param {number} userIdx
  * @returns {Promise}
  */
-module.exports.deleteByUserIdx = async (userIdx) => {   
-    const { affectedRows } = await pool.queryParam_Parse(SQL_WISHLIST_DELETE_BY_USER_IDX, [userIdx]);
-    if (affectedRows == 0) {
-        throw new NotMatchedError();
-    }
-    return affectedRows;
+module.exports.deleteByUserIdx = (userIdx) => {   
+    return Wishlist.destroy({ where: { userIdx } });
 }
 
 /**
@@ -89,10 +76,6 @@ module.exports.deleteByUserIdx = async (userIdx) => {
  * @param {number} userIdx
  * @returns {Promise}
  */
-module.exports.delete = async (perfumeIdx, userIdx) => {   
-    const { affectedRows } = await pool.queryParam_Parse(SQL_WISHLIST_DELETE, [userIdx, perfumeIdx]);
-    if (affectedRows == 0) {
-        throw new NotMatchedError();
-    }
-    return affectedRows;
+module.exports.delete = (perfumeIdx, userIdx) => {   
+    return Wishlist.destroy({ where: { userIdx, perfumeIdx } });
 }
