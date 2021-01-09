@@ -63,14 +63,25 @@ describe('# brandDao Test', () => {
         });
     });
 
+    describe('# search Test', () => {
+        it('# success case', (done) => {
+            brandDao.search(1, 10, [['createdAt', 'desc']]).then((result) => {
+                expect(result.count).gt(0);
+                expect(result.rows.length).gt(0);
+                done();
+            });
+        });
+    });
+
     describe('# readAll Test', () => {
         it('# success case', (done) => {
-            brandDao.readAll(1, 10, [['createdAt', 'desc']]).then((result) => {
+            brandDao.readAll([['createdAt', 'desc']]).then((result) => {
                 expect(result.length).gt(0);
                 done();
             });
         });
     });
+
 
     describe('# update Test', () => {
         let brandIdx;

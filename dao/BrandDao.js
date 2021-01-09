@@ -37,17 +37,29 @@ module.exports.read = async (brandIdx) => {
 };
 
 /**
- * 브랜드 전체 목록 조회
+ * 브랜드 검색
  * 
  * @param {number} pagingIndex
  * @param {number} pagingSize
  * @param {array} order
- * @returns {Promise<Brand[]>}
+ * @returns {Promise<Object>}
  */
-module.exports.readAll = async (pagingIndex, pagingSize, order) => {
-    return Brand.findAll({ 
+module.exports.search = (pagingIndex, pagingSize, order) => {
+    return Brand.findAndCountAll({ 
         offset: (pagingIndex - 1) * pagingSize, 
         limit: pagingSize, 
+        order
+    });
+};
+
+/**
+ * 브랜드 전체 목록 조회
+ * 
+ * @param {array} order
+ * @returns {Promise<Brand[]>}
+ */
+module.exports.readAll = async (order) => {
+    return Brand.findAll({ 
         order
     });
 };
