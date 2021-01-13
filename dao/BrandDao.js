@@ -1,4 +1,7 @@
-const { NotMatchedError } = require('../utils/errors/errors.js');
+const {
+    NotMatchedError,
+    DuplicatedEntryError,
+} = require('../utils/errors/errors.js');
 
 const { Brand } = require('../models');
 
@@ -9,21 +12,32 @@ const { Brand } = require('../models');
  * @param {Promise}
  * @returns {integer} brandIdx
  */
-module.exports.create = async ({
+module.exports.create = ({
     name,
     englishName,
     startCharacter,
     imageUrl,
     description,
 }) => {
-    const brand = await Brand.create({
+    return Brand.create({
         name,
         englishName,
         startCharacter,
         imageUrl,
         description,
-    });
-    return brand.dataValues.brandIdx;
+    })
+        .then((brand) => {
+            return brand.dataValues.brandIdx;
+        })
+        .catch((err) => {
+            if (
+                err.parent.errno === 1062 ||
+                err.parent.code === 'ER_DUP_ENTRY'
+            ) {
+                throw new DuplicatedEntryError();
+            }
+            throw err;
+        });
 };
 
 /**

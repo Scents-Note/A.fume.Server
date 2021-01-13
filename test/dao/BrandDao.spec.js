@@ -5,6 +5,7 @@ const chai = require('chai');
 const { expect } = chai;
 const brandDao = require('../../dao/BrandDao.js');
 const { Brand, sequelize } = require('../../models');
+const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
 
 describe('# brandDao Test', () => {
     before(async () => {
@@ -72,8 +73,7 @@ describe('# brandDao Test', () => {
                     done();
                 })
                 .catch((err) => {
-                    expect(err.parent.errno).eq(1062);
-                    expect(err.parent.code).eq('ER_DUP_ENTRY');
+                    expect(err).instanceOf(DuplicatedEntryError);
                     done();
                 });
         });
