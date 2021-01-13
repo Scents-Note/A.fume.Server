@@ -1,7 +1,5 @@
 'use strict';
-const {
-    Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Wishlist extends Model {
         static associate(models) {
@@ -9,40 +7,43 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: {
                     name: 'perfumeIdx',
                     allowNull: false,
-                    primaryKey: true
+                    primaryKey: true,
                 },
                 as: 'Perfume',
-                onDelete: 'CASCADE'
+                onDelete: 'CASCADE',
             });
             this.belongsTo(models.User, {
                 foreignKey: {
                     name: 'userIdx',
                     allowNull: false,
-                    primaryKey: true
+                    primaryKey: true,
                 },
                 as: 'User',
-                onDelete: 'CASCADE'
+                onDelete: 'CASCADE',
             });
         }
-    };
-    Wishlist.init({
-        userIdx: {
-            type: DataTypes.INTEGER,
-            primaryKey: true
+    }
+    Wishlist.init(
+        {
+            userIdx: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+            },
+            perfumeIdx: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+            },
+            priority: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
         },
-        perfumeIdx: {
-            type: DataTypes.INTEGER,
-            primaryKey: true
-        },
-        priority: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-    }, {
-        modelName: 'Wishlist',
-        timestamps: true,
-        underscored: true,
-        sequelize,
-    });
+        {
+            modelName: 'Wishlist',
+            timestamps: true,
+            underscored: true,
+            sequelize,
+        }
+    );
     return Wishlist;
 };

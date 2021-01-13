@@ -1,7 +1,5 @@
 'use strict';
-const {
-    Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
     class Perfume extends Model {
@@ -9,50 +7,53 @@ module.exports = (sequelize, DataTypes) => {
             Perfume.belongsTo(models.Brand, {
                 foreignKey: {
                     name: 'brandIdx',
-                    allowNull: false
+                    allowNull: false,
                 },
                 as: 'Brand',
-                onDelete: 'CASCADE'
+                onDelete: 'CASCADE',
             });
             Perfume.belongsTo(models.Series, {
                 foreignKey: {
                     name: 'mainSeriesIdx',
-                    allowNull: false
+                    allowNull: false,
                 },
                 as: 'MainSeries',
-                onDelete: 'CASCADE'
+                onDelete: 'CASCADE',
             });
         }
     }
-    Perfume.init({
-        perfumeIdx: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            allowNull: false,
-            primaryKey: true
+    Perfume.init(
+        {
+            perfumeIdx: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                allowNull: false,
+                primaryKey: true,
+            },
+            name: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                unique: true,
+            },
+            englishName: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            imageThumbnailUrl: {
+                type: DataTypes.STRING,
+                allowNull: false,
+            },
+            releaseDate: {
+                type: DataTypes.DATEONLY,
+                allowNull: false,
+            },
         },
-        name: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true
-        },
-        englishName: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        imageThumbnailUrl: {
-            type: DataTypes.STRING,
-            allowNull: false,
-        },
-        releaseDate: {
-            type: DataTypes.DATEONLY,
-            allowNull: false,
+        {
+            modelName: 'Perfume',
+            timestamps: true,
+            underscored: true,
+            sequelize,
         }
-    }, {
-        modelName: 'Perfume',
-        timestamps: true,
-        underscored: true,
-        sequelize,
-    });
+    );
     return Perfume;
 };

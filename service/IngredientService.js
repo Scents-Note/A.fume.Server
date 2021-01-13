@@ -1,7 +1,6 @@
 'use strict';
 const ingredientDAO = require('../dao/IngredientDao.js');
 
-
 /**
  * 향료 삽입
  * 향료 삽입
@@ -9,10 +8,9 @@ const ingredientDAO = require('../dao/IngredientDao.js');
  * body IngredientInfo Insert new ingredient info (optional)
  * no response value expected for this operation
  **/
-exports.postIngredient = ({name, englishName, description, seriesName}) => {
-  return ingredientDAO.create({name, englishName, description, seriesName});
+exports.postIngredient = ({ name, englishName, description, seriesName }) => {
+    return ingredientDAO.create({ name, englishName, description, seriesName });
 };
-
 
 /**
  * 특정 향료 조회
@@ -22,9 +20,8 @@ exports.postIngredient = ({name, englishName, description, seriesName}) => {
  * returns IngredientInfo
  **/
 exports.getIngredientByIdx = (ingredientIdx) => {
-  return ingredientDAO.read(ingredientIdx);
+    return ingredientDAO.read(ingredientIdx);
 };
-
 
 /**
  * 향료 목록 조회
@@ -33,10 +30,8 @@ exports.getIngredientByIdx = (ingredientIdx) => {
  * returns List
  **/
 exports.getIngredientList = () => {
-  return ingredientDAO.readAll();
+    return ingredientDAO.readAll();
 };
-
-
 
 /**
  * 향료 수정
@@ -46,10 +41,14 @@ exports.getIngredientList = () => {
  * body IngredientInfo Updated series info (optional)
  * no response value expected for this operation
  **/
-exports.putIngredient = ({ingredientIdx, name, englishName, description}) => {
-  return ingredientDAO.update({ingredientIdx, name, englishName, description});
+exports.putIngredient = ({ ingredientIdx, name, englishName, description }) => {
+    return ingredientDAO.update({
+        ingredientIdx,
+        name,
+        englishName,
+        description,
+    });
 };
-
 
 /**
  * 향료 삭제
@@ -59,5 +58,5 @@ exports.putIngredient = ({ingredientIdx, name, englishName, description}) => {
  * no response value expected for this operation
  **/
 exports.deleteIngredient = (ingredientIdx) => {
-  return ingredientDAO.delete(ingredientIdx);
+    return ingredientDAO.delete(ingredientIdx);
 };

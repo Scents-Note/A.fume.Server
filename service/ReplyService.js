@@ -10,9 +10,8 @@ const replyDao = require('../dao/ReplyDao.js');
  * no response value expected for this operation
  **/
 exports.deleteReply = (replyIdx) => {
-  return replyDao.delete(replyIdx);
+    return replyDao.delete(replyIdx);
 };
-
 
 /**
  * 댓글 반환
@@ -22,9 +21,8 @@ exports.deleteReply = (replyIdx) => {
  * returns Reply
  **/
 exports.getReplyByIdx = (replyIdx) => {
-  return replyDao.read(replyIdx);
+    return replyDao.read(replyIdx);
 };
-
 
 /**
  * 전체 댓글 반환
@@ -34,9 +32,8 @@ exports.getReplyByIdx = (replyIdx) => {
  * returns List
  **/
 exports.getReplyOfReview = (reviewIdx) => {
-  return replyDao.readAll(reviewIdx);
+    return replyDao.readAll(reviewIdx);
 };
-
 
 /**
  * 댓글 추가
@@ -46,10 +43,9 @@ exports.getReplyOfReview = (reviewIdx) => {
  * body ReplyInfo 댓글 정보
  * no response value expected for this operation
  **/
-exports.postReply = ({userIdx, reviewIdx, content}) => {
-  return replyDao.create({userIdx, reviewIdx, content});
+exports.postReply = ({ userIdx, reviewIdx, content }) => {
+    return replyDao.create({ userIdx, reviewIdx, content });
 };
-
 
 /**
  * 댓글 수정
@@ -59,7 +55,6 @@ exports.postReply = ({userIdx, reviewIdx, content}) => {
  * body ReplyInfo  (optional)
  * no response value expected for this operation
  **/
-exports.updateReply = ({replyIdx, content}) => {
-  return replyDao.update({replyIdx, content});
+exports.updateReply = ({ replyIdx, content }) => {
+    return replyDao.update({ replyIdx, content });
 };
-

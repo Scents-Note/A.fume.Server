@@ -9,9 +9,9 @@ const seriesDAO = require('../dao/SeriesDao.js');
  * body SeriesInfo Insert new series info (optional)
  * no response value expected for this operation
  **/
-exports.postSeries = ({name, englishName, description}) => {
-  return seriesDAO.create({name, englishName, description});
-}
+exports.postSeries = ({ name, englishName, description }) => {
+    return seriesDAO.create({ name, englishName, description });
+};
 
 /**
  * 특정 계열 조회
@@ -21,9 +21,8 @@ exports.postSeries = ({name, englishName, description}) => {
  * returns SeriesInfo
  **/
 exports.getSeriesByIdx = (seriesIdx) => {
-  return seriesDAO.read(seriesIdx);
+    return seriesDAO.read(seriesIdx);
 };
-
 
 /**
  * 계열 전체 목록 조회
@@ -32,11 +31,9 @@ exports.getSeriesByIdx = (seriesIdx) => {
  * returns List
  **/
 exports.getSeriesList = () => {
-  console.log("service -> series getList");
-  return seriesDAO.readAll();
+    console.log('service -> series getList');
+    return seriesDAO.readAll();
 };
-
-
 
 /**
  * 계열 수정
@@ -46,10 +43,9 @@ exports.getSeriesList = () => {
  * body SeriesInfo Updated series info (optional)
  * no response value expected for this operation
  **/
-exports.putSeries = ({seriesIdx, name, englishName, description}) => {
-  return seriesDAO.update({seriesIdx, name, englishName, description});
+exports.putSeries = ({ seriesIdx, name, englishName, description }) => {
+    return seriesDAO.update({ seriesIdx, name, englishName, description });
 };
-
 
 /**
  * 계열 삭제
@@ -59,5 +55,5 @@ exports.putSeries = ({seriesIdx, name, englishName, description}) => {
  * no response value expected for this operation
  **/
 exports.deleteSeries = (seriesIdx) => {
-  return seriesDAO.delete(seriesIdx);
-}
+    return seriesDAO.delete(seriesIdx);
+};

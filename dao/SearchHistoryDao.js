@@ -6,5 +6,8 @@ const { SearchHistory } = require('../models');
  * @param {number} perfumeIdx
  */
 module.exports.create = (userIdx, perfumeIdx) => {
-    return SearchHistory.create({userIdx, perfumeIdx}, {raw: true, nest: true});
-}
+    return SearchHistory.create(
+        { userIdx, perfumeIdx },
+        { raw: true, nest: true }
+    );
+};
