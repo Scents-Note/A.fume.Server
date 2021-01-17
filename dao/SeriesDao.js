@@ -32,8 +32,22 @@ module.exports.create = ({ name, englishName, description }) => {
  * @param {number} seriesIdx
  * @return {Promise<Series>}
  */
-module.exports.read = async (seriesIdx) => {
+module.exports.readByIdx = async (seriesIdx) => {
     const result = await Series.findByPk(seriesIdx);
+    if (!result) {
+        throw new NotMatchedError();
+    }
+    return result.dataValues;
+};
+
+/**
+ * 계열 조회
+ *
+ * @param {string} seriesName
+ * @return {Promise<Series>}
+ */
+module.exports.readByName = async (seriesName) => {
+    const result = await Series.findOne({ where: { name: seriesName } });
     if (!result) {
         throw new NotMatchedError();
     }

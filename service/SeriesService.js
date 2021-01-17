@@ -22,7 +22,7 @@ exports.postSeries = ({ name, englishName, description }) => {
  * @returns {Promise<Series>}
  **/
 exports.getSeriesByIdx = (seriesIdx) => {
-    return seriesDAO.read(seriesIdx);
+    return seriesDAO.readByIdx(seriesIdx);
 };
 
 /**

@@ -82,9 +82,18 @@ describe('# seriesDao Test', () => {
                 })
             )[0].seriesIdx;
         });
-        it('# success case', (done) => {
+        it('# success case(readyByIdx)', (done) => {
             seriesDao
-                .read(seriesIdx)
+                .readByIdx(seriesIdx)
+                .then((result) => {
+                    expect(result.name).eq('읽기 데이터');
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+        it('# success case(readByName)', (done) => {
+            seriesDao
+                .readByName('읽기 데이터')
                 .then((result) => {
                     expect(result.name).eq('읽기 데이터');
                     done();
