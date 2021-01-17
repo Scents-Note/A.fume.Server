@@ -4,21 +4,17 @@ module.exports = (sequelize, DataTypes) => {
     class Wishlist extends Model {
         static associate(models) {
             this.belongsTo(models.Perfume, {
-                foreignKey: {
-                    name: 'perfumeIdx',
-                    allowNull: false,
-                    primaryKey: true,
-                },
+                foreignKey: 'perfumeIdx',
                 as: 'Perfume',
+                onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
-            this.belongsTo(models.User, {
-                foreignKey: {
-                    name: 'userIdx',
-                    allowNull: false,
-                    primaryKey: true,
-                },
-                as: 'User',
+            models.User.belongsToMany(models.Perfume, {
+                as: 'MyWishList',
+                through: 'Wishlist',
+                foreignKey: 'userIdx',
+                otherKey: 'perfumeIdx',
+                onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
         }

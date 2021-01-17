@@ -10,7 +10,8 @@ module.exports = (sequelize, DataTypes) => {
                     allowNull: false,
                 },
                 as: 'Brand',
-                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                onDelete: 'RESTRICT',
             });
             Perfume.belongsTo(models.Series, {
                 foreignKey: {
@@ -18,7 +19,12 @@ module.exports = (sequelize, DataTypes) => {
                     allowNull: false,
                 },
                 as: 'MainSeries',
-                onDelete: 'CASCADE',
+                onUpdate: 'CASCADE',
+                onDelete: 'RESTRICT',
+            });
+            Perfume.hasOne(models.PerfumeDetail, {
+                foreignKey: 'perfumeIdx',
+                as: 'PerfumeDetail',
             });
         }
     }

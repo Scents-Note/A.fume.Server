@@ -3,8 +3,15 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class PerfumeDetail extends Model {
         static associate(models) {
-            models.Perfume.hasOne(this, {
-                foreignKey: 'perfumeIdx',
+            this.belongsTo(models.Perfume, {
+                foreignKey: {
+                    name: 'perfumeIdx',
+                    allowNull: false,
+                    primaryKey: true,
+                },
+                as: 'Perfume',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
             });
         }
     }

@@ -1,46 +1,43 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class SearchHistory extends Model {
+    class likePerfume extends Model {
         static associate(models) {
-            this.belongsTo(models.Perfume, {
+            models.User.belongsToMany(models.Perfume, {
                 foreignKey: 'perfumeIdx',
-                as: 'Perfume',
+                through: 'LikePerfume',
+                as: 'MyLikePerfumes',
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
-            models.User.belongsToMany(models.Perfume, {
-                as: 'MySearchHistories',
-                through: 'SearchHistory',
+            models.Perfume.belongsToMany(models.User, {
                 foreignKey: 'userIdx',
-                otherKey: 'perfumeIdx',
+                through: 'LikePerfume',
+                as: 'LikedUsers',
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
         }
     }
-    SearchHistory.init(
+    likePerfume.init(
         {
             userIdx: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
+                allowNull: false,
             },
             perfumeIdx: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
-            },
-            createdAt: {
-                type: DataTypes.DATE,
-                defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
                 allowNull: false,
             },
         },
         {
-            modelName: 'SearchHistory',
-            timestamps: false,
-            underscored: true,
             sequelize,
+            modelName: 'LikePerfume',
+            timestamps: true,
+            underscored: true,
         }
     );
-    return SearchHistory;
+    return likePerfume;
 };
