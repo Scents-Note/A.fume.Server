@@ -1,7 +1,7 @@
 'use strict';
 
 const Brand = require('../service/BrandService');
-const { OK, INTERNAL_SERVER_ERROR } = require('../utils/statusCode.js');
+const { OK } = require('../utils/statusCode.js');
 
 module.exports.searchBrand = (req, res, next) => {
     let { pagingIndex, pagingSize, sort } = req.query;
@@ -11,15 +11,11 @@ module.exports.searchBrand = (req, res, next) => {
     Brand.searchBrand(pagingIndex, pagingSize, sort)
         .then((response) => {
             res.status(OK).json({
-                message: '브랜드 조회 성공',
+                message: '브랜드 검색 성공',
                 data: response,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.getBrandAll = (req, res, next) => {
@@ -32,11 +28,7 @@ module.exports.getBrandAll = (req, res, next) => {
                 data: response,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.getBrandByIdx = (req, res, next) => {
@@ -48,11 +40,7 @@ module.exports.getBrandByIdx = (req, res, next) => {
                 data: response,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.postBrand = (req, res, next) => {
@@ -76,11 +64,7 @@ module.exports.postBrand = (req, res, next) => {
                 data: response,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.putBrand = (req, res, next) => {
@@ -105,11 +89,7 @@ module.exports.putBrand = (req, res, next) => {
                 message: '브랜드 수정 성공',
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.deleteBrand = (req, res, next) => {
@@ -120,9 +100,5 @@ module.exports.deleteBrand = (req, res, next) => {
                 message: '브랜드 삭제 성공',
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };

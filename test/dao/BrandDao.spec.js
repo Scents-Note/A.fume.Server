@@ -54,10 +54,7 @@ describe('# brandDao Test', () => {
                     expect(result).gt(0);
                     done();
                 })
-                .catch(() => {
-                    expect(false).true();
-                    done();
-                });
+                .catch((err) => done(err));
         });
         it('# DuplicatedEntryError case', (done) => {
             brandDao
@@ -69,13 +66,13 @@ describe('# brandDao Test', () => {
                     description: '',
                 })
                 .then(() => {
-                    expect(false).true();
-                    done();
+                    done(new Error('expected DuplicatedEntryError'));
                 })
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
                     done();
-                });
+                })
+                .catch((err) => done(err));
         });
     });
 
@@ -89,10 +86,7 @@ describe('# brandDao Test', () => {
                     expect(result.description.length).gt(0);
                     done();
                 })
-                .catch((err) => {
-                    expect(false).true();
-                    done();
-                });
+                .catch((err) => done(err));
         });
     });
 
@@ -108,10 +102,13 @@ describe('# brandDao Test', () => {
 
     describe('# readAll Test', () => {
         it('# success case', (done) => {
-            brandDao.readAll([['createdAt', 'desc']]).then((result) => {
-                expect(result.length).gt(0);
-                done();
-            });
+            brandDao
+                .readAll([['createdAt', 'desc']])
+                .then((result) => {
+                    expect(result.length).gt(0);
+                    done();
+                })
+                .catch((err) => done(err));
         });
     });
 
@@ -148,7 +145,8 @@ describe('# brandDao Test', () => {
                     expect(updated.imageUrl).eq('image_url');
                     expect(updated.description).eq('변경완료');
                     done();
-                });
+                })
+                .catch((err) => done(err));
         });
         after(async () => {
             await Brand.destroy({ where: { brandIdx } });
@@ -168,10 +166,13 @@ describe('# brandDao Test', () => {
             brandIdx = dataValues.brandIdx;
         });
         it('# success case', (done) => {
-            brandDao.delete(brandIdx).then((result) => {
-                expect(result).eq(1);
-                done();
-            });
+            brandDao
+                .delete(brandIdx)
+                .then((result) => {
+                    expect(result).eq(1);
+                    done();
+                })
+                .catch((err) => done(err));
         });
         after(async () => {
             if (!brandIdx) return;

@@ -1,6 +1,7 @@
 'use strict';
 
 const brandDao = require('../dao/BrandDao.js');
+const { parseSortToOrder } = require('../utils/parser.js');
 
 /**
  * 브랜드 검색
@@ -11,22 +12,7 @@ const brandDao = require('../dao/BrandDao.js');
  * @returns {Promise<Brand[]>}
  **/
 exports.searchBrand = (pagingIndex, pagingSize, sort) => {
-    let order = [];
-    if (sort) {
-        let [key, ascending] = sort.split('_');
-        ascending = ascending || 'desc';
-        switch (ascending) {
-            case 'desc':
-            case 'dsc':
-                ascending = 'DESC';
-                break;
-            case 'asc':
-            default:
-                ascending = 'ASC';
-                break;
-        }
-        order.push([key, ascending]);
-    }
+    const order = parseSortToOrder(sort);
     return brandDao.search(pagingIndex, pagingSize, order);
 };
 
@@ -37,22 +23,7 @@ exports.searchBrand = (pagingIndex, pagingSize, sort) => {
  * @returns {Promise<Brand[]>}
  **/
 exports.getBrandAll = (sort) => {
-    let order = [];
-    if (sort) {
-        let [key, ascending] = sort.split('_');
-        ascending = ascending || 'desc';
-        switch (ascending) {
-            case 'desc':
-            case 'dsc':
-                ascending = 'DESC';
-                break;
-            case 'asc':
-            default:
-                ascending = 'ASC';
-                break;
-        }
-        order.push([key, ascending]);
-    }
+    const order = parseSortToOrder(sort);
     return brandDao.readAll(order);
 };
 

@@ -60,7 +60,7 @@ module.exports.read = async (brandIdx) => {
  * @param {number} pagingIndex
  * @param {number} pagingSize
  * @param {array} order
- * @returns {Promise<Object>}
+ * @returns {Promise<Brand[]>}
  */
 module.exports.search = (pagingIndex, pagingSize, order) => {
     return Brand.findAndCountAll({
@@ -76,7 +76,7 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
  * @param {array} order
  * @returns {Promise<Brand[]>}
  */
-module.exports.readAll = async (order) => {
+module.exports.readAll = async (order = [['createdAt', 'desc']]) => {
     return Brand.findAll({
         order,
     });

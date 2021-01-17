@@ -2569,10 +2569,13 @@ definitions:
         type: string
       description:
         type: string
+      imageUrl:
+        type: string
     example:
       name: 씨쏠트
       englishName: Sea Salt
       description: 바다 소금
+      imageUrl: 'url'
   NoteInfo:
     type: object
     properties:

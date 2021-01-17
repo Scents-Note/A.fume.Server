@@ -29,23 +29,19 @@ describe('# NoteDao Test', () => {
                     expect(result).gt(0);
                     done();
                 })
-                .catch((err) => {
-                    expect(false).true();
-                    done();
-                });
+                .catch((err) => done(err));
         });
         it(' # DuplicatedEntryError case', (done) => {
             noteDao
                 .create({ ingredientName, perfumeName, type: 111 })
-                .then((result) => {
-                    console.log(result);
-                    expect(false).true();
-                    done();
-                })
+                .then((result) =>
+                    done(new Error('must be expected DuplicatedEntryEro'))
+                )
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
                     done();
-                });
+                })
+                .catch((err) => done(err));
         });
         after(() => {
             pool.queryParam_Parse("DELETE FROM note WHERE type = '111'");

@@ -1,8 +1,6 @@
-const pool = require('../utils/db/pool.js');
-
 const { NotMatchedError } = require('../utils/errors/errors.js');
 
-const { sequelize, Wishlist } = require('../models');
+const { Wishlist } = require('../models');
 /**
  * 위시리스트 등록
  *
