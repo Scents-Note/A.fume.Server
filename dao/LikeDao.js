@@ -1,13 +1,8 @@
-const pool = require('../utils/db/pool.js');
-
-const { NotMatchedError } = require('../utils/errors/errors.js');
-
-const SQL_LIKE_PERFUME_INSERT =
-    'INSERT like_perfume(user_idx, perfume_idx) VALUES(?, ?)';
-const SQL_LIKE_PERFUME_SELECT =
-    'SELECT user_idx as userIdx, perfume_idx as perfumeIdx FROM like_perfume WHERE user_idx = ? AND perfume_idx = ?';
-const SQL_LIKE_PERFUME_DELETE =
-    'DELETE FROM like_perfume WHERE user_idx = ? AND perfume_idx';
+const {
+    NotMatchedError,
+    DuplicatedEntryError,
+} = require('../utils/errors/errors.js');
+const { LikePerfume } = require('../models');
 
 /**
  * 향수 좋아요 생성
@@ -16,17 +11,13 @@ const SQL_LIKE_PERFUME_DELETE =
  * @param {number} perfumeIdx
  * @returns {Promise}
  */
-module.exports.create = async (userIdx, perfumeIdx) => {
-    const {
-        affectedRows,
-    } = await pool.queryParam_Parse(SQL_LIKE_PERFUME_INSERT, [
-        userIdx,
-        perfumeIdx,
-    ]);
-    if (affectedRows == 0) {
-        throw new FailedToCreateError();
-    }
-    return affectedRows;
+module.exports.create = (userIdx, perfumeIdx) => {
+    return LikePerfume.create({ userIdx, perfumeIdx }).catch((err) => {
+        if (err.parent.errno === 1062 || err.parent.code === 'ER_DUP_ENTRY') {
+            throw new DuplicatedEntryError();
+        }
+        throw err;
+    });
 };
 
 /**
@@ -37,14 +28,13 @@ module.exports.create = async (userIdx, perfumeIdx) => {
  * @returns {Promise}
  */
 module.exports.read = async (userIdx, perfumeIdx) => {
-    const result = await pool.queryParam_Parse(SQL_LIKE_PERFUME_SELECT, [
-        userIdx,
-        perfumeIdx,
-    ]);
-    if (result.length == 0) {
+    const result = await LikePerfume.findOne({
+        where: { userIdx, perfumeIdx },
+    });
+    if (!result) {
         throw new NotMatchedError();
     }
-    return result[0];
+    return result;
 };
 
 /**
@@ -54,15 +44,6 @@ module.exports.read = async (userIdx, perfumeIdx) => {
  * @param {number} perfumeIdx
  * @returns {Promise}
  */
-module.exports.delete = async (userIdx, perfumeIdx) => {
-    const {
-        affectedRows,
-    } = await pool.queryParam_Parse(SQL_LIKE_PERFUME_DELETE, [
-        userIdx,
-        perfumeIdx,
-    ]);
-    if (affectedRows == 0) {
-        throw new NotMatchedError();
-    }
-    return affectedRows;
+module.exports.delete = (userIdx, perfumeIdx) => {
+    return LikePerfume.destroy({ where: { userIdx, perfumeIdx } });
 };
