@@ -1,11 +1,10 @@
 'use strict';
 const { Model } = require('sequelize');
-
 module.exports = (sequelize, DataTypes) => {
-    class Brand extends Model {}
-    Brand.init(
+    class Series extends Model {}
+    Series.init(
         {
-            brandIdx: {
+            seriesIdx: {
                 type: DataTypes.INTEGER,
                 autoIncrement: true,
                 allowNull: false,
@@ -20,26 +19,17 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            startCharacter: {
-                type: DataTypes.CHAR(1),
-                allowNull: false,
-                comment: '첫글자 카테고리',
-            },
-            imageUrl: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
             description: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
         },
         {
-            modelName: 'Brand',
+            modelName: 'Series',
             timestamps: true,
             underscored: true,
             sequelize,
         }
     );
-    return Brand;
+    return Series;
 };

@@ -1,7 +1,5 @@
 const dotenv = require('dotenv');
-dotenv.config({
-    path: './config/.env.tst'
-});
+dotenv.config();
 
 const chai = require('chai');
 const {
@@ -68,7 +66,7 @@ describe('# verify Test', () => {
         expect(result).to.deep.eq(payload);
     });
     it(' # fail case (Expired Token)', () => {
-        const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZXN0IjoidGVzdCIsImlhdCI6MTYwNjQwMTEzOSwiZXhwIjoxNjA2NDAxMTM5LCJpc3MiOiJhZnVtZS1qYWNrcG90In0.oFuXYJgAiwZoX3zvYZnxW8Rv9uIyX0spgao92X05dF4';
+        const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWR4IjoxLCJlbWFpbCI6ImhlZS55b3VuQHNhbXN1bmcuY29tIiwibmlja25hbWUiOiLsv7zsubTrp6giLCJnZW5kZXIiOjEsInBob25lIjoiMDEwLTIwODEtMzgxOCIsImJpcnRoIjoxOTk1LCJncmFkZSI6MCwiYWNjZXNzVGltZSI6IjIwMjEtMDEtMDVUMTI6NTg6MTAuMDAwWiIsImNyZWF0ZWRBdCI6IjIwMjEtMDEtMDVUMTI6NTg6MTAuMDAwWiIsInVwZGF0ZWRBdCI6IjIwMjEtMDEtMDVUMTI6NTg6MTAuMDAwWiIsImlhdCI6MTYwOTg1MTQ5MywiZXhwIjoxNjExNTc5NDkzLCJpc3MiOiJhZnVtZS1qYWNrcG90In0.sVzdA4L4w-kHDImSpW0j2L30UhBKhVZTrlT1wMrzygw';
         try {
             jwt.verify(expiredToken);
             expect(false).eq(true);
@@ -102,7 +100,7 @@ describe('# reissue Test', () => {
         token = result.token;
         refreshToken = result.refreshToken;
     });
-    it(' # success case', () => {
+    it('# success case', () => {
         const tokenStr = jwt.reissue(refreshToken);
         const result = jwt.verify(tokenStr);
         delete result.iat;

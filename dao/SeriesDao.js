@@ -1,58 +1,115 @@
-const pool = require('../utils/db/pool.js');
 const {
-    NotMatchedError, FailedToCreateError
+    NotMatchedError,
+    DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
+const { Series } = require('../models');
 
 /**
  * 계열 생성
- * 
+ *
+ * @param {Object} seriesObject
+ * @return {number} insertIdx
  */
-const SQL_SERIES_INSERT = "INSERT INTO series(name, english_name, description) VALUES(?, ?, ?)";
-module.exports.create = async ({name, englishName, description}) => {
-    const result = await pool.queryParam_Parse(SQL_SERIES_INSERT, [name, englishName, description]);
-    return result.affectedRows;
-}
-
+module.exports.create = ({ name, englishName, description }) => {
+    return Series.create({ name, englishName, description })
+        .then((series) => {
+            return series.seriesIdx;
+        })
+        .catch((err) => {
+            if (
+                err.parent.errno === 1062 ||
+                err.parent.code === 'ER_DUP_ENTRY'
+            ) {
+                throw new DuplicatedEntryError();
+            }
+            throw err;
+        });
+};
 
 /**
  * 계열 조회
- * 
+ *
+ * @param {number} seriesIdx
+ * @return {Promise<Series>}
  */
-const SQL_SERIES_SELECT_BY_IDX = "SELECT series_idx as seriesIdx, name, english_name as englishName FROM series WHERE series_idx = ?";
-module.exports.read = async (seriesIdx) => {
-    const result = await pool.queryParam_Parse(SQL_SERIES_SELECT_BY_IDX, [seriesIdx]);
-    if(result.length == 0) {
+module.exports.readByIdx = async (seriesIdx) => {
+    const result = await Series.findByPk(seriesIdx);
+    if (!result) {
         throw new NotMatchedError();
     }
-    return result[0];
-}
+    return result.dataValues;
+};
 
+/**
+ * 계열 조회
+ *
+ * @param {string} seriesName
+ * @return {Promise<Series>}
+ */
+module.exports.readByName = async (seriesName) => {
+    const result = await Series.findOne({ where: { name: seriesName } });
+    if (!result) {
+        throw new NotMatchedError();
+    }
+    return result.dataValues;
+};
 
 /**
  * 계열 전체 조회
+ *
+ * @param {array} order
+ * @returns {Promise<Series[]>}
  */
-const SQL_SERIES_SELECT_ALL = "SELECT series_idx as seriesIdx, name, english_name as englishName FROM series";
-module.exports.readAll = async () => {
-    const result = await pool.queryParam_None(SQL_SERIES_SELECT_ALL);
-    return result;
-}
+module.exports.readAll = (order = [['createdAt', 'desc']]) => {
+    return Series.findAll({
+        order,
+    });
+};
 
+/**
+ * 계열 검색
+ *
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @param {array} order
+ * @returns {Promise<Series[]>}
+ */
+module.exports.search = (pagingIndex, pagingSize, order) => {
+    return Series.findAndCountAll({
+        offset: (pagingIndex - 1) * pagingSize,
+        limit: pagingSize,
+        order,
+    });
+};
 
 /**
  * 계열 수정
+ *
+ * @param {Object} Series
+ * @return {Promise<number>} affectedRows
  */
-const SQL_SERIES_UPDATE = "UPDATE series SET name = ?, english_name = ?, description = ? WHERE series_idx = ?";
-module.exports.update = async ({seriesIdx, name, englishName, description}) => {
-    const result = await pool.queryParam_Parse(SQL_SERIES_UPDATE, [name, englishName, description, seriesIdx]);
-    return result.affectedRows;
-}
-
+module.exports.update = async ({
+    seriesIdx,
+    name,
+    englishName,
+    description,
+}) => {
+    const [affectedRows] = await Series.update(
+        { name, englishName, description },
+        { where: { seriesIdx } }
+    );
+    if (affectedRows == 0) {
+        throw new NotMatchedError();
+    }
+    return affectedRows;
+};
 
 /**
  * 계열 삭제
+ *
+ * @param {number} seriesIdx
+ * @returns {Promise<number>} affectedRow
  */
-const SQL_SERIES_DELETE = "DELETE FROM series WHERE series_idx = ?";
-module.exports.delete = async (seriesIdx) => {
-    const result = await pool.queryParam_Parse(SQL_SERIES_DELETE, [seriesIdx]);   
-    return result.affectedRows;
-}
+module.exports.delete = (seriesIdx) => {
+    return Series.destroy({ where: { seriesIdx } });
+};

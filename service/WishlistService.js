@@ -12,7 +12,7 @@ const perfumeDao = require('../dao/PerfumeDao.js');
  * @returns {Promise}
  **/
 exports.createWishlist = (perfumeIdx, userIdx, priority) => {
-  return wishlistDao.create(perfumeIdx, userIdx, priority);
+    return wishlistDao.create(perfumeIdx, userIdx, priority);
 };
 
 /**
@@ -24,7 +24,7 @@ exports.createWishlist = (perfumeIdx, userIdx, priority) => {
  * @returns {Promise}
  **/
 exports.updateWishlist = (perfumeIdx, userIdx, priority) => {
-  return wishlistDao.update(perfumeIdx, userIdx, priority);
+    return wishlistDao.update(perfumeIdx, userIdx, priority);
 };
 
 /**
@@ -35,7 +35,7 @@ exports.updateWishlist = (perfumeIdx, userIdx, priority) => {
  * @returns {Promise}
  **/
 exports.deleteWishlist = (perfumeIdx, userIdx) => {
-  return wishlistDao.delete(perfumeIdx, userIdx);
+    return wishlistDao.delete(perfumeIdx, userIdx);
 };
 
 /**
@@ -45,7 +45,7 @@ exports.deleteWishlist = (perfumeIdx, userIdx) => {
  * @returns {Promise}
  **/
 exports.readWishlistByUser = (userIdx) => {
-  return perfumeDao.readAllOfWishlist(userIdx);
+    return perfumeDao.readAllOfWishlist(userIdx);
 };
 
 /**
@@ -55,5 +55,5 @@ exports.readWishlistByUser = (userIdx) => {
  * @returns {Promise}
  **/
 exports.deleteWishlistByUser = (userIdx) => {
-  return wishlistDao.deleteByUserIdx(userIdx);
+    return wishlistDao.deleteByUserIdx(userIdx);
 };

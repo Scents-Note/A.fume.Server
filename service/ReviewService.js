@@ -1,7 +1,11 @@
 'use strict';
 
 const reviewDao = require('../dao/ReviewDao.js');
-const { NotMatchedError, FailedToCreateError, UnAuthorizedError} = require('../utils/errors/errors.js');
+const {
+    NotMatchedError,
+    FailedToCreateError,
+    UnAuthorizedError,
+} = require('../utils/errors/errors.js');
 
 /**
  * 시향노트 삭제
@@ -10,23 +14,25 @@ const { NotMatchedError, FailedToCreateError, UnAuthorizedError} = require('../u
  * reviewIdx Long 시향노트 Idx
  * no response value expected for this operation
  **/
-exports.deleteReview = ({reviewIdx, userIdx}) => {
-  return new Promise((resolve, reject) => {
-    reviewDao.read(reviewIdx)
-    .then(res => {
-      if (res.userIdx != userIdx){
-        reject(new UnAuthorizedError());
-      }
-      return reviewDao.delete(reviewIdx);
-    }).then(() => {
-      resolve();
-    }).catch(err => {
-      console.log(err)
-      reject(err);
+exports.deleteReview = ({ reviewIdx, userIdx }) => {
+    return new Promise((resolve, reject) => {
+        reviewDao
+            .read(reviewIdx)
+            .then((res) => {
+                if (res.userIdx != userIdx) {
+                    reject(new UnAuthorizedError());
+                }
+                return reviewDao.delete(reviewIdx);
+            })
+            .then(() => {
+                resolve();
+            })
+            .catch((err) => {
+                console.log(err);
+                reject(err);
+            });
     });
-  });
 };
-
 
 /**
  * 시향노트 반환
@@ -36,7 +42,7 @@ exports.deleteReview = ({reviewIdx, userIdx}) => {
  * returns ReviewInfo
  **/
 exports.getReviewByIdx = (reviewIdx) => {
-  return reviewDao.read(reviewIdx);
+    return reviewDao.read(reviewIdx);
 };
 
 /**
@@ -47,7 +53,7 @@ exports.getReviewByIdx = (reviewIdx) => {
  * returns List
  **/
 exports.getReviewByUser = (userIdx) => {
-  return reviewDao.readAllByUser(userIdx);
+    return reviewDao.readAllByUser(userIdx);
 };
 
 /**
@@ -58,9 +64,8 @@ exports.getReviewByUser = (userIdx) => {
  * returns List
  **/
 exports.getReviewOfPerfumeByLike = (perfumeIdx) => {
-  return reviewDao.readAllOrderByLike(perfumeIdx);
+    return reviewDao.readAllOrderByLike(perfumeIdx);
 };
-
 
 /**
  * 전체 시향노트 반환(별점순)
@@ -70,9 +75,8 @@ exports.getReviewOfPerfumeByLike = (perfumeIdx) => {
  * returns List
  **/
 exports.getReviewOfPerfumeByScore = (perfumeIdx) => {
-  return reviewDao.readAllOrderByScore(perfumeIdx);
+    return reviewDao.readAllOrderByScore(perfumeIdx);
 };
-
 
 /**
  * 전체 시향노트 반환(최신순)
@@ -82,9 +86,8 @@ exports.getReviewOfPerfumeByScore = (perfumeIdx) => {
  * returns List
  **/
 exports.getReviewOfPerfumeByRecent = (perfumeIdx) => {
-  return reviewDao.readAllOrderByRecent(perfumeIdx);
+    return reviewDao.readAllOrderByRecent(perfumeIdx);
 };
-
 
 /**
  * 시향노트 추가\"
@@ -94,10 +97,29 @@ exports.getReviewOfPerfumeByRecent = (perfumeIdx) => {
  * body ReviewInfo 시향노트 정보
  * no response value expected for this operation
  **/
-exports.postReview = ({perfumeIdx, userIdx, score, longevity, sillage, seasonal, gender, access, content}) => {
-  return reviewDao.create({perfumeIdx, userIdx, score, longevity, sillage, seasonal, gender, access, content});
+exports.postReview = ({
+    perfumeIdx,
+    userIdx,
+    score,
+    longevity,
+    sillage,
+    seasonal,
+    gender,
+    access,
+    content,
+}) => {
+    return reviewDao.create({
+        perfumeIdx,
+        userIdx,
+        score,
+        longevity,
+        sillage,
+        seasonal,
+        gender,
+        access,
+        content,
+    });
 };
-
 
 /**
  * 시향노트 수정
@@ -107,47 +129,72 @@ exports.postReview = ({perfumeIdx, userIdx, score, longevity, sillage, seasonal,
  * body ReviewInfo  (optional)
  * no response value expected for this operation
  **/
-exports.updateReview = ({reviewIdx, userIdx, score, longevity, sillage, seasonal, gender, access, content}) => {
-  return new Promise((resolve, reject) => {
-    reviewDao.read(reviewIdx)
-    .then(res => {
-      if (res.userIdx != userIdx){
-        reject(new UnAuthorizedError());
-      }
-      return reviewDao.update({reviewIdx, score, longevity, sillage, seasonal, gender, access, content});
-    }).then(() => {
-      resolve();
-    }).catch(err => {
-      console.log(err)
-      reject(err);
+exports.updateReview = ({
+    reviewIdx,
+    userIdx,
+    score,
+    longevity,
+    sillage,
+    seasonal,
+    gender,
+    access,
+    content,
+}) => {
+    return new Promise((resolve, reject) => {
+        reviewDao
+            .read(reviewIdx)
+            .then((res) => {
+                if (res.userIdx != userIdx) {
+                    reject(new UnAuthorizedError());
+                }
+                return reviewDao.update({
+                    reviewIdx,
+                    score,
+                    longevity,
+                    sillage,
+                    seasonal,
+                    gender,
+                    access,
+                    content,
+                });
+            })
+            .then(() => {
+                resolve();
+            })
+            .catch((err) => {
+                console.log(err);
+                reject(err);
+            });
     });
-  });
 };
 
 /**
  * 향수 좋아요
- * 
+ *
  * reviewIdx Long 시향노트 Idx
  * returns Boolean
  **/
 exports.likeReview = (reviewIdx, userIdx) => {
-  return new Promise((resolve, reject) => {
-    let isLiked = false;
-    reviewDao.readLike({reviewIdx, userIdx})
-    .then(res => {
-      isLiked = true;
-      return reviewDao.deleteLike({reviewIdx,  userIdx});
-    })
-    .catch(err => {
-      isLiked = false;
-      if (err instanceof NotMatchedError) {  
-        return reviewDao.createLike({reviewIdx,  userIdx});
-      }
-      reject(new FailedToCreateError());
-    }).then(() => {
-      resolve(!isLiked);
-    }).catch(err => {
-      reject(err);
+    return new Promise((resolve, reject) => {
+        let isLiked = false;
+        reviewDao
+            .readLike({ reviewIdx, userIdx })
+            .then((res) => {
+                isLiked = true;
+                return reviewDao.deleteLike({ reviewIdx, userIdx });
+            })
+            .catch((err) => {
+                isLiked = false;
+                if (err instanceof NotMatchedError) {
+                    return reviewDao.createLike({ reviewIdx, userIdx });
+                }
+                reject(new FailedToCreateError());
+            })
+            .then(() => {
+                resolve(!isLiked);
+            })
+            .catch((err) => {
+                reject(err);
+            });
     });
-  });
-}
+};

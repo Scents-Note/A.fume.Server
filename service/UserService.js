@@ -3,7 +3,10 @@
 const jwt = require('../lib/token.js');
 const crypto = require('../lib/crypto.js');
 const userDao = require('../dao/UserDao.js');
-const { WrongPasswordError, NotMatchedError } = require('../utils/errors/errors.js');
+const {
+    WrongPasswordError,
+    NotMatchedError,
+} = require('../utils/errors/errors.js');
 
 /**
  * 유저 회원 가입
@@ -11,11 +14,28 @@ const { WrongPasswordError, NotMatchedError } = require('../utils/errors/errors.
  * @param {Object} User
  * @returns {Promise}
  **/
-exports.createUser = ({id, nickname, password, gender, phone, email, birth, grade}) => {
-  password = crypto.encrypt(password);
-  return userDao.create({id, nickname, password, gender, phone, email, birth, grade});
-}
-
+exports.createUser = ({
+    id,
+    nickname,
+    password,
+    gender,
+    phone,
+    email,
+    birth,
+    grade,
+}) => {
+    password = crypto.encrypt(password);
+    return userDao.create({
+        id,
+        nickname,
+        password,
+        gender,
+        phone,
+        email,
+        birth,
+        grade,
+    });
+};
 
 /**
  * 회원 탈퇴
@@ -24,9 +44,8 @@ exports.createUser = ({id, nickname, password, gender, phone, email, birth, grad
  * @returns {Promise}
  **/
 exports.deleteUser = (userIdx) => {
-  return userDao.delete(userIdx);
-}
-
+    return userDao.delete(userIdx);
+};
 
 /**
  * 유저 조회
@@ -35,10 +54,10 @@ exports.deleteUser = (userIdx) => {
  * @returns {Promise<User>}
  **/
 exports.getUserByIdx = async (userIdx) => {
-  const result = await userDao.readByIdx(userIdx)
-  delete result.password;
-  return result;
-}
+    const result = await userDao.readByIdx(userIdx);
+    delete result.password;
+    return result;
+};
 
 /**
  * 유저 권한 조회
@@ -47,21 +66,28 @@ exports.getUserByIdx = async (userIdx) => {
  * @returns {Promise<User>}
  **/
 exports.authUser = (token) => {
-  return new Promise((resolve, reject) => {
-    try {
-      const payload = jwt.verify(token);
-      userDao.readByIdx(payload.userIdx)
-      .then(user => {
-        delete user.password;
-        resolve(Object.assign({ isAuth: true, isAdmin: user.grade >= 1 }, user));
-      }).catch(err => {
-        resolve({ isAuth: false, isAdmin: false});
-      });
-    } catch(err) {
-      resolve({ isAuth: false, isAdmin: false });
-    };
-  });
-}
+    return new Promise((resolve, reject) => {
+        try {
+            const payload = jwt.verify(token);
+            userDao
+                .readByIdx(payload.userIdx)
+                .then((user) => {
+                    delete user.password;
+                    resolve(
+                        Object.assign(
+                            { isAuth: true, isAdmin: user.grade >= 1 },
+                            user
+                        )
+                    );
+                })
+                .catch((err) => {
+                    resolve({ isAuth: false, isAdmin: false });
+                });
+        } catch (err) {
+            resolve({ isAuth: false, isAdmin: false });
+        }
+    });
+};
 
 /**
  * @typedef LoginToken
@@ -71,30 +97,30 @@ exports.authUser = (token) => {
 
 /**
  * 로그인
- * 
+ *
  * @param {string} email
  * @param {string} password
  * @returns {Promise<LoginToken>} - 토큰 정보
  **/
-exports.loginUser = async (email,password) => {
-  const user = await userDao.readByEmail(email);
-  if(crypto.decrypt(user.password) != password) {
-    throw new WrongPasswordError();
-  }
-  delete user.password;
-  const payload = Object.assign({}, user);
-  userDao.updateAccessTime(user.userIdx);
-  return Object.assign({userIdx: user.userIdx}, jwt.publish(payload));
-}
+exports.loginUser = async (email, password) => {
+    const user = await userDao.readByEmail(email);
+    if (crypto.decrypt(user.password) != password) {
+        throw new WrongPasswordError();
+    }
+    delete user.password;
+    const payload = Object.assign({}, user);
+    userDao.updateAccessTime(user.userIdx);
+    return Object.assign({ userIdx: user.userIdx }, jwt.publish(payload));
+};
 
 /**
  * 로그아웃
- * 
+ *
  * @returns
  **/
 exports.logoutUser = () => {
-  throw "Not Implemented";
-}
+    throw 'Not Implemented';
+};
 
 /**
  * 유저 정보 수정
@@ -102,9 +128,27 @@ exports.logoutUser = () => {
  * @param {Object} User
  * @returns {}
  **/
-exports.updateUser = ({userIdx, nickname, password, gender, phone, email, birth, grade}) => {
-  return userDao.update({userIdx, nickname, password, gender, phone, email, birth, grade})
-}
+exports.updateUser = ({
+    userIdx,
+    nickname,
+    password,
+    gender,
+    phone,
+    email,
+    birth,
+    grade,
+}) => {
+    return userDao.update({
+        userIdx,
+        nickname,
+        password,
+        gender,
+        phone,
+        email,
+        birth,
+        grade,
+    });
+};
 
 /**
  * Email 중복 체크
@@ -113,13 +157,13 @@ exports.updateUser = ({userIdx, nickname, password, gender, phone, email, birth,
  * @returns {boolean}
  **/
 exports.validateEmail = async (email) => {
-  try {
-    await userDao.readByEmail(email)
-    return false;
-  } catch(err) {
-    if(err instanceof NotMatchedError) {
-      return true;
+    try {
+        await userDao.readByEmail(email);
+        return false;
+    } catch (err) {
+        if (err instanceof NotMatchedError) {
+            return true;
+        }
+        throw err;
     }
-    throw err;
-  }
-}
+};

@@ -1,7 +1,5 @@
 const dotenv = require('dotenv');
-dotenv.config({
-    path: './config/.env.tst'
-});
+dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;

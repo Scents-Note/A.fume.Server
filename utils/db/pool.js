@@ -1,10 +1,14 @@
 const mysql = require('promise-mysql');
+
+const env = process.env.NODE_ENV || 'development';
+const config = require('../../config/config.js')[env];
+
 const poolPromise = mysql.createPool({
-    host: process.env.MYSQL_HOST_URL,
-    port: process.env.MYSQL_PORT,
-    user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PWD,
-    database: process.env.MYSQL_DB_NAME,
+    host: config.host,
+    port: config.port,
+    user: config.username,
+    password: config.password,
+    database: config.database,
     dateStrings: true,
 });
 

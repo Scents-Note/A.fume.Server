@@ -1,6 +1,7 @@
 'use strict';
 
 const brandDao = require('../dao/BrandDao.js');
+const { parseSortToOrder } = require('../utils/parser.js');
 
 /**
  * 브랜드 검색
@@ -10,24 +11,20 @@ const brandDao = require('../dao/BrandDao.js');
  * @param {string} sort
  * @returns {Promise<Brand[]>}
  **/
-exports.getBrandList = (pagingIndex, pagingSize, sort) => {
-  let order = [];
-  if(sort) {
-    let [key, ascending] = sort.split('_');
-    ascending = ascending || 'desc';
-    switch(ascending) {
-        case 'desc':
-        case 'dsc':
-            ascending = 'DESC';
-            break;
-        case 'asc':
-        default:
-            ascending = 'ASC';
-            break;
-    }
-    order.push([key, ascending]);
-  }
-  return brandDao.readAll(pagingIndex, pagingSize, order);
+exports.searchBrand = (pagingIndex, pagingSize, sort) => {
+    const order = parseSortToOrder(sort);
+    return brandDao.search(pagingIndex, pagingSize, order);
+};
+
+/**
+ * 브랜드 전체 조회
+ *
+ * @param {string} sort
+ * @returns {Promise<Brand[]>}
+ **/
+exports.getBrandAll = (sort) => {
+    const order = parseSortToOrder(sort);
+    return brandDao.readAll(order);
 };
 
 /**
@@ -37,7 +34,7 @@ exports.getBrandList = (pagingIndex, pagingSize, sort) => {
  * @returns {Promise<Brand>}
  **/
 exports.getBrandByIdx = (brandIdx) => {
-  return brandDao.read(brandIdx);
+    return brandDao.read(brandIdx);
 };
 
 /**
@@ -47,19 +44,19 @@ exports.getBrandByIdx = (brandIdx) => {
  * @returns {Promise}
  **/
 exports.insertBrand = ({
-  name,
-  englishName,
-  startCharacter,
-  imageUrl,
-  description
-}) => {
-  return brandDao.create({
     name,
     englishName,
     startCharacter,
     imageUrl,
-    description
-  });
+    description,
+}) => {
+    return brandDao.create({
+        name,
+        englishName,
+        startCharacter,
+        imageUrl,
+        description,
+    });
 };
 
 /**
@@ -69,21 +66,21 @@ exports.insertBrand = ({
  * @returns {Promise}
  **/
 exports.putBrand = ({
-  brandIdx,
-  name,
-  englishName,
-  startCharacter,
-  imageUrl,
-  description
-}) => {
-  return brandDao.update({
     brandIdx,
     name,
     englishName,
     startCharacter,
     imageUrl,
-    description
-  });
+    description,
+}) => {
+    return brandDao.update({
+        brandIdx,
+        name,
+        englishName,
+        startCharacter,
+        imageUrl,
+        description,
+    });
 };
 
 /**
@@ -93,5 +90,5 @@ exports.putBrand = ({
  * @returns {Promise}
  **/
 exports.deleteBrand = (brandIdx) => {
-  return brandDao.delete(brandIdx);
+    return brandDao.delete(brandIdx);
 };

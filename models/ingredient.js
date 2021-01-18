@@ -1,14 +1,14 @@
 'use strict';
 const { Model } = require('sequelize');
-
 module.exports = (sequelize, DataTypes) => {
-    class Brand extends Model {}
-    Brand.init(
+    class Ingredient extends Model {}
+    Ingredient.init(
         {
-            brandIdx: {
+            ingredientIdx: {
                 type: DataTypes.INTEGER,
                 autoIncrement: true,
                 allowNull: false,
+                unique: true,
                 primaryKey: true,
             },
             name: {
@@ -20,26 +20,21 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            startCharacter: {
-                type: DataTypes.CHAR(1),
+            description: {
+                type: DataTypes.STRING,
                 allowNull: false,
-                comment: '첫글자 카테고리',
             },
             imageUrl: {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            description: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
         },
         {
-            modelName: 'Brand',
+            sequelize,
+            modelName: 'Ingredient',
             timestamps: true,
             underscored: true,
-            sequelize,
         }
     );
-    return Brand;
+    return Ingredient;
 };
