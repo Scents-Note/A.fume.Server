@@ -1,18 +1,18 @@
 'use strict';
-const noteDAO = require('../dao/NoteDao.js');
+const noteDao = require('../dao/NoteDao.js');
 
-exports.insertNote = ({ ingredientName, perfumeName, type }) => {
-    return noteDAO.create({
-        ingredientName,
-        perfumeName,
+exports.insertNote = ({ ingredientIdx, perfumeIdx, type }) => {
+    return noteDao.create({
+        ingredientIdx,
+        perfumeIdx,
         type,
     });
 };
 
-exports.putNote = ({ ingredientName, perfumeName, type }) => {
-    return noteDAO.updateType({
+exports.putNote = ({ ingredientIdx, perfumeIdx, type }) => {
+    return noteDao.updateType({
         type,
-        perfumeName,
-        ingredientName,
+        perfumeIdx,
+        ingredientIdx,
     });
 };
