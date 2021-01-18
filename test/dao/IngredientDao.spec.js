@@ -22,7 +22,6 @@ describe('# ingredientDao Test', () => {
             name: '테스트 데이터1',
             englishName: 'Test Data',
             description: '왈라왈라',
-            seriesIdx: 1,
             imageUrl: '',
         });
         await Ingredient.upsert({
@@ -30,7 +29,6 @@ describe('# ingredientDao Test', () => {
             name: '테스트 데이터2',
             englishName: 'Test Data',
             description: '왈라왈라',
-            seriesIdx: 1,
             imageUrl: '',
         });
         await Ingredient.upsert({
@@ -38,7 +36,6 @@ describe('# ingredientDao Test', () => {
             name: '테스트 데이터3',
             englishName: 'Test Data',
             description: '왈라왈라',
-            seriesIdx: 1,
             imageUrl: '',
         });
     });

@@ -9,9 +9,8 @@ const { Wishlist } = require('../models');
  * @param {number} priority
  * @returns {Promise}
  */
-module.exports.create = async (perfumeIdx, userIdx, priority) => {
-    const wishlist = await Wishlist.create({ perfumeIdx, userIdx, priority });
-    return wishlist.dataValues;
+module.exports.create = (perfumeIdx, userIdx, priority) => {
+    return Wishlist.create({ perfumeIdx, userIdx, priority });
 };
 
 /**

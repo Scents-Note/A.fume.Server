@@ -120,7 +120,7 @@ describe('# NoteDao Test', () => {
         it(' # DuplicatedEntryError case', (done) => {
             noteDao
                 .create({ ingredientIdx: 1, perfumeIdx: 1, type: 1 })
-                .then((result) =>
+                .then(() =>
                     done(new Error('must be expected DuplicatedEntryError'))
                 )
                 .catch((err) => {

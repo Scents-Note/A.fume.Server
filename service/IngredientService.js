@@ -1,6 +1,6 @@
 'use strict';
 
-const ingredientDAO = require('../dao/IngredientDao.js');
+const ingredientDao = require('../dao/IngredientDao.js');
 const seriesDao = require('../dao/SeriesDao.js');
 const { parseSortToOrder } = require('../utils/parser.js');
 
@@ -18,7 +18,7 @@ exports.postIngredient = ({
     seriesName,
 }) => {
     return seriesDao.readByName(seriesName).then((series) => {
-        return ingredientDAO.create({
+        return ingredientDao.create({
             name,
             englishName,
             description,
@@ -35,7 +35,7 @@ exports.postIngredient = ({
  * @returns {Promise<Ingredient>}
  **/
 exports.getIngredientByIdx = (ingredientIdx) => {
-    return ingredientDAO.readByIdx(ingredientIdx);
+    return ingredientDao.readByIdx(ingredientIdx);
 };
 
 /**
@@ -46,7 +46,7 @@ exports.getIngredientByIdx = (ingredientIdx) => {
  **/
 exports.getIngredientAll = (sort) => {
     const order = parseSortToOrder(sort);
-    return ingredientDAO.readAll(order);
+    return ingredientDao.readAll(order);
 };
 
 /**
@@ -75,7 +75,7 @@ exports.putIngredient = ({
     imageUrl,
     description,
 }) => {
-    return ingredientDAO.update({
+    return ingredientDao.update({
         ingredientIdx,
         name,
         englishName,
@@ -91,5 +91,5 @@ exports.putIngredient = ({
  * @returns {Promise<number>}
  **/
 exports.deleteIngredient = (ingredientIdx) => {
-    return ingredientDAO.delete(ingredientIdx);
+    return ingredientDao.delete(ingredientIdx);
 };

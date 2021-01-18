@@ -2579,15 +2579,15 @@ definitions:
   NoteInfo:
     type: object
     properties:
-      ingredientName:
-        type: string
-      perfumeName:
-        type: string
+      ingredientIdx:
+        type: integer
+      perfumeIdx:
+        type: integer
       type: 
         type: integer
     example:
-      ingredientName: 씨쏠트
-      perfumeName: 154 코롱
+      ingredientIdx: 1
+      perfumeIdx: 1
       type: 4
   BrandInfo:
     type: object

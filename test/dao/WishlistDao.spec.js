@@ -108,10 +108,7 @@ describe('# wishlistDao Test', () => {
                     expect(result).to.not.be.null;
                     done();
                 })
-                .catch((err) => {
-                    console.log(err);
-                    throw err;
-                });
+                .catch((err) => done(err));
         });
         it(' # DuplicatedEntryError case', (done) => {
             wishlistDao
@@ -124,7 +121,8 @@ describe('# wishlistDao Test', () => {
                     expect(err.parent.errno).eq(1062);
                     expect(err.parent.code).eq('ER_DUP_ENTRY');
                     done();
-                });
+                })
+                .catch((err) => done(err));
         });
         after(async () => {
             await Wishlist.destroy({ where: { perfumeIdx: 1, userIdx: 1 } });
@@ -157,10 +155,7 @@ describe('# wishlistDao Test', () => {
                         expect(result.length).to.greaterThan(2);
                         done();
                     })
-                    .catch((err) => {
-                        console.log(err);
-                        throw err;
-                    });
+                    .catch((err) => done(err));
             });
         });
         describe('# readByPK Test', () => {
@@ -172,20 +167,22 @@ describe('# wishlistDao Test', () => {
                 });
             });
             it('# success case', (done) => {
-                wishlistDao.readByPK(3, 2).then((result) => {
-                    expect(result.userIdx).eq(2);
-                    expect(result.perfumeIdx).eq(3);
-                    expect(result.priority).eq(1);
-                    done();
-                });
+                wishlistDao
+                    .readByPK(3, 2)
+                    .then((result) => {
+                        expect(result.userIdx).eq(2);
+                        expect(result.perfumeIdx).eq(3);
+                        expect(result.priority).eq(1);
+                        done();
+                    })
+                    .catch((err) => done(err));
             });
             it('# Not Matched case', (done) => {
                 wishlistDao
                     .readByPK(3, 1)
-                    .then(() => {
-                        expect(false).true();
-                        done();
-                    })
+                    .then(() =>
+                        done(new Error('must be expected NotMatchedError'))
+                    )
                     .catch((err) => {
                         expect(err).instanceOf(NotMatchedError);
                         done();
@@ -205,10 +202,7 @@ describe('# wishlistDao Test', () => {
                     expect(result).eq(1);
                     done();
                 })
-                .catch((err) => {
-                    console.log(err);
-                    throw err;
-                });
+                .catch((err) => done(err));
         });
         after(async () => {
             await Wishlist.destroy({ where: { userIdx: 1, perfumeIdx: 1 } });
@@ -231,10 +225,7 @@ describe('# wishlistDao Test', () => {
                         expect(result).eq(1);
                         done();
                     })
-                    .catch((err) => {
-                        console.log(err);
-                        throw err;
-                    });
+                    .catch((err) => done(err));
             });
         });
         describe('# delete by user_idx Test', () => {
@@ -245,10 +236,7 @@ describe('# wishlistDao Test', () => {
                         expect(result).eq(5);
                         done();
                     })
-                    .catch((err) => {
-                        console.log(err);
-                        throw err;
-                    });
+                    .catch((err) => done(err));
             });
         });
         after(async () => {
