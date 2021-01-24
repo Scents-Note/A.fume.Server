@@ -1,7 +1,7 @@
 'use strict';
 
 const Perfume = require('../service/PerfumeService');
-const { OK, INTERNAL_SERVER_ERROR } = require('../utils/statusCode.js');
+const { OK } = require('../utils/statusCode.js');
 
 module.exports.createPerfume = (req, res, next) => {
     const body = req.body;
@@ -13,11 +13,7 @@ module.exports.createPerfume = (req, res, next) => {
                 data: response,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.getPerfumeById = (req, res, next) => {
@@ -30,11 +26,7 @@ module.exports.getPerfumeById = (req, res, next) => {
                 data: response,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.searchPerfume = (req, res, next) => {
@@ -54,11 +46,7 @@ module.exports.searchPerfume = (req, res, next) => {
                 data: response,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.updatePerfume = (req, res, next) => {
@@ -69,11 +57,7 @@ module.exports.updatePerfume = (req, res, next) => {
                 message: '향수 수정 성공',
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.likePerfume = (req, res, next) => {
@@ -86,11 +70,7 @@ module.exports.likePerfume = (req, res, next) => {
                 data: result,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.recentSearch = (req, res, next) => {
@@ -102,11 +82,7 @@ module.exports.recentSearch = (req, res, next) => {
                 data: result,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.recommendByUser = (req, res, next) => {
@@ -118,11 +94,7 @@ module.exports.recommendByUser = (req, res, next) => {
                 data: result,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.deletePerfume = (req, res, next) => {
@@ -133,9 +105,5 @@ module.exports.deletePerfume = (req, res, next) => {
                 message: '향수 삭제 성공',
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
