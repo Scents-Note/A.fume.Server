@@ -1,11 +1,7 @@
 'use strict';
 
 const User = require('../service/UserService');
-const {
-    OK,
-    CONFLICT,
-    INTERNAL_SERVER_ERROR,
-} = require('../utils/statusCode.js');
+const { OK, CONFLICT } = require('../utils/statusCode.js');
 
 const genderMap = {
     남자: 1,
@@ -22,12 +18,7 @@ module.exports.registerUser = (req, res, next) => {
                 message: '회원가입 성공',
             });
         })
-        .catch((response) => {
-            console.log(response);
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.deleteUser = (req, res, next) => {
@@ -39,11 +30,7 @@ module.exports.deleteUser = (req, res, next) => {
                 data: response,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.getUserByIdx = (req, res, next) => {
@@ -55,11 +42,7 @@ module.exports.getUserByIdx = (req, res, next) => {
                 data: response,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.loginUser = (req, res, next) => {
@@ -71,11 +54,7 @@ module.exports.loginUser = (req, res, next) => {
                 data: response,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.logoutUser = (req, res, next) => {
@@ -83,11 +62,7 @@ module.exports.logoutUser = (req, res, next) => {
         .then((response) => {
             res.status(OK).json(response);
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.updateUser = (req, res, next) => {
@@ -104,11 +79,7 @@ module.exports.updateUser = (req, res, next) => {
                 data: response,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.authUser = (req, res, next) => {
@@ -120,11 +91,7 @@ module.exports.authUser = (req, res, next) => {
                 data: response,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.validateEmail = (req, res, next) => {
@@ -143,9 +110,5 @@ module.exports.validateEmail = (req, res, next) => {
                 });
             }
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
