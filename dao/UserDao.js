@@ -35,11 +35,11 @@ module.exports.create = async ({
 /**
  * 유저 조회
  *
- * @param {string} email
+ * @param {Object} whereObj
  * @returns {Promise<User>}
  */
-module.exports.readByEmail = async (email) => {
-    const result = await User.findOne({ where: { email } });
+module.exports.read = async (where) => {
+    const result = await User.findOne({ where });
     if (!result) {
         throw new NotMatchedError();
     }

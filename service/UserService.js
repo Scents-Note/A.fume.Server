@@ -158,7 +158,25 @@ exports.updateUser = ({
  **/
 exports.validateEmail = async (email) => {
     try {
-        await userDao.readByEmail(email);
+        await userDao.read({ email });
+        return false;
+    } catch (err) {
+        if (err instanceof NotMatchedError) {
+            return true;
+        }
+        throw err;
+    }
+};
+
+/**
+ * Name 중복 체크
+ *
+ * @param {string} nickname
+ * @returns {boolean}
+ **/
+exports.validateName = async (nickname) => {
+    try {
+        await userDao.read({ nickname });
         return false;
     } catch (err) {
         if (err instanceof NotMatchedError) {
