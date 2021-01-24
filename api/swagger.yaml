@@ -92,51 +92,12 @@ paths:
           description: Invalid input
       deprecated: true
       x-swagger-router-controller: Perfume
-  /perfume/search:
-    post:
-      tags:
-      - perfume
-      summary: 향수 검색
-      description: 검색 조건에 해당하는 향수를 반환한다.
-      operationId: searchPerfume
-      security:
-        - userToken: []
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: filter
-        description: 검색 필터
-        required: false
-        schema:
-          $ref: '#/definitions/Filter'
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: 향수 검색 성공
-              data:
-                type: array
-                items:
-                  $ref: '#/definitions/Perfume'
-        400:
-          description: Invalid tag value
-        401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-      x-swagger-router-controller: Perfume
   /perfume/search/all:
     get:
       tags:
       - perfume
       summary: 향수 검색
-      operationId: searchPerfumeAll
+      operationId: searchPerfume
       security:
         - userToken: []
       produces:
@@ -161,12 +122,10 @@ paths:
         in: query
         type: string
         enum:
-        - like_asc
-        - recent_asc
-        - random_asc
-        - like_desc
-        - recent_desc
-        - random_desc
+        - likeCnt_asc
+        - releaseDate_asc
+        - likeCnt_desc
+        - releaseDate_desc
         required: false
       responses:
         200:
@@ -2708,12 +2667,11 @@ definitions:
       sortBy:
         type: string
         enum:
-        - like_asc
-        - recent_asc
-        - random_asc
-        - like_desc
+        - likeCnt_asc
+        - releaseDate_asc
+        - likeCnt_desc
         - recent_desc
-        - random_desc
+        - releaseDate_desc
     example:
       series:
       - 플로럴

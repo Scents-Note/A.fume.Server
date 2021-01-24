@@ -7,6 +7,8 @@ const likeDao = require('../dao/LikeDao.js');
 const searchHistoryDao = require('../dao/SearchHistoryDao.js');
 const userDao = require('../dao/UserDao.js');
 
+const { parseSortToOrder } = require('../utils/parser.js');
+
 const {
     NotMatchedError,
     FailedToCreateError,
@@ -194,7 +196,8 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
  * @returns {Promise<Perfume[]>}
  **/
 exports.searchPerfume = (filter, sort, userIdx) => {
-    return perfumeDao.search(filter, sort, userIdx);
+    const order = parseSortToOrder(sort);
+    return perfumeDao.search(filter, order, userIdx);
 };
 
 /**

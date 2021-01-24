@@ -38,83 +38,11 @@ module.exports.getPerfumeById = (req, res, next) => {
 };
 
 module.exports.searchPerfume = (req, res, next) => {
-    const { series, brands, keywords, sortBy } = req.swagger.params[
-        'filter'
-    ].value;
-    const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
-
-    if (sortBy) {
-        let [key, ascending] = sortBy.split('_');
-        switch (key) {
-            case 'like':
-                key = 'likeCnt';
-                break;
-            case 'recent':
-                key = 'p.release_date';
-                break;
-            case 'random':
-                key = 'RAND()';
-                break;
-        }
-        ascending = ascending || 'desc';
-        switch (ascending) {
-            case 'desc':
-            case 'dsc':
-                ascending = 'DESC';
-                break;
-            case 'asc':
-            default:
-                ascending = 'ASC';
-                break;
-        }
-        sortBy = [[key, ascending]];
-    }
-    Perfume.searchPerfume({ series, brands, keywords }, sortBy, loginUserIdx)
-        .then((response) => {
-            res.status(OK).json({
-                message: '향수 검색 성공',
-                data: response,
-            });
-        })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
-};
-
-module.exports.searchPerfumeAll = (req, res, next) => {
     let { series, brand, keyword, sort } = req.query;
     const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
     series = (series && series.split('%')) || [];
     brand = (brand && brand.split('%')) || [];
     keyword = (keyword && keyword.split('%')) || [];
-    if (sort) {
-        let [key, ascending] = sort.split('_');
-        switch (key) {
-            case 'like':
-                key = 'likeCnt';
-                break;
-            case 'recent':
-                key = 'p.release_date';
-                break;
-            case 'random':
-                key = 'RAND()';
-                break;
-        }
-        ascending = ascending || 'desc';
-        switch (ascending) {
-            case 'desc':
-            case 'dsc':
-                ascending = 'DESC';
-                break;
-            case 'asc':
-            default:
-                ascending = 'ASC';
-                break;
-        }
-        sort = [[key, ascending]];
-    }
     Perfume.searchPerfume(
         { series, brands: brand, keywords: keyword },
         sort,
