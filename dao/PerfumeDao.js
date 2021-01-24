@@ -15,10 +15,22 @@ const { Op } = Sequelize;
 
 const SQL_RECENT_SEARCH_PERFUME_SELECT =
     'SELECT ' +
-    'MAX(sh.created_at) as createdAt, ' +
-    'p.perfume_idx as perfumeIdx, p.main_series_idx as mainSeriesIdx, p.brand_idx as brandIdx, p.name, p.english_name as englishName, p.image_thumbnail_url as imageUrl, p.release_date as releaseDate, ' +
-    'b.name as brandName, ' +
-    's.name as mainSeriesName, ' +
+    'MAX(sh.created_at) as "SearchHistory.createdAt", ' +
+    'p.perfume_idx as perfumeIdx, p.main_series_idx as mainSeriesIdx, p.brand_idx as brandIdx, p.name, p.english_name as englishName, p.image_thumbnail_url as imageUrl, p.release_date as releaseDate, p.created_at as createdAt, p.updated_at as updatedAt, ' +
+    'b.brand_idx as "Brand.brandIdx", ' +
+    'b.name as "Brand.name", ' +
+    'b.english_name as "Brand.englishName", ' +
+    'b.start_character as "Brand.startCharacter", ' +
+    'b.image_url as "Brand.imageUrl", ' +
+    'b.description as "Brand.description", ' +
+    'b.created_at as "Brand.createdAt", ' +
+    'b.updated_at as "Brand.updatedAt", ' +
+    's.series_idx as "MainSeries.seriesIdx", ' +
+    's.name as "MainSeries.name", ' +
+    's.english_name as "MainSeries.englishName", ' +
+    's.description as "MainSeries.description", ' +
+    's.created_at as "MainSeries.createdAt", ' +
+    's.updated_at as "MainSeries.updatedAt", ' +
     '(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = p.perfume_idx) as likeCnt, ' +
     '(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = p.perfume_idx AND lp.user_idx = $1) as isLiked ' +
     'FROM search_histories sh ' +
@@ -27,14 +39,26 @@ const SQL_RECENT_SEARCH_PERFUME_SELECT =
     'INNER JOIN series s ON p.main_series_idx = s.series_idx ' +
     'WHERE sh.user_idx = $1 ' +
     'GROUP BY sh.perfume_idx ' +
-    'ORDER BY createdAt DESC ' +
+    'ORDER BY "SearchHistory.createdAt" DESC ' +
     'LIMIT 10 ';
 const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER__SELECT =
     'SELECT ' +
-    'COUNT(*) as weight, ' +
-    'p.perfume_idx as perfumeIdx, p.main_series_idx as mainSeriesIdx, p.brand_idx as brandIdx, p.name, p.english_name as englishName, p.image_thumbnail_url as imageUrl, p.release_date as releaseDate, ' +
-    'b.name as brandName, ' +
-    's.name as mainSeriesName, ' +
+    'COUNT(*) as "SearchHistory.weight", ' +
+    'p.perfume_idx as perfumeIdx, p.main_series_idx as mainSeriesIdx, p.brand_idx as brandIdx, p.name, p.english_name as englishName, p.image_thumbnail_url as imageUrl, p.release_date as releaseDate, p.created_at as createdAt, p.updated_at as updatedAt,' +
+    'b.brand_idx as "Brand.brandIdx", ' +
+    'b.name as "Brand.name", ' +
+    'b.english_name as "Brand.englishName", ' +
+    'b.start_character as "Brand.startCharacter", ' +
+    'b.image_url as "Brand.imageUrl", ' +
+    'b.description as "Brand.description", ' +
+    'b.created_at as "Brand.createdAt", ' +
+    'b.updated_at as "Brand.updatedAt", ' +
+    's.series_idx as "MainSeries.seriesIdx", ' +
+    's.name as "MainSeries.name", ' +
+    's.english_name as "MainSeries.englishName", ' +
+    's.description as "MainSeries.description", ' +
+    's.created_at as "MainSeries.createdAt", ' +
+    's.updated_at as "MainSeries.updatedAt", ' +
     '(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = p.perfume_idx) as likeCnt, ' +
     '(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = p.perfume_idx AND lp.user_idx = $1) as isLiked ' +
     'FROM search_histories sh ' +
@@ -44,7 +68,7 @@ const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER__SELECT =
     'INNER JOIN users u ON sh.user_idx = u.user_idx ' +
     'WHERE u.gender = $2 AND (u.birth BETWEEN $3 AND $4) ' +
     'GROUP BY sh.perfume_idx ' +
-    'ORDER BY weight DESC ' +
+    'ORDER BY "SearchHistory.weight" DESC ' +
     'LIMIT 10 ';
 
 const genderMap = {
@@ -296,6 +320,7 @@ module.exports.recentSearchPerfumeList = async (userIdx) => {
     const result = await sequelize.query(SQL_RECENT_SEARCH_PERFUME_SELECT, {
         bind: [userIdx],
         type: sequelize.QueryTypes.SELECT,
+        nest: true,
     });
     return result.map((it) => {
         delete it.createTime;
