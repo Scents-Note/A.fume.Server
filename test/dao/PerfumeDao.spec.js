@@ -18,9 +18,6 @@ const {
 } = require('../../models');
 
 describe('# perfumeDao Test', () => {
-    before(() => {
-        sequelize.sync();
-    });
     before(async () => {
         await sequelize.sync();
         await Brand.upsert({
@@ -445,10 +442,7 @@ describe('# perfumeDao Test', () => {
                     expect(result.length).gte(3);
                     done();
                 })
-                .catch((err) => {
-                    console.log(err);
-                    throw err;
-                });
+                .catch((err) => done(err));
         });
 
         it('# recommend perfume by age and gender', (done) => {

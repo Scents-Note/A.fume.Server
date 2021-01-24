@@ -271,38 +271,31 @@ module.exports.readAllOfWishlist = async (userIdx) => {
                 ],
             ],
         },
-        where: {
-            userIdx,
-        },
         include: [
             {
-                model: Perfume,
-                as: 'Perfume',
-                include: [
-                    {
-                        model: Brand,
-                        as: 'Brand',
-                    },
-                    {
-                        model: Series,
-                        as: 'MainSeries',
-                    },
-                    {
-                        model: PerfumeDetail,
-                        as: 'PerfumeDetail',
-                    },
-                ],
+                model: Brand,
+                as: 'Brand',
+            },
+            {
+                model: Series,
+                as: 'MainSeries',
+            },
+            {
+                model: PerfumeDetail,
+                as: 'PerfumeDetail',
+            },
+            {
+                model: Wishlist,
+                as: 'MyWishlist',
+                where: {
+                    userIdx,
+                },
             },
         ],
         raw: true,
         nest: true,
     };
-    const wishlist = await Wishlist.findAll(options);
-    const perfumeList = wishlist.map((it) => {
-        const perfume = it.perfume;
-        delete it.perfume;
-        return Object.assign(it, perfume);
-    });
+    const perfumeList = await Perfume.findAll(options);
     perfumeList.map((it) => {
         it.isLiked = it.isLiked == 1;
         return it;

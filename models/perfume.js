@@ -26,6 +26,13 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'perfumeIdx',
                 as: 'PerfumeDetail',
             });
+            Perfume.hasMany(models.Wishlist, {
+                as: 'MyWishlist',
+                sourceKey: 'perfumeIdx',
+                foreignKey: 'perfumeIdx',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            });
         }
     }
     Perfume.init(
