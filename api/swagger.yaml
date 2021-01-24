@@ -1986,8 +1986,34 @@ paths:
                 type: boolean
                 description: 사용 가능 여부
                 example: true
-        400:
-          description: Invalid username/password supplied
+      x-swagger-router-controller: User
+  /user/validate/name:
+    get:
+      tags:
+      - user
+      description: 이름 중복 체크
+      operationId: validateName
+      produces:
+      - application/json
+      - application/x-www-urlencoded
+      parameters:
+      - in: query
+        name: nickname
+        type: string
+        required: true
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 이름 중복 체크
+              data:
+                type: boolean
+                description: 사용 가능 여부
+                example: true
       x-swagger-router-controller: User
   /user/auth:
     post:

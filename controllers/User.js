@@ -112,3 +112,22 @@ module.exports.validateEmail = (req, res, next) => {
         })
         .catch((err) => next(err));
 };
+
+module.exports.validateName = (req, res, next) => {
+    const nickname = decodeURIComponent(req.query.nickname);
+    User.validateName(nickname)
+        .then((response) => {
+            if (response) {
+                res.status(OK).json({
+                    message: 'Name 중복 체크: 사용 가능',
+                    data: response,
+                });
+            } else {
+                res.status(CONFLICT).json({
+                    message: 'Name 중복 체크: 사용 불가능',
+                    data: response,
+                });
+            }
+        })
+        .catch((err) => next(err));
+};
