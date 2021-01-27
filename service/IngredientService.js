@@ -10,21 +10,13 @@ const { parseSortToOrder } = require('../utils/parser.js');
  * @param {Object} ingredient
  * @return {Promise<number>}
  **/
-exports.postIngredient = ({
-    name,
-    englishName,
-    description,
-    imageUrl,
-    seriesName,
-}) => {
-    return seriesDao.readByName(seriesName).then((series) => {
-        return ingredientDao.create({
-            name,
-            englishName,
-            description,
-            imageUrl,
-            seriesIdx: series.seriesIdx,
-        });
+exports.postIngredient = ({ name, englishName, description, imageUrl }) => {
+    return ingredientDao.create({
+        name,
+        englishName,
+        description,
+        imageUrl,
+        seriesIdx: series.seriesIdx,
     });
 };
 

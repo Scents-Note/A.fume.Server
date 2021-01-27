@@ -147,7 +147,7 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
     perfume.noteType = noteType;
     perfume.ingredients = ingredients;
 
-    let reviews = await reviewDao.readAll(perfumeIdx);
+    let reviews = await reviewDao.readAllOrderByLike(perfumeIdx);
     let sum = 0,
         cnt = 0;
     let seasonal = makeZeroMap(seasonalArr);

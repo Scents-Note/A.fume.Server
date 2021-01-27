@@ -28,7 +28,9 @@ module.exports.getSeriesByIdx = (req, res, next) => {
 };
 
 module.exports.getSeriesList = (req, res, next) => {
-    Series.getSeriesAll()
+    let { sort } = req.query;
+    sort = sort || 'createdAt_desc';
+    Series.getSeriesAll(sort)
         .then((response) => {
             res.status(OK).json({
                 message: 'series 전체 조회 성공',
@@ -38,13 +40,15 @@ module.exports.getSeriesList = (req, res, next) => {
         .catch((err) => next(err));
 };
 
-module.exports.getSeriesList = (req, res, next) => {
-    let { sort } = req.query;
+module.exports.searchSeries = (req, res, next) => {
+    let { pagingIndex, pagingSize, sort } = req.query;
+    pagingIndex = parseInt(pagingIndex) || 1;
+    pagingSize = parseInt(pagingSize) || 10;
     sort = sort || 'createdAt_desc';
-    Series.getSeriesAll(sort)
+    Series.searchSeries(pagingIndex, pagingSize, sort)
         .then((response) => {
             res.status(OK).json({
-                message: 'series 전체 조회 성공',
+                message: '계열 검색 성공',
                 data: response,
             });
         })

@@ -4,19 +4,14 @@ const Ingredient = require('../service/IngredientService');
 const { OK } = require('../utils/statusCode.js');
 
 module.exports.postIngredient = (req, res, next) => {
-    const {
-        name,
-        englishName,
-        description,
-        imageUrl,
-        seriesName,
-    } = req.swagger.params['body'].value;
+    const { name, englishName, description, imageUrl } = req.swagger.params[
+        'body'
+    ].value;
     Ingredient.postIngredient({
         name,
         englishName,
         description,
         imageUrl,
-        seriesName,
     })
         .then((response) => {
             res.status(OK).json({

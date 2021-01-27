@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             this.belongsTo(models.Perfume, {
                 foreignKey: 'perfumeIdx',
+                targetKey: 'perfumeIdx',
                 as: 'Perfume',
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',

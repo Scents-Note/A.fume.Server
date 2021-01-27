@@ -1,6 +1,6 @@
 'use strict';
 
-const seriesDAO = require('../dao/SeriesDao.js');
+const seriesDao = require('../dao/SeriesDao.js');
 const { parseSortToOrder } = require('../utils/parser.js');
 
 /**
@@ -12,7 +12,7 @@ const { parseSortToOrder } = require('../utils/parser.js');
  * @returns {Promise<integer>} insertIdx
  **/
 exports.postSeries = ({ name, englishName, description }) => {
-    return seriesDAO.create({ name, englishName, description });
+    return seriesDao.create({ name, englishName, description });
 };
 
 /**
@@ -22,7 +22,7 @@ exports.postSeries = ({ name, englishName, description }) => {
  * @returns {Promise<Series>}
  **/
 exports.getSeriesByIdx = (seriesIdx) => {
-    return seriesDAO.readByIdx(seriesIdx);
+    return seriesDao.readByIdx(seriesIdx);
 };
 
 /**
@@ -33,7 +33,7 @@ exports.getSeriesByIdx = (seriesIdx) => {
  **/
 exports.getSeriesAll = (sort) => {
     const order = parseSortToOrder(sort);
-    return seriesDAO.readAll(order);
+    return seriesDao.readAll(order);
 };
 
 /**
@@ -56,7 +56,7 @@ exports.searchSeries = (pagingIndex, pagingSize, sort) => {
  * @returns {Promise<number>} affectedRows
  **/
 exports.putSeries = ({ seriesIdx, name, englishName, description }) => {
-    return seriesDAO.update({ seriesIdx, name, englishName, description });
+    return seriesDao.update({ seriesIdx, name, englishName, description });
 };
 
 /**
@@ -66,5 +66,5 @@ exports.putSeries = ({ seriesIdx, name, englishName, description }) => {
  * @returns {Promise<number>}
  **/
 exports.deleteSeries = (seriesIdx) => {
-    return seriesDAO.delete(seriesIdx);
+    return seriesDao.delete(seriesIdx);
 };

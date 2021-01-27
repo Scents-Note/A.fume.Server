@@ -287,7 +287,6 @@ paths:
               type: string
         405:
           description: Invalid input
-      deprecated: true
       x-swagger-router-controller: Perfume
     delete:
       tags:
@@ -399,7 +398,6 @@ paths:
           headers:
             WWW_Authenticate:
               type: string
-      deprecated: true
       x-swagger-router-controller: Brand
   /brand/all:
     get:
@@ -812,15 +810,26 @@ paths:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Ingredient
-  /series:
+  /series/all:
     get:
       tags:
       - series
-      summary: 계열 전체 목록 조회, Admin(WEB) 용
+      summary: 계열 전체 목록 조회
       operationId: getSeriesList
       produces:
       - application/json
-      parameters: []
+      parameters:
+      - name: sort
+        in: query
+        type: string
+        enum:
+        - name_asc
+        - name_desc
+        - englishName_asc
+        - englishName_desc
+        - createdAt_asc
+        - createdAt_desc
+        required: false
       responses:
         200:
           description: 성공
@@ -847,6 +856,67 @@ paths:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Series
+  /series/search/all:
+    get:
+      tags:
+      - series
+      summary: 계열 검색, Admin(WEB) 용
+      operationId: searchSeries
+      produces:
+      - application/json
+      parameters:
+      - name: sort
+        in: query
+        type: string
+        enum:
+        - name_asc
+        - name_desc
+        - englishName_asc
+        - englishName_desc
+        - createdAt_asc
+        - createdAt_desc
+        required: false
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 계열 검색 성공
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 10
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                      - $ref: '#/definitions/SeriesInfo'
+                      - type: object
+                        properties:
+                          seriesIdx:
+                            type: integer
+                        example:
+                          seriesIdx: 1
+        401:
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+      x-swagger-router-controller: Series
+  /series:
     post:
       tags:
       - series
@@ -1949,7 +2019,7 @@ paths:
   /user/logout:
     get:
       tags:
-      - user
+      - user, WEB 용
       operationId: logoutUser
       produces:
       - application/json
@@ -1958,7 +2028,6 @@ paths:
         default:
           description: successful operation
       x-swagger-router-controller: User
-      deprecated: true
   /user/validate/email:
     get:
       tags:
