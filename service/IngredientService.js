@@ -16,7 +16,6 @@ exports.postIngredient = ({ name, englishName, description, imageUrl }) => {
         englishName,
         description,
         imageUrl,
-        seriesIdx: series.seriesIdx,
     });
 };
 

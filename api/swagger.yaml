@@ -664,14 +664,7 @@ paths:
         description: Post new ingredient info
         required: false
         schema:
-          allOf:
-            - $ref: '#/definitions/IngredientInfo'
-            - type: object
-              properties:
-                seriesName:
-                  type: string
-              example:
-                seriesName : 우디
+          $ref: '#/definitions/IngredientInfo'
       responses:
         200:
           description: 성공

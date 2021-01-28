@@ -12,35 +12,15 @@ const { Ingredient, JoinSeriesIngredient, sequelize } = require('../models');
  * @param {Object} Series
  * @return {Promise<number>}
  */
-module.exports.create = ({
-    name,
-    englishName,
-    description,
-    imageUrl,
-    seriesIdx,
-}) => {
-    return sequelize
-        .transaction(async (t) => {
-            const ingredient = await Ingredient.create(
-                {
-                    name,
-                    englishName,
-                    description,
-                    imageUrl,
-                },
-                { transaction: t }
-            );
+module.exports.create = ({ name, englishName, description, imageUrl }) => {
+    return Ingredient.create({
+        name,
+        englishName,
+        description,
+        imageUrl,
+    })
+        .then((ingredient) => {
             if (!ingredient) {
-                throw new FailedToCreateError();
-            }
-            const joinSeriesIngredient = await JoinSeriesIngredient.create(
-                {
-                    ingredientIdx: ingredient.ingredientIdx,
-                    seriesIdx,
-                },
-                { transaction: t }
-            );
-            if (!joinSeriesIngredient) {
                 throw new FailedToCreateError();
             }
             return ingredient.ingredientIdx;
