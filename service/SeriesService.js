@@ -28,12 +28,10 @@ exports.getSeriesByIdx = (seriesIdx) => {
 /**
  * 계열 전체 목록 조회
  *
- * @param {string} sort
  * @returns {Promise<Series[]>}
  **/
-exports.getSeriesAll = (sort) => {
-    const order = parseSortToOrder(sort);
-    return seriesDao.readAll(order);
+exports.getSeriesAll = () => {
+    return seriesDao.readAll();
 };
 
 /**

@@ -70,10 +70,8 @@ module.exports.readByName = async (ingredientName) => {
 /**
  * 재료 전체 조회
  */
-module.exports.readAll = (order = [['createdAt', 'desc']]) => {
-    return Ingredient.findAll({
-        order,
-    });
+module.exports.readAll = () => {
+    return Ingredient.findAll();
 };
 
 /**

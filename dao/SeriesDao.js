@@ -57,13 +57,10 @@ module.exports.readByName = async (seriesName) => {
 /**
  * 계열 전체 조회
  *
- * @param {array} order
  * @returns {Promise<Series[]>}
  */
-module.exports.readAll = (order = [['createdAt', 'desc']]) => {
-    return Series.findAll({
-        order,
-    });
+module.exports.readAll = () => {
+    return Series.findAll();
 };
 
 /**

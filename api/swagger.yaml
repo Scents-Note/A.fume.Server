@@ -415,18 +415,6 @@ paths:
       operationId: getBrandAll
       produces:
       - application/json
-      parameters:
-      - name: sort
-        in: query
-        type: string
-        enum:
-        - name_asc
-        - name_desc
-        - englishName_asc
-        - englishName_desc
-        - createdAt_asc
-        - createdAt_desc
-        required: false
       responses:
         200:
           description: 성공
@@ -817,18 +805,6 @@ paths:
       operationId: getSeriesList
       produces:
       - application/json
-      parameters:
-      - name: sort
-        in: query
-        type: string
-        enum:
-        - name_asc
-        - name_desc
-        - englishName_asc
-        - englishName_desc
-        - createdAt_asc
-        - createdAt_desc
-        required: false
       responses:
         200:
           description: 성공

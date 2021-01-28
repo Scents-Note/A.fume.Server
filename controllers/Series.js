@@ -28,9 +28,7 @@ module.exports.getSeriesByIdx = (req, res, next) => {
 };
 
 module.exports.getSeriesList = (req, res, next) => {
-    let { sort } = req.query;
-    sort = sort || 'createdAt_desc';
-    Series.getSeriesAll(sort)
+    Series.getSeriesAll()
         .then((response) => {
             res.status(OK).json({
                 message: 'series 전체 조회 성공',

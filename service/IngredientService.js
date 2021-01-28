@@ -32,12 +32,10 @@ exports.getIngredientByIdx = (ingredientIdx) => {
 /**
  * 향료 목록 조회
  *
- * @param {string} sort
  * @returns {Promise<Ingredient[]>}
  **/
-exports.getIngredientAll = (sort) => {
-    const order = parseSortToOrder(sort);
-    return ingredientDao.readAll(order);
+exports.getIngredientAll = () => {
+    return ingredientDao.readAll();
 };
 
 /**

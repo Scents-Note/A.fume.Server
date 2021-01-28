@@ -19,12 +19,10 @@ exports.searchBrand = (pagingIndex, pagingSize, sort) => {
 /**
  * 브랜드 전체 조회
  *
- * @param {string} sort
  * @returns {Promise<Brand[]>}
  **/
-exports.getBrandAll = (sort) => {
-    const order = parseSortToOrder(sort);
-    return brandDao.readAll(order);
+exports.getBrandAll = () => {
+    return brandDao.readAll();
 };
 
 /**
