@@ -15,9 +15,6 @@ basePath: /A.fume/api/0.0.1
 tags:
 - name: perfume
   description: 향수 정보
-  externalDocs:
-    description: Find out more
-    url: http://swagger.io
 - name: series
   description: 계열
 - name: ingredient
@@ -35,10 +32,20 @@ tags:
 - name: wishlist
   description: 위시리스트
 - name: user
-  description: Operations about user
-  externalDocs:
-    description: Find out more about our store
-    url: http://swagger.io
+  description: 사용자
+- name: WEB_perfume
+  description: 향수 정보 for Web
+- name: WEB_series
+  description: 계열 for Web
+- name: WEB_ingredient
+  description: 향료 for Web
+- name: WEB_note
+  description: 노트 for Web
+- name: WEB_brand
+  description: 브랜드 for Web
+- name: WEB_user
+  description: 사용자 for Web
+
 schemes:
 #- https
 - http
@@ -48,8 +55,8 @@ paths:
   /perfume:
     post:
       tags:
-      - perfume
-      summary: 향수 정보 추가, Admin(WEB) 용
+      - WEB_perfume
+      summary: 향수 정보 추가
       operationId: createPerfume
       security:
         - userToken: []
@@ -93,7 +100,7 @@ paths:
   /perfume/search/all:
     get:
       tags:
-      - perfume
+      - WEB_perfume
       summary: 향수 검색
       operationId: searchPerfume
       security:
@@ -251,8 +258,8 @@ paths:
       x-swagger-router-controller: Perfume
     put:
       tags:
-      - perfume
-      summary: 향수 정보 업데이트, Admin(WEB) 용
+      - WEB_perfume
+      summary: 향수 정보 업데이트
       operationId: updatePerfume
       security:
         - userToken: []
@@ -290,8 +297,8 @@ paths:
       x-swagger-router-controller: Perfume
     delete:
       tags:
-      - perfume
-      summary: 향수 삭제, Admin(WEB) 용
+      - WEB_perfume
+      summary: 향수 삭제
       operationId: deletePerfume
       security:
         - userToken: []
@@ -362,8 +369,8 @@ paths:
   /brand:
     post:
       tags:
-      - brand
-      summary: 브랜드 삽입, Admin(WEB) 용
+      - WEB_brand
+      summary: 브랜드 삽입
       operationId: postBrand
       security:
         - userToken: []
@@ -449,8 +456,8 @@ paths:
   /brand/search/all:
     get:
       tags:
-      - brand
-      summary: 브랜드 검색, Admin(WEB) 용
+      - WEB_brand
+      summary: 브랜드 검색
       operationId: searchBrand
       produces:
       - application/json
@@ -551,8 +558,8 @@ paths:
       x-swagger-router-controller: Brand
     put:
       tags:
-      - brand
-      summary: 브랜드 수정, Admin(WEB) 용
+      - WEB_brand
+      summary: 브랜드 수정
       operationId: putBrand
       security:
         - userToken: []
@@ -584,8 +591,8 @@ paths:
       x-swagger-router-controller: Brand
     delete:
       tags:
-      - brand
-      summary: 브랜드 삭제, Admin(WEB) 용
+      - WEB_brand
+      summary: 브랜드 삭제
       operationId: deleteBrand
       security:
         - userToken: []
@@ -647,8 +654,8 @@ paths:
       x-swagger-router-controller: Ingredient
     post:
       tags:
-      - ingredient
-      summary: 향료 삽입, Admin(WEB) 용
+      - WEB_ingredient
+      summary: 향료 삽입
       operationId: postIngredient
       security:
         - userToken: []
@@ -728,8 +735,8 @@ paths:
       x-swagger-router-controller: Ingredient
     put:
       tags:
-      - ingredient
-      summary: 향료 수정, Admin(WEB) 용
+      - WEB_ingredient
+      summary: 향료 수정
       operationId: putIngredient
       security:
         - userToken: []
@@ -769,9 +776,8 @@ paths:
       x-swagger-router-controller: Ingredient
     delete:
       tags:
-      - ingredient
-      summary: 향료 삭제, Admin(WEB) 용
-      description: 향료 삭제
+      - WEB_ingredient
+      summary: 향료 삭제
       operationId: deleteIngredient
       security:
         - userToken: []
@@ -852,8 +858,8 @@ paths:
   /series/search/all:
     get:
       tags:
-      - series
-      summary: 계열 검색, Admin(WEB) 용
+      - WEB_series
+      summary: 계열 검색
       operationId: searchSeries
       produces:
       - application/json
@@ -912,8 +918,8 @@ paths:
   /series:
     post:
       tags:
-      - series
-      summary: 계열 삽입, Admin(WEB) 용
+      - WEB_series
+      summary: 계열 삽입
       operationId: postSeries
       security:
         - userToken: []
@@ -986,8 +992,8 @@ paths:
       x-swagger-router-controller: Series
     put:
       tags:
-      - series
-      summary: 계열 수정, Admin(WEB) 용
+      - WEB_series
+      summary: 계열 수정
       operationId: putSeries
       security:
         - userToken: []
@@ -1027,8 +1033,8 @@ paths:
       x-swagger-router-controller: Series
     delete:
       tags:
-      - series
-      summary: 계열 삭제, Admin(WEB) 용
+      - WEB_series
+      summary: 계열 삭제
       operationId: deleteSeries
       security:
         - userToken: []
@@ -1063,8 +1069,8 @@ paths:
   /note:
     post:
       tags:
-      - note
-      summary: note 삽입, Admin(WEB) 용
+      - WEB_note
+      summary: note 삽입
       operationId: postNote
       security:
         - userToken: []
@@ -1102,8 +1108,8 @@ paths:
       x-swagger-router-controller: Note
     put:
       tags:
-      - note
-      summary: note 수정, Admin(WEB) 용
+      - WEB_note
+      summary: note 수정
       operationId: putNote
       security:
         - userToken: []
@@ -1138,8 +1144,8 @@ paths:
   /perfume/{perfumeIdx}/review:
     post:
       tags:
-      - review
-      summary: 시향노트 추가, Admin(WEB) 용
+      - WEB_review
+      summary: 시향노트 추가
       operationId: postReview
       security:
         - userToken: []
@@ -1462,7 +1468,7 @@ paths:
     delete:
       tags:
       - review
-      summary: 시향노트 삭제, Admin(WEB) 용
+      summary: 시향노트 삭제
       description: 시향노트 삭제하기
       operationId: deleteReview
       security:
@@ -2012,7 +2018,7 @@ paths:
   /user/logout:
     get:
       tags:
-      - user, WEB 용
+      - WEB_user
       operationId: logoutUser
       produces:
       - application/json
