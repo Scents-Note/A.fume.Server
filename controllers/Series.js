@@ -75,3 +75,15 @@ module.exports.deleteSeries = (req, res, next) => {
         })
         .catch((err) => next(err));
 };
+
+module.exports.getIngredients = (req, res, next) => {
+    const seriesIdx = req.swagger.params['seriesIdx'].value;
+    Series.getIngredientList(seriesIdx)
+        .then((result) => {
+            res.status(OK).json({
+                message: 'Series에 해당하는 Ingredient 조회 성공',
+                data: result,
+            });
+        })
+        .catch((err) => next(err));
+};

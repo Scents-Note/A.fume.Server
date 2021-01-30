@@ -86,6 +86,18 @@ describe('# ingredientDao Test', () => {
         });
     });
 
+    describe('# read By seriesIdx Test', () => {
+        it('# success case', (done) => {
+            ingredientDao
+                .readBySeriesIdx(1)
+                .then((result) => {
+                    expect(result.length).eq(5);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+    });
+
     describe('# update Test', () => {
         let ingredientIdx;
         before(async () => {

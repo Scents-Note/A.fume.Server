@@ -4,7 +4,7 @@ const {
     DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
 
-const { Ingredient, JoinSeriesIngredient, sequelize } = require('../models');
+const { Ingredient, Series } = require('../models');
 
 /**
  * 재료 생성
@@ -119,4 +119,33 @@ module.exports.update = async ({
  */
 module.exports.delete = (ingredientIdx) => {
     return Ingredient.destroy({ where: { ingredientIdx } });
+};
+
+/**
+ * 계열에 해당하는 재료 조회
+ *
+ * @param {number} seriesIdx
+ * @return {Promise<Ingredients>}
+ */
+module.exports.readBySeriesIdx = async (seriesIdx) => {
+    const result = await Ingredient.findAll({
+        include: [
+            {
+                model: Series,
+                as: 'Series',
+                where: {
+                    seriesIdx,
+                },
+            },
+        ],
+        raw: true,
+        nest: true,
+    });
+    if (!result) {
+        throw new NotMatchedError();
+    }
+    return result.map((it) => {
+        delete it.Series;
+        return it;
+    });
 };

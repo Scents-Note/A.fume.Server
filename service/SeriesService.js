@@ -1,6 +1,7 @@
 'use strict';
 
 const seriesDao = require('../dao/SeriesDao.js');
+const ingredientDao = require('../dao/IngredientDao');
 const { parseSortToOrder } = require('../utils/parser.js');
 
 /**
@@ -65,4 +66,17 @@ exports.putSeries = ({ seriesIdx, name, englishName, description }) => {
  **/
 exports.deleteSeries = (seriesIdx) => {
     return seriesDao.delete(seriesIdx);
+};
+
+/**
+ * 계열에 해당하는 재료 조회
+ *
+ * @param {number} seriesIdx
+ * @returns {Promise<Ingredient[]>}
+ */
+exports.getIngredientList = (seriesIdx) => {
+    return ingredientDao.readBySeriesIdx(seriesIdx).then((it) => {
+        delete it.JoinSeriesIngredient;
+        return it;
+    });
 };
