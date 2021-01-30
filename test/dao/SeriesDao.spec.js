@@ -9,22 +9,8 @@ const { sequelize, Series } = require('../../models/index.js');
 
 describe('# seriesDao Test', () => {
     before(async () => {
-        sequelize.sync();
-        await Series.upsert({
-            name: '테스트 데이터1',
-            englishName: 'Test Data',
-            description: '',
-        });
-        await Series.upsert({
-            name: '테스트 데이터2',
-            englishName: 'Test Data',
-            description: '',
-        });
-        await Series.upsert({
-            name: '테스트 데이터3',
-            englishName: 'Test Data',
-            description: '',
-        });
+        await sequelize.sync();
+        await require('./seeds.js')();
     });
     describe(' # create Test', () => {
         // 중복 데이터 미리 삭제

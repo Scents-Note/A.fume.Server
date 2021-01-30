@@ -9,6 +9,10 @@ const { Perfume, User, SearchHistory, sequelize } = require('../../models');
 describe('# searchHistoryDao Test', () => {
     before(async () => {
         await sequelize.sync();
+        await require('./seeds.js')();
+    });
+    before(async () => {
+        await sequelize.sync();
         await Perfume.upsert({
             perfumeIdx: 1,
             brandIdx: 1,
