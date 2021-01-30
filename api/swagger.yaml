@@ -852,6 +852,49 @@ paths:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Ingredient
+  /ingredient/{ingredientIdx}/series:
+    get:
+      tags:
+      - WEB_ingredient
+      summary: 재료에 해당하는 Series 조회
+      operationId: getSeries
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: ingredientIdx
+        in: path
+        description: 계열 ID
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example : Ingredient에 해당하는 Series 조회 성공
+              data:
+                type: array
+                items:
+                  allOf:
+                  - $ref: '#/definitions/SeriesInfo'
+                  - type: object
+                    properties:
+                      seriesIdx:
+                        type: integer
+                    example:
+                      seriesIdx: 222
+        401:
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+      x-swagger-router-controller: Ingredient
   /series/all:
     get:
       tags:

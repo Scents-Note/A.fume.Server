@@ -82,3 +82,16 @@ exports.putIngredient = ({
 exports.deleteIngredient = (ingredientIdx) => {
     return ingredientDao.delete(ingredientIdx);
 };
+
+/**
+ * 재료에 해당하는 계열 조회
+ *
+ * @param {number} ingredientIdx
+ * @returns {Promise<Series[]>}
+ */
+exports.getSeriesList = (ingredientIdx) => {
+    return seriesDao.readByIngredientIdx(ingredientIdx).then((it) => {
+        delete it.JoinSeriesIngredient;
+        return it;
+    });
+};

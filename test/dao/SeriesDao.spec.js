@@ -103,6 +103,18 @@ describe('# seriesDao Test', () => {
         });
     });
 
+    describe('# read By ingredientIdx Test', () => {
+        it('# success case', (done) => {
+            seriesDao
+                .readByIngredientIdx(1)
+                .then((result) => {
+                    expect(result.length).eq(5);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+    });
+
     describe('# search Test', () => {
         it('# success case', (done) => {
             seriesDao.search(1, 10, [['createdAt', 'desc']]).then((result) => {
