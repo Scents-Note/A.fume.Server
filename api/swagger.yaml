@@ -19,8 +19,6 @@ tags:
   description: 계열
 - name: ingredient
   description: 향료
-- name: note
-  description: 노트
 - name: brand
   description: 브랜드
 - name: review
@@ -29,8 +27,6 @@ tags:
   description: 댓글
 - name: keyword
   description: 키워드
-- name: wishlist
-  description: 위시리스트
 - name: user
   description: 사용자
 - name: WEB_perfume
@@ -57,7 +53,7 @@ paths:
       tags:
       - WEB_perfume
       summary: 향수 정보 추가
-      operationId: createPerfume
+      operationId: postPerfume
       security:
         - userToken: []
       x-security-scopes:
@@ -90,21 +86,14 @@ paths:
         400:
           description: Invalid ID supplied
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        405:
-          description: Invalid input
+          description: Token is missing or invalid
       x-swagger-router-controller: Perfume
-  /perfume/search/all:
+  /perfume/search:
     get:
       tags:
-      - WEB_perfume
+      - perfume
       summary: 향수 검색
       operationId: searchPerfume
-      security:
-        - userToken: []
       produces:
       - application/json
       parameters:
@@ -142,24 +131,25 @@ paths:
                 type: string
                 example: 향수 검색 성공
               data:
-                type: array
-                items:
-                  $ref: '#/definitions/Perfume'
-        400:
-          description: Invalid tag value
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      $ref: '#/definitions/Perfume'
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Perfume
-  /perfume/recentSearch:
+  /perfume/recent:
     get:
       tags:
       - perfume
       summary: 최근 검색한 향수 조회
       description: 최근에 검색한 향수를 조회한다.
-      operationId: recentSearch
+      operationId: getRecentPerfume
       security:
         - userToken: []
       x-security-scopes:
@@ -176,24 +166,86 @@ paths:
                 type: string
                 example: 향수 검색 성공
               data:
-                type: array
-                items:
-                  $ref: '#/definitions/Perfume'
-        400:
-          description: Invalid tag value
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      $ref: '#/definitions/Perfume'
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-      x-swagger-router-controller: Perfume
-  /perfume/recommend:
+          description: Token is missing or invalid
+  /perfume/new:
     get:
       tags:
       - perfume
-      summary: 유저 기반 향수 추천
+      summary: 새로 등록한 향수 조회
+      operationId: getNewPerfume
+      produces:
+      - application/json
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 검색 성공
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      $ref: '#/definitions/Perfume'
+        401:
+          description: Token is missing or invalid
+  /perfume/survey:
+    get:
+      tags:
+      - perfume
+      summary: 서베이 추천 향수 조회 
+      operationId: getSurveyPerfume
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      produces:
+      - application/json
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 서베이 추천 향수 조회 성공
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      $ref: '#/definitions/Perfume'
+        401:
+          description: Token is missing or invalid
+  /perfume/recommend/common:
+    get:
+      tags:
+      - perfume
+      summary: 향수 일반 추천 (성별, 나이 반영)
       description: 유저 연령, 성별에 따른 향수를 추천해준다.
-      operationId: recommendByUser
+      operationId: recommendCommonPerfume
       security:
         - userToken: []
       x-security-scopes:
@@ -210,26 +262,56 @@ paths:
                 type: string
                 example: 향수 검색 성공
               data:
-                type: array
-                items:
-                  $ref: '#/definitions/Perfume'
-        400:
-          description: Invalid tag value
-        401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      $ref: '#/definitions/Perfume'
       x-swagger-router-controller: Perfume
+  /perfume/recommend/personal:
+    get:
+      tags:
+      - perfume
+      summary: 향수 개인 맞춤 추천
+      description: 향수를 추천해준다.
+      operationId: recommendPersonalPerfume
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      produces:
+      - application/json
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 검색 성공
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      $ref: '#/definitions/Perfume'
+        401:
+          description: Token is missing or invalid
   /perfume/{perfumeIdx}:
     get:
       tags:
       - perfume
       summary: 향수 세부 정보 조회
-      description: 향수 세부 정보를 반환한다.
-      security:
-        - userToken: []
-      operationId: getPerfumeById
+      operationId: getPerfume
       produces:
       - application/json
       parameters:
@@ -250,9 +332,7 @@ paths:
               data:
                 $ref: '#/definitions/PerfumeDetail'
         401:
-          description: Not authenticated
-        403:
-          description: Access token does not have the required scope
+          description: Token is missing or invalid
         404:
           description: Perfume not found
       x-swagger-router-controller: Perfume
@@ -260,7 +340,7 @@ paths:
       tags:
       - WEB_perfume
       summary: 향수 정보 업데이트
-      operationId: updatePerfume
+      operationId: putPerfume
       security:
         - userToken: []
       x-security-scopes:
@@ -285,15 +365,8 @@ paths:
           description: 성공
           schema:
             $ref: '#/definitions/ApiResponse'
-        400:
-          description: Invalid ID supplied
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        405:
-          description: Invalid input
+          description: Token is missing or invalid
       x-swagger-router-controller: Perfume
     delete:
       tags:
@@ -317,18 +390,13 @@ paths:
           description: 성공
           schema:
             $ref: '#/definitions/ApiResponse'
-        400:
-          description: Invalid ID supplied
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
         404:
           description: Perfume not found
       x-swagger-router-controller: Perfume
   /perfume/{perfumeIdx}/like:
-    put:
+    post:
       tags:
       - perfume
       summary: 향수 좋아요
@@ -360,13 +428,47 @@ paths:
                 example: true
                 description: 요청 이후 좋아요 상태
         401:
-          description: Not authenticated
-        403:
-          description: Access token does not have the required scope
+          description: Token is missing or invalid
         404:
           description: Perfume not found
       x-swagger-router-controller: Perfume
   /brand:
+    get:
+      tags:
+      - brand
+      summary: 브랜드 전체 조회
+      operationId: getBrandAll
+      produces:
+      - application/json
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 브랜드 조회 성공
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                      - $ref: '#/definitions/BrandInfo'
+                      - type: object
+                        properties:
+                          brandIdx:
+                            type: integer
+                        example:
+                          brandIdx: 1
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Brand
     post:
       tags:
       - WEB_brand
@@ -383,8 +485,6 @@ paths:
       parameters:
       - in: body
         name: body
-        description: Post new brand info
-        required: false
         schema:
           $ref: '#/definitions/BrandInfo'
       responses:
@@ -401,47 +501,9 @@ paths:
                 example: 1
                 description: 브랜드 brandIdx
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Brand
-  /brand/all:
-    get:
-      tags:
-      - brand
-      summary: 브랜드 전체 조회
-      description: 브랜드 리스트 반환
-      operationId: getBrandAll
-      produces:
-      - application/json
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: 브랜드 조회 성공
-              data:
-                type: array
-                items:
-                  allOf:
-                  - $ref: '#/definitions/BrandInfo'
-                  - type: object
-                    properties:
-                      brandIdx:
-                        type: integer
-                    example:
-                      brandIdx: 1
-        401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-      x-swagger-router-controller: Brand
-  /brand/search/all:
+  /brand/search:
     get:
       tags:
       - WEB_brand
@@ -496,18 +558,15 @@ paths:
                         example:
                           brandIdx: 1
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Brand
   /brand/{brandIdx}:
     get:
       tags:
-      - brand
+      - WEB_brand
       summary: 브랜드 조회
       description: 브랜드 조회
-      operationId: getBrandByIdx
+      operationId: getBrand
       security:
         - userToken: []
       consumes:
@@ -539,10 +598,7 @@ paths:
                   example:
                     brandIdx: 1
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Brand
     put:
       tags:
@@ -572,10 +628,7 @@ paths:
         200:
           description: 성공
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Brand
     delete:
       tags:
@@ -600,12 +653,45 @@ paths:
         200:
           description: 성공
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Brand
   /ingredient:
+    get:
+      tags:
+      - ingredient
+      summary: 향료 목록 전체 조회
+      operationId: getIngredientAll
+      produces:
+      - application/json
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: ingredient 목록 조회 성공
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: '#/definitions/IngredientInfo'
+                        - type: object
+                          properties:
+                            ingredientIdx:
+                              type: integer
+                          example:
+                            ingredientIdx: 333
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Ingredient
     post:
       tags:
       - WEB_ingredient
@@ -640,51 +726,13 @@ paths:
                 example: 133
                 description: ingredient idx
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Ingredient
-  /ingredient/all:
-    get:
-      tags:
-      - ingredient
-      summary: 향료 목록 전체 조회
-      operationId: getIngredientList
-      produces:
-      - application/json
-      parameters: []
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: ingredient 목록 조회 성공
-              data:
-                type: array
-                items:
-                  allOf:
-                    - $ref: '#/definitions/IngredientInfo'
-                    - type: object
-                      properties:
-                        ingredientIdx:
-                          type: integer
-                      example:
-                        ingredientIdx: 333
-        401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-      x-swagger-router-controller: Ingredient
-  /ingredient/search/all:
+  /ingredient/search:
     get:
       tags:
       - WEB_ingredient
-      summary: 향료 목록 전체 조회
+      summary: 향료 목록 검색
       operationId: searchIngredient
       produces:
       - application/json
@@ -729,18 +777,14 @@ paths:
                       example:
                         ingredientIdx: 333
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Ingredient
   /ingredient/{ingredientIdx}:
     get:
       tags:
-      - ingredient
+      - WEB_ingredient
       summary: 특정 향료 조회
-      description: 특정 향료 조회
-      operationId: getIngredientByIdx
+      operationId: getIngredient
       consumes:
       - application/json
       produces:
@@ -771,10 +815,7 @@ paths:
                   example:
                     ingredientIdx: 333
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Ingredient
     put:
       tags:
@@ -812,10 +853,7 @@ paths:
                 type: string
                 example: ingredient 수정 성공
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Ingredient
     delete:
       tags:
@@ -847,60 +885,14 @@ paths:
                 type: string
                 example: ingredient 삭제 성공
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Ingredient
-  /ingredient/{ingredientIdx}/series:
-    get:
-      tags:
-      - WEB_ingredient
-      summary: 재료에 해당하는 Series 조회
-      operationId: getSeries
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - name: ingredientIdx
-        in: path
-        description: 계열 ID
-        required: true
-        type: integer
-        format: int64
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example : Ingredient에 해당하는 Series 조회 성공
-              data:
-                type: array
-                items:
-                  allOf:
-                  - $ref: '#/definitions/SeriesInfo'
-                  - type: object
-                    properties:
-                      seriesIdx:
-                        type: integer
-                    example:
-                      seriesIdx: 222
-        401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-      x-swagger-router-controller: Ingredient
-  /series/all:
+  /series:
     get:
       tags:
       - series
       summary: 계열 전체 목록 조회
-      operationId: getSeriesList
+      operationId: getSeriesAll
       produces:
       - application/json
       responses:
@@ -924,12 +916,45 @@ paths:
                       example:
                         seriesIdx: 222
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Series
-  /series/search/all:
+    post:
+      tags:
+      - WEB_series
+      summary: 계열 삽입
+      operationId: postSeries
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Post new series info
+        required: false
+        schema:
+          $ref: '#/definitions/SeriesInfo'
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+                example: series 추가 성공
+              data:
+                type: integer
+                example: 122
+                description: series idx
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Series
+  /series/search:
     get:
       tags:
       - WEB_series
@@ -984,50 +1009,7 @@ paths:
                         example:
                           seriesIdx: 1
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-      x-swagger-router-controller: Series
-  /series:
-    post:
-      tags:
-      - WEB_series
-      summary: 계열 삽입
-      operationId: postSeries
-      security:
-        - userToken: []
-      x-security-scopes:
-        - admin
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: body
-        description: Post new series info
-        required: false
-        schema:
-          $ref: '#/definitions/SeriesInfo'
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message: 
-                type: string
-                example: series 추가 성공
-              data:
-                type: integer
-                example: 122
-                description: series idx
-        401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Series
   /series/{seriesIdx}:
     get:
@@ -1035,7 +1017,7 @@ paths:
       - series
       summary: 특정 계열 조회
       description: 특정 계열 조회
-      operationId: getSeriesByIdx
+      operationId: getSeries
       consumes:
       - application/json
       produces:
@@ -1059,10 +1041,7 @@ paths:
               data:
                   $ref : '#/definitions/SeriesInfo'
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Series
     put:
       tags:
@@ -1100,10 +1079,7 @@ paths:
                 type: string
                 example: series 수정 성공
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Series
     delete:
       tags:
@@ -1135,17 +1111,14 @@ paths:
                 type: string
                 example: series 삭제 성공
         401:  
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Series
   /series/{seriesIdx}/ingredients:
     get:
       tags:
       - WEB_series
       summary: 계열에 해당하는 Ingredient 조회
-      operationId: getIngredients
+      operationId: getIngredientAll
       consumes:
       - application/json
       produces:
@@ -1153,7 +1126,6 @@ paths:
       parameters:
       - name: seriesIdx
         in: path
-        description: 계열 ID
         required: true
         type: integer
         format: int64
@@ -1178,10 +1150,7 @@ paths:
                     example:
                       ingredientIdx: 222
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Series
   /note:
     post:
@@ -1218,10 +1187,7 @@ paths:
                 example: 122
                 description: perfume idx
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Note
     put:
       tags:
@@ -1253,15 +1219,12 @@ paths:
                 type: string
                 example: note 수정 성공
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Note
-  /perfume/{perfumeIdx}/review:
+  /review:
     post:
       tags:
-      - WEB_review
+      - review
       summary: 시향노트 추가
       operationId: postReview
       security:
@@ -1273,12 +1236,6 @@ paths:
       produces:
       - application/json
       parameters:
-      - name: perfumeIdx
-        in: path
-        description: 향수 Idx
-        required: true
-        type: integer
-        format: int64
       - name: body
         in: body
         description: 시향노트 정보
@@ -1295,19 +1252,14 @@ paths:
                 type: string
                 example: 시향노트 추가 성공
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        405:
-          description: Invalid input
+          description: Token is missing or invalid
       x-swagger-router-controller: Review
+  /perfume/{perfumeIdx}/review:
     get:
       tags:
       - review
-      summary: 전체 시향노트 반환(인기순)
-      description: 특정 향수에 달린 전체 시향노트 좋아요 개수 순으로 가져오기
-      operationId: getReviewOfPerfumeByLike
+      summary: 향수별 시향 노트 전체 조회 
+      operationId: getPerfumeReview
       consumes:
       - application/json
       produces:
@@ -1319,6 +1271,15 @@ paths:
         required: true
         type: integer
         format: int64
+      - name: sort
+        in: query
+        type: string
+        enum:
+        - likeCount_asc
+        - score_asc
+        - likeCount_desc
+        - score_desc
+        required: false
       responses:
         200:
           description: 성공
@@ -1327,7 +1288,7 @@ paths:
             properties:
               message: 
                 type: string
-                example: 특정 향수의 시향노트 목록 인기순 조회 성공
+                example: 특정 향수의 시향노트 목록 조회 성공
               data:
                 type: array
                 items:
@@ -1356,124 +1317,6 @@ paths:
                       age: 20대 중반
                       nickname: 담담
                       createTime: '2020-12-07 00:11:41'
-        400:
-          description: Invalid username/password supplied
-      x-swagger-router-controller: Review
-  /perfume/{perfumeIdx}/review/score:
-    get:
-      tags:
-      - review
-      summary: 전체 시향노트 반환(별점순)
-      description: 특정 향수에 달린 전체 시향노트 별점순으로 가져오기
-      operationId: getReviewOfPerfumeByScore
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - name: perfumeIdx
-        in: path
-        description: 향수 Idx
-        required: true
-        type: integer
-        format: int64
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message: 
-                type: string
-                example: 특정 향수의 시향노트 목록 별점순 조회 성공
-              data:
-                type: array
-                items:
-                  allOf:
-                  - $ref: '#/definitions/ReviewInfo'
-                  - type: object
-                    properties: 
-                      reviewIdx:
-                        type: integer
-                        format: int64
-                      likeCount:
-                        type: integer
-                        format: int64
-                      age:
-                        type: string
-                      userGender: 
-                        type: string
-                      nickname:
-                        type: string
-                      createTime:
-                        type: string
-                    example:
-                      reviewIdx: 339
-                      likeCount: 5
-                      userGender: 여자
-                      age: 20대 중반
-                      nickname: 담담
-                      createTime: '2020-12-07 00:11:41'
-        400:
-          description: Invalid username/password supplied
-      x-swagger-router-controller: Review
-  /perfume/{perfumeIdx}/review/recent:
-    get:
-      tags:
-      - review
-      summary: 전체 시향노트 반환(최신순)
-      description: 특정 향수에 달린 전체 시향노트 최신순으로 가져오기
-      operationId: getReviewOfPerfumeByRecent
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - name: perfumeIdx
-        in: path
-        description: 향수 Idx
-        required: true
-        type: integer
-        format: int64
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message: 
-                type: string
-                example: 특정 향수의 시향노트 목록 최신순 조회 성공
-              data:
-                type: array
-                items:
-                  allOf:
-                  - $ref: '#/definitions/ReviewInfo'
-                  - type: object
-                    properties: 
-                      reviewIdx:
-                        type: integer
-                        format: int64
-                      likeCount:
-                        type: integer
-                        format: int64
-                      age:
-                        type: string
-                      userGender: 
-                        type: string
-                      nickname:
-                        type: string
-                      createTime:
-                        type: string
-                    example:
-                      reviewIdx: 339
-                      likeCount: 5
-                      age: 20대 중반
-                      userGender: 여자
-                      nickname: 홍길동
-                      createTime: '2020-12-07 00:11:41'
-        400:
-          description: Invalid username/password supplied
       x-swagger-router-controller: Review
   /review/{reviewIdx}:
     get:
@@ -1481,7 +1324,7 @@ paths:
       - review
       summary: 시향노트 반환
       description: 특정 시향노트 가져오기
-      operationId: getReviewByIdx
+      operationId: getReview
       consumes:
       - application/json
       produces:
@@ -1530,10 +1373,7 @@ paths:
         400:
           description: Invalid ID supplied
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
         404:
           description: Review not found
       x-swagger-router-controller: Review
@@ -1541,8 +1381,7 @@ paths:
       tags:
       - review
       summary: 시향노트 수정
-      description: 시향노트 수정하기
-      operationId: updateReview
+      operationId: putReview
       security:
         - userToken: []
       x-security-scopes:
@@ -1575,12 +1414,7 @@ paths:
         400:
           description: Invalid ID supplied
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        405:
-          description: Invalid input
+          description: Token is missing or invalid
       x-swagger-router-controller: Review
     delete:
       tags:
@@ -1615,13 +1449,10 @@ paths:
         400:
           description: Invalid ID supplied
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Review
   /review/{reviewIdx}/like:
-    put:
+    post:
       tags:
       - review
       summary:  시향노트 좋아요
@@ -1658,64 +1489,6 @@ paths:
         404:
           description: Review Like not found
       x-swagger-router-controller: Review
-  /myperfume:
-    get:
-      tags:
-      - review
-      summary: 마이퍼퓸 반환
-      description: 나의 시향노트 목록 가져오기
-      operationId: getReviewByUser
-      security:
-        - userToken: []
-      x-security-scopes:
-        - user
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: 마이퍼퓸 조회 성공
-              data:
-                type: array
-                items:
-                  allOf:
-                  - $ref: '#/definitions/ReviewInfo'
-                  - type: object
-                    properties:
-                      reviewIdx:
-                        type: integer
-                        format: int64
-                      imageUrl:
-                        type: string
-                      brandName:
-                        type: string
-                      name:
-                        type: string
-                      createTime:
-                        type: string
-                    example:
-                      reviewIdx: 349
-                      imageUrl: 
-                      brandName: JoMalone
-                      name: 넥타린 블로썸 앤 허니 코롱
-                      createTime: '2020-12-07 00:11:41'
-        400:
-          description: Invalid ID supplied
-        401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        404:
-          description: Review not found
-      x-swagger-router-controller: Review
   /review/{reviewIdx}/reply:
     post:
       tags:
@@ -1748,12 +1521,7 @@ paths:
         200:
           description: 성공
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        405:
-          description: Invalid input
+          description: Token is missing or invalid
       x-swagger-router-controller: Reply
     get:
       tags:
@@ -1787,8 +1555,6 @@ paths:
                     format: int64
                 example:
                   replyIdx: 1
-        400:
-          description: Invalid username/password supplied
       x-swagger-router-controller: Reply
   /reply/{replyIdx}:
     get:
@@ -1816,10 +1582,7 @@ paths:
         400:
           description: Invalid ID supplied
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
         404:
           description: Reply not found
       x-swagger-router-controller: Reply
@@ -1827,8 +1590,7 @@ paths:
       tags:
       - reply
       summary: 댓글 수정
-      description: 댓글 수정하기
-      operationId: updateReply
+      operationId: putReply
       consumes:
       - application/json
       produces:
@@ -1851,12 +1613,7 @@ paths:
         400:
           description: Invalid ID supplied
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        405:
-          description: Invalid input
+          description: Token is missing or invalid
       x-swagger-router-controller: Reply
     delete:
       tags:
@@ -1881,15 +1638,12 @@ paths:
         400:
           description: Invalid ID supplied
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Reply
   /perfume/{perfumeIdx}/keyword:
     post:
       tags:
-      - keyword
+      - WEB_keyword
       summary: 키워드 추가
       description : 특정 향수에 키워드 추가하기
       operationId: postKeyword
@@ -1918,57 +1672,14 @@ paths:
         200:
           description: 성공
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        405:
-          description: Invalid input
+          description: Token is missing or invalid
       x-swagger-router-controller: Keyword
-    get:
-      tags:
-      - keyword
-      summary: 향수의 키워드 반환
-      description: 특정 향수가 가지고 있는 키워드 목록 가져오기
-      operationId: getKeywordOfPerfume
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - name: perfumeIdx
-        in: path
-        description: 향수 Idx
-        required: true
-        type: integer
-        format: int64
-      responses:
-        200:
-          description: successful operation
-          schema:
-            type: array
-            items:
-              allOf:
-              - $ref: '#/definitions/KeywordInfo'
-              - type: object
-                properties:
-                  keywordIdx:
-                    type: integer
-                    format: int64
-                example:
-                  keywordIdx: 1
-        401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
   /keyword:
     get:
       tags:
       - keyword
       summary: 전체 키워드 목록 반환
-      description: 서버에 등록되어있는 전체 키워드 목록 가져오기
-      operationId: getKeywordList
+      operationId: getKeywordAll
       produces:
       - application/json
       responses:
@@ -1986,18 +1697,14 @@ paths:
                 example:
                   keywordIdx: 1
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Keyword
   /keyword/{keywordIdx}:
     put:
       tags:
       - keyword
       summary: 키워드 수정
-      description: 키워드 이름 수정하기
-      operationId: updatekeyword
+      operationId: putKeyword
       consumes:
       - application/json
       produces:
@@ -2020,12 +1727,7 @@ paths:
         400:
           description: Invalid ID supplied
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
-        405:
-          description: Invalid input
+          description: Token is missing or invalid
       x-swagger-router-controller: Keyword
     delete:
       tags:
@@ -2050,11 +1752,68 @@ paths:
         400:
           description: Invalid ID supplied
         401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
+          description: Token is missing or invalid
       x-swagger-router-controller: Keyword
+  /filter/series:
+    get:
+      tags:
+      - series
+      summary: 필터를 위한 series 리스트
+      operationId: getFilterSeries
+      produces:
+      - application/json
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Filter Series 리스트 조회 성공
+              data:
+                type: array
+                items:
+                  allOf:
+                  - $ref: '#/definitions/SeriesInfo'
+                  - type: object
+                    properties: 
+                      ingredients:
+                        type: array
+                        items: 
+                          $ref: '#/definitions/IngredientInfo'
+                example:
+                  ingredients: []
+      x-swagger-router-controller: Series
+  /filter/brand:
+    get:
+      tags:
+      - brand
+      summary: 필터를 위한 brand 리스트
+      operationId: getFilterBrand
+      produces:
+      - application/json
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Filter Brand 리스트 조회 성공
+              data:
+                type: array
+                items:
+                  - type: object
+                    properties: 
+                      initial: 
+                        type: string
+                      brand:
+                        $ref: '#/definitions/BrandInfo'
+                example:
+                  ingredients: []
+      x-swagger-router-controller: Brand
   /user/register:
     post:
       tags:
@@ -2117,10 +1876,8 @@ paths:
               data:
                 type: object
                 properties:
-                  userIdx:
-                    type: string
-                    description: userIdx
-                    example: 0
+                  user:
+                    $ref: '#/definitions/User'
                   token:
                     type: string
                     description: login용 userToken
@@ -2128,7 +1885,7 @@ paths:
                   refreshToken:
                     type: string
                     description: token 재발급 용 
-                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZWZyZXNoVG9rZW4iOnsidXNlcklkeCI6MSwiZW1haWwiOiJoZWUueW91bkBzYW1zdW5nLmNvbSIsIm5pY2tuYW1lIjoi7L-87Lm066eoIiwiZ2VuZGVyIjoxLCJwaG9uZSI6IjAxMC0yMDgxLTM4MTgiLCJiaXJ0aCI6MTk5NSwiZ3JhZGUiOjAsImFjY2Vzc1RpbWUiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoiLCJjcmVhdGVkQXQiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoiLCJ1cGRhdGVkQXQiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoifSwiaWF0IjoxNjA5ODUxODIzLCJleHAiOjE2MTE1Nzk4MjMsImlzcyI6ImFmdW1lLWphY2twb3QifQ.Vb9-KO1DWOBhuVAoBzh0USybt5b5YpZqfqG1OU3snUY
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZWZyZXNoVG9rZW4iOnsidXNlcklkeCI6MSwiZW1haWwiOiJoZWUueW91bkBzYW1zdW5nLmNvbSIsIm5pY2tuYW1lIjoi7L-87Lm066eoIiwiZ2VuZGVyIjoxLCJwaG9uZSI6IjAxMC0yMDgxLTM4MTgiLCJiaXJ0aCI6MTk5NSwiZ3JhZGUiOjAsImFjY2Vzc1RpbWUiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoiLCJjcmVhdGVkQXQiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoiLCJ1cGRhdGVkQXQiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoifSwiaWF0IjoxNjA5ODUxODIzLCJleHAiOjE2MTE1Nzk4MjMsImlzcyI6ImFmdW1lLWphY2twb3QifQ.Vb9-KO1DWOBhuVAoBzh0USybt5b5YpZqfqG1OU3snUY    
         400:
           description: Invalid username/password supplied
       x-swagger-router-controller: User
@@ -2270,7 +2027,7 @@ paths:
       - user
       summary: Updated user
       description: This can only be done by the logged in user.
-      operationId: updateUser
+      operationId: putUser
       produces:
       - application/json
       parameters:
@@ -2309,7 +2066,6 @@ paths:
       parameters:
       - name: userIdx
         in: path
-        description: The Idx that needs to be deleted
         required: true
         type: string
       responses:
@@ -2318,106 +2074,13 @@ paths:
         404:
           description: User not found
       x-swagger-router-controller: User
-  /wishlist:
-    post:
-      tags:
-      - wishlist
-      summary: add wishlist
-      description: 위시 리스트에 추가하기
-      operationId: createWishlist
-      security:
-        - userToken: []
-      x-security-scopes:
-        - user
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: body
-        required: true
-        schema: 
-          $ref: '#/definitions/Wishlist'
-      responses:
-        200:
-          description: successful operation
-          schema:
-            $ref: '#/definitions/ApiResponse'
-        default:
-          description: successful operation
-      x-swagger-router-controller: Wishlist
-    put:
-      tags:
-      - wishlist
-      summary: update wishlist
-      description: 위시 리스트에 수정하기
-      operationId: updateWishlist
-      security:
-        - userToken: []
-      x-security-scopes:
-        - user
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/Wishlist'
-      responses:
-        200:
-          description: successful operation
-          schema:
-            $ref: '#/definitions/ApiResponse'
-        default:
-          description: successful operation
-      x-swagger-router-controller: Wishlist
-    delete:
-      tags:
-      - wishlist
-      summary: delete user's wishlist
-      description: 유저가 가지고 있는 위시 리스트 전체 삭제하기
-      operationId: deleteWishlistByUser
-      security:
-        - userToken: []
-      x-security-scopes:
-        - user
-      responses:
-        200:
-          description: successful operation
-          schema:
-            $ref: '#/definitions/ApiResponse'
-        default:
-          description: successful operation
-      x-swagger-router-controller: Wishlist
+  /user/{userIdx}/perfume/wishlist:
     get:
       tags:
-      - wishlist
+      - Perfume
       summary: read user's wishlist
       description: 유저가 가지고 있는 위시 리스트 전체 조회하기
-      operationId: readWishlistByUser
-      security:
-        - userToken: []
-      x-security-scopes:
-        - user
-      produces:
-      - application/json
-      responses:
-        200:
-          description: successful operation
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/Perfume'
-        default:
-          description: successful operation
-      x-swagger-router-controller: Wishlist
-  /wishlist/{perfumeIdx}:
-    delete:
-      tags:
-      - wishlist
-      summary: delete wishlist
-      description: 위시 리스트에 삭제하기
-      operationId: deleteWishlist
+      operationId: getWishlist
       security:
         - userToken: []
       x-security-scopes:
@@ -2425,7 +2088,7 @@ paths:
       produces:
       - application/json
       parameters:
-      - name: perfumeIdx
+      - name: userIdx
         in: path
         required: true
         type: string
@@ -2433,10 +2096,38 @@ paths:
         200:
           description: successful operation
           schema:
-            $ref: '#/definitions/ApiResponse'
+            type: object
+            properties:
+              message:
+                type: string
+                example: 마이퍼퓸 조회 성공
+              data:
+                type: array
+                items:
+                  allOf:
+                  - $ref: '#/definitions/ReviewInfo'
+                  - type: object
+                    properties:
+                      reviewIdx:
+                        type: integer
+                        format: int64
+                      imageUrl:
+                        type: string
+                      brandName:
+                        type: string
+                      name:
+                        type: string
+                      createTime:
+                        type: string
+                    example:
+                      reviewIdx: 349
+                      imageUrl: 
+                      brandName: JoMalone
+                      name: 넥타린 블로썸 앤 허니 코롱
+                      createTime: '2020-12-07 00:11:41'
         default:
           description: successful operation
-      x-swagger-router-controller: Wishlist
+      x-swagger-router-controller: Perfume
 securityDefinitions:
   userToken:
       type: apiKey
@@ -2837,52 +2528,6 @@ definitions:
     - {}
     example:
       nickname: 향린이S2
-  Filter:
-    type: object
-    properties:
-      series:
-        type: array
-        items:
-          type: string
-      brands:
-        type: array
-        items:
-          type: string
-      keywords:
-        type: array
-        items:
-          type: string
-      sortBy:
-        type: string
-        enum:
-        - likeCnt_asc
-        - releaseDate_asc
-        - likeCnt_desc
-        - recent_desc
-        - releaseDate_desc
-    example:
-      series:
-      - 플로럴
-      - 오리엔탈
-      - 시트러스
-      brands:
-      - 조 말론 런던
-      - 르 라보
-      - 딥디크 파리스
-      keywords:
-      - 구현전
-      sortBy: recent_asc
-  Wishlist:
-    type: object
-    properties:
-      perfumeIdx:
-        type: integer
-        format: int32
-      priority:
-        type: integer
-    example:
-      perfumeIdx: 1
-      priority: 4
   ApiResponse:
     type: object
     properties:
@@ -2911,12 +2556,6 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/IngredientInfo'
-responses:
-  UnauthorizedError:
-    description: API key is missing or invalid
-    headers:
-      WWW_Authenticate:
-        type: string
 externalDocs:
   description: Afume Server Git Wiki
   url: https://github.com/A-fume/A.fume.Server/wiki

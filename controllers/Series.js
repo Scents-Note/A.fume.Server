@@ -15,7 +15,7 @@ module.exports.postSeries = (req, res, next) => {
         .catch((err) => next(err));
 };
 
-module.exports.getSeriesByIdx = (req, res, next) => {
+module.exports.getSeries = (req, res, next) => {
     const seriesIdx = req.swagger.params['seriesIdx'].value;
     Series.getSeriesByIdx(seriesIdx)
         .then((response) => {
@@ -27,7 +27,7 @@ module.exports.getSeriesByIdx = (req, res, next) => {
         .catch((err) => next(err));
 };
 
-module.exports.getSeriesList = (req, res, next) => {
+module.exports.getSeriesAll = (req, res, next) => {
     Series.getSeriesAll()
         .then((response) => {
             res.status(OK).json({

@@ -22,11 +22,7 @@ module.exports.postIngredient = (req, res, next) => {
         .catch((err) => next(err));
 };
 
-module.exports.getIngredientByIdx = function getIngredientByIdx(
-    req,
-    res,
-    next
-) {
+module.exports.getIngredient = (req, res, next) => {
     const ingredientIdx = req.swagger.params['ingredientIdx'].value;
     Ingredient.getIngredientByIdx(ingredientIdx)
         .then((response) => {
@@ -38,7 +34,7 @@ module.exports.getIngredientByIdx = function getIngredientByIdx(
         .catch((err) => next(err));
 };
 
-module.exports.getIngredientList = (req, res, next) => {
+module.exports.getIngredientAll = (req, res, next) => {
     Ingredient.getIngredientAll()
         .then((response) => {
             res.status(OK).json({
@@ -90,18 +86,6 @@ module.exports.deleteIngredient = (req, res, next) => {
         .then(() => {
             res.status(OK).json({
                 message: 'ingredient delete 성공',
-            });
-        })
-        .catch((err) => next(err));
-};
-
-module.exports.getSeries = (req, res, next) => {
-    const ingredientIdx = req.swagger.params['ingredientIdx'].value;
-    Ingredient.getSeriesList(ingredientIdx)
-        .then((result) => {
-            res.status(OK).json({
-                message: 'Ingredient에 해당하는 Series 조회 성공',
-                data: result,
             });
         })
         .catch((err) => next(err));
