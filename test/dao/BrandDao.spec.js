@@ -67,11 +67,14 @@ describe('# brandDao Test', () => {
 
     describe('# search Test', () => {
         it('# success case', (done) => {
-            brandDao.search(1, 10, [['createdAt', 'desc']]).then((result) => {
-                expect(result.count).gt(0);
-                expect(result.rows.length).gt(0);
-                done();
-            });
+            brandDao
+                .search(1, 10, [['createdAt', 'desc']])
+                .then((result) => {
+                    expect(result.count).gt(0);
+                    expect(result.rows.length).gt(0);
+                    done();
+                })
+                .catch((err) => done(err));
         });
     });
 

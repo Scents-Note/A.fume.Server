@@ -12,7 +12,7 @@ const {
     sequelize,
 } = require('../../models');
 
-module.exports = async () => {
+module.exports = () => {
     const firstJob = [];
     for (let i = 1; i <= 5; i++) {
         firstJob.push(
@@ -32,7 +32,6 @@ module.exports = async () => {
             })
         );
     }
-    await Promise.all(firstJob);
     const secondJob = [];
     for (let i = 1; i <= 5; i++) {
         secondJob.push(
@@ -64,7 +63,6 @@ module.exports = async () => {
             })
         );
     }
-    await Promise.all(secondJob);
     const thirdJob = [];
     for (let i = 1; i <= 5; i++) {
         thirdJob.push(
@@ -75,6 +73,10 @@ module.exports = async () => {
             JoinSeriesIngredient.upsert({ seriesIdx: i, ingredientIdx: 1 })
         );
     }
-    await Promise.all(thirdJob);
-    return true;
+    return Promise.all(firstJob)
+        .then((it) => Promise.all(secondJob))
+        .then((it) => Promise.all(thirdJob))
+        .catch((err) => {
+            console.log(err);
+        });
 };
