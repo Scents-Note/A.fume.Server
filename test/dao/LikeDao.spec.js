@@ -8,64 +8,12 @@ const {
     DuplicatedEntryError,
     NotMatchedError,
 } = require('../../utils/errors/errors.js');
-const {
-    sequelize,
-    Perfume,
-    User,
-    Brand,
-    Series,
-    LikePerfume,
-} = require('../../models');
+const { sequelize, LikePerfume } = require('../../models');
 
 describe('# likeDao Test', () => {
     before(async () => {
         sequelize.sync();
-        await Brand.upsert({
-            brandIdx: 1,
-            name: '조 말론 런던',
-            startCharacter: 'ㅈ',
-            englishName: 'Jo Malone London',
-            imageUrl: '',
-            description: '브랜드',
-        });
-        await Series.upsert({
-            seriesIdx: 1,
-            name: '플로럴',
-            englishName: 'Floral',
-            description: '',
-        });
-        await Perfume.upsert({
-            perfumeIdx: 1,
-            brandIdx: 1,
-            mainSeriesIdx: 1,
-            name: '오토니엘 로사 오 드 뚜왈렛',
-            englishName: 'OTHONIEL ROSA EAU DE TOILETTE',
-            imageThumbnailUrl: '',
-            releaseDate: '2020-12-30',
-        });
-        await Perfume.upsert({
-            perfumeIdx: 2,
-            brandIdx: 1,
-            mainSeriesIdx: 1,
-            name: '오토니엘 로사 오 드 뚜왈렛2',
-            englishName: 'OTHONIEL ROSA EAU DE TOILETTE',
-            imageThumbnailUrl: '',
-            releaseDate: '2020-12-30',
-        });
-        await User.upsert({
-            userIdx: 1,
-            nickname: '쿼카맨',
-            password: 'dummy',
-            gender: 1,
-            phone: '010-2081-3818',
-            email: 'heesung6701@naver.com',
-            birth: '1995',
-            grade: 1,
-        });
-        await LikePerfume.upsert({
-            userIdx: 1,
-            perfumeIdx: 2,
-        });
+        await require('./seeds.js')();
     });
     describe('# create Test', () => {
         before(async () => {
@@ -96,11 +44,14 @@ describe('# likeDao Test', () => {
 
     describe('# read case', () => {
         it('# success case', (done) => {
-            likeDao.read(1, 2).then((result) => {
-                expect(result.userIdx).eq(1);
-                expect(result.perfumeIdx).eq(2);
-                done();
-            });
+            likeDao
+                .read(1, 2)
+                .then((result) => {
+                    expect(result.userIdx).eq(1);
+                    expect(result.perfumeIdx).eq(2);
+                    done();
+                })
+                .catch((err) => done(err));
         });
 
         it('# fail case', (done) => {
@@ -122,13 +73,16 @@ describe('# likeDao Test', () => {
             LikePerfume.upsert({
                 userIdx: 1,
                 perfumeIdx: 2,
-            });
+            }).catch((err) => done(err));
         });
         it('# success case', (done) => {
-            likeDao.delete(1, 2).then((result) => {
-                expect(result).eq(1);
-                done();
-            });
+            likeDao
+                .delete(1, 2)
+                .then((result) => {
+                    expect(result).eq(1);
+                    done();
+                })
+                .catch((err) => done(err));
         });
     });
 });

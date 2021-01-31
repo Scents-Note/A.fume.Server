@@ -2,7 +2,7 @@ const {
     NotMatchedError,
     DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
-const { Series } = require('../models');
+const { Series, Ingredient } = require('../models');
 
 /**
  * 계열 생성
@@ -57,13 +57,10 @@ module.exports.readByName = async (seriesName) => {
 /**
  * 계열 전체 조회
  *
- * @param {array} order
  * @returns {Promise<Series[]>}
  */
-module.exports.readAll = (order = [['createdAt', 'desc']]) => {
-    return Series.findAll({
-        order,
-    });
+module.exports.readAll = () => {
+    return Series.findAll();
 };
 
 /**
@@ -112,4 +109,33 @@ module.exports.update = async ({
  */
 module.exports.delete = (seriesIdx) => {
     return Series.destroy({ where: { seriesIdx } });
+};
+
+/**
+ * 재료에 해당하는 계열 조회
+ *
+ * @param {number} ingredientIdx
+ * @return {Promise<Series>}
+ */
+module.exports.readByIngredientIdx = async (ingredientIdx) => {
+    const result = await Series.findAll({
+        include: [
+            {
+                model: Ingredient,
+                as: 'Ingredients',
+                where: {
+                    ingredientIdx,
+                },
+            },
+        ],
+        raw: true,
+        nest: true,
+    });
+    if (!result) {
+        throw new NotMatchedError();
+    }
+    return result.map((it) => {
+        delete it.Ingredients;
+        return it;
+    });
 };

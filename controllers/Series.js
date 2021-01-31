@@ -38,13 +38,15 @@ module.exports.getSeriesList = (req, res, next) => {
         .catch((err) => next(err));
 };
 
-module.exports.getSeriesList = (req, res, next) => {
-    let { sort } = req.query;
+module.exports.searchSeries = (req, res, next) => {
+    let { pagingIndex, pagingSize, sort } = req.query;
+    pagingIndex = parseInt(pagingIndex) || 1;
+    pagingSize = parseInt(pagingSize) || 10;
     sort = sort || 'createdAt_desc';
-    Series.getSeriesAll(sort)
+    Series.searchSeries(pagingIndex, pagingSize, sort)
         .then((response) => {
             res.status(OK).json({
-                message: 'series 전체 조회 성공',
+                message: '계열 검색 성공',
                 data: response,
             });
         })
@@ -69,6 +71,18 @@ module.exports.deleteSeries = (req, res, next) => {
         .then(() => {
             res.status(OK).json({
                 message: 'series delete 성공',
+            });
+        })
+        .catch((err) => next(err));
+};
+
+module.exports.getIngredients = (req, res, next) => {
+    const seriesIdx = req.swagger.params['seriesIdx'].value;
+    Series.getIngredientList(seriesIdx)
+        .then((result) => {
+            res.status(OK).json({
+                message: 'Series에 해당하는 Ingredient 조회 성공',
+                data: result,
             });
         })
         .catch((err) => next(err));

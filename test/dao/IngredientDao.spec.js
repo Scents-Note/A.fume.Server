@@ -5,39 +5,12 @@ const chai = require('chai');
 const { expect } = chai;
 const ingredientDao = require('../../dao/IngredientDao.js');
 const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
-const { sequelize, Ingredient, Series } = require('../../models');
+const { sequelize, Ingredient } = require('../../models');
 
 describe('# ingredientDao Test', () => {
     before(async () => {
         sequelize.sync();
-        await Series.upsert({
-            seriesIdx: 1,
-            name: '계열 테스트',
-            englishName: 'series name',
-            description: '',
-            imageUrl: '',
-        });
-        await Ingredient.upsert({
-            ingredientIdx: 1,
-            name: '테스트 데이터1',
-            englishName: 'Test Data',
-            description: '왈라왈라',
-            imageUrl: '',
-        });
-        await Ingredient.upsert({
-            ingredientIdx: 2,
-            name: '테스트 데이터2',
-            englishName: 'Test Data',
-            description: '왈라왈라',
-            imageUrl: '',
-        });
-        await Ingredient.upsert({
-            ingredientIdx: 3,
-            name: '테스트 데이터3',
-            englishName: 'Test Data',
-            description: '왈라왈라',
-            imageUrl: '',
-        });
+        await require('./seeds.js')();
     });
     describe(' # create Test', () => {
         before(async () => {
@@ -107,6 +80,18 @@ describe('# ingredientDao Test', () => {
                 .readAll()
                 .then((result) => {
                     expect(result.length).greaterThan(0);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+    });
+
+    describe('# read By seriesIdx Test', () => {
+        it('# success case', (done) => {
+            ingredientDao
+                .readBySeriesIdx(1)
+                .then((result) => {
+                    expect(result.length).eq(5);
                     done();
                 })
                 .catch((err) => done(err));

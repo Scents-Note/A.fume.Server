@@ -73,13 +73,10 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
 /**
  * 브랜드 전체 목록 조회
  *
- * @param {array} order
  * @returns {Promise<Brand[]>}
  */
-module.exports.readAll = async (order = [['createdAt', 'desc']]) => {
-    return Brand.findAll({
-        order,
-    });
+module.exports.readAll = async () => {
+    return Brand.findAll();
 };
 
 /**

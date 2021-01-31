@@ -10,21 +10,12 @@ const { parseSortToOrder } = require('../utils/parser.js');
  * @param {Object} ingredient
  * @return {Promise<number>}
  **/
-exports.postIngredient = ({
-    name,
-    englishName,
-    description,
-    imageUrl,
-    seriesName,
-}) => {
-    return seriesDao.readByName(seriesName).then((series) => {
-        return ingredientDao.create({
-            name,
-            englishName,
-            description,
-            imageUrl,
-            seriesIdx: series.seriesIdx,
-        });
+exports.postIngredient = ({ name, englishName, description, imageUrl }) => {
+    return ingredientDao.create({
+        name,
+        englishName,
+        description,
+        imageUrl,
     });
 };
 
@@ -41,12 +32,10 @@ exports.getIngredientByIdx = (ingredientIdx) => {
 /**
  * 향료 목록 조회
  *
- * @param {string} sort
  * @returns {Promise<Ingredient[]>}
  **/
-exports.getIngredientAll = (sort) => {
-    const order = parseSortToOrder(sort);
-    return ingredientDao.readAll(order);
+exports.getIngredientAll = () => {
+    return ingredientDao.readAll();
 };
 
 /**
@@ -92,4 +81,17 @@ exports.putIngredient = ({
  **/
 exports.deleteIngredient = (ingredientIdx) => {
     return ingredientDao.delete(ingredientIdx);
+};
+
+/**
+ * 재료에 해당하는 계열 조회
+ *
+ * @param {number} ingredientIdx
+ * @returns {Promise<Series[]>}
+ */
+exports.getSeriesList = (ingredientIdx) => {
+    return seriesDao.readByIngredientIdx(ingredientIdx).then((it) => {
+        delete it.JoinSeriesIngredient;
+        return it;
+    });
 };

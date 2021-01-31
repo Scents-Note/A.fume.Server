@@ -19,9 +19,7 @@ module.exports.searchBrand = (req, res, next) => {
 };
 
 module.exports.getBrandAll = (req, res, next) => {
-    let { sort } = req.query;
-    sort = sort || 'createdAt_desc';
-    Brand.getBrandAll(sort)
+    Brand.getBrandAll()
         .then((response) => {
             res.status(OK).json({
                 message: '브랜드 조회 성공',

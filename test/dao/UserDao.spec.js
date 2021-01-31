@@ -10,16 +10,7 @@ const { User, sequelize } = require('../../models');
 describe('# userDao Test', () => {
     before(async () => {
         await sequelize.sync();
-        await User.upsert({
-            userIdx: 1,
-            nickname: '쿼카맨',
-            password: 'dummy',
-            gender: 1,
-            phone: '010-2081-3818',
-            email: 'heesung6701@naver.com',
-            birth: '1995',
-            grade: 1,
-        });
+        await require('./seeds.js')();
     });
     describe('# create Test', () => {
         before(async () => {
@@ -40,11 +31,7 @@ describe('# userDao Test', () => {
                     expect(result).gt(0);
                     done();
                 })
-                .catch((err) => {
-                    console.log(err);
-                    expect(false).true();
-                    done();
-                });
+                .catch((err) => done(err));
         });
         it('# DuplicatedEntryError case', (done) => {
             User.create({
@@ -57,14 +44,14 @@ describe('# userDao Test', () => {
                 grade: 1,
             })
                 .then(() => {
-                    expect(false).true();
-                    done();
+                    done(new Error('Must expect Error'));
                 })
                 .catch((err) => {
                     expect(err.parent.errno).eq(1062);
                     expect(err.parent.code).eq('ER_DUP_ENTRY');
                     done();
-                });
+                })
+                .catch((err) => done(err));
         });
         after(async () => {
             await User.destroy({ where: { email: 'createTest@afume.com' } });
@@ -74,33 +61,39 @@ describe('# userDao Test', () => {
     describe(' # read Test', () => {
         describe('# readByEmail Test', () => {
             it('# success case', (done) => {
-                userDao.readByEmail('heesung6701@naver.com').then((result) => {
-                    expect(result.nickname).eq('쿼카맨');
-                    expect(result.gender).eq(1);
-                    done();
-                });
+                userDao
+                    .read({ email: 'email1@afume.com' })
+                    .then((result) => {
+                        expect(result.nickname).eq('user1');
+                        expect(result.phone).eq('010-0000-0001');
+                        done();
+                    })
+                    .catch((err) => done(err));
             });
             it('# Not Matched case', (done) => {
                 userDao
-                    .readByEmail('존재하지 않는 아이디')
+                    .read({ email: '존재하지 않는 아이디' })
                     .then(() => {
-                        expect(false).true();
-                        done();
+                        throw new Error('Must be expected NotMatchedError');
                     })
                     .catch((err) => {
                         expect(err).instanceOf(NotMatchedError);
                         done();
-                    });
+                    })
+                    .catch((err) => done(err));
             });
         });
         describe('# readByIdx Test', () => {
             it('# success case', (done) => {
-                userDao.readByIdx(1).then((result) => {
-                    expect(result.nickname).eq('쿼카맨');
-                    expect(result.gender).eq(1);
-                    expect(result.email).eq('heesung6701@naver.com');
-                    done();
-                });
+                userDao
+                    .readByIdx(1)
+                    .then((result) => {
+                        expect(result.nickname).eq('user1');
+                        expect(result.phone).eq('010-0000-0001');
+                        expect(result.email).eq('email1@afume.com');
+                        done();
+                    })
+                    .catch((err) => done(err));
             });
             it('# Not Matched case', (done) => {
                 userDao
@@ -145,7 +138,8 @@ describe('# userDao Test', () => {
                 .then((result) => {
                     expect(result).eq(1);
                     done();
-                });
+                })
+                .catch((err) => done(err));
         });
         it('# updateAccessTime success case', (done) => {
             setTimeout(() => {
@@ -155,11 +149,7 @@ describe('# userDao Test', () => {
                         expect(result).eq(1);
                         done();
                     })
-                    .catch((err) => {
-                        console.log(err);
-                        expect(false).true();
-                        done();
-                    });
+                    .catch((err) => done(err));
             }, 1000);
         });
         after(async () => {
@@ -181,10 +171,13 @@ describe('# userDao Test', () => {
         });
         describe('# delete Test', () => {
             it('# success case', (done) => {
-                userDao.delete(userIdx).then((result) => {
-                    expect(result).eq(1);
-                    done();
-                });
+                userDao
+                    .delete(userIdx)
+                    .then((result) => {
+                        expect(result).eq(1);
+                        done();
+                    })
+                    .catch((err) => done(err));
             });
         });
         after(async () => {

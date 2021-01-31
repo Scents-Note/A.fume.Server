@@ -1,7 +1,7 @@
 'use strict';
 
 const Perfume = require('../service/PerfumeService');
-const { OK, INTERNAL_SERVER_ERROR } = require('../utils/statusCode.js');
+const { OK } = require('../utils/statusCode.js');
 
 module.exports.createPerfume = (req, res, next) => {
     const body = req.body;
@@ -13,11 +13,7 @@ module.exports.createPerfume = (req, res, next) => {
                 data: response,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.getPerfumeById = (req, res, next) => {
@@ -30,91 +26,15 @@ module.exports.getPerfumeById = (req, res, next) => {
                 data: response,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.searchPerfume = (req, res, next) => {
-    const { series, brands, keywords, sortBy } = req.swagger.params[
-        'filter'
-    ].value;
-    const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
-
-    if (sortBy) {
-        let [key, ascending] = sortBy.split('_');
-        switch (key) {
-            case 'like':
-                key = 'likeCnt';
-                break;
-            case 'recent':
-                key = 'p.release_date';
-                break;
-            case 'random':
-                key = 'RAND()';
-                break;
-        }
-        ascending = ascending || 'desc';
-        switch (ascending) {
-            case 'desc':
-            case 'dsc':
-                ascending = 'DESC';
-                break;
-            case 'asc':
-            default:
-                ascending = 'ASC';
-                break;
-        }
-        sortBy = [[key, ascending]];
-    }
-    Perfume.searchPerfume({ series, brands, keywords }, sortBy, loginUserIdx)
-        .then((response) => {
-            res.status(OK).json({
-                message: '향수 검색 성공',
-                data: response,
-            });
-        })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
-};
-
-module.exports.searchPerfumeAll = (req, res, next) => {
     let { series, brand, keyword, sort } = req.query;
     const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
     series = (series && series.split('%')) || [];
     brand = (brand && brand.split('%')) || [];
     keyword = (keyword && keyword.split('%')) || [];
-    if (sort) {
-        let [key, ascending] = sort.split('_');
-        switch (key) {
-            case 'like':
-                key = 'likeCnt';
-                break;
-            case 'recent':
-                key = 'p.release_date';
-                break;
-            case 'random':
-                key = 'RAND()';
-                break;
-        }
-        ascending = ascending || 'desc';
-        switch (ascending) {
-            case 'desc':
-            case 'dsc':
-                ascending = 'DESC';
-                break;
-            case 'asc':
-            default:
-                ascending = 'ASC';
-                break;
-        }
-        sort = [[key, ascending]];
-    }
     Perfume.searchPerfume(
         { series, brands: brand, keywords: keyword },
         sort,
@@ -126,11 +46,7 @@ module.exports.searchPerfumeAll = (req, res, next) => {
                 data: response,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.updatePerfume = (req, res, next) => {
@@ -141,11 +57,7 @@ module.exports.updatePerfume = (req, res, next) => {
                 message: '향수 수정 성공',
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.likePerfume = (req, res, next) => {
@@ -158,11 +70,7 @@ module.exports.likePerfume = (req, res, next) => {
                 data: result,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.recentSearch = (req, res, next) => {
@@ -174,11 +82,7 @@ module.exports.recentSearch = (req, res, next) => {
                 data: result,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.recommendByUser = (req, res, next) => {
@@ -190,11 +94,7 @@ module.exports.recommendByUser = (req, res, next) => {
                 data: result,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.deletePerfume = (req, res, next) => {
@@ -205,9 +105,5 @@ module.exports.deletePerfume = (req, res, next) => {
                 message: '향수 삭제 성공',
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };

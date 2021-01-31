@@ -4,7 +4,7 @@ const {
     DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
 
-const { Ingredient, JoinSeriesIngredient, sequelize } = require('../models');
+const { Ingredient, Series } = require('../models');
 
 /**
  * 재료 생성
@@ -12,35 +12,15 @@ const { Ingredient, JoinSeriesIngredient, sequelize } = require('../models');
  * @param {Object} Series
  * @return {Promise<number>}
  */
-module.exports.create = ({
-    name,
-    englishName,
-    description,
-    imageUrl,
-    seriesIdx,
-}) => {
-    return sequelize
-        .transaction(async (t) => {
-            const ingredient = await Ingredient.create(
-                {
-                    name,
-                    englishName,
-                    description,
-                    imageUrl,
-                },
-                { transaction: t }
-            );
+module.exports.create = ({ name, englishName, description, imageUrl }) => {
+    return Ingredient.create({
+        name,
+        englishName,
+        description,
+        imageUrl,
+    })
+        .then((ingredient) => {
             if (!ingredient) {
-                throw new FailedToCreateError();
-            }
-            const joinSeriesIngredient = await JoinSeriesIngredient.create(
-                {
-                    ingredientIdx: ingredient.ingredientIdx,
-                    seriesIdx,
-                },
-                { transaction: t }
-            );
-            if (!joinSeriesIngredient) {
                 throw new FailedToCreateError();
             }
             return ingredient.ingredientIdx;
@@ -90,10 +70,8 @@ module.exports.readByName = async (ingredientName) => {
 /**
  * 재료 전체 조회
  */
-module.exports.readAll = (order = [['createdAt', 'desc']]) => {
-    return Ingredient.findAll({
-        order,
-    });
+module.exports.readAll = () => {
+    return Ingredient.findAll();
 };
 
 /**
@@ -141,4 +119,33 @@ module.exports.update = async ({
  */
 module.exports.delete = (ingredientIdx) => {
     return Ingredient.destroy({ where: { ingredientIdx } });
+};
+
+/**
+ * 계열에 해당하는 재료 조회
+ *
+ * @param {number} seriesIdx
+ * @return {Promise<Ingredients>}
+ */
+module.exports.readBySeriesIdx = async (seriesIdx) => {
+    const result = await Ingredient.findAll({
+        include: [
+            {
+                model: Series,
+                as: 'Series',
+                where: {
+                    seriesIdx,
+                },
+            },
+        ],
+        raw: true,
+        nest: true,
+    });
+    if (!result) {
+        throw new NotMatchedError();
+    }
+    return result.map((it) => {
+        delete it.Series;
+        return it;
+    });
 };

@@ -1,6 +1,7 @@
 'use strict';
 
-const seriesDAO = require('../dao/SeriesDao.js');
+const seriesDao = require('../dao/SeriesDao.js');
+const ingredientDao = require('../dao/IngredientDao');
 const { parseSortToOrder } = require('../utils/parser.js');
 
 /**
@@ -12,7 +13,7 @@ const { parseSortToOrder } = require('../utils/parser.js');
  * @returns {Promise<integer>} insertIdx
  **/
 exports.postSeries = ({ name, englishName, description }) => {
-    return seriesDAO.create({ name, englishName, description });
+    return seriesDao.create({ name, englishName, description });
 };
 
 /**
@@ -22,18 +23,16 @@ exports.postSeries = ({ name, englishName, description }) => {
  * @returns {Promise<Series>}
  **/
 exports.getSeriesByIdx = (seriesIdx) => {
-    return seriesDAO.readByIdx(seriesIdx);
+    return seriesDao.readByIdx(seriesIdx);
 };
 
 /**
  * 계열 전체 목록 조회
  *
- * @param {string} sort
  * @returns {Promise<Series[]>}
  **/
-exports.getSeriesAll = (sort) => {
-    const order = parseSortToOrder(sort);
-    return seriesDAO.readAll(order);
+exports.getSeriesAll = () => {
+    return seriesDao.readAll();
 };
 
 /**
@@ -56,7 +55,7 @@ exports.searchSeries = (pagingIndex, pagingSize, sort) => {
  * @returns {Promise<number>} affectedRows
  **/
 exports.putSeries = ({ seriesIdx, name, englishName, description }) => {
-    return seriesDAO.update({ seriesIdx, name, englishName, description });
+    return seriesDao.update({ seriesIdx, name, englishName, description });
 };
 
 /**
@@ -66,5 +65,18 @@ exports.putSeries = ({ seriesIdx, name, englishName, description }) => {
  * @returns {Promise<number>}
  **/
 exports.deleteSeries = (seriesIdx) => {
-    return seriesDAO.delete(seriesIdx);
+    return seriesDao.delete(seriesIdx);
+};
+
+/**
+ * 계열에 해당하는 재료 조회
+ *
+ * @param {number} seriesIdx
+ * @returns {Promise<Ingredient[]>}
+ */
+exports.getIngredientList = (seriesIdx) => {
+    return ingredientDao.readBySeriesIdx(seriesIdx).then((it) => {
+        delete it.JoinSeriesIngredient;
+        return it;
+    });
 };

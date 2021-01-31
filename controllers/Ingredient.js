@@ -4,19 +4,14 @@ const Ingredient = require('../service/IngredientService');
 const { OK } = require('../utils/statusCode.js');
 
 module.exports.postIngredient = (req, res, next) => {
-    const {
-        name,
-        englishName,
-        description,
-        imageUrl,
-        seriesName,
-    } = req.swagger.params['body'].value;
+    const { name, englishName, description, imageUrl } = req.swagger.params[
+        'body'
+    ].value;
     Ingredient.postIngredient({
         name,
         englishName,
         description,
         imageUrl,
-        seriesName,
     })
         .then((response) => {
             res.status(OK).json({
@@ -95,6 +90,18 @@ module.exports.deleteIngredient = (req, res, next) => {
         .then(() => {
             res.status(OK).json({
                 message: 'ingredient delete 성공',
+            });
+        })
+        .catch((err) => next(err));
+};
+
+module.exports.getSeries = (req, res, next) => {
+    const ingredientIdx = req.swagger.params['ingredientIdx'].value;
+    Ingredient.getSeriesList(ingredientIdx)
+        .then((result) => {
+            res.status(OK).json({
+                message: 'Ingredient에 해당하는 Series 조회 성공',
+                data: result,
             });
         })
         .catch((err) => next(err));

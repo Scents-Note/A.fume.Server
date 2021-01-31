@@ -103,7 +103,7 @@ exports.authUser = (token) => {
  * @returns {Promise<LoginToken>} - 토큰 정보
  **/
 exports.loginUser = async (email, password) => {
-    const user = await userDao.readByEmail(email);
+    const user = await userDao.read({ email });
     if (crypto.decrypt(user.password) != password) {
         throw new WrongPasswordError();
     }
@@ -158,7 +158,25 @@ exports.updateUser = ({
  **/
 exports.validateEmail = async (email) => {
     try {
-        await userDao.readByEmail(email);
+        await userDao.read({ email });
+        return false;
+    } catch (err) {
+        if (err instanceof NotMatchedError) {
+            return true;
+        }
+        throw err;
+    }
+};
+
+/**
+ * Name 중복 체크
+ *
+ * @param {string} nickname
+ * @returns {boolean}
+ **/
+exports.validateName = async (nickname) => {
+    try {
+        await userDao.read({ nickname });
         return false;
     } catch (err) {
         if (err instanceof NotMatchedError) {

@@ -15,9 +15,6 @@ basePath: /A.fume/api/0.0.1
 tags:
 - name: perfume
   description: 향수 정보
-  externalDocs:
-    description: Find out more
-    url: http://swagger.io
 - name: series
   description: 계열
 - name: ingredient
@@ -35,10 +32,20 @@ tags:
 - name: wishlist
   description: 위시리스트
 - name: user
-  description: Operations about user
-  externalDocs:
-    description: Find out more about our store
-    url: http://swagger.io
+  description: 사용자
+- name: WEB_perfume
+  description: 향수 정보 for Web
+- name: WEB_series
+  description: 계열 for Web
+- name: WEB_ingredient
+  description: 향료 for Web
+- name: WEB_note
+  description: 노트 for Web
+- name: WEB_brand
+  description: 브랜드 for Web
+- name: WEB_user
+  description: 사용자 for Web
+
 schemes:
 #- https
 - http
@@ -48,9 +55,8 @@ paths:
   /perfume:
     post:
       tags:
-      - perfume
+      - WEB_perfume
       summary: 향수 정보 추가
-      description: 향수 정보를 추가한다.
       operationId: createPerfume
       security:
         - userToken: []
@@ -90,53 +96,13 @@ paths:
               type: string
         405:
           description: Invalid input
-      deprecated: true
-      x-swagger-router-controller: Perfume
-  /perfume/search:
-    post:
-      tags:
-      - perfume
-      summary: 향수 검색
-      description: 검색 조건에 해당하는 향수를 반환한다.
-      operationId: searchPerfume
-      security:
-        - userToken: []
-      produces:
-      - application/json
-      parameters:
-      - in: body
-        name: filter
-        description: 검색 필터
-        required: false
-        schema:
-          $ref: '#/definitions/Filter'
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: 향수 검색 성공
-              data:
-                type: array
-                items:
-                  $ref: '#/definitions/Perfume'
-        400:
-          description: Invalid tag value
-        401:
-          description: API key is missing or invalid
-          headers:
-            WWW_Authenticate:
-              type: string
       x-swagger-router-controller: Perfume
   /perfume/search/all:
     get:
       tags:
-      - perfume
+      - WEB_perfume
       summary: 향수 검색
-      operationId: searchPerfumeAll
+      operationId: searchPerfume
       security:
         - userToken: []
       produces:
@@ -161,12 +127,10 @@ paths:
         in: query
         type: string
         enum:
-        - like_asc
-        - recent_asc
-        - random_asc
-        - like_desc
-        - recent_desc
-        - random_desc
+        - likeCnt_asc
+        - releaseDate_asc
+        - likeCnt_desc
+        - releaseDate_desc
         required: false
       responses:
         200:
@@ -294,7 +258,7 @@ paths:
       x-swagger-router-controller: Perfume
     put:
       tags:
-      - perfume
+      - WEB_perfume
       summary: 향수 정보 업데이트
       operationId: updatePerfume
       security:
@@ -330,12 +294,11 @@ paths:
               type: string
         405:
           description: Invalid input
-      deprecated: true
       x-swagger-router-controller: Perfume
     delete:
       tags:
-      - perfume
-      summary: Deletes a perfume
+      - WEB_perfume
+      summary: 향수 삭제
       operationId: deletePerfume
       security:
         - userToken: []
@@ -363,7 +326,6 @@ paths:
               type: string
         404:
           description: Perfume not found
-      deprecated: true
       x-swagger-router-controller: Perfume
   /perfume/{perfumeIdx}/like:
     put:
@@ -407,8 +369,8 @@ paths:
   /brand:
     post:
       tags:
-      - brand
-      summary: 브랜드 삽입, Admin(WEB) 용
+      - WEB_brand
+      summary: 브랜드 삽입
       operationId: postBrand
       security:
         - userToken: []
@@ -443,7 +405,6 @@ paths:
           headers:
             WWW_Authenticate:
               type: string
-      deprecated: true
       x-swagger-router-controller: Brand
   /brand/all:
     get:
@@ -454,18 +415,6 @@ paths:
       operationId: getBrandAll
       produces:
       - application/json
-      parameters:
-      - name: sort
-        in: query
-        type: string
-        enum:
-        - name_asc
-        - name_desc
-        - englishName_asc
-        - englishName_desc
-        - createdAt_asc
-        - createdAt_desc
-        required: false
       responses:
         200:
           description: 성공
@@ -495,8 +444,8 @@ paths:
   /brand/search/all:
     get:
       tags:
-      - brand
-      summary: 브랜드 검색, Admin(WEB) 용
+      - WEB_brand
+      summary: 브랜드 검색
       operationId: searchBrand
       produces:
       - application/json
@@ -597,8 +546,8 @@ paths:
       x-swagger-router-controller: Brand
     put:
       tags:
-      - brand
-      summary: 브랜드 수정, Admin(WEB) 용
+      - WEB_brand
+      summary: 브랜드 수정
       operationId: putBrand
       security:
         - userToken: []
@@ -627,12 +576,11 @@ paths:
           headers:
             WWW_Authenticate:
               type: string
-      deprecated: true
       x-swagger-router-controller: Brand
     delete:
       tags:
-      - brand
-      summary: 브랜드 삭제, Admin(WEB) 용
+      - WEB_brand
+      summary: 브랜드 삭제
       operationId: deleteBrand
       security:
         - userToken: []
@@ -656,14 +604,52 @@ paths:
           headers:
             WWW_Authenticate:
               type: string
-      deprecated: true
       x-swagger-router-controller: Brand
   /ingredient:
+    post:
+      tags:
+      - WEB_ingredient
+      summary: 향료 삽입
+      operationId: postIngredient
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Post new ingredient info
+        required: false
+        schema:
+          $ref: '#/definitions/IngredientInfo'
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: ingredient 추가 성공
+              data:
+                type: integer
+                example: 133
+                description: ingredient idx
+        401:
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+      x-swagger-router-controller: Ingredient
+  /ingredient/all:
     get:
       tags:
       - ingredient
-      summary: 향료 목록 조회
-      description: 향료 목록 반환
+      summary: 향료 목록 전체 조회
       operationId: getIngredientList
       produces:
       - application/json
@@ -694,34 +680,34 @@ paths:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Ingredient
-    post:
+  /ingredient/search/all:
+    get:
       tags:
-      - ingredient
-      summary: 향료 삽입
-      description: 향료 삽입
-      operationId: postIngredient
-      security:
-        - userToken: []
-      x-security-scopes:
-        - admin
-      consumes:
-      - application/json
+      - WEB_ingredient
+      summary: 향료 목록 전체 조회
+      operationId: searchIngredient
       produces:
       - application/json
       parameters:
-      - in: body
-        name: body
-        description: Post new ingredient info
+      - name: sort
+        in: query
+        type: string
+        enum:
+        - name_asc
+        - name_desc
+        - englishName_asc
+        - englishName_desc
+        - createdAt_asc
+        - createdAt_desc
         required: false
-        schema:
-          allOf:
-            - $ref: '#/definitions/IngredientInfo'
-            - type: object
-              properties:
-                seriesName:
-                  type: string
-              example:
-                seriesName : 우디
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
       responses:
         200:
           description: 성공
@@ -730,18 +716,24 @@ paths:
             properties:
               message:
                 type: string
-                example: ingredient 추가 성공
+                example: ingredient 목록 조회 성공
               data:
-                type: integer
-                example: 133
-                description: ingredient idx
+                type: array
+                items:
+                  allOf:
+                    - $ref: '#/definitions/IngredientInfo'
+                    - type: object
+                      properties:
+                        ingredientIdx:
+                          type: integer
+                      example:
+                        ingredientIdx: 333
         401:
           description: API key is missing or invalid
           headers:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Ingredient
-      deprecated: true
   /ingredient/{ingredientIdx}:
     get:
       tags:
@@ -786,9 +778,8 @@ paths:
       x-swagger-router-controller: Ingredient
     put:
       tags:
-      - ingredient
+      - WEB_ingredient
       summary: 향료 수정
-      description: 향료 수정
       operationId: putIngredient
       security:
         - userToken: []
@@ -826,12 +817,10 @@ paths:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Ingredient
-      deprecated: true
     delete:
       tags:
-      - ingredient
+      - WEB_ingredient
       summary: 향료 삭제
-      description: 향료 삭제
       operationId: deleteIngredient
       security:
         - userToken: []
@@ -863,17 +852,57 @@ paths:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Ingredient
-      deprecated: true
-  /series:
+  /ingredient/{ingredientIdx}/series:
+    get:
+      tags:
+      - WEB_ingredient
+      summary: 재료에 해당하는 Series 조회
+      operationId: getSeries
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: ingredientIdx
+        in: path
+        description: 계열 ID
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example : Ingredient에 해당하는 Series 조회 성공
+              data:
+                type: array
+                items:
+                  allOf:
+                  - $ref: '#/definitions/SeriesInfo'
+                  - type: object
+                    properties:
+                      seriesIdx:
+                        type: integer
+                    example:
+                      seriesIdx: 222
+        401:
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+      x-swagger-router-controller: Ingredient
+  /series/all:
     get:
       tags:
       - series
       summary: 계열 전체 목록 조회
-      description: 계열 전체 목록 반환
       operationId: getSeriesList
       produces:
       - application/json
-      parameters: []
       responses:
         200:
           description: 성공
@@ -900,11 +929,71 @@ paths:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Series
+  /series/search/all:
+    get:
+      tags:
+      - WEB_series
+      summary: 계열 검색
+      operationId: searchSeries
+      produces:
+      - application/json
+      parameters:
+      - name: sort
+        in: query
+        type: string
+        enum:
+        - name_asc
+        - name_desc
+        - englishName_asc
+        - englishName_desc
+        - createdAt_asc
+        - createdAt_desc
+        required: false
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 계열 검색 성공
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 10
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                      - $ref: '#/definitions/SeriesInfo'
+                      - type: object
+                        properties:
+                          seriesIdx:
+                            type: integer
+                        example:
+                          seriesIdx: 1
+        401:
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+      x-swagger-router-controller: Series
+  /series:
     post:
       tags:
-      - series
+      - WEB_series
       summary: 계열 삽입
-      description: 계열 삽입
       operationId: postSeries
       security:
         - userToken: []
@@ -940,7 +1029,6 @@ paths:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Series
-      deprecated: true
   /series/{seriesIdx}:
     get:
       tags:
@@ -978,9 +1066,8 @@ paths:
       x-swagger-router-controller: Series
     put:
       tags:
-      - series
+      - WEB_series
       summary: 계열 수정
-      description: 계열 수정
       operationId: putSeries
       security:
         - userToken: []
@@ -1018,12 +1105,10 @@ paths:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Series
-      deprecated: true
     delete:
       tags:
-      - series
+      - WEB_series
       summary: 계열 삭제
-      description: 계열 삭제
       operationId: deleteSeries
       security:
         - userToken: []
@@ -1055,13 +1140,54 @@ paths:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Series
-      deprecated: true
+  /series/{seriesIdx}/ingredients:
+    get:
+      tags:
+      - WEB_series
+      summary: 계열에 해당하는 Ingredient 조회
+      operationId: getIngredients
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: seriesIdx
+        in: path
+        description: 계열 ID
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example : series에 해당하는 Ingredient 조회 성공
+              data:
+                type: array
+                items:
+                  allOf:
+                  - $ref: '#/definitions/IngredientInfo'
+                  - type: object
+                    properties:
+                      ingredientIdx:
+                        type: integer
+                    example:
+                      ingredientIdx: 222
+        401:
+          description: API key is missing or invalid
+          headers:
+            WWW_Authenticate:
+              type: string
+      x-swagger-router-controller: Series
   /note:
     post:
       tags:
-      - note
+      - WEB_note
       summary: note 삽입
-      description: note 삽입
       operationId: postNote
       security:
         - userToken: []
@@ -1097,12 +1223,10 @@ paths:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Note
-      deprecated: true
     put:
       tags:
-      - note
+      - WEB_note
       summary: note 수정
-      description: note 수정
       operationId: putNote
       security:
         - userToken: []
@@ -1134,13 +1258,11 @@ paths:
             WWW_Authenticate:
               type: string
       x-swagger-router-controller: Note
-      deprecated: true
   /perfume/{perfumeIdx}/review:
     post:
       tags:
-      - review
+      - WEB_review
       summary: 시향노트 추가
-      description: 특정 향수에 시향노트 추가하기
       operationId: postReview
       security:
         - userToken: []
@@ -2013,7 +2135,7 @@ paths:
   /user/logout:
     get:
       tags:
-      - user
+      - WEB_user
       operationId: logoutUser
       produces:
       - application/json
@@ -2022,7 +2144,6 @@ paths:
         default:
           description: successful operation
       x-swagger-router-controller: User
-      deprecated: true
   /user/validate/email:
     get:
       tags:
@@ -2050,8 +2171,34 @@ paths:
                 type: boolean
                 description: 사용 가능 여부
                 example: true
-        400:
-          description: Invalid username/password supplied
+      x-swagger-router-controller: User
+  /user/validate/name:
+    get:
+      tags:
+      - user
+      description: 이름 중복 체크
+      operationId: validateName
+      produces:
+      - application/json
+      - application/x-www-urlencoded
+      parameters:
+      - in: query
+        name: nickname
+        type: string
+        required: true
+      responses:
+        200:
+          description: success
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 이름 중복 체크
+              data:
+                type: boolean
+                description: 사용 가능 여부
+                example: true
       x-swagger-router-controller: User
   /user/auth:
     post:
@@ -2708,12 +2855,11 @@ definitions:
       sortBy:
         type: string
         enum:
-        - like_asc
-        - recent_asc
-        - random_asc
-        - like_desc
+        - likeCnt_asc
+        - releaseDate_asc
+        - likeCnt_desc
         - recent_desc
-        - random_desc
+        - releaseDate_desc
     example:
       series:
       - 플로럴
