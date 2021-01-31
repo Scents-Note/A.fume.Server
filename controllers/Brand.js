@@ -29,7 +29,7 @@ module.exports.getBrandAll = (req, res, next) => {
         .catch((err) => next(err));
 };
 
-module.exports.getBrandByIdx = (req, res, next) => {
+module.exports.getBrand = (req, res, next) => {
     const brandIdx = req.swagger.params['brandIdx'].value;
     Brand.getBrandByIdx(brandIdx)
         .then((response) => {

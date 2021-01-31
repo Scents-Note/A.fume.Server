@@ -3,7 +3,7 @@
 const Perfume = require('../service/PerfumeService');
 const { OK } = require('../utils/statusCode.js');
 
-module.exports.createPerfume = (req, res, next) => {
+module.exports.postPerfume = (req, res, next) => {
     const body = req.body;
     body.imageThumbnailUrl = body.imageUrl;
     Perfume.createPerfume(body)
@@ -16,7 +16,7 @@ module.exports.createPerfume = (req, res, next) => {
         .catch((err) => next(err));
 };
 
-module.exports.getPerfumeById = (req, res, next) => {
+module.exports.getPerfume = (req, res, next) => {
     const perfumeIdx = req.swagger.params['perfumeIdx'].value;
     const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
     Perfume.getPerfumeById(perfumeIdx, loginUserIdx)
@@ -49,7 +49,7 @@ module.exports.searchPerfume = (req, res, next) => {
         .catch((err) => next(err));
 };
 
-module.exports.updatePerfume = (req, res, next) => {
+module.exports.putPerfume = (req, res, next) => {
     const body = req.swagger.params['body'].value;
     Perfume.updatePerfume(body)
         .then(() => {
@@ -73,7 +73,7 @@ module.exports.likePerfume = (req, res, next) => {
         .catch((err) => next(err));
 };
 
-module.exports.recentSearch = (req, res, next) => {
+module.exports.getRecentPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
     Perfume.recentSearch(loginUserIdx)
         .then((result) => {
@@ -85,12 +85,24 @@ module.exports.recentSearch = (req, res, next) => {
         .catch((err) => next(err));
 };
 
-module.exports.recommendByUser = (req, res, next) => {
+module.exports.recommendPersonalPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
     Perfume.recommendByUser(loginUserIdx)
         .then((result) => {
             res.status(OK).json({
-                message: '최근 검색한 향수 조회',
+                message: '향수 개인 맞춤 추천',
+                data: result,
+            });
+        })
+        .catch((err) => next(err));
+};
+
+module.exports.recommendCommonPerfume = (req, res, next) => {
+    const loginUserIdx = req.middlewareToken.loginUserIdx;
+    Perfume.recommendByUser(loginUserIdx)
+        .then((result) => {
+            res.status(OK).json({
+                message: '향수 일반 추천 (성별, 나이 반영)',
                 data: result,
             });
         })
@@ -107,3 +119,5 @@ module.exports.deletePerfume = (req, res, next) => {
         })
         .catch((err) => next(err));
 };
+
+module.exports.getWishlist = (req, res, next) => {};
