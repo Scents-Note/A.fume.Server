@@ -45,10 +45,10 @@ describe('# likeDao Test', () => {
     describe('# read case', () => {
         it('# success case', (done) => {
             likeDao
-                .read(1, 2)
+                .read(1, 1)
                 .then((result) => {
                     expect(result.userIdx).eq(1);
-                    expect(result.perfumeIdx).eq(2);
+                    expect(result.perfumeIdx).eq(1);
                     done();
                 })
                 .catch((err) => done(err));
