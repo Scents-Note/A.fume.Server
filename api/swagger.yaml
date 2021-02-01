@@ -121,6 +121,14 @@ paths:
         - likeCnt_desc
         - releaseDate_desc
         required: false
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
       responses:
         200:
           description: 성공
@@ -147,8 +155,8 @@ paths:
     get:
       tags:
       - perfume
-      summary: 최근 검색한 향수 조회
-      description: 최근에 검색한 향수를 조회한다.
+      summary: 최근 조회한 향수 조회
+      description: 최근에 조회한 향수를 조회한다.
       operationId: getRecentPerfume
       security:
         - userToken: []
@@ -156,6 +164,15 @@ paths:
         - user
       produces:
       - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
       responses:
         200:
           description: 성공
@@ -185,6 +202,15 @@ paths:
       operationId: getNewPerfume
       produces:
       - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
       responses:
         200:
           description: 성공
@@ -218,6 +244,15 @@ paths:
         - user
       produces:
       - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
       responses:
         200:
           description: 성공
@@ -252,6 +287,15 @@ paths:
         - user
       produces:
       - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
       responses:
         200:
           description: 성공
@@ -285,6 +329,15 @@ paths:
         - user
       produces:
       - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
       responses:
         200:
           description: 성공
@@ -328,7 +381,7 @@ paths:
             properties:
               message:
                 type: string
-                example: 향수 세부 조회 성공
+                example: 향수 세부 회 성공
               data:
                 $ref: '#/definitions/PerfumeDetail'
         401:
@@ -440,6 +493,15 @@ paths:
       operationId: getBrandAll
       produces:
       - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
       responses:
         200:
           description: 성공
@@ -663,6 +725,15 @@ paths:
       operationId: getIngredientAll
       produces:
       - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
       responses:
         200:
           description: 성공
@@ -895,6 +966,15 @@ paths:
       operationId: getSeriesAll
       produces:
       - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
       responses:
         200:
           description: 성공
@@ -1279,6 +1359,14 @@ paths:
         - score_asc
         - likeCount_desc
         - score_desc
+        required: false
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
         required: false
       responses:
         200:
@@ -2077,7 +2165,7 @@ paths:
   /user/{userIdx}/perfume/wishlist:
     get:
       tags:
-      - Perfume
+      - perfume
       summary: read user's wishlist
       description: 유저가 가지고 있는 위시 리스트 전체 조회하기
       operationId: getWishlist
@@ -2092,6 +2180,14 @@ paths:
         in: path
         required: true
         type: string
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
       responses:
         200:
           description: successful operation
