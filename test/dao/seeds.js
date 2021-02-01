@@ -6,11 +6,13 @@ const {
     User,
     LikePerfume,
     Wishlist,
+    Ingredient,
     SearchHistory,
     JoinSeriesIngredient,
     Sequelize,
     sequelize,
 } = require('../../models');
+const ingredient = require('../../models/ingredient');
 
 module.exports = () => {
     const firstJob = [];
@@ -29,6 +31,12 @@ module.exports = () => {
                 name: `계열${i}`,
                 englishName: 'series english-name',
                 description: '계열 설명 텍스트',
+            }),
+            Ingredient.upsert({
+                ingredientIdx: i,
+                name: `재료${i}`,
+                englishName: 'ingredient english-name',
+                description: '재료 설명 텍스트',
             })
         );
     }
@@ -43,13 +51,6 @@ module.exports = () => {
                 englishName: 'perfume english name',
                 imageThumbnailUrl: `http://perfume-image/${i}`,
                 releaseDate: `2021-01-1${i}`,
-            }),
-            PerfumeDetail.upsert({
-                perfumeIdx: i,
-                story: `스토리${i}`,
-                abundanceRate: 1,
-                imageUrl: '',
-                volumeAndPrice: '{"30":"95000","100":"190000"}',
             }),
             User.upsert({
                 userIdx: i,
@@ -66,6 +67,13 @@ module.exports = () => {
     const thirdJob = [];
     for (let i = 1; i <= 5; i++) {
         thirdJob.push(
+            PerfumeDetail.upsert({
+                perfumeIdx: i,
+                story: `스토리${i}`,
+                abundanceRate: 1,
+                imageUrl: '',
+                volumeAndPrice: '{"30":"95000","100":"190000"}',
+            }),
             Wishlist.upsert({ userIdx: 1, perfumeIdx: i, priority: i }),
             LikePerfume.upsert({ userIdx: i, perfumeIdx: i }),
             SearchHistory.upsert({ userIdx: i, perfumeIdx: i }),
