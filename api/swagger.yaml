@@ -1870,8 +1870,8 @@ paths:
                         type: array
                         items: 
                           $ref: '#/definitions/IngredientInfo'
-                example:
-                  ingredients: []
+                    example:
+                      ingredients: []
       x-swagger-router-controller: Series
   /filter/brand:
     get:
@@ -1893,14 +1893,13 @@ paths:
               data:
                 type: array
                 items:
-                  - type: object
-                    properties: 
-                      initial: 
-                        type: string
-                      brand:
-                        $ref: '#/definitions/BrandInfo'
-                example:
-                  ingredients: []
+                  type: object
+                  properties: 
+                    firstInitial: 
+                      type: string
+                      example: 'ㅌ'
+                    brand:
+                      $ref: '#/definitions/BrandInfo'
       x-swagger-router-controller: Brand
   /user/register:
     post:
@@ -2530,7 +2529,7 @@ definitions:
         type: string
       englishName:
         type: string
-      startCharacter:
+      firstInitial:
         type: string
       description:
         type: string
@@ -2539,7 +2538,7 @@ definitions:
     example:
       name: (테스트)조말론
       englishName: (테스트)Jo Malone
-      startCharacter: ㅌ
+      firstInitial: ㅌ
       description: (테스트)런던 브랜드
       imageUrl: (테스트)
   ReviewInfo:
