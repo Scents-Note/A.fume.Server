@@ -8,39 +8,13 @@ const {
     Brand,
     Series,
     LikePerfume,
+    SearchHistory,
+    User,
     sequelize,
     Sequelize,
 } = require('../models');
 const { Op } = Sequelize;
 
-const SQL_RECENT_SEARCH_PERFUME_SELECT =
-    'SELECT ' +
-    'MAX(sh.created_at) as "SearchHistory.createdAt", ' +
-    'p.perfume_idx as perfumeIdx, p.main_series_idx as mainSeriesIdx, p.brand_idx as brandIdx, p.name, p.english_name as englishName, p.image_thumbnail_url as imageUrl, p.release_date as releaseDate, p.created_at as createdAt, p.updated_at as updatedAt, ' +
-    'b.brand_idx as "Brand.brandIdx", ' +
-    'b.name as "Brand.name", ' +
-    'b.english_name as "Brand.englishName", ' +
-    'b.start_character as "Brand.startCharacter", ' +
-    'b.image_url as "Brand.imageUrl", ' +
-    'b.description as "Brand.description", ' +
-    'b.created_at as "Brand.createdAt", ' +
-    'b.updated_at as "Brand.updatedAt", ' +
-    's.series_idx as "MainSeries.seriesIdx", ' +
-    's.name as "MainSeries.name", ' +
-    's.english_name as "MainSeries.englishName", ' +
-    's.description as "MainSeries.description", ' +
-    's.created_at as "MainSeries.createdAt", ' +
-    's.updated_at as "MainSeries.updatedAt", ' +
-    '(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = p.perfume_idx) as likeCnt, ' +
-    '(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = p.perfume_idx AND lp.user_idx = $1) as isLiked ' +
-    'FROM search_histories sh ' +
-    'INNER JOIN perfumes p ON sh.perfume_idx = p.perfume_idx ' +
-    'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
-    'INNER JOIN series s ON p.main_series_idx = s.series_idx ' +
-    'WHERE sh.user_idx = $1 ' +
-    'GROUP BY sh.perfume_idx ' +
-    'ORDER BY "SearchHistory.createdAt" DESC ' +
-    'LIMIT 10 ';
 const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER__SELECT =
     'SELECT ' +
     'COUNT(*) as "SearchHistory.weight", ' +
@@ -305,11 +279,56 @@ module.exports.readAllOfWishlist = async (userIdx) => {
  * @returns {Promise<Perfume[]>}
  */
 module.exports.recentSearchPerfumeList = async (userIdx) => {
-    const result = await sequelize.query(SQL_RECENT_SEARCH_PERFUME_SELECT, {
-        bind: [userIdx],
-        type: sequelize.QueryTypes.SELECT,
+    const options = {
+        attributes: {
+            include: [
+                [
+                    sequelize.literal(
+                        `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx)`
+                    ),
+                    'likeCnt',
+                ],
+                [
+                    sequelize.literal(
+                        `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx AND lp.user_idx = ${userIdx})`
+                    ),
+                    'isLiked',
+                ],
+            ],
+        },
+        include: [
+            {
+                model: Brand,
+                as: 'Brand',
+            },
+            {
+                model: Series,
+                as: 'MainSeries',
+            },
+            {
+                model: PerfumeDetail,
+                as: 'PerfumeDetail',
+            },
+            {
+                model: SearchHistory,
+                as: 'SearchHistory',
+                include: {
+                    model: User,
+                    as: 'User',
+                    where: {
+                        userIdx,
+                    },
+                },
+            },
+        ],
+        limit: 10,
+        raw: true,
         nest: true,
-    });
+        order: [
+            [{ model: SearchHistory, as: 'SearchHistory' }, 'createdAt', 'asc'],
+        ],
+    };
+    const result = await Perfume.findAll(options);
     return result.map((it) => {
         delete it.createTime;
         return it;

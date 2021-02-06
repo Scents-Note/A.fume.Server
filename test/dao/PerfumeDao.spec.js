@@ -272,6 +272,21 @@ describe('# perfumeDao Test', () => {
                 .recentSearchPerfumeList(1)
                 .then((result) => {
                     expect(result.length).gte(5);
+                    const originString = result
+                        .map((it) => it.perfumeIdx)
+                        .toString();
+                    const sortedString = result
+                        .sort(
+                            (a, b) =>
+                                a.SearchHistory.createdAt >
+                                b.SearchHistory.createdAt
+                        )
+                        .map((it) => it.perfumeIdx)
+                        .toString();
+                    expect(sortedString).to.be.eq(originString);
+                    for (const obj of result) {
+                        expect(obj.SearchHistory.userIdx).to.be.eq(1);
+                    }
                     done();
                 })
                 .catch((err) => done(err));
