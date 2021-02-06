@@ -5,6 +5,7 @@ const { NotMatchedError } = require('../utils/errors/errors.js');
 const {
     Perfume,
     PerfumeDetail,
+    PerfumeSurvey,
     Brand,
     Series,
     LikePerfume,
@@ -361,6 +362,75 @@ module.exports.recommendPerfumeByAgeAndGender = async (
         delete it.weight;
         return it;
     });
+};
+
+/**
+ * 서베이 추천 향수 조회
+ *
+ * @param {number} userIdx
+ * @param {number} gender
+ * @returns {Promise<Perfume[]>}
+ */
+module.exports.readPerfumeSurvey = async (userIdx, gender) => {
+    const options = {
+        attributes: {
+            exclude: [
+                'createdAt',
+                'updatedAt',
+                'mainSeriesIdx',
+                'brandIdx',
+                'release_date',
+            ],
+            include: [
+                [
+                    sequelize.literal(
+                        `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx)`
+                    ),
+                    'likeCnt',
+                ],
+                [
+                    sequelize.literal(
+                        `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx AND lp.user_idx = ${userIdx})`
+                    ),
+                    'isLiked',
+                ],
+            ],
+        },
+        include: [
+            {
+                model: Brand,
+                as: 'Brand',
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+            },
+            {
+                model: Series,
+                as: 'MainSeries',
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+            },
+            {
+                model: PerfumeDetail,
+                as: 'PerfumeDetail',
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+            },
+            {
+                model: PerfumeSurvey,
+                as: 'PerfumeSurvey',
+                where: {
+                    gender,
+                },
+            },
+        ],
+        raw: true,
+        nest: true,
+    };
+    const perfumeList = await Perfume.findAndCountAll(options);
+    return perfumeList;
 };
 
 /**

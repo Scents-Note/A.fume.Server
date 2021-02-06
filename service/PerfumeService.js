@@ -201,6 +201,27 @@ exports.searchPerfume = (filter, sort, userIdx) => {
 };
 
 /**
+ * Survey 향수 조회
+ *
+ * @param {number} userIdx
+ * @returns {Promise<Brand[]>}
+ **/
+exports.getSurveyPerfume = (userIdx) => {
+    return userDao
+        .readByIdx(userIdx)
+        .then((it) => {
+            return perfumeDao.readPerfumeSurvey(it.userIdx, it.gender);
+        })
+        .then((result) => {
+            result.rows = result.rows.map((it) => {
+                delete it.PerfumeSurvey;
+                return it;
+            });
+            return result;
+        });
+};
+
+/**
  * 향수 정보 업데이트
  *
  * @param {Object} Perfume

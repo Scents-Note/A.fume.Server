@@ -26,6 +26,10 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: 'perfumeIdx',
                 as: 'PerfumeDetail',
             });
+            Perfume.hasOne(models.PerfumeSurvey, {
+                foreignKey: 'perfumeIdx',
+                as: 'PerfumeSurvey',
+            });
             Perfume.hasMany(models.LikePerfume, {
                 as: 'Wishlist',
                 sourceKey: 'perfumeIdx',

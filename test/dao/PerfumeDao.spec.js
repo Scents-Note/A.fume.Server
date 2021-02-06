@@ -301,6 +301,16 @@ describe('# perfumeDao Test', () => {
                 })
                 .catch((err) => done(err));
         });
+
+        it('# read perfume survey', (done) => {
+            perfumeDao
+                .readPerfumeSurvey(1, GENDER_WOMAN)
+                .then((result) => {
+                    expect(result.length).gte(5);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
     });
 
     describe('# update Test', () => {
