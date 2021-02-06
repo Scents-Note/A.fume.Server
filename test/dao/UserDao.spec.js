@@ -7,6 +7,8 @@ const userDao = require('../../dao/UserDao.js');
 const { NotMatchedError } = require('../../utils/errors/errors.js');
 const { User, sequelize } = require('../../models');
 
+const { GENDER_MAN, GENDER_WOMAN } = require('../../utils/code.js');
+
 describe('# userDao Test', () => {
     before(async () => {
         await sequelize.sync();
@@ -37,7 +39,7 @@ describe('# userDao Test', () => {
             User.create({
                 nickname: '생성 테스트',
                 password: 'hashed',
-                gender: 1,
+                gender: GENDER_MAN,
                 phone: '010-2081-3818',
                 email: 'createTest@afume.com',
                 birth: '1995',
@@ -116,7 +118,7 @@ describe('# userDao Test', () => {
             userIdx = await userDao.create({
                 nickname: '수정 테스트',
                 password: 'hashed',
-                gender: 1,
+                gender: GENDER_MAN,
                 phone: '010-2081-3818',
                 email: 'updateTest@afume.com',
                 birth: '1995',
@@ -129,7 +131,7 @@ describe('# userDao Test', () => {
                     userIdx,
                     nickname: '수정 테스트(完)',
                     password: '변경',
-                    gender: 2,
+                    gender: GENDER_WOMAN,
                     phone: '010-1234-1234',
                     email: 'updateTest@afume.com',
                     birth: '1995',
@@ -162,7 +164,7 @@ describe('# userDao Test', () => {
             userIdx = await userDao.create({
                 nickname: '삭제 테스트',
                 password: 'hashed',
-                gender: 1,
+                gender: GENDER_MAN,
                 phone: '010-2081-3818',
                 email: 'deleteTest@afume.com',
                 birth: '1995',

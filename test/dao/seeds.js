@@ -28,6 +28,16 @@ module.exports = () => {
                 name: `계열${i}`,
                 englishName: 'series english-name',
                 description: '계열 설명 텍스트',
+            }),
+            User.upsert({
+                userIdx: i,
+                nickname: `user${i}`,
+                password: 'test',
+                gender: (i % 2) + 1,
+                phone: `010-0000-000${i}`,
+                email: `email${i}@afume.com`,
+                birth: '1995',
+                grade: 1,
             })
         );
     }
@@ -49,16 +59,6 @@ module.exports = () => {
                 englishName: 'perfume english name',
                 imageThumbnailUrl: `http://perfume-image/${i}`,
                 releaseDate: `2021-01-1${i}`,
-            }),
-            User.upsert({
-                userIdx: i,
-                nickname: `user${i}`,
-                password: 'test',
-                gender: (i % 2) + 1,
-                phone: `010-0000-000${i}`,
-                email: `email${i}@afume.com`,
-                birth: '1995',
-                grade: 1,
             })
         );
     }
@@ -72,8 +72,9 @@ module.exports = () => {
                 imageUrl: '',
                 volumeAndPrice: '{"30":"95000","100":"190000"}',
             }),
-            LikePerfume.upsert({ userIdx: i, perfumeIdx: i }),
-            SearchHistory.upsert({ userIdx: i, perfumeIdx: i })
+            LikePerfume.upsert({ userIdx: 1, perfumeIdx: i }),
+            SearchHistory.upsert({ userIdx: i, perfumeIdx: i }),
+            SearchHistory.upsert({ userIdx: 1, perfumeIdx: i })
         );
     }
     return Promise.all(firstJob)

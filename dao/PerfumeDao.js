@@ -71,11 +71,6 @@ const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER__SELECT =
     'ORDER BY "SearchHistory.weight" DESC ' +
     'LIMIT 10 ';
 
-const genderMap = {
-    남자: 1,
-    여자: 2,
-};
-
 /**
  * 향수 추가
  *
@@ -335,8 +330,6 @@ module.exports.recommendPerfumeByAgeAndGender = async (
     startBirth,
     endBirth
 ) => {
-    gender = genderMap[gender] || 2;
-
     const result = await sequelize.query(
         SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER__SELECT,
         {

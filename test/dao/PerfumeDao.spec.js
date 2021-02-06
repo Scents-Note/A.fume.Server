@@ -11,6 +11,8 @@ const {
     sequelize,
 } = require('../../models');
 
+const { GENDER_MAN, GENDER_WOMAN } = require('../../utils/code.js');
+
 describe('# perfumeDao Test', () => {
     before(async () => {
         await sequelize.sync();
@@ -269,7 +271,7 @@ describe('# perfumeDao Test', () => {
             perfumeDao
                 .recentSearchPerfumeList(1)
                 .then((result) => {
-                    expect(result.length).gte(3);
+                    expect(result.length).gte(5);
                     done();
                 })
                 .catch((err) => done(err));
@@ -277,7 +279,7 @@ describe('# perfumeDao Test', () => {
 
         it('# recommend perfume by age and gender', (done) => {
             perfumeDao
-                .recommendPerfumeByAgeAndGender(1, '남자', 0, 2020)
+                .recommendPerfumeByAgeAndGender(1, GENDER_WOMAN, 0, 2021)
                 .then((result) => {
                     expect(result.length).gte(3);
                     done();
@@ -384,7 +386,6 @@ describe('# perfumeDao Test', () => {
                     });
                 })
                 .then((it) => {
-                    //expect(it);
                     done();
                 })
                 .catch((err) => done(err));
