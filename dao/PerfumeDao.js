@@ -7,7 +7,7 @@ const {
     PerfumeDetail,
     Brand,
     Series,
-    Wishlist,
+    LikePerfume,
     sequelize,
     Sequelize,
 } = require('../models');
@@ -285,8 +285,8 @@ module.exports.readAllOfWishlist = async (userIdx) => {
                 as: 'PerfumeDetail',
             },
             {
-                model: Wishlist,
-                as: 'MyWishlist',
+                model: LikePerfume,
+                as: 'Wishlist',
                 where: {
                     userIdx,
                 },

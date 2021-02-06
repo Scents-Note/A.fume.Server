@@ -5,13 +5,11 @@ const {
     PerfumeDetail,
     User,
     LikePerfume,
-    Wishlist,
     Ingredient,
     SearchHistory,
     Sequelize,
     sequelize,
 } = require('../../models');
-const ingredient = require('../../models/ingredient');
 
 module.exports = () => {
     const firstJob = [];
@@ -74,7 +72,6 @@ module.exports = () => {
                 imageUrl: '',
                 volumeAndPrice: '{"30":"95000","100":"190000"}',
             }),
-            Wishlist.upsert({ userIdx: 1, perfumeIdx: i, priority: i }),
             LikePerfume.upsert({ userIdx: i, perfumeIdx: i }),
             SearchHistory.upsert({ userIdx: i, perfumeIdx: i })
         );

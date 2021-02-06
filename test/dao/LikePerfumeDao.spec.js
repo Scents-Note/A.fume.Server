@@ -3,7 +3,7 @@ dotenv.config({ path: './config/.env.test' });
 
 const chai = require('chai');
 const { expect } = chai;
-const likeDao = require('../../dao/LikeDao.js');
+const likePerfumeDao = require('../../dao/LikePerfumeDao.js');
 const {
     DuplicatedEntryError,
     NotMatchedError,
@@ -17,11 +17,11 @@ describe('# likeDao Test', () => {
     });
     describe('# create Test', () => {
         before(async () => {
-            await LikePerfume.destroy({ where: { userIdx: 1, perfumeIdx: 1 } });
+            await LikePerfume.destroy({ where: { userIdx: 5, perfumeIdx: 5 } });
         });
         it('# success case', (done) => {
-            likeDao
-                .create(1, 1)
+            likePerfumeDao
+                .create(5, 5)
                 .then((result) => {
                     expect(result).to.be.not.null;
                     done();
@@ -29,8 +29,8 @@ describe('# likeDao Test', () => {
                 .catch((err) => done(err));
         });
         it('# DuplicatedEntryError case', (done) => {
-            likeDao
-                .create(1, 1)
+            likePerfumeDao
+                .create(5, 5)
                 .then(() => {
                     done(new Error('must be expected DuplicatedEntryError'));
                 })
@@ -44,7 +44,7 @@ describe('# likeDao Test', () => {
 
     describe('# read case', () => {
         it('# success case', (done) => {
-            likeDao
+            likePerfumeDao
                 .read(1, 1)
                 .then((result) => {
                     expect(result.userIdx).eq(1);
@@ -55,7 +55,7 @@ describe('# likeDao Test', () => {
         });
 
         it('# fail case', (done) => {
-            likeDao
+            likePerfumeDao
                 .read(-1, 1)
                 .then(() =>
                     done(new Error('must be expected DuplicatedEntryError'))
@@ -71,13 +71,13 @@ describe('# likeDao Test', () => {
     describe('# delete Test', () => {
         before(async () => {
             LikePerfume.upsert({
-                userIdx: 1,
-                perfumeIdx: 2,
+                userIdx: 5,
+                perfumeIdx: 5,
             }).catch((err) => done(err));
         });
         it('# success case', (done) => {
-            likeDao
-                .delete(1, 2)
+            likePerfumeDao
+                .delete(5, 5)
                 .then((result) => {
                     expect(result).eq(1);
                     done();
