@@ -8,7 +8,6 @@ const {
     Wishlist,
     Ingredient,
     SearchHistory,
-    JoinSeriesIngredient,
     Sequelize,
     sequelize,
 } = require('../../models');
@@ -31,18 +30,19 @@ module.exports = () => {
                 name: `계열${i}`,
                 englishName: 'series english-name',
                 description: '계열 설명 텍스트',
-            }),
-            Ingredient.upsert({
-                ingredientIdx: i,
-                name: `재료${i}`,
-                englishName: 'ingredient english-name',
-                description: '재료 설명 텍스트',
             })
         );
     }
     const secondJob = [];
     for (let i = 1; i <= 5; i++) {
         secondJob.push(
+            Ingredient.upsert({
+                ingredientIdx: i,
+                name: `재료${i}`,
+                seriesIdx: 1,
+                englishName: 'ingredient english-name',
+                description: '재료 설명 텍스트',
+            }),
             Perfume.upsert({
                 perfumeIdx: i,
                 brandIdx: i,
@@ -76,9 +76,7 @@ module.exports = () => {
             }),
             Wishlist.upsert({ userIdx: 1, perfumeIdx: i, priority: i }),
             LikePerfume.upsert({ userIdx: i, perfumeIdx: i }),
-            SearchHistory.upsert({ userIdx: i, perfumeIdx: i }),
-            JoinSeriesIngredient.upsert({ seriesIdx: 1, ingredientIdx: i }),
-            JoinSeriesIngredient.upsert({ seriesIdx: i, ingredientIdx: 1 })
+            SearchHistory.upsert({ userIdx: i, perfumeIdx: i })
         );
     }
     return Promise.all(firstJob)

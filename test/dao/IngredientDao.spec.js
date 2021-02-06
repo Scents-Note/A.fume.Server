@@ -58,14 +58,14 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readByIdx(1)
                 .then((result) => {
-                    expect(result.name).eq('테스트 데이터1');
+                    expect(result.name).eq('재료1');
                     done();
                 })
                 .catch((err) => done(err));
         });
         it(' # success case (By Name)', (done) => {
             ingredientDao
-                .readByName('테스트 데이터2')
+                .readByName('재료2')
                 .then((result) => {
                     expect(result.ingredientIdx).eq(2);
                     done();
@@ -79,7 +79,7 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readAll()
                 .then((result) => {
-                    expect(result.length).greaterThan(0);
+                    expect(result.length).greaterThan(4);
                     done();
                 })
                 .catch((err) => done(err));
@@ -89,9 +89,15 @@ describe('# ingredientDao Test', () => {
     describe('# read By seriesIdx Test', () => {
         it('# success case', (done) => {
             ingredientDao
-                .readBySeriesIdx(1)
+                .readAll({ seriesIdx: 1 })
                 .then((result) => {
                     expect(result.length).eq(5);
+                    expect(
+                        result.reduce(
+                            (prev, cur) => prev && cur.seriesIdx == 1,
+                            true
+                        )
+                    ).to.be.true;
                     done();
                 })
                 .catch((err) => done(err));

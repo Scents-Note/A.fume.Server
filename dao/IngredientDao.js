@@ -12,8 +12,15 @@ const { Ingredient, Series } = require('../models');
  * @param {Object} Series
  * @return {Promise<number>}
  */
-module.exports.create = ({ name, englishName, description, imageUrl }) => {
+module.exports.create = ({
+    seriesIdx,
+    name,
+    englishName,
+    description,
+    imageUrl,
+}) => {
     return Ingredient.create({
+        seriesIdx,
         name,
         englishName,
         description,
@@ -68,10 +75,16 @@ module.exports.readByName = async (ingredientName) => {
 };
 
 /**
- * 재료 전체 조회
+ * 재료 조회
  */
-module.exports.readAll = () => {
-    return Ingredient.findAll();
+module.exports.readAll = async (where) => {
+    const result = await Ingredient.findAll({
+        where,
+    });
+    if (!result) {
+        throw new NotMatchedError();
+    }
+    return result;
 };
 
 /**

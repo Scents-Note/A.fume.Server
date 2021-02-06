@@ -1,7 +1,19 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class Ingredient extends Model {}
+    class Ingredient extends Model {
+        static associate(models) {
+            Ingredient.hasOne(models.Series, {
+                foreignKey: {
+                    name: 'seriesIdx',
+                    allowNull: false,
+                },
+                as: 'Series',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            });
+        }
+    }
     Ingredient.init(
         {
             ingredientIdx: {
@@ -26,6 +38,11 @@ module.exports = (sequelize, DataTypes) => {
             },
             imageUrl: {
                 type: DataTypes.STRING,
+                allowNull: false,
+            },
+            seriesIdx: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
                 allowNull: false,
             },
         },

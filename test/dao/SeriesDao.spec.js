@@ -24,6 +24,7 @@ describe('# seriesDao Test', () => {
                     name: '테스트 데이터',
                     englishName: 'Test Data',
                     description: '왈라왈라',
+                    seriesIdx: 1,
                 })
                 .then((result) => {
                     return Series.findOne({ where: { name: '테스트 데이터' } });
