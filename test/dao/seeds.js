@@ -7,9 +7,11 @@ const {
     LikePerfume,
     Ingredient,
     SearchHistory,
+    PerfumeSurvey,
     Sequelize,
     sequelize,
 } = require('../../models');
+const { GENDER_MAN, GENDER_WOMAN } = require('../../utils/code');
 
 module.exports = () => {
     const firstJob = [];
@@ -74,7 +76,8 @@ module.exports = () => {
             }),
             LikePerfume.upsert({ userIdx: 1, perfumeIdx: i }),
             SearchHistory.upsert({ userIdx: i, perfumeIdx: i }),
-            SearchHistory.upsert({ userIdx: 1, perfumeIdx: i })
+            SearchHistory.upsert({ userIdx: 1, perfumeIdx: i }),
+            PerfumeSurvey.upsert({ perfumeIdx: i, gender: GENDER_WOMAN })
         );
     }
     return Promise.all(firstJob)

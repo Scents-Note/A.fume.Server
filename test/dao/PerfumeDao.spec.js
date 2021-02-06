@@ -11,7 +11,7 @@ const {
     sequelize,
 } = require('../../models');
 
-const { GENDER_MAN, GENDER_WOMAN } = require('../../utils/code.js');
+const { GENDER_WOMAN } = require('../../utils/code.js');
 
 describe('# perfumeDao Test', () => {
     before(async () => {
@@ -414,6 +414,10 @@ describe('# perfumeDao Test', () => {
                     done();
                 })
                 .catch((err) => done(err));
+        });
+        after(() => {
+            Perfume.destroy({ perfumeIdx });
+            PerfumeDetail.destroy({ perfumeIdx });
         });
     });
 });

@@ -489,5 +489,5 @@ module.exports.delete = async (perfumeIdx) => {
         Perfume.destroy({ where: { perfumeIdx } }),
         PerfumeDetail.destroy({ where: { perfumeIdx } }),
     ]);
-    return result[0] & result[1];
+    return result[0];
 };

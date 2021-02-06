@@ -244,15 +244,6 @@ paths:
         - user
       produces:
       - application/json
-      parameters:
-      - name: pagingSize
-        in: query
-        type: integer
-        required: false
-      - name: pagingIndex
-        in: query
-        type: integer
-        required: false
       responses:
         200:
           description: 성공
@@ -274,6 +265,7 @@ paths:
                       $ref: '#/definitions/Perfume'
         401:
           description: Token is missing or invalid
+      x-swagger-router-controller: Perfume
   /perfume/recommend/common:
     get:
       tags:
