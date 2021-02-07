@@ -12,8 +12,8 @@ const { parseSortToOrder } = require('../utils/parser.js');
  * @param {string} description
  * @returns {Promise<integer>} insertIdx
  **/
-exports.postSeries = ({ name, englishName, description }) => {
-    return seriesDao.create({ name, englishName, description });
+exports.postSeries = ({ name, englishName, description, imageUrl }) => {
+    return seriesDao.create({ name, englishName, description, imageUrl });
 };
 
 /**

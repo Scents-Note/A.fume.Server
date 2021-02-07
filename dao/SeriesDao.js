@@ -10,8 +10,13 @@ const { Series, Ingredient } = require('../models');
  * @param {Object} seriesObject
  * @return {number} insertIdx
  */
-module.exports.create = ({ name, englishName, description }) => {
-    return Series.create({ name, englishName, description })
+module.exports.create = ({ name, englishName, description, imageUrl }) => {
+    return Series.create({
+        name,
+        englishName,
+        description,
+        imageUrl,
+    })
         .then((series) => {
             return series.seriesIdx;
         })
