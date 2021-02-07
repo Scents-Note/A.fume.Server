@@ -1893,6 +1893,46 @@ paths:
                     brand:
                       $ref: '#/definitions/BrandInfo'
       x-swagger-router-controller: Brand
+  /user/survey:
+    post:
+      tags:
+      - user
+      description: 사용자 survey
+      operationId: postSurvey
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            keywordList:
+              type: array
+              items:
+                type: integer
+              example: [1, 2]
+            seriesList:
+              type: array
+              items:
+                type: integer
+              example: [1, 2]
+            perfumeList:
+              type: array
+              items: 
+                type: integer
+              example: [1, 2]
+      responses:
+        default:
+          description: successful operation
+      x-swagger-router-controller: User
   /user/register:
     post:
       tags:
