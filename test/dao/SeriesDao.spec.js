@@ -95,21 +95,10 @@ describe('# seriesDao Test', () => {
     describe(' # readAll Test', () => {
         it(' # success case', (done) => {
             seriesDao
-                .readAll()
+                .readAll(1, 100)
                 .then((result) => {
-                    expect(result.length).greaterThan(0);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
-    describe('# read By ingredientIdx Test', () => {
-        it('# success case', (done) => {
-            seriesDao
-                .readByIngredientIdx(1)
-                .then((result) => {
-                    expect(result.length).eq(5);
+                    expect(result.count).gt(0);
+                    expect(result.rows.length).greaterThan(0);
                     done();
                 })
                 .catch((err) => done(err));

@@ -57,10 +57,18 @@ module.exports.readByName = async (seriesName) => {
 /**
  * 계열 전체 조회
  *
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
  * @returns {Promise<Series[]>}
  */
-module.exports.readAll = () => {
-    return Series.findAll();
+module.exports.readAll = (pagingIndex, pagingSize) => {
+    return Series.findAndCountAll({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        offset: (pagingIndex - 1) * pagingSize,
+        limit: pagingSize,
+    });
 };
 
 /**
@@ -109,33 +117,4 @@ module.exports.update = async ({
  */
 module.exports.delete = (seriesIdx) => {
     return Series.destroy({ where: { seriesIdx } });
-};
-
-/**
- * 재료에 해당하는 계열 조회
- *
- * @param {number} ingredientIdx
- * @return {Promise<Series>}
- */
-module.exports.readByIngredientIdx = async (ingredientIdx) => {
-    const result = await Series.findAll({
-        include: [
-            {
-                model: Ingredient,
-                as: 'Ingredients',
-                where: {
-                    ingredientIdx,
-                },
-            },
-        ],
-        raw: true,
-        nest: true,
-    });
-    if (!result) {
-        throw new NotMatchedError();
-    }
-    return result.map((it) => {
-        delete it.Ingredients;
-        return it;
-    });
 };

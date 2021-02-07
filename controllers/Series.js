@@ -28,7 +28,10 @@ module.exports.getSeries = (req, res, next) => {
 };
 
 module.exports.getSeriesAll = (req, res, next) => {
-    Series.getSeriesAll()
+    let { pagingIndex, pagingSize } = req.query;
+    pagingIndex = parseInt(pagingIndex) || 1;
+    pagingSize = parseInt(pagingSize) || 100;
+    Series.getSeriesAll(pagingIndex, pagingSize)
         .then((response) => {
             res.status(OK).json({
                 message: 'series 전체 조회 성공',
