@@ -24,7 +24,7 @@ describe('# seriesDao Test', () => {
                     name: '테스트 데이터',
                     englishName: 'Test Data',
                     description: '왈라왈라',
-                    seriesIdx: 1,
+                    imageUrl: 'imageUrl',
                 })
                 .then((result) => {
                     return Series.findOne({ where: { name: '테스트 데이터' } });
@@ -33,6 +33,7 @@ describe('# seriesDao Test', () => {
                     expect(result.name).eq('테스트 데이터');
                     expect(result.englishName).eq('Test Data');
                     expect(result.description).eq('왈라왈라');
+                    expect(result.imageUrl).eq('imageUrl');
                     done();
                 })
                 .catch((err) => done(err));
@@ -44,6 +45,7 @@ describe('# seriesDao Test', () => {
                     name: '테스트 데이터',
                     englishName: 'Test Data',
                     description: '왈라왈라',
+                    imageUrl: 'imageUrl',
                 })
                 .then(() => done(new Error('expected DuplicatedEntryError')))
                 .catch((err) => {
@@ -95,21 +97,10 @@ describe('# seriesDao Test', () => {
     describe(' # readAll Test', () => {
         it(' # success case', (done) => {
             seriesDao
-                .readAll()
+                .readAll(1, 100)
                 .then((result) => {
-                    expect(result.length).greaterThan(0);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
-    describe('# read By ingredientIdx Test', () => {
-        it('# success case', (done) => {
-            seriesDao
-                .readByIngredientIdx(1)
-                .then((result) => {
-                    expect(result.length).eq(5);
+                    expect(result.count).gt(0);
+                    expect(result.rows.length).greaterThan(0);
                     done();
                 })
                 .catch((err) => done(err));

@@ -1,5 +1,6 @@
 'use strict';
 
+const { validateType } = require('../utils/validation.js');
 const User = require('../service/UserService');
 const { OK, CONFLICT } = require('../utils/statusCode.js');
 
@@ -128,6 +129,22 @@ module.exports.validateName = (req, res, next) => {
                     data: response,
                 });
             }
+        })
+        .catch((err) => next(err));
+};
+
+module.exports.postSurvey = (req, res, next) => {
+    const userIdx = req.middlewareToken.loginUserIdx;
+    if (!validateType(req.body, 'keywordList', Array, next)) return;
+    if (!validateType(req.body, 'perfumeList', Array, next)) return;
+    if (!validateType(req.body, 'seriesList', Array, next)) return;
+    const { keywordList, perfumeList, seriesList } = req.body;
+    User.addSurvey(userIdx, keywordList, perfumeList, seriesList)
+        .then((response) => {
+            console.log(response);
+            res.status(OK).json({
+                message: 'Survey 등록 성공',
+            });
         })
         .catch((err) => next(err));
 };

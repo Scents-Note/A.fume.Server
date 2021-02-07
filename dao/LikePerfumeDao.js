@@ -47,3 +47,13 @@ module.exports.read = async (userIdx, perfumeIdx) => {
 module.exports.delete = (userIdx, perfumeIdx) => {
     return LikePerfume.destroy({ where: { userIdx, perfumeIdx } });
 };
+
+/**
+ * 위시 리스트 향수 전체 삭제
+ *
+ * @param {number} userIdx
+ * @returns {Promise}
+ */
+module.exports.deleteByUserIdx = (userIdx) => {
+    return LikePerfume.destroy({ where: { userIdx } });
+};

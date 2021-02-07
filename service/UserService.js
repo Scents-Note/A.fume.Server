@@ -7,6 +7,7 @@ const {
     WrongPasswordError,
     NotMatchedError,
 } = require('../utils/errors/errors.js');
+const user = require('../mongoose_models/user.js');
 
 /**
  * 유저 회원 가입
@@ -184,4 +185,27 @@ exports.validateName = async (nickname) => {
         }
         throw err;
     }
+};
+
+/**
+ * 서베이 등록
+ *
+ * @param {number} userIdx
+ * @param {number[]} keywordIdxList
+ * @param {number[]} perfumeIdxList
+ * @param {number[]} seriesIdxList
+ * @returns {boolean}
+ **/
+exports.addSurvey = async (
+    userIdx,
+    keywordIdxList,
+    perfumeIdxList,
+    seriesIdxList
+) => {
+    return userDao.postSurvey(
+        userIdx,
+        keywordIdxList,
+        perfumeIdxList,
+        seriesIdxList
+    );
 };

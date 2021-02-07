@@ -1,6 +1,10 @@
-const { NotMatchedError } = require('../utils/errors/errors.js');
+const {
+    NotMatchedError,
+    DuplicatedEntryError,
+} = require('../utils/errors/errors.js');
 
 const { sequelize, User } = require('../models');
+const { user: MongooseUser } = require('../mongoose_models');
 
 /**
  * 유저 생성
@@ -114,4 +118,35 @@ module.exports.updateAccessTime = async (userIdx) => {
  */
 module.exports.delete = (userIdx) => {
     return User.destroy({ where: { userIdx } });
+};
+
+/**
+ * 서베이 등록
+ *
+ * @param {number[]} keywordIdxList
+ * @param {number[]} perfumeIdxList
+ * @param {number[]} seriesIdxList
+ * @return {Promise}
+ */
+module.exports.postSurvey = (
+    userIdx,
+    surveyKeywordList,
+    surveyPerfumeList,
+    surveySeriesList
+) => {
+    return MongooseUser.create({
+        userIdx,
+        surveyKeywordList,
+        surveyPerfumeList,
+        surveySeriesList,
+    }).catch((err) => {
+        if (err.code == 11000) {
+            return MongooseUser.updateByPk(userIdx, {
+                surveyKeywordList,
+                surveyPerfumeList,
+                surveySeriesList,
+            });
+        }
+        throw err;
+    });
 };

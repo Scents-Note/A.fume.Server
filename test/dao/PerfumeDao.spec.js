@@ -11,6 +11,8 @@ const {
     sequelize,
 } = require('../../models');
 
+const { GENDER_WOMAN } = require('../../utils/code.js');
+
 describe('# perfumeDao Test', () => {
     before(async () => {
         await sequelize.sync();
@@ -269,7 +271,22 @@ describe('# perfumeDao Test', () => {
             perfumeDao
                 .recentSearchPerfumeList(1)
                 .then((result) => {
-                    expect(result.length).gte(3);
+                    expect(result.length).gte(5);
+                    const originString = result
+                        .map((it) => it.perfumeIdx)
+                        .toString();
+                    const sortedString = result
+                        .sort(
+                            (a, b) =>
+                                a.SearchHistory.createdAt >
+                                b.SearchHistory.createdAt
+                        )
+                        .map((it) => it.perfumeIdx)
+                        .toString();
+                    expect(sortedString).to.be.eq(originString);
+                    for (const obj of result) {
+                        expect(obj.SearchHistory.userIdx).to.be.eq(1);
+                    }
                     done();
                 })
                 .catch((err) => done(err));
@@ -277,9 +294,19 @@ describe('# perfumeDao Test', () => {
 
         it('# recommend perfume by age and gender', (done) => {
             perfumeDao
-                .recommendPerfumeByAgeAndGender(1, '남자', 0, 2020)
+                .recommendPerfumeByAgeAndGender(1, GENDER_WOMAN, 0, 2021)
                 .then((result) => {
                     expect(result.length).gte(3);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it('# read perfume survey', (done) => {
+            perfumeDao
+                .readPerfumeSurvey(1, GENDER_WOMAN)
+                .then((result) => {
+                    expect(result.length).gte(5);
                     done();
                 })
                 .catch((err) => done(err));
@@ -384,10 +411,13 @@ describe('# perfumeDao Test', () => {
                     });
                 })
                 .then((it) => {
-                    //expect(it);
                     done();
                 })
                 .catch((err) => done(err));
+        });
+        after(() => {
+            Perfume.destroy({ perfumeIdx });
+            PerfumeDetail.destroy({ perfumeIdx });
         });
     });
 });

@@ -12,8 +12,8 @@ const { parseSortToOrder } = require('../utils/parser.js');
  * @param {string} description
  * @returns {Promise<integer>} insertIdx
  **/
-exports.postSeries = ({ name, englishName, description }) => {
-    return seriesDao.create({ name, englishName, description });
+exports.postSeries = ({ name, englishName, description, imageUrl }) => {
+    return seriesDao.create({ name, englishName, description, imageUrl });
 };
 
 /**
@@ -29,10 +29,12 @@ exports.getSeriesByIdx = (seriesIdx) => {
 /**
  * 계열 전체 목록 조회
  *
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
  * @returns {Promise<Series[]>}
  **/
-exports.getSeriesAll = () => {
-    return seriesDao.readAll();
+exports.getSeriesAll = (pagingIndex, pagingSize) => {
+    return seriesDao.readAll(pagingIndex, pagingSize);
 };
 
 /**

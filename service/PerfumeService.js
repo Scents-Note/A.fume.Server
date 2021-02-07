@@ -3,7 +3,7 @@
 const perfumeDao = require('../dao/PerfumeDao.js');
 const noteDao = require('../dao/NoteDao.js');
 const reviewDao = require('../dao/ReviewDao.js');
-const likeDao = require('../dao/LikeDao.js');
+const likePerfumeDao = require('../dao/LikePerfumeDao.js');
 const searchHistoryDao = require('../dao/SearchHistoryDao.js');
 const userDao = require('../dao/UserDao.js');
 
@@ -201,6 +201,27 @@ exports.searchPerfume = (filter, sort, userIdx) => {
 };
 
 /**
+ * Survey 향수 조회
+ *
+ * @param {number} userIdx
+ * @returns {Promise<Brand[]>}
+ **/
+exports.getSurveyPerfume = (userIdx) => {
+    return userDao
+        .readByIdx(userIdx)
+        .then((it) => {
+            return perfumeDao.readPerfumeSurvey(it.userIdx, it.gender);
+        })
+        .then((result) => {
+            result.rows = result.rows.map((it) => {
+                delete it.PerfumeSurvey;
+                return it;
+            });
+            return result;
+        });
+};
+
+/**
  * 향수 정보 업데이트
  *
  * @param {Object} Perfume
@@ -242,16 +263,16 @@ exports.updatePerfume = ({
 exports.likePerfume = (perfumeIdx, userIdx) => {
     return new Promise((resolve, reject) => {
         let isExist = false;
-        likeDao
+        likePerfumeDao
             .read(perfumeIdx, userIdx)
             .then((res) => {
                 isExist = true;
-                return likeDao.delete(perfumeIdx, userIdx);
+                return likePerfumeDao.delete(perfumeIdx, userIdx);
             })
             .catch((err) => {
                 isExist = false;
                 if (err instanceof NotMatchedError) {
-                    return likeDao.create(perfumeIdx, userIdx);
+                    return likePerfumeDao.create(perfumeIdx, userIdx);
                 }
                 reject(new FailedToCreateError());
             })

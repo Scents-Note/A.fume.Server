@@ -120,6 +120,25 @@ class UnAuthorizedError extends Error {
     }
 }
 
+class InvalidRequestError extends Error {
+    constructor(
+        key,
+        type,
+        value,
+        code = 'GENERIC',
+        status = statusCode.UNAUTHORIZED,
+        ...params
+    ) {
+        super(...params);
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, InvalidTokenError);
+        }
+        this.code = code;
+        this.status = status;
+        this.message = `잘못된 요청입니다. ${key} must to be ${type.name} but ${value}`;
+    }
+}
+
 module.exports.DatabaseError = DatabaseError;
 module.exports.NoReferencedRowError = NoReferencedRowError;
 module.exports.DuplicatedEntryError = DuplicatedEntryError;
@@ -130,3 +149,4 @@ module.exports.InvalidTokenError = InvalidTokenError;
 module.exports.ExpiredTokenError = ExpiredTokenError;
 module.exports.WrongPasswordError = WrongPasswordError;
 module.exports.UnAuthorizedError = UnAuthorizedError;
+module.exports.InvalidRequestError = InvalidRequestError;

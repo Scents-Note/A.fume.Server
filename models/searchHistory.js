@@ -3,17 +3,41 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class SearchHistory extends Model {
         static associate(models) {
+            models.User.belongsToMany(models.Perfume, {
+                foreignKey: 'userIdx',
+                through: 'SearchHistory',
+                as: 'SearchedPerfumes',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            });
+            models.Perfume.belongsToMany(models.User, {
+                foreignKey: 'perfumeIdx',
+                through: 'SearchHistory',
+                as: 'SearchingUsers',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            });
             this.belongsTo(models.Perfume, {
                 foreignKey: 'perfumeIdx',
                 as: 'Perfume',
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
-            models.User.belongsToMany(models.Perfume, {
-                as: 'MySearchHistories',
-                through: 'SearchHistory',
+            models.Perfume.hasMany(this, {
+                foreignKey: 'perfumeIdx',
+                as: 'SearchHistory',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            });
+            this.belongsTo(models.User, {
                 foreignKey: 'userIdx',
-                otherKey: 'perfumeIdx',
+                as: 'User',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            });
+            models.User.hasMany(this, {
+                foreignKey: 'userIdx',
+                as: 'SearchHistory',
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });

@@ -109,6 +109,18 @@ module.exports.recommendCommonPerfume = (req, res, next) => {
         .catch((err) => next(err));
 };
 
+module.exports.getSurveyPerfume = (req, res, next) => {
+    const loginUserIdx = req.middlewareToken.loginUserIdx;
+    Perfume.getSurveyPerfume(loginUserIdx)
+        .then((result) => {
+            res.status(OK).json({
+                message: '서베이 향수 조회 성공',
+                data: result,
+            });
+        })
+        .catch((err) => next(err));
+};
+
 module.exports.deletePerfume = (req, res, next) => {
     const perfumeIdx = req.swagger.params['perfumeIdx'].value;
     Perfume.deletePerfume(perfumeIdx)

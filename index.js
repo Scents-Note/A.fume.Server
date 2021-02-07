@@ -23,6 +23,22 @@ sequelize.sync();
 
 app.use(cookieParser());
 
+const mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
+
+mongoose
+    .connect(
+        `${process.env.MONGO_URI}${process.env.NODE_ENV}?retryWrites=true&w=majority`,
+        {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+            useCreateIndex: true,
+            useFindAndModify: false,
+        }
+    )
+    .then(() => console.log('Successfully connected to mongodb'))
+    .catch((e) => console.error(e));
+
 const allowList = process.env.CORS_ALLOW_LIST.split(',').map((it) => {
     return it.trim();
 });
