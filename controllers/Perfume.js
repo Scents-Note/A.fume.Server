@@ -87,7 +87,10 @@ module.exports.getRecentPerfume = (req, res, next) => {
 
 module.exports.recommendPersonalPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    Perfume.recommendByUser(loginUserIdx)
+    let { pagingIndex, pagingSize } = req.query;
+    pagingIndex = parseInt(pagingIndex) || 1;
+    pagingSize = parseInt(pagingSize) || 10;
+    Perfume.recommendByUser(loginUserIdx, pagingIndex, pagingSize)
         .then((result) => {
             res.status(OK).json({
                 message: '향수 개인 맞춤 추천',
@@ -99,7 +102,10 @@ module.exports.recommendPersonalPerfume = (req, res, next) => {
 
 module.exports.recommendCommonPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    Perfume.recommendByUser(loginUserIdx)
+    let { pagingIndex, pagingSize } = req.query;
+    pagingIndex = parseInt(pagingIndex) || 1;
+    pagingSize = parseInt(pagingSize) || 10;
+    Perfume.recommendByUser(loginUserIdx, pagingIndex, pagingSize)
         .then((result) => {
             res.status(OK).json({
                 message: '향수 일반 추천 (성별, 나이 반영)',

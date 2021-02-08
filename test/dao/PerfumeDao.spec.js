@@ -294,7 +294,14 @@ describe('# perfumeDao Test', () => {
 
         it('# recommend perfume by age and gender', (done) => {
             perfumeDao
-                .recommendPerfumeByAgeAndGender(1, GENDER_WOMAN, 0, 2021)
+                .recommendPerfumeByAgeAndGender(
+                    1,
+                    GENDER_WOMAN,
+                    0,
+                    2021,
+                    1,
+                    100
+                )
                 .then((result) => {
                     expect(result.length).gte(3);
                     done();
@@ -306,7 +313,7 @@ describe('# perfumeDao Test', () => {
             perfumeDao
                 .readPerfumeSurvey(1, GENDER_WOMAN)
                 .then((result) => {
-                    expect(result.length).gte(5);
+                    expect(result.rows.length).gte(5);
                     done();
                 })
                 .catch((err) => done(err));

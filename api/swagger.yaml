@@ -351,6 +351,7 @@ paths:
                       $ref: '#/definitions/Perfume'
         401:
           description: Token is missing or invalid
+      x-swagger-router-controller: Perfume
   /perfume/{perfumeIdx}:
     get:
       tags:

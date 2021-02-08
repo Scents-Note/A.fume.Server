@@ -44,7 +44,8 @@ const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER__SELECT =
     'WHERE u.gender = $2 AND (u.birth BETWEEN $3 AND $4) ' +
     'GROUP BY sh.perfume_idx ' +
     'ORDER BY "SearchHistory.weight" DESC ' +
-    'LIMIT 10 ';
+    'LIMIT $5 ' +
+    'OFFSET $6';
 
 /**
  * 향수 추가
@@ -339,22 +340,36 @@ module.exports.recentSearchPerfumeList = async (userIdx) => {
 /**
  * 나이 및 성별에 기반한 향수 추천
  *
+ * @param {number} userIdx
  * @param {string} gender
  * @param {number} startBirth
  * @param {number} endBirth
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
  * @returns {Promise<Perfume[]>}
  */
 module.exports.recommendPerfumeByAgeAndGender = async (
     userIdx,
     gender,
     startBirth,
-    endBirth
+    endBirth,
+    pagingIndex,
+    pagingSize
 ) => {
     const result = await sequelize.query(
         SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER__SELECT,
         {
-            bind: [userIdx, gender, startBirth, endBirth],
+            bind: [
+                userIdx,
+                gender,
+                startBirth,
+                endBirth,
+                pagingSize,
+                (pagingIndex - 1) * pagingSize,
+            ],
             type: sequelize.QueryTypes.SELECT,
+            raw: true,
+            nest: true,
         }
     );
     return result.map((it) => {

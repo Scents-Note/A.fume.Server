@@ -299,9 +299,11 @@ exports.recentSearch = (userIdx) => {
  * 유저 연령대 및 성별에 따른 향수 추천
  *
  * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
  * @returns {Promise<Perfume[]>}
  **/
-exports.recommendByUser = async (userIdx) => {
+exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
     const user = await userDao.readByIdx(userIdx);
     const today = new Date();
     const age = today.getFullYear() - user.birth + 1;
@@ -312,6 +314,8 @@ exports.recommendByUser = async (userIdx) => {
         userIdx,
         user.gender,
         startYear,
-        endYear
+        endYear,
+        pagingIndex,
+        pagingSize
     );
 };
