@@ -5,12 +5,11 @@ const chai = require('chai');
 const { expect } = chai;
 const noteDao = require('../../dao/NoteDao.js');
 const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
-const { sequelize, Note } = require('../../models');
+const { Note } = require('../../models');
 
 describe('# NoteDao Test', () => {
     before(async () => {
-        sequelize.sync();
-        await require('./seeds.js')();
+        await require('./presets.js')();
     });
     describe(' # create Test', () => {
         before(async () => {

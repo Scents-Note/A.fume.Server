@@ -4,13 +4,12 @@ dotenv.config({ path: './config/.env.test' });
 const chai = require('chai');
 const { expect } = chai;
 const brandDao = require('../../dao/BrandDao.js');
-const { Brand, sequelize } = require('../../models');
+const { Brand } = require('../../models');
 const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
 
 describe('# brandDao Test', () => {
     before(async () => {
-        await sequelize.sync();
-        await require('./seeds.js')();
+        await require('./presets.js')();
     });
     describe('# create Test', () => {
         before(async () => {

@@ -8,12 +8,11 @@ const {
     DuplicatedEntryError,
     NotMatchedError,
 } = require('../../utils/errors/errors.js');
-const { sequelize, LikePerfume } = require('../../models');
+const { LikePerfume } = require('../../models');
 
 describe('# likeDao Test', () => {
     before(async () => {
-        sequelize.sync();
-        await require('./seeds.js')();
+        await require('./presets.js')();
     });
     describe('# create Test', () => {
         before(async () => {

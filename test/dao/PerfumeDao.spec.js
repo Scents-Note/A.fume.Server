@@ -4,19 +4,13 @@ dotenv.config({ path: './config/.env.test' });
 const chai = require('chai');
 const { expect } = chai;
 const perfumeDao = require('../../dao/PerfumeDao.js');
-const {
-    Perfume,
-    PerfumeDetail,
-    Sequelize,
-    sequelize,
-} = require('../../models');
+const { Perfume, PerfumeDetail, Sequelize } = require('../../models');
 
 const { GENDER_WOMAN } = require('../../utils/code.js');
 
 describe('# perfumeDao Test', () => {
     before(async () => {
-        await sequelize.sync();
-        await require('./seeds.js')();
+        await require('./presets.js')();
     });
     describe('# create Test', () => {
         before(async () => {
@@ -297,7 +291,7 @@ describe('# perfumeDao Test', () => {
                 .recommendPerfumeByAgeAndGender(
                     1,
                     GENDER_WOMAN,
-                    0,
+                    10,
                     2021,
                     1,
                     100
