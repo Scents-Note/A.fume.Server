@@ -10,7 +10,7 @@ const { GENDER_WOMAN } = require('../../utils/code.js');
 
 describe('# perfumeDao Test', () => {
     before(async () => {
-        await require('./presets.js')();
+        await require('./common/presets.js')();
     });
     describe('# create Test', () => {
         before(async () => {

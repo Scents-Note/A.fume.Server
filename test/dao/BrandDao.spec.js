@@ -9,7 +9,7 @@ const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
 
 describe('# brandDao Test', () => {
     before(async () => {
-        await require('./presets.js')();
+        await require('./common/presets.js')();
     });
     describe('# create Test', () => {
         before(async () => {

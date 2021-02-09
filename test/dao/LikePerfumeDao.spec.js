@@ -12,7 +12,7 @@ const { LikePerfume } = require('../../models');
 
 describe('# likeDao Test', () => {
     before(async () => {
-        await require('./presets.js')();
+        await require('./common/presets.js')();
     });
     describe('# create Test', () => {
         before(async () => {

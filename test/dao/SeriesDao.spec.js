@@ -9,7 +9,7 @@ const { Series } = require('../../models/index.js');
 
 describe('# seriesDao Test', () => {
     before(async () => {
-        await require('./presets.js')();
+        await require('./common/presets.js')();
     });
     describe(' # create Test', () => {
         // 중복 데이터 미리 삭제

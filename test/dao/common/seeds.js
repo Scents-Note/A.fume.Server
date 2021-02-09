@@ -10,8 +10,8 @@ const {
     PerfumeSurvey,
     Sequelize,
     sequelize,
-} = require('../../models');
-const { GENDER_MAN, GENDER_WOMAN } = require('../../utils/code');
+} = require('../../../models');
+const { GENDER_MAN, GENDER_WOMAN } = require('../../../utils/code');
 
 module.exports = () => {
     const firstJob = [];
