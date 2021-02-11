@@ -1,3 +1,4 @@
+const _ = require('lodash');
 const { NotMatchedError } = require('../utils/errors/errors.js');
 
 const {
@@ -40,6 +41,35 @@ const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
     'ORDER BY "SearchHistory.weight" DESC ' +
     'LIMIT $4 ' +
     'OFFSET $5';
+
+const defaultOption = {
+    include: [
+        {
+            model: Brand,
+            as: 'Brand',
+            attributes: {
+                exclude: ['createdAt', 'updatedAt'],
+            },
+        },
+        {
+            model: Series,
+            as: 'MainSeries',
+            attributes: {
+                exclude: ['createdAt', 'updatedAt'],
+            },
+        },
+        {
+            model: PerfumeDetail,
+            as: 'PerfumeDetail',
+            attributes: {
+                exclude: ['createdAt', 'updatedAt'],
+            },
+        },
+    ],
+    raw: true,
+    nest: true,
+};
+
 /**
  * 향수 추가
  *
@@ -90,23 +120,12 @@ module.exports.create = ({
  */
 module.exports.search = async (
     { series = [], brands = [], keywords = [] },
-    sort = [['createdAt', 'asc']],
-    userIdx = -1
+    sort = [['createdAt', 'asc']]
 ) => {
     sort.forEach((it) => {
         it[0] = sequelize.literal(it[0]);
     });
-    const options = {
-        attributes: {
-            include: [
-                [
-                    sequelize.literal(
-                        `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx AND lp.user_idx = ${userIdx})`
-                    ),
-                    'isLiked',
-                ],
-            ],
-        },
+    const options = Object.assign({}, defaultOption, {
         where: {
             //[Op.or]: keywords.map(it => { return {"brand.name": it }}),
         },
@@ -114,6 +133,9 @@ module.exports.search = async (
             {
                 model: Brand,
                 as: 'Brand',
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
                 where: {
                     [Op.or]: brands.map((it) => {
                         return { name: it };
@@ -123,6 +145,9 @@ module.exports.search = async (
             {
                 model: Series,
                 as: 'MainSeries',
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
                 where: {
                     [Op.or]: series.map((it) => {
                         return { name: it };
@@ -132,21 +157,18 @@ module.exports.search = async (
             {
                 model: PerfumeDetail,
                 as: 'PerfumeDetail',
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
             },
         ],
         order: sort,
-        raw: true,
-        nest: true,
-    };
+    });
     options.include.forEach((it) => {
         if (!it.where || it.where[Op.or].length > 0) return;
         delete it.where;
     });
     const perfumeList = await Perfume.findAll(options);
-    perfumeList.map((it) => {
-        it.isLiked = it.isLiked == 1;
-        return it;
-    });
     return perfumeList;
 };
 
@@ -154,39 +176,13 @@ module.exports.search = async (
  * 향수 세부 조회
  *
  * @param {number} perfumeIdx
- * @param {number} [userIdx=-1]
  * @returns {Promise<Perfume>}
  */
-module.exports.readByPerfumeIdx = async (perfumeIdx, userIdx = -1) => {
-    const perfume = await Perfume.findOne({
-        attributes: {
-            include: [
-                [
-                    sequelize.literal(
-                        `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = ${perfumeIdx} AND lp.user_idx = ${userIdx})`
-                    ),
-                    'isLiked',
-                ],
-            ],
-        },
+module.exports.readByPerfumeIdx = async (perfumeIdx) => {
+    const options = _.merge({}, defaultOption, {
         where: { perfumeIdx },
-        include: [
-            {
-                model: Brand,
-                as: 'Brand',
-            },
-            {
-                model: Series,
-                as: 'MainSeries',
-            },
-            {
-                model: PerfumeDetail,
-                as: 'PerfumeDetail',
-            },
-        ],
-        raw: true,
-        nest: true,
     });
+    const perfume = await Perfume.findOne(options);
     if (!perfume) {
         throw new NotMatchedError();
     }
@@ -195,57 +191,28 @@ module.exports.readByPerfumeIdx = async (perfumeIdx, userIdx = -1) => {
     ).map(([volume, price]) => {
         return { volume: parseInt(volume), price: parseInt(price) };
     });
-    perfume.isLiked = perfume.isLiked === 1;
     return perfume;
 };
 
 /**
  * 위시 리스트에 속하는 향수 조회
  *
- * @param {number} [userIdx = -1]
+ * @param {number} userIdx
  * @returns {Promise<Perfume[]>} perfumeList
  */
 module.exports.readAllOfWishlist = async (userIdx) => {
-    const options = {
+    const options = _.merge({}, defaultOption);
+    options.include.push({
+        model: LikePerfume,
+        as: 'Wishlist',
         attributes: {
-            include: [
-                [
-                    sequelize.literal(
-                        `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx AND lp.user_idx = ${userIdx})`
-                    ),
-                    'isLiked',
-                ],
-            ],
+            exclude: ['createdAt', 'updatedAt'],
         },
-        include: [
-            {
-                model: Brand,
-                as: 'Brand',
-            },
-            {
-                model: Series,
-                as: 'MainSeries',
-            },
-            {
-                model: PerfumeDetail,
-                as: 'PerfumeDetail',
-            },
-            {
-                model: LikePerfume,
-                as: 'Wishlist',
-                where: {
-                    userIdx,
-                },
-            },
-        ],
-        raw: true,
-        nest: true,
-    };
-    const perfumeList = await Perfume.findAll(options);
-    perfumeList.map((it) => {
-        it.isLiked = it.isLiked == 1;
-        return it;
+        where: {
+            userIdx,
+        },
     });
+    const perfumeList = await Perfume.findAll(options);
     return perfumeList;
 };
 
@@ -256,49 +223,23 @@ module.exports.readAllOfWishlist = async (userIdx) => {
  * @returns {Promise<Perfume[]>}
  */
 module.exports.recentSearchPerfumeList = async (userIdx) => {
-    const options = {
-        attributes: {
-            include: [
-                [
-                    sequelize.literal(
-                        `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx AND lp.user_idx = ${userIdx})`
-                    ),
-                    'isLiked',
-                ],
-            ],
-        },
-        include: [
-            {
-                model: Brand,
-                as: 'Brand',
-            },
-            {
-                model: Series,
-                as: 'MainSeries',
-            },
-            {
-                model: PerfumeDetail,
-                as: 'PerfumeDetail',
-            },
-            {
-                model: SearchHistory,
-                as: 'SearchHistory',
-                include: {
-                    model: User,
-                    as: 'User',
-                    where: {
-                        userIdx,
-                    },
-                },
-            },
-        ],
+    const options = Object.assign({}, defaultOption, {
         limit: 10,
-        raw: true,
-        nest: true,
         order: [
             [{ model: SearchHistory, as: 'SearchHistory' }, 'createdAt', 'asc'],
         ],
-    };
+    });
+    options.include.push({
+        model: SearchHistory,
+        as: 'SearchHistory',
+        include: {
+            model: User,
+            as: 'User',
+            where: {
+                userIdx,
+            },
+        },
+    });
     const result = await Perfume.findAll(options);
     return result.map((it) => {
         delete it.createTime;
@@ -358,62 +299,18 @@ module.exports.recommendPerfumeByAgeAndGender = async (
 /**
  * 서베이 추천 향수 조회
  *
- * @param {number} userIdx
  * @param {number} gender
  * @returns {Promise<Perfume[]>}
  */
-module.exports.readPerfumeSurvey = async (userIdx, gender) => {
-    const options = {
-        attributes: {
-            exclude: [
-                'createdAt',
-                'updatedAt',
-                'mainSeriesIdx',
-                'brandIdx',
-                'release_date',
-            ],
-            include: [
-                [
-                    sequelize.literal(
-                        `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx AND lp.user_idx = ${userIdx})`
-                    ),
-                    'isLiked',
-                ],
-            ],
+module.exports.readPerfumeSurvey = async (gender) => {
+    const options = _.merge({}, defaultOption);
+    options.include.push({
+        model: PerfumeSurvey,
+        as: 'PerfumeSurvey',
+        where: {
+            gender,
         },
-        include: [
-            {
-                model: Brand,
-                as: 'Brand',
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt'],
-                },
-            },
-            {
-                model: Series,
-                as: 'MainSeries',
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt'],
-                },
-            },
-            {
-                model: PerfumeDetail,
-                as: 'PerfumeDetail',
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt'],
-                },
-            },
-            {
-                model: PerfumeSurvey,
-                as: 'PerfumeSurvey',
-                where: {
-                    gender,
-                },
-            },
-        ],
-        raw: true,
-        nest: true,
-    };
+    });
     const perfumeList = await Perfume.findAndCountAll(options);
     return perfumeList;
 };
