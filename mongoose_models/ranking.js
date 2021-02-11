@@ -5,7 +5,7 @@ const rankingSchema = new mongoose.Schema(
         title: { type: String, required: true },
         gender: { type: Number, require: false },
         ageGroup: { type: Number, require: false },
-        perfumeList: { type: Array, required: true },
+        result: { type: mongoose.Schema.Types.Mixed, required: true },
     },
     {
         timestamps: true,

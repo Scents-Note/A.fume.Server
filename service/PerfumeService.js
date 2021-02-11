@@ -13,7 +13,8 @@ const {
     NotMatchedError,
     FailedToCreateError,
 } = require('../utils/errors/errors.js');
-async function updateIsLike(perfumeList, userIdx) {
+async function updateIsLike(result, userIdx) {
+    const perfumeList = result.rows;
     const perfumeIdxList = perfumeList.map((it) => it.perfumeIdx);
     const likePerfumeList = await likePerfumeDao.readLikeInfo(
         userIdx,
@@ -23,10 +24,11 @@ async function updateIsLike(perfumeList, userIdx) {
         prev[cur] = true;
         return prev;
     }, {});
-    return perfumeList.map((it) => {
+    result.rows = perfumeList.map((it) => {
         it.isLiked = likeMap[it.perfumeIdx] ? true : false;
         return it;
     });
+    return result;
 }
 
 /**
@@ -213,7 +215,9 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
  **/
 exports.searchPerfume = (filter, sort, userIdx) => {
     const order = parseSortToOrder(sort);
-    return updateIsLike(perfumeDao.search(filter, order), userIdx);
+    return perfumeDao.search(filter, order).then((result) => {
+        return updateIsLike(result, userIdx);
+    });
 };
 
 /**
@@ -228,13 +232,12 @@ exports.getSurveyPerfume = (userIdx) => {
         .then((it) => {
             return perfumeDao.readPerfumeSurvey(it.gender);
         })
-        .then(async (result) => {
+        .then((result) => {
             result.rows = result.rows.map((it) => {
                 delete it.PerfumeSurvey;
                 return it;
             });
-            result.rows = await updateIsLike(result.rows, userIdx);
-            return result;
+            return updateIsLike(result, userIdx);
         });
 };
 
@@ -326,11 +329,39 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
     const today = new Date();
     const age = today.getFullYear() - user.birth + 1;
     const ageGroup = parseInt(age / 10) * 10;
-    const perfumeList = await perfumeDao.recommendPerfumeByAgeAndGender(
+    const cached = await perfumeDao.recommendPerfumeByAgeAndGenderCached();
+    if (cached) {
+        return updateIsLike(cached, userIdx);
+    }
+    this.recommendByGenderAgeAndGender(
         user.gender,
         ageGroup,
         pagingIndex,
         pagingSize
+    ).then((result) => {
+        return updateIsLike(result, userIdx);
+    });
+};
+
+/**
+ * 유저 연령대 및 성별에 따른 향수 추천
+ *
+ * @param {number} gender
+ * @param {number} ageGroup
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>}
+ **/
+exports.recommendByGenderAgeAndGender = (
+    gender,
+    ageGroup,
+    pagingIndex,
+    pagingSize
+) => {
+    return perfumeDao.recommendPerfumeByAgeAndGender(
+        gender,
+        ageGroup,
+        pagingIndex,
+        pagingSize
     );
-    return updateIsLike(perfumeList, userIdx);
 };
