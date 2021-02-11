@@ -20,7 +20,7 @@ const { ranking } = require('../mongoose_models');
 const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
     'SELECT ' +
     'COUNT(*) as "SearchHistory.weight", ' +
-    'p.perfume_idx as perfumeIdx, p.main_series_idx as mainSeriesIdx, p.brand_idx as brandIdx, p.name, p.english_name as englishName, p.image_thumbnail_url as imageUrl, p.release_date as releaseDate,' +
+    'p.perfume_idx as perfumeIdx, p.main_series_idx as mainSeriesIdx, p.brand_idx as brandIdx, p.name, p.english_name as englishName, p.image_thumbnail_url as imageUrl, p.release_date as releaseDate, p.like_cnt as likeCnt, ' +
     'b.brand_idx as "Brand.brandIdx", ' +
     'b.name as "Brand.name", ' +
     'b.english_name as "Brand.englishName", ' +

@@ -61,7 +61,7 @@ module.exports = () => {
                 englishName: 'perfume english name',
                 imageThumbnailUrl: `http://perfume-image/${i}`,
                 releaseDate: `2021-01-1${i}`,
-                likeCnt: 5,
+                likeCnt: 1,
             })
         );
     }

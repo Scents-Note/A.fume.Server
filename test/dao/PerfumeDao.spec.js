@@ -298,7 +298,7 @@ describe('# perfumeDao Test', () => {
 
         it('# read perfume survey', (done) => {
             perfumeDao
-                .readPerfumeSurvey(1, GENDER_WOMAN)
+                .readPerfumeSurvey(GENDER_WOMAN)
                 .then((result) => {
                     expect(result.rows.length).gte(5);
                     done();

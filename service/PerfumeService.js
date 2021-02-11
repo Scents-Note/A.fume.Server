@@ -13,6 +13,21 @@ const {
     NotMatchedError,
     FailedToCreateError,
 } = require('../utils/errors/errors.js');
+async function updateIsLike(perfumeList, userIdx) {
+    const perfumeIdxList = perfumeList.map((it) => it.perfumeIdx);
+    const likePerfumeList = await likePerfumeDao.readLikeInfo(
+        userIdx,
+        perfumeIdxList
+    );
+    const likeMap = likePerfumeList.reduce((prev, cur) => {
+        prev[cur] = true;
+        return prev;
+    }, {});
+    return perfumeList.map((it) => {
+        it.isLiked = likeMap[it.perfumeIdx] ? true : false;
+        return it;
+    });
+}
 
 /**
  * 향수 정보 추가
@@ -115,7 +130,8 @@ function normalize(obj) {
  * @returns {Promise<Perfume>}
  **/
 exports.getPerfumeById = async (perfumeIdx, userIdx) => {
-    const perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx, userIdx);
+    const perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
+    // to do
 
     let notes = await noteDao.read(perfumeIdx);
     notes = notes.map((it) => {
@@ -197,7 +213,7 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
  **/
 exports.searchPerfume = (filter, sort, userIdx) => {
     const order = parseSortToOrder(sort);
-    return perfumeDao.search(filter, order, userIdx);
+    return updateIsLike(perfumeDao.search(filter, order), userIdx);
 };
 
 /**
@@ -210,13 +226,14 @@ exports.getSurveyPerfume = (userIdx) => {
     return userDao
         .readByIdx(userIdx)
         .then((it) => {
-            return perfumeDao.readPerfumeSurvey(it.userIdx, it.gender);
+            return perfumeDao.readPerfumeSurvey(it.gender);
         })
-        .then((result) => {
+        .then(async (result) => {
             result.rows = result.rows.map((it) => {
                 delete it.PerfumeSurvey;
                 return it;
             });
+            result.rows = await updateIsLike(result.rows, userIdx);
             return result;
         });
 };
@@ -264,7 +281,7 @@ exports.likePerfume = (perfumeIdx, userIdx) => {
     return new Promise((resolve, reject) => {
         let isExist = false;
         likePerfumeDao
-            .read(perfumeIdx, userIdx)
+            .read(userIdx, perfumeIdx)
             .then((res) => {
                 isExist = true;
                 return likePerfumeDao.delete(perfumeIdx, userIdx);
@@ -292,7 +309,8 @@ exports.likePerfume = (perfumeIdx, userIdx) => {
  * @returns {Promise<Perfume[]>}
  **/
 exports.recentSearch = (userIdx) => {
-    return perfumeDao.recentSearchPerfumeList(userIdx);
+    const perfumeList = perfumeDao.recentSearchPerfumeList(userIdx);
+    return updateIsLike(perfumeList, userIdx);
 };
 
 /**
@@ -314,17 +332,5 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
         pagingIndex,
         pagingSize
     );
-    const perfumeIdxList = perfumeList.map((it) => it.perfumeIdx);
-    const likePerfumeList = await likePerfumeDao.readLikeInfo(
-        userIdx,
-        perfumeIdxList
-    );
-    const likeMap = likePerfumeList.reduce((prev, cur) => {
-        prev[cur] = true;
-        return prev;
-    }, {});
-    perfumeList.forEach((it) => {
-        it.isLiked = likeMap[it.perfumeIdx] ? true : false;
-    });
-    return perfumeList;
+    return updateIsLike(perfumeList, userIdx);
 };
