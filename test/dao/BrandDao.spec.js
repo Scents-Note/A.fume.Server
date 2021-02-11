@@ -82,7 +82,7 @@ describe('# brandDao Test', () => {
             brandDao
                 .readAll([['createdAt', 'desc']])
                 .then((result) => {
-                    expect(result.length).gt(0);
+                    expect(result.rows.length).gt(0);
                     done();
                 })
                 .catch((err) => done(err));

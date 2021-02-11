@@ -78,7 +78,7 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readAll()
                 .then((result) => {
-                    expect(result.length).greaterThan(4);
+                    expect(result.rows.length).greaterThan(4);
                     done();
                 })
                 .catch((err) => done(err));
@@ -90,9 +90,9 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readAll({ seriesIdx: 1 })
                 .then((result) => {
-                    expect(result.length).eq(5);
+                    expect(result.rows.length).eq(5);
                     expect(
-                        result.reduce(
+                        result.rows.reduce(
                             (prev, cur) => prev && cur.seriesIdx == 1,
                             true
                         )

@@ -76,7 +76,7 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
  * @returns {Promise<Brand[]>}
  */
 module.exports.readAll = async () => {
-    return Brand.findAll();
+    return Brand.findAndCountAll();
 };
 
 /**

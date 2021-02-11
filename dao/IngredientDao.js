@@ -78,7 +78,7 @@ module.exports.readByName = async (ingredientName) => {
  * 재료 조회
  */
 module.exports.readAll = async (where) => {
-    const result = await Ingredient.findAll({
+    const result = await Ingredient.findAndCountAll({
         where,
     });
     if (!result) {
@@ -141,7 +141,7 @@ module.exports.delete = (ingredientIdx) => {
  * @return {Promise<Ingredients>}
  */
 module.exports.readBySeriesIdx = async (seriesIdx) => {
-    const result = await Ingredient.findAll({
+    const result = await Ingredient.findAndCountAll({
         include: [
             {
                 model: Series,
@@ -157,8 +157,8 @@ module.exports.readBySeriesIdx = async (seriesIdx) => {
     if (!result) {
         throw new NotMatchedError();
     }
-    return result.map((it) => {
+    result.rows.forEach((it) => {
         delete it.Series;
-        return it;
     });
+    return result;
 };
