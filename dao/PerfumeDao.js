@@ -108,12 +108,6 @@ module.exports.search = async (
             include: [
                 [
                     sequelize.literal(
-                        `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx)`
-                    ),
-                    'likeCnt',
-                ],
-                [
-                    sequelize.literal(
                         `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx AND lp.user_idx = ${userIdx})`
                     ),
                     'isLiked',
@@ -176,12 +170,6 @@ module.exports.readByPerfumeIdx = async (perfumeIdx, userIdx = -1) => {
             include: [
                 [
                     sequelize.literal(
-                        `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = ${perfumeIdx})`
-                    ),
-                    'likeCnt',
-                ],
-                [
-                    sequelize.literal(
                         `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = ${perfumeIdx} AND lp.user_idx = ${userIdx})`
                     ),
                     'isLiked',
@@ -228,12 +216,6 @@ module.exports.readAllOfWishlist = async (userIdx) => {
     const options = {
         attributes: {
             include: [
-                [
-                    sequelize.literal(
-                        `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx)`
-                    ),
-                    'likeCnt',
-                ],
                 [
                     sequelize.literal(
                         `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx AND lp.user_idx = ${userIdx})`
@@ -284,12 +266,6 @@ module.exports.recentSearchPerfumeList = async (userIdx) => {
     const options = {
         attributes: {
             include: [
-                [
-                    sequelize.literal(
-                        `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx)`
-                    ),
-                    'likeCnt',
-                ],
                 [
                     sequelize.literal(
                         `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx AND lp.user_idx = ${userIdx})`
@@ -397,12 +373,6 @@ module.exports.readPerfumeSurvey = async (userIdx, gender) => {
                 'release_date',
             ],
             include: [
-                [
-                    sequelize.literal(
-                        `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx)`
-                    ),
-                    'likeCnt',
-                ],
                 [
                     sequelize.literal(
                         `(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = perfumeIdx AND lp.user_idx = ${userIdx})`
