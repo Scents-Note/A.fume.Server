@@ -8,8 +8,8 @@ const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
 const { Series } = require('../../models/index.js');
 
 describe('# seriesDao Test', () => {
-    before(async () => {
-        await require('./common/presets.js')();
+    before(async function () {
+        await require('./common/presets.js')(this);
     });
     describe(' # create Test', () => {
         // 중복 데이터 미리 삭제

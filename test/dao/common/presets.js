@@ -1,8 +1,11 @@
 const { sequelize } = require('../../../models');
 
-module.exports = () => {
-    return Promise.all([
+module.exports = async (context) => {
+    context.timeout(100000);
+    await Promise.all([
         sequelize.sync(),
         require('../../../utils/db/mongoose.js'),
-    ]).then((it) => require('./seeds.js')());
+    ]);
+    await require('./seeds.js')();
+    context.timeout();
 };

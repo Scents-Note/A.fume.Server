@@ -8,8 +8,8 @@ const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
 const { Ingredient } = require('../../models');
 
 describe('# ingredientDao Test', () => {
-    before(async () => {
-        await require('./common/presets.js')();
+    before(async function () {
+        await require('./common/presets.js')(this);
     });
     describe(' # create Test', () => {
         before(async () => {

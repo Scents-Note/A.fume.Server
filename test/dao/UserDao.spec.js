@@ -10,8 +10,8 @@ const { User } = require('../../models');
 const { GENDER_MAN, GENDER_WOMAN } = require('../../utils/code.js');
 
 describe('# userDao Test', () => {
-    before(async () => {
-        await require('./common/presets.js')();
+    before(async function () {
+        await require('./common/presets.js')(this);
     });
     describe('# create Test', () => {
         before(async () => {

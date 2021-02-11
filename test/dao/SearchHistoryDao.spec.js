@@ -7,8 +7,8 @@ const searchHistoryDao = require('../../dao/SearchHistoryDao.js');
 const { Perfume, User, SearchHistory } = require('../../models');
 
 describe('# searchHistoryDao Test', () => {
-    before(async () => {
-        await require('./common/presets.js')();
+    before(async function () {
+        await require('./common/presets.js')(this);
     });
     before(async () => {
         await sequelize.sync();
