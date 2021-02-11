@@ -308,12 +308,23 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
     const today = new Date();
     const age = today.getFullYear() - user.birth + 1;
     const ageGroup = parseInt(age / 10) * 10;
-    const startYear = today.getFullYear() - ageQuantize - 8;
-    return perfumeDao.recommendPerfumeByAgeAndGender(
-        userIdx,
+    const perfumeList = await perfumeDao.recommendPerfumeByAgeAndGender(
         user.gender,
         ageGroup,
         pagingIndex,
         pagingSize
     );
+    const perfumeIdxList = perfumeList.map((it) => it.perfumeIdx);
+    const likePerfumeList = await likePerfumeDao.readLikeInfo(
+        userIdx,
+        perfumeIdxList
+    );
+    const likeMap = likePerfumeList.reduce((prev, cur) => {
+        prev[cur] = true;
+        return prev;
+    }, {});
+    perfumeList.forEach((it) => {
+        it.isLiked = likeMap[it.perfumeIdx] ? true : false;
+    });
+    return perfumeList;
 };

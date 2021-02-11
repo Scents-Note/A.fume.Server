@@ -65,6 +65,19 @@ describe('# likeDao Test', () => {
                 })
                 .catch((err) => done(err));
         });
+
+        it('# success case', (done) => {
+            likePerfumeDao
+                .readLikeInfo(1, [1, 2, 3, 4, 5])
+                .then((result) => {
+                    expect(result.filter((it) => it.userIdx == 1).length).eq(
+                        result.length
+                    );
+                    expect(result.length).gte(5);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
     });
 
     describe('# delete Test', () => {

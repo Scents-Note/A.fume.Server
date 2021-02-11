@@ -14,7 +14,9 @@ const {
 } = require('../models');
 const { Op } = Sequelize;
 
-const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER__SELECT =
+const { ranking } = require('../mongoose_models');
+
+const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
     'SELECT ' +
     'COUNT(*) as "SearchHistory.weight", ' +
     'p.perfume_idx as perfumeIdx, p.main_series_idx as mainSeriesIdx, p.brand_idx as brandIdx, p.name, p.english_name as englishName, p.image_thumbnail_url as imageUrl, p.release_date as releaseDate,' +
@@ -33,12 +35,11 @@ const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER__SELECT =
     'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
     'INNER JOIN series s ON p.main_series_idx = s.series_idx ' +
     'INNER JOIN users u ON sh.user_idx = u.user_idx ' +
-    'WHERE u.gender = $2 AND (u.birth BETWEEN $3 AND $4) ' +
+    'WHERE u.gender = $1 AND (u.birth BETWEEN $2 AND $3) ' +
     'GROUP BY sh.perfume_idx ' +
     'ORDER BY "SearchHistory.weight" DESC ' +
-    'LIMIT $5 ' +
-    'OFFSET $6';
-
+    'LIMIT $4 ' +
+    'OFFSET $5';
 /**
  * 향수 추가
  *
@@ -316,20 +317,22 @@ module.exports.recentSearchPerfumeList = async (userIdx) => {
  * @returns {Promise<Perfume[]>}
  */
 module.exports.recommendPerfumeByAgeAndGender = async (
-    userIdx,
     gender,
     ageGroup,
     pagingIndex,
     pagingSize
 ) => {
-    const result = await sequelize.query(
-        SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER__SELECT,
+    const cached = await ranking.findItem({ gender, ageGroup });
+    if (cached) {
+        return cached.perfumeList;
+    }
     const today = new Date();
     const startYear = today.getFullYear() - ageGroup - 8;
     const endYear = today.getFullYear() - ageGroup + 1;
+    let result = await sequelize.query(
+        SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT,
         {
             bind: [
-                userIdx,
                 gender,
                 startYear,
                 endYear,
@@ -341,11 +344,15 @@ module.exports.recommendPerfumeByAgeAndGender = async (
             nest: true,
         }
     );
-    return result.map((it) => {
-        delete it.createTime;
-        delete it.weight;
+    result = result.map((it) => {
+        delete it.SearchHistory;
         return it;
     });
+    await ranking.upsert(
+        { gender, ageGroup },
+        { title: '나이 및 성별에 따른 추천', perfumeList: result }
+    );
+    return result;
 };
 
 /**
