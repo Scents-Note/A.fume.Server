@@ -34,7 +34,7 @@ rankingSchema.statics.findAll = function () {
  *
  * @param {number} userIdx
  */
-rankingSchema.statics.findOne = function (filter) {
+rankingSchema.statics.findItem = function (filter) {
     return this.findOne(filter);
 };
 

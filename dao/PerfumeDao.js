@@ -1,5 +1,3 @@
-const pool = require('../utils/db/pool.js');
-
 const { NotMatchedError } = require('../utils/errors/errors.js');
 
 const {
@@ -19,23 +17,17 @@ const { Op } = Sequelize;
 const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER__SELECT =
     'SELECT ' +
     'COUNT(*) as "SearchHistory.weight", ' +
-    'p.perfume_idx as perfumeIdx, p.main_series_idx as mainSeriesIdx, p.brand_idx as brandIdx, p.name, p.english_name as englishName, p.image_thumbnail_url as imageUrl, p.release_date as releaseDate, p.created_at as createdAt, p.updated_at as updatedAt,' +
+    'p.perfume_idx as perfumeIdx, p.main_series_idx as mainSeriesIdx, p.brand_idx as brandIdx, p.name, p.english_name as englishName, p.image_thumbnail_url as imageUrl, p.release_date as releaseDate,' +
     'b.brand_idx as "Brand.brandIdx", ' +
     'b.name as "Brand.name", ' +
     'b.english_name as "Brand.englishName", ' +
     'b.start_character as "Brand.startCharacter", ' +
     'b.image_url as "Brand.imageUrl", ' +
     'b.description as "Brand.description", ' +
-    'b.created_at as "Brand.createdAt", ' +
-    'b.updated_at as "Brand.updatedAt", ' +
     's.series_idx as "MainSeries.seriesIdx", ' +
     's.name as "MainSeries.name", ' +
     's.english_name as "MainSeries.englishName", ' +
-    's.description as "MainSeries.description", ' +
-    's.created_at as "MainSeries.createdAt", ' +
-    's.updated_at as "MainSeries.updatedAt", ' +
-    '(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = p.perfume_idx) as likeCnt, ' +
-    '(SELECT COUNT(*) FROM like_perfumes lp WHERE lp.perfume_idx = p.perfume_idx AND lp.user_idx = $1) as isLiked ' +
+    's.description as "MainSeries.description" ' +
     'FROM search_histories sh ' +
     'INNER JOIN perfumes p ON sh.perfume_idx = p.perfume_idx ' +
     'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
@@ -318,8 +310,7 @@ module.exports.recentSearchPerfumeList = async (userIdx) => {
  *
  * @param {number} userIdx
  * @param {string} gender
- * @param {number} startBirth
- * @param {number} endBirth
+ * @param {number} ageGroup
  * @param {number} pagingIndex
  * @param {number} pagingSize
  * @returns {Promise<Perfume[]>}
@@ -327,19 +318,21 @@ module.exports.recentSearchPerfumeList = async (userIdx) => {
 module.exports.recommendPerfumeByAgeAndGender = async (
     userIdx,
     gender,
-    startBirth,
-    endBirth,
+    ageGroup,
     pagingIndex,
     pagingSize
 ) => {
     const result = await sequelize.query(
         SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER__SELECT,
+    const today = new Date();
+    const startYear = today.getFullYear() - ageGroup - 8;
+    const endYear = today.getFullYear() - ageGroup + 1;
         {
             bind: [
                 userIdx,
                 gender,
-                startBirth,
-                endBirth,
+                startYear,
+                endYear,
                 pagingSize,
                 (pagingIndex - 1) * pagingSize,
             ],

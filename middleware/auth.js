@@ -22,6 +22,7 @@ module.exports.verifyTokenMiddleware = (req, authOrSecDef, token, callback) => {
         if (currentScopes.indexOf('user') > -1) {
             return callback(new InvalidTokenError());
         }
+        req.middlewareToken.loginUserIdx = -1;
         return callback(null);
     }
 

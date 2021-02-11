@@ -307,14 +307,12 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
     const user = await userDao.readByIdx(userIdx);
     const today = new Date();
     const age = today.getFullYear() - user.birth + 1;
-    const ageQuantize = parseInt(age / 10) * 10;
+    const ageGroup = parseInt(age / 10) * 10;
     const startYear = today.getFullYear() - ageQuantize - 8;
-    const endYear = today.getFullYear() - ageQuantize + 1;
     return perfumeDao.recommendPerfumeByAgeAndGender(
         userIdx,
         user.gender,
-        startYear,
-        endYear,
+        ageGroup,
         pagingIndex,
         pagingSize
     );

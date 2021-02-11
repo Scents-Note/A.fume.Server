@@ -94,6 +94,8 @@ paths:
       - perfume
       summary: 향수 검색
       operationId: searchPerfume
+      security:
+        - userToken: []
       produces:
       - application/json
       parameters:
