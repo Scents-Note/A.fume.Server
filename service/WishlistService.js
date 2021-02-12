@@ -42,10 +42,19 @@ exports.deleteWishlist = (perfumeIdx, userIdx) => {
  * 유저의 위시 리스트에 조회하기
  *
  * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
  * @returns {Promise}
  **/
-exports.readWishlistByUser = (userIdx) => {
-    return perfumeDao.readAllOfWishlist(userIdx);
+exports.readWishlistByUser = (userIdx, pagingIndex, pagingSize) => {
+    return perfumeDao
+        .readAllOfWishlist(userIdx, pagingIndex, pagingSize)
+        .then((it) => {
+            it.rows.forEach((it) => {
+                delete it.Wishlist;
+            });
+            return it;
+        });
 };
 
 /**

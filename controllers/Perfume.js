@@ -1,6 +1,7 @@
 'use strict';
 
 const Perfume = require('../service/PerfumeService');
+const Wishlist = require('../service/WishlistService');
 const { OK } = require('../utils/statusCode.js');
 
 module.exports.postPerfume = (req, res, next) => {
@@ -142,7 +143,24 @@ module.exports.deletePerfume = (req, res, next) => {
         .catch((err) => next(err));
 };
 
-module.exports.getWishlist = (req, res, next) => {};
+module.exports.getWishlist = (req, res, next) => {
+    const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
+    const userIdx = req.swagger.params['userIdx'].value;
+    if (loginUserIdx != userIdx) {
+        next(new InvalidRequestError('본인의 위시리스트만 조회할 수 있습니다'));
+    }
+    let { pagingIndex, pagingSize } = req.query;
+    pagingIndex = parseInt(pagingIndex) || 1;
+    pagingSize = parseInt(pagingSize) || 100;
+    Wishlist.readWishlistByUser(userIdx, pagingIndex, pagingSize)
+        .then((response) => {
+            res.status(OK).json({
+                message: '위시리스트 조회  성공',
+                data: response,
+            });
+        })
+        .catch((err) => next(err));
+};
 
 module.exports.getNewPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx || -1;

@@ -202,10 +202,18 @@ module.exports.readByPerfumeIdx = async (perfumeIdx) => {
  * 위시 리스트에 속하는 향수 조회
  *
  * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
  * @returns {Promise<Perfume[]>} perfumeList
  */
-module.exports.readAllOfWishlist = async (userIdx) => {
-    const options = _.merge({}, defaultOption);
+module.exports.readAllOfWishlist = async (userIdx, pagingIndex, pagingSize) => {
+    const options = _.merge({}, defaultOption, {
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        offset: (pagingIndex - 1) * pagingSize,
+        limit: pagingSize,
+    });
     options.include.push({
         model: LikePerfume,
         as: 'Wishlist',
@@ -216,8 +224,7 @@ module.exports.readAllOfWishlist = async (userIdx) => {
             userIdx,
         },
     });
-    const perfumeList = await Perfume.findAndCountAll(options);
-    return perfumeList;
+    return Perfume.findAndCountAll(options);
 };
 
 /**
