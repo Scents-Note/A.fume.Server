@@ -101,6 +101,15 @@ describe('# ingredientDao Test', () => {
                 })
                 .catch((err) => done(err));
         });
+        it('# success case', (done) => {
+            ingredientDao
+                .readBySeriesIdxList([1, 2, 3, 4, 5])
+                .then((result) => {
+                    expect(result.length).eq(5);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
     });
 
     describe('# update Test', () => {

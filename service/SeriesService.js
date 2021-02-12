@@ -77,8 +77,34 @@ exports.deleteSeries = (seriesIdx) => {
  * @returns {Promise<Ingredient[]>}
  */
 exports.getIngredientList = (seriesIdx) => {
-    return ingredientDao.readBySeriesIdx(seriesIdx).then((it) => {
+    return ingredientDao.readAll({ seriesIdx }).then((it) => {
         delete it.JoinSeriesIngredient;
         return it;
     });
+};
+
+/**
+ * 필터에서 보여주는 Series 조회
+ *
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ */
+exports.getFilterSeries = async (pagingIndex, pagingSize) => {
+    const result = await seriesDao.readAll(pagingIndex, pagingSize);
+    const seriesIdxList = result.rows.map((it) => it.seriesIdx);
+    const ingredientList = await ingredientDao.readBySeriesIdxList(
+        seriesIdxList
+    );
+    const ingredientMap = ingredientList.reduce((prev, cur) => {
+        delete cur.Series;
+        if (!prev[cur.seriesIdx]) {
+            prev[cur.seriesIdx] = [];
+        }
+        prev[cur.seriesIdx].push(cur);
+        return prev;
+    }, {});
+    result.rows.forEach((it) => {
+        it.ingredients = ingredientMap[it.seriesIdx] || [];
+    });
+    return result;
 };

@@ -90,3 +90,17 @@ module.exports.getIngredients = (req, res, next) => {
         })
         .catch((err) => next(err));
 };
+
+module.exports.getFilterSeries = (req, res, next) => {
+    let { pagingIndex, pagingSize } = req.query;
+    pagingIndex = parseInt(pagingIndex) || 1;
+    pagingSize = parseInt(pagingSize) || 100;
+    Series.getFilterSeries(pagingIndex, pagingSize)
+        .then((response) => {
+            res.status(OK).json({
+                message: '계열 검색 성공',
+                data: response,
+            });
+        })
+        .catch((err) => next(err));
+};
