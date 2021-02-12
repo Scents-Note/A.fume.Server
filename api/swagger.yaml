@@ -45,8 +45,8 @@ tags:
 schemes:
 #- https
 - http
-# security:
-# - APIKeyHeader: []
+security:
+  - userToken: []
 paths:
   /perfume:
     post:
@@ -196,6 +196,7 @@ paths:
                       $ref: '#/definitions/Perfume'
         401:
           description: Token is missing or invalid
+      x-swagger-router-controller: Perfume
   /perfume/new:
     get:
       tags:
@@ -234,6 +235,7 @@ paths:
                       $ref: '#/definitions/Perfume'
         401:
           description: Token is missing or invalid
+      x-swagger-router-controller: Perfume
   /perfume/survey:
     get:
       tags:
@@ -360,6 +362,8 @@ paths:
       - perfume
       summary: 향수 세부 정보 조회
       operationId: getPerfume
+      security:
+        - userToken: []
       produces:
       - application/json
       parameters:

@@ -114,15 +114,18 @@ module.exports.create = ({
  * 향수 검색
  *
  * @param {Object} Filter - series, brands, keywords
- * @param {array} sort - 정렬 조건
- * @param {number} [userIdx=-1]
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @param {array} order - 정렬 조건
  * @returns {Promise<Perfume[]>} perfumeList
  */
 module.exports.search = async (
     { series = [], brands = [], keywords = [] },
-    sort = [['createdAt', 'asc']]
+    pagingIndex,
+    pagingSize,
+    order = [['createdAt', 'asc']]
 ) => {
-    sort.forEach((it) => {
+    order.forEach((it) => {
         it[0] = sequelize.literal(it[0]);
     });
     const options = Object.assign({}, defaultOption, {
@@ -162,7 +165,9 @@ module.exports.search = async (
                 },
             },
         ],
-        order: sort,
+        offset: (pagingIndex - 1) * pagingSize,
+        limit: pagingSize,
+        order,
     });
     options.include.forEach((it) => {
         if (!it.where || it.where[Op.or].length > 0) return;

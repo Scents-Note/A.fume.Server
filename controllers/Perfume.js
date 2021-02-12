@@ -30,13 +30,17 @@ module.exports.getPerfume = (req, res, next) => {
 };
 
 module.exports.searchPerfume = (req, res, next) => {
-    let { series, brand, keyword, sort } = req.query;
+    let { series, brand, keyword, pagingIndex, pagingSize, sort } = req.query;
     const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
     series = (series && series.split('%')) || [];
     brand = (brand && brand.split('%')) || [];
     keyword = (keyword && keyword.split('%')) || [];
+    pagingIndex = parseInt(pagingIndex) || 1;
+    pagingSize = parseInt(pagingSize) || 100;
     Perfume.searchPerfume(
         { series, brands: brand, keywords: keyword },
+        pagingIndex,
+        pagingSize,
         sort,
         loginUserIdx
     )
@@ -63,7 +67,7 @@ module.exports.putPerfume = (req, res, next) => {
 module.exports.likePerfume = (req, res, next) => {
     const perfumeIdx = req.swagger.params['perfumeIdx'].value;
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    Perfume.likePerfume(perfumeIdx, loginUserIdx)
+    Perfume.likePerfume(loginUserIdx, perfumeIdx)
         .then((result) => {
             res.status(OK).json({
                 message: '향수 좋아요',

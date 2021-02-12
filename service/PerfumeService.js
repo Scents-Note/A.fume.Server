@@ -209,15 +209,19 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
  * 향수 검색
  *
  * @param {Object} Filter
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
  * @param {array} sort
  * @param {number} userIdx
  * @returns {Promise<Perfume[]>}
  **/
-exports.searchPerfume = (filter, sort, userIdx) => {
+exports.searchPerfume = (filter, pagingIndex, pagingSize, sort, userIdx) => {
     const order = parseSortToOrder(sort);
-    return perfumeDao.search(filter, order).then((result) => {
-        return updateIsLike(result, userIdx);
-    });
+    return perfumeDao
+        .search(filter, pagingIndex, pagingSize, order)
+        .then((result) => {
+            return updateIsLike(result, userIdx);
+        });
 };
 
 /**
@@ -276,23 +280,23 @@ exports.updatePerfume = ({
 /**
  * 향수 좋아요
  *
- * @param {number} perfumeIdx
  * @param {number} userIdx
+ * @param {number} perfumeIdx
  * @returns {Promise}
  **/
-exports.likePerfume = (perfumeIdx, userIdx) => {
+exports.likePerfume = (userIdx, perfumeIdx) => {
     return new Promise((resolve, reject) => {
         let isExist = false;
         likePerfumeDao
             .read(userIdx, perfumeIdx)
             .then((res) => {
                 isExist = true;
-                return likePerfumeDao.delete(perfumeIdx, userIdx);
+                return likePerfumeDao.delete(userIdx, perfumeIdx);
             })
             .catch((err) => {
                 isExist = false;
                 if (err instanceof NotMatchedError) {
-                    return likePerfumeDao.create(perfumeIdx, userIdx);
+                    return likePerfumeDao.create(userIdx, perfumeIdx);
                 }
                 reject(new FailedToCreateError());
             })
@@ -312,8 +316,9 @@ exports.likePerfume = (perfumeIdx, userIdx) => {
  * @returns {Promise<Perfume[]>}
  **/
 exports.recentSearch = (userIdx) => {
-    const perfumeList = perfumeDao.recentSearchPerfumeList(userIdx);
-    return updateIsLike(perfumeList, userIdx);
+    return perfumeDao.recentSearchPerfumeList(userIdx).then((result) => {
+        return updateIsLike(result, userIdx);
+    });
 };
 
 /**
