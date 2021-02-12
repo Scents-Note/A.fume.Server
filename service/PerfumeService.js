@@ -370,3 +370,23 @@ exports.recommendByGenderAgeAndGender = (
         pagingSize
     );
 };
+
+/**
+ * 새로 등록한 향수 조회
+ *
+ * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>}
+ **/
+exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
+    return perfumeDao
+        .search({}, pagingIndex, pagingSize, [['createdAt', 'desc']])
+        .then((result) => {
+            result.rows.forEach((it) => {
+                delete it.createdAt;
+                delete it.updatedAt;
+            });
+            return updateIsLike(result, userIdx);
+        });
+};

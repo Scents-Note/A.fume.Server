@@ -143,3 +143,18 @@ module.exports.deletePerfume = (req, res, next) => {
 };
 
 module.exports.getWishlist = (req, res, next) => {};
+
+module.exports.getNewPerfume = (req, res, next) => {
+    const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
+    let { pagingIndex, pagingSize } = req.query;
+    pagingIndex = parseInt(pagingIndex) || 1;
+    pagingSize = parseInt(pagingSize) || 100;
+    Perfume.getNewPerfume(loginUserIdx, pagingIndex, pagingSize)
+        .then((response) => {
+            res.status(OK).json({
+                message: '최신 향수 조회 성공',
+                data: response,
+            });
+        })
+        .catch((err) => next(err));
+};
