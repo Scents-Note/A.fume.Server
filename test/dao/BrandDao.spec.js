@@ -20,7 +20,7 @@ describe('# brandDao Test', () => {
                 .create({
                     name: '삽입테스트',
                     englishName: 'insert Test',
-                    startCharacter: 'ㅅ',
+                    firstInitial: 'ㅅ',
                     imageUrl: '',
                     description: 'brand 생성 테스트를 위한 더미데이터입니다.',
                 })
@@ -35,7 +35,7 @@ describe('# brandDao Test', () => {
                 .create({
                     name: '삽입테스트',
                     englishName: 'insert Test',
-                    startCharacter: 'ㅅ',
+                    firstInitial: 'ㅅ',
                     imageUrl: '',
                     description: '',
                 })
@@ -56,7 +56,7 @@ describe('# brandDao Test', () => {
                 .read(2)
                 .then((result) => {
                     expect(result.name).eq('브랜드2');
-                    expect(result.startCharacter).eq('ㅂ');
+                    expect(result.firstInitial).eq('ㅂ');
                     expect(result.description.length).gt(0);
                     done();
                 })
@@ -94,7 +94,7 @@ describe('# brandDao Test', () => {
         let origin = {
             name: '수정테스트',
             englishName: 'modify test',
-            startCharacter: 'ㅅ',
+            firstInitial: 'ㅅ',
             imageUrl: '',
             description: '',
         };
@@ -109,7 +109,7 @@ describe('# brandDao Test', () => {
                     brandIdx,
                     name: '변경된 이름',
                     englishName: 'modified_name',
-                    startCharacter: 'ㅂ',
+                    firstInitial: 'ㅂ',
                     imageUrl: 'image_url',
                     description: '변경완료',
                 })
@@ -118,7 +118,7 @@ describe('# brandDao Test', () => {
                     const updated = await brandDao.read(brandIdx);
                     expect(updated.name).eq('변경된 이름');
                     expect(updated.englishName).eq('modified_name');
-                    expect(updated.startCharacter).eq('ㅂ');
+                    expect(updated.firstInitial).eq('ㅂ');
                     expect(updated.imageUrl).eq('image_url');
                     expect(updated.description).eq('변경완료');
                     done();
@@ -136,7 +136,7 @@ describe('# brandDao Test', () => {
             const { dataValues } = await Brand.create({
                 name: '삭제테스트',
                 englishName: 'delete test',
-                startCharacter: 'ㅅ',
+                firstInitial: 'ㅅ',
                 imageUrl: '',
                 description: '',
             });

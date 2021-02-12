@@ -44,14 +44,14 @@ exports.getBrandByIdx = (brandIdx) => {
 exports.insertBrand = ({
     name,
     englishName,
-    startCharacter,
+    firstInitial,
     imageUrl,
     description,
 }) => {
     return brandDao.create({
         name,
         englishName,
-        startCharacter,
+        firstInitial,
         imageUrl,
         description,
     });
@@ -67,7 +67,7 @@ exports.putBrand = ({
     brandIdx,
     name,
     englishName,
-    startCharacter,
+    firstInitial,
     imageUrl,
     description,
 }) => {
@@ -75,7 +75,7 @@ exports.putBrand = ({
         brandIdx,
         name,
         englishName,
-        startCharacter,
+        firstInitial,
         imageUrl,
         description,
     });

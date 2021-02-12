@@ -45,14 +45,14 @@ module.exports.postBrand = (req, res, next) => {
     const {
         name,
         englishName,
-        startCharacter,
+        firstInitial,
         imageUrl,
         description,
     } = req.swagger.params['body'].value;
     Brand.insertBrand({
         name,
         englishName,
-        startCharacter,
+        firstInitial,
         imageUrl,
         description,
     })
@@ -70,7 +70,7 @@ module.exports.putBrand = (req, res, next) => {
     const {
         name,
         englishName,
-        startChar,
+        firstInitial,
         imageUrl,
         description,
     } = req.swagger.params['body'].value;
@@ -78,7 +78,7 @@ module.exports.putBrand = (req, res, next) => {
         brandIdx,
         name,
         englishName,
-        startChar,
+        firstInitial,
         imageUrl,
         description,
     })

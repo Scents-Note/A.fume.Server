@@ -24,7 +24,7 @@ const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
     'b.brand_idx as "Brand.brandIdx", ' +
     'b.name as "Brand.name", ' +
     'b.english_name as "Brand.englishName", ' +
-    'b.start_character as "Brand.startCharacter", ' +
+    'b.first_initial as "Brand.firstInitial", ' +
     'b.image_url as "Brand.imageUrl", ' +
     'b.description as "Brand.description", ' +
     's.series_idx as "MainSeries.seriesIdx", ' +

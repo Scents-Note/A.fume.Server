@@ -15,14 +15,14 @@ const { Brand } = require('../models');
 module.exports.create = ({
     name,
     englishName,
-    startCharacter,
+    firstInitial,
     imageUrl,
     description,
 }) => {
     return Brand.create({
         name,
         englishName,
-        startCharacter,
+        firstInitial,
         imageUrl,
         description,
     })
@@ -89,12 +89,18 @@ module.exports.update = async ({
     brandIdx,
     name,
     englishName,
-    startCharacter,
+    firstInitial,
     imageUrl,
     description,
 }) => {
     const [affectedRows] = await Brand.update(
-        { name, englishName, startCharacter, imageUrl, description },
+        {
+            name,
+            englishName,
+            firstInitial,
+            imageUrl,
+            description,
+        },
         { where: { brandIdx } }
     );
     if (affectedRows == 0) {
