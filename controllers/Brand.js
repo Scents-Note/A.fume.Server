@@ -100,3 +100,14 @@ module.exports.deleteBrand = (req, res, next) => {
         })
         .catch((err) => next(err));
 };
+
+module.exports.getFilterBrand = (req, res, next) => {
+    Brand.getFilterBrand()
+        .then((response) => {
+            res.status(OK).json({
+                message: '브랜드 필터 조회 성공',
+                data: response,
+            });
+        })
+        .catch((err) => next(err));
+};
