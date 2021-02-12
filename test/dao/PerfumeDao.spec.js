@@ -4,19 +4,13 @@ dotenv.config({ path: './config/.env.test' });
 const chai = require('chai');
 const { expect } = chai;
 const perfumeDao = require('../../dao/PerfumeDao.js');
-const {
-    Perfume,
-    PerfumeDetail,
-    Sequelize,
-    sequelize,
-} = require('../../models');
+const { Perfume, PerfumeDetail, Sequelize } = require('../../models');
 
 const { GENDER_WOMAN } = require('../../utils/code.js');
 
 describe('# perfumeDao Test', () => {
-    before(async () => {
-        await sequelize.sync();
-        await require('./seeds.js')();
+    before(async function () {
+        await require('./common/presets.js')(this);
     });
     describe('# create Test', () => {
         before(async () => {
@@ -108,8 +102,8 @@ describe('# perfumeDao Test', () => {
                 perfumeDao
                     .search(filter, [['createdAt', 'asc']])
                     .then((result) => {
-                        expect(result.length).to.gte(3);
-                        result.forEach((it) => {
+                        expect(result.rows.length).to.gte(3);
+                        result.rows.forEach((it) => {
                             filter.series &&
                                 filter.series.length > 0 &&
                                 expect(
@@ -129,7 +123,7 @@ describe('# perfumeDao Test', () => {
                 perfumeDao
                     .search({})
                     .then((result) => {
-                        expect(result.length).gt(3);
+                        expect(result.rows.length).gt(3);
                         done();
                     })
                     .catch((err) => done(err));
@@ -142,8 +136,8 @@ describe('# perfumeDao Test', () => {
                 perfumeDao
                     .search(filter)
                     .then((result) => {
-                        expect(result.length).gte(3);
-                        result.forEach((it) => {
+                        expect(result.rows.length).gte(3);
+                        result.rows.forEach((it) => {
                             filter.series &&
                                 filter.series.length > 0 &&
                                 expect(
@@ -162,8 +156,8 @@ describe('# perfumeDao Test', () => {
                 perfumeDao
                     .search(filter)
                     .then((result) => {
-                        expect(result.length).to.gte(2);
-                        result.forEach((it) => {
+                        expect(result.rows.length).to.gte(2);
+                        result.rows.forEach((it) => {
                             filter.brands &&
                                 filter.brands.length > 0 &&
                                 expect(
@@ -182,8 +176,8 @@ describe('# perfumeDao Test', () => {
                 perfumeDao
                     .search(filter, [['likeCnt', 'asc']])
                     .then((result) => {
-                        expect(result.length).gte(2);
-                        result.forEach((it) => {
+                        expect(result.rows.length).gte(2);
+                        result.rows.forEach((it) => {
                             filter.series &&
                                 filter.series.length > 0 &&
                                 expect(
@@ -199,11 +193,11 @@ describe('# perfumeDao Test', () => {
                 perfumeDao
                     .search({}, [['releaseDate', 'desc']])
                     .then((result) => {
-                        expect(result.length).gte(3);
-                        const str1 = result
+                        expect(result.rows.length).gte(3);
+                        const str1 = result.rows
                             .map((it) => it.releaseDate)
                             .join(',');
-                        const str2 = result
+                        const str2 = result.rows
                             .map((it) => it.releaseDate)
                             .sort()
                             .reverse()
@@ -218,9 +212,9 @@ describe('# perfumeDao Test', () => {
                 perfumeDao
                     .search({}, [['likeCnt', 'asc']])
                     .then((result) => {
-                        expect(result.length).gte(3);
-                        const str1 = result.map((it) => it.like).join(',');
-                        const str2 = result
+                        expect(result.rows.length).gte(3);
+                        const str1 = result.rows.map((it) => it.like).join(',');
+                        const str2 = result.rows
                             .map((it) => it.like)
                             .sort()
                             .reverse()
@@ -238,16 +232,16 @@ describe('# perfumeDao Test', () => {
                     perfumeDao.search({}, [Sequelize.fn('RAND')]),
                 ])
                     .then(([result1, result2, result3]) => {
-                        expect(result1.length).gte(3);
-                        expect(result2.length).gte(3);
-                        expect(result3.length).gte(3);
-                        const str1 = result1
+                        expect(result1.rows.length).gte(3);
+                        expect(result2.rows.length).gte(3);
+                        expect(result3.rows.length).gte(3);
+                        const str1 = result1.rows
                             .map((it) => it.perfumeIdx)
                             .join(',');
-                        const str2 = result2
+                        const str2 = result2.rows
                             .map((it) => it.perfumeIdx)
                             .join(',');
-                        const str3 = result3
+                        const str3 = result3.rows
                             .map((it) => it.perfumeIdx)
                             .join(',');
                         expect(str1 == str2 && str1 == str3).eq(false);
@@ -261,7 +255,7 @@ describe('# perfumeDao Test', () => {
             perfumeDao
                 .readAllOfWishlist(1)
                 .then((result) => {
-                    expect(result.length).gte(3);
+                    expect(result.rows.length).gte(3);
                     done();
                 })
                 .catch((err) => done(err));
@@ -271,11 +265,11 @@ describe('# perfumeDao Test', () => {
             perfumeDao
                 .recentSearchPerfumeList(1)
                 .then((result) => {
-                    expect(result.length).gte(5);
-                    const originString = result
+                    expect(result.rows.length).gte(5);
+                    const originString = result.rows
                         .map((it) => it.perfumeIdx)
                         .toString();
-                    const sortedString = result
+                    const sortedString = result.rows
                         .sort(
                             (a, b) =>
                                 a.SearchHistory.createdAt >
@@ -284,7 +278,7 @@ describe('# perfumeDao Test', () => {
                         .map((it) => it.perfumeIdx)
                         .toString();
                     expect(sortedString).to.be.eq(originString);
-                    for (const obj of result) {
+                    for (const obj of result.rows) {
                         expect(obj.SearchHistory.userIdx).to.be.eq(1);
                     }
                     done();
@@ -294,9 +288,9 @@ describe('# perfumeDao Test', () => {
 
         it('# recommend perfume by age and gender', (done) => {
             perfumeDao
-                .recommendPerfumeByAgeAndGender(1, GENDER_WOMAN, 0, 2021)
+                .recommendPerfumeByAgeAndGender(GENDER_WOMAN, 20, 1, 100)
                 .then((result) => {
-                    expect(result.length).gte(3);
+                    expect(result.rows.length).gte(3);
                     done();
                 })
                 .catch((err) => done(err));
@@ -304,9 +298,9 @@ describe('# perfumeDao Test', () => {
 
         it('# read perfume survey', (done) => {
             perfumeDao
-                .readPerfumeSurvey(1, GENDER_WOMAN)
+                .readPerfumeSurvey(GENDER_WOMAN)
                 .then((result) => {
-                    expect(result.length).gte(5);
+                    expect(result.rows.length).gte(5);
                     done();
                 })
                 .catch((err) => done(err));

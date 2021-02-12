@@ -13,6 +13,23 @@ const {
     NotMatchedError,
     FailedToCreateError,
 } = require('../utils/errors/errors.js');
+async function updateIsLike(result, userIdx) {
+    const perfumeList = result.rows;
+    const perfumeIdxList = perfumeList.map((it) => it.perfumeIdx);
+    const likePerfumeList = await likePerfumeDao.readLikeInfo(
+        userIdx,
+        perfumeIdxList
+    );
+    const likeMap = likePerfumeList.reduce((prev, cur) => {
+        prev[cur] = true;
+        return prev;
+    }, {});
+    result.rows = perfumeList.map((it) => {
+        it.isLiked = likeMap[it.perfumeIdx] ? true : false;
+        return it;
+    });
+    return result;
+}
 
 /**
  * 향수 정보 추가
@@ -115,7 +132,8 @@ function normalize(obj) {
  * @returns {Promise<Perfume>}
  **/
 exports.getPerfumeById = async (perfumeIdx, userIdx) => {
-    const perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx, userIdx);
+    const perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
+    // to do
 
     let notes = await noteDao.read(perfumeIdx);
     notes = notes.map((it) => {
@@ -197,7 +215,9 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
  **/
 exports.searchPerfume = (filter, sort, userIdx) => {
     const order = parseSortToOrder(sort);
-    return perfumeDao.search(filter, order, userIdx);
+    return perfumeDao.search(filter, order).then((result) => {
+        return updateIsLike(result, userIdx);
+    });
 };
 
 /**
@@ -210,14 +230,14 @@ exports.getSurveyPerfume = (userIdx) => {
     return userDao
         .readByIdx(userIdx)
         .then((it) => {
-            return perfumeDao.readPerfumeSurvey(it.userIdx, it.gender);
+            return perfumeDao.readPerfumeSurvey(it.gender);
         })
         .then((result) => {
             result.rows = result.rows.map((it) => {
                 delete it.PerfumeSurvey;
                 return it;
             });
-            return result;
+            return updateIsLike(result, userIdx);
         });
 };
 
@@ -264,7 +284,7 @@ exports.likePerfume = (perfumeIdx, userIdx) => {
     return new Promise((resolve, reject) => {
         let isExist = false;
         likePerfumeDao
-            .read(perfumeIdx, userIdx)
+            .read(userIdx, perfumeIdx)
             .then((res) => {
                 isExist = true;
                 return likePerfumeDao.delete(perfumeIdx, userIdx);
@@ -292,26 +312,56 @@ exports.likePerfume = (perfumeIdx, userIdx) => {
  * @returns {Promise<Perfume[]>}
  **/
 exports.recentSearch = (userIdx) => {
-    return perfumeDao.recentSearchPerfumeList(userIdx);
+    const perfumeList = perfumeDao.recentSearchPerfumeList(userIdx);
+    return updateIsLike(perfumeList, userIdx);
 };
 
 /**
  * 유저 연령대 및 성별에 따른 향수 추천
  *
  * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
  * @returns {Promise<Perfume[]>}
  **/
-exports.recommendByUser = async (userIdx) => {
+exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
     const user = await userDao.readByIdx(userIdx);
     const today = new Date();
     const age = today.getFullYear() - user.birth + 1;
-    const ageQuantize = parseInt(age / 10) * 10;
-    const startYear = today.getFullYear() - ageQuantize - 8;
-    const endYear = today.getFullYear() - ageQuantize + 1;
-    return perfumeDao.recommendPerfumeByAgeAndGender(
-        userIdx,
+    const ageGroup = parseInt(age / 10) * 10;
+    const cached = await perfumeDao.recommendPerfumeByAgeAndGenderCached();
+    if (cached) {
+        return updateIsLike(cached, userIdx);
+    }
+    this.recommendByGenderAgeAndGender(
         user.gender,
-        startYear,
-        endYear
+        ageGroup,
+        pagingIndex,
+        pagingSize
+    ).then((result) => {
+        return updateIsLike(result, userIdx);
+    });
+};
+
+/**
+ * 유저 연령대 및 성별에 따른 향수 추천
+ *
+ * @param {number} gender
+ * @param {number} ageGroup
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>}
+ **/
+exports.recommendByGenderAgeAndGender = (
+    gender,
+    ageGroup,
+    pagingIndex,
+    pagingSize
+) => {
+    return perfumeDao.recommendPerfumeByAgeAndGender(
+        gender,
+        ageGroup,
+        pagingIndex,
+        pagingSize
     );
 };

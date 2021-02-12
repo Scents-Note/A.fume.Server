@@ -2,7 +2,8 @@ const {
     NotMatchedError,
     DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
-const { LikePerfume } = require('../models');
+const { Perfume, LikePerfume, Sequelize, sequelize } = require('../models');
+const { Op } = Sequelize;
 
 /**
  * 향수 좋아요 생성
@@ -12,11 +13,36 @@ const { LikePerfume } = require('../models');
  * @returns {Promise}
  */
 module.exports.create = (userIdx, perfumeIdx) => {
-    return LikePerfume.create({ userIdx, perfumeIdx }).catch((err) => {
-        if (err.parent.errno === 1062 || err.parent.code === 'ER_DUP_ENTRY') {
-            throw new DuplicatedEntryError();
-        }
-        throw err;
+    return sequelize.transaction((t) => {
+        const createLikePerfume = LikePerfume.create(
+            { userIdx, perfumeIdx },
+            { transaction: t }
+        ).catch((err) => {
+            if (
+                err.parent.errno === 1062 ||
+                err.parent.code === 'ER_DUP_ENTRY'
+            ) {
+                throw new DuplicatedEntryError();
+            }
+            throw err;
+        });
+        const updateLikeCntOfPerfume = Perfume.findOne({
+            where: { perfumeIdx },
+        }).then((perfume) => {
+            return Perfume.update(
+                { likeCnt: perfume.likeCnt + 1 },
+                {
+                    where: { perfumeIdx: perfume.perfumeIdx },
+                    transaction: t,
+                    silent: true,
+                }
+            );
+        });
+        return Promise.all([createLikePerfume, updateLikeCntOfPerfume]).then(
+            (it) => {
+                return it[0];
+            }
+        );
     });
 };
 
@@ -45,7 +71,32 @@ module.exports.read = async (userIdx, perfumeIdx) => {
  * @returns {Promise}
  */
 module.exports.delete = (userIdx, perfumeIdx) => {
-    return LikePerfume.destroy({ where: { userIdx, perfumeIdx } });
+    return sequelize.transaction((t) => {
+        const deleteLikePerfume = LikePerfume.destroy({
+            where: { userIdx, perfumeIdx },
+            transaction: t,
+        }).then((it) => {
+            if (it == 0) throw new NotMatchedError();
+            return it;
+        });
+        const updateLikeCntOfPerfume = Perfume.findOne({
+            where: { perfumeIdx },
+        }).then((perfume) => {
+            return Perfume.update(
+                { likeCnt: perfume.likeCnt - 1 },
+                {
+                    where: { perfumeIdx: perfume.perfumeIdx },
+                    transaction: t,
+                    silent: true,
+                }
+            );
+        });
+        return Promise.all([deleteLikePerfume, updateLikeCntOfPerfume]).then(
+            (it) => {
+                return it[0];
+            }
+        );
+    });
 };
 
 /**
@@ -55,5 +106,29 @@ module.exports.delete = (userIdx, perfumeIdx) => {
  * @returns {Promise}
  */
 module.exports.deleteByUserIdx = (userIdx) => {
-    return LikePerfume.destroy({ where: { userIdx } });
+    return LikePerfume.destroy({
+        where: {
+            userIdx,
+        },
+    });
+};
+
+/**
+ * 향수 좋아요 정보
+ *
+ * @param {number[]} userIdx
+ * @param {number[]} perfumeIdxList
+ * @returns {Promise}
+ */
+module.exports.readLikeInfo = async (userIdx, perfumeIdxList) => {
+    return LikePerfume.findAll({
+        where: {
+            userIdx,
+            perfumeIdx: {
+                [Op.in]: perfumeIdxList,
+            },
+        },
+        raw: true,
+        nest: true,
+    });
 };

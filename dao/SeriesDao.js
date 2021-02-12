@@ -73,6 +73,8 @@ module.exports.readAll = (pagingIndex, pagingSize) => {
         },
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
+        raw: true,
+        nest: true,
     });
 };
 

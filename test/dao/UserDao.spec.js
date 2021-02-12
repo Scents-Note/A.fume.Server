@@ -5,14 +5,13 @@ const chai = require('chai');
 const { expect } = chai;
 const userDao = require('../../dao/UserDao.js');
 const { NotMatchedError } = require('../../utils/errors/errors.js');
-const { User, sequelize } = require('../../models');
+const { User } = require('../../models');
 
 const { GENDER_MAN, GENDER_WOMAN } = require('../../utils/code.js');
 
 describe('# userDao Test', () => {
-    before(async () => {
-        await sequelize.sync();
-        await require('./seeds.js')();
+    before(async function () {
+        await require('./common/presets.js')(this);
     });
     describe('# create Test', () => {
         before(async () => {
