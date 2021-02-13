@@ -220,6 +220,10 @@ exports.searchPerfume = (filter, pagingIndex, pagingSize, sort, userIdx) => {
     return perfumeDao
         .search(filter, pagingIndex, pagingSize, order)
         .then((result) => {
+            result.rows.forEach((it) => {
+                delete it.createdAt;
+                delete it.updatedAt;
+            });
             return updateIsLike(result, userIdx);
         });
 };
