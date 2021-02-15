@@ -5,12 +5,11 @@ const chai = require('chai');
 const { expect } = chai;
 const ingredientDao = require('../../dao/IngredientDao.js');
 const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
-const { sequelize, Ingredient } = require('../../models');
+const { Ingredient } = require('../../models');
 
 describe('# ingredientDao Test', () => {
-    before(async () => {
-        sequelize.sync();
-        await require('./seeds.js')();
+    before(async function () {
+        await require('./common/presets.js')(this);
     });
     describe(' # create Test', () => {
         before(async () => {
@@ -79,7 +78,7 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readAll()
                 .then((result) => {
-                    expect(result.length).greaterThan(4);
+                    expect(result.rows.length).greaterThan(4);
                     done();
                 })
                 .catch((err) => done(err));
@@ -91,13 +90,22 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readAll({ seriesIdx: 1 })
                 .then((result) => {
-                    expect(result.length).eq(5);
+                    expect(result.rows.length).eq(5);
                     expect(
-                        result.reduce(
+                        result.rows.reduce(
                             (prev, cur) => prev && cur.seriesIdx == 1,
                             true
                         )
                     ).to.be.true;
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+        it('# success case', (done) => {
+            ingredientDao
+                .readBySeriesIdxList([1, 2, 3, 4, 5])
+                .then((result) => {
+                    expect(result.length).eq(5);
                     done();
                 })
                 .catch((err) => done(err));

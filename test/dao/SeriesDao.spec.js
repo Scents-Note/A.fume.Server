@@ -5,12 +5,11 @@ const chai = require('chai');
 const { expect } = chai;
 const seriesDao = require('../../dao/SeriesDao.js');
 const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
-const { sequelize, Series } = require('../../models/index.js');
+const { Series } = require('../../models/index.js');
 
 describe('# seriesDao Test', () => {
-    before(async () => {
-        await sequelize.sync();
-        await require('./seeds.js')();
+    before(async function () {
+        await require('./common/presets.js')(this);
     });
     describe(' # create Test', () => {
         // 중복 데이터 미리 삭제

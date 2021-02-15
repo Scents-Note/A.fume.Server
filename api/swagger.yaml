@@ -96,6 +96,8 @@ paths:
       - perfume
       summary: 향수 검색
       operationId: searchPerfume
+      security:
+        - userToken: []
       produces:
       - application/json
       parameters:
@@ -353,6 +355,7 @@ paths:
                       $ref: '#/definitions/Perfume'
         401:
           description: Token is missing or invalid
+      x-swagger-router-controller: Perfume
   /perfume/{perfumeIdx}:
     get:
       tags:
@@ -831,16 +834,22 @@ paths:
                 type: string
                 example: ingredient 목록 조회 성공
               data:
-                type: array
-                items:
-                  allOf:
-                    - $ref: '#/definitions/IngredientInfo'
-                    - type: object
-                      properties:
-                        ingredientIdx:
-                          type: integer
-                      example:
-                        ingredientIdx: 333
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 10
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: '#/definitions/IngredientInfo'
+                        - type: object
+                          properties:
+                            ingredientIdx:
+                              type: integer
+                          example:
+                            ingredientIdx: 333
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Ingredient
@@ -979,16 +988,22 @@ paths:
                 type: string
                 example: series 목록 조회 성공
               data:
-                type: array
-                items:
-                  allOf:
-                    - $ref: '#/definitions/SeriesInfo'
-                    - type: object
-                      properties:
-                        seriesIdx:
-                          type: integer
-                      example:
-                        seriesIdx: 222
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 10
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: '#/definitions/SeriesInfo'
+                        - type: object
+                          properties:
+                            seriesIdx:
+                              type: integer
+                          example:
+                            seriesIdx: 222
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Series
@@ -1213,16 +1228,22 @@ paths:
                 type: string
                 example : series에 해당하는 Ingredient 조회 성공
               data:
-                type: array
-                items:
-                  allOf:
-                  - $ref: '#/definitions/IngredientInfo'
-                  - type: object
-                    properties:
-                      ingredientIdx:
-                        type: integer
-                    example:
-                      ingredientIdx: 222
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 10
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                      - $ref: '#/definitions/IngredientInfo'
+                      - type: object
+                        properties:
+                          ingredientIdx:
+                            type: integer
+                        example:
+                          ingredientIdx: 222
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Series

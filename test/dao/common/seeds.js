@@ -12,8 +12,8 @@ const {
     JoinPerfumeKeyword,
     Sequelize,
     sequelize,
-} = require('../../models');
-const { GENDER_MAN, GENDER_WOMAN } = require('../../utils/code');
+} = require('../../../models');
+const { GENDER_MAN, GENDER_WOMAN } = require('../../../utils/code');
 
 module.exports = () => {
     const firstJob = [];
@@ -71,6 +71,7 @@ module.exports = () => {
                 englishName: 'perfume english name',
                 imageThumbnailUrl: `http://perfume-image/${i}`,
                 releaseDate: `2021-01-1${i}`,
+                likeCnt: 1,
             })
         );
     }

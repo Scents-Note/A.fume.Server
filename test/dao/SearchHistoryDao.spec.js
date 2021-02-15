@@ -4,12 +4,11 @@ dotenv.config({ path: './config/.env.test' });
 const chai = require('chai');
 const { expect } = chai;
 const searchHistoryDao = require('../../dao/SearchHistoryDao.js');
-const { Perfume, User, SearchHistory, sequelize } = require('../../models');
+const { Perfume, User, SearchHistory } = require('../../models');
 
 describe('# searchHistoryDao Test', () => {
-    before(async () => {
-        await sequelize.sync();
-        await require('./seeds.js')();
+    before(async function () {
+        await require('./common/presets.js')(this);
     });
     before(async () => {
         await sequelize.sync();

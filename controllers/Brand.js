@@ -45,14 +45,14 @@ module.exports.postBrand = (req, res, next) => {
     const {
         name,
         englishName,
-        startCharacter,
+        firstInitial,
         imageUrl,
         description,
     } = req.swagger.params['body'].value;
     Brand.insertBrand({
         name,
         englishName,
-        startCharacter,
+        firstInitial,
         imageUrl,
         description,
     })
@@ -70,7 +70,7 @@ module.exports.putBrand = (req, res, next) => {
     const {
         name,
         englishName,
-        startChar,
+        firstInitial,
         imageUrl,
         description,
     } = req.swagger.params['body'].value;
@@ -78,7 +78,7 @@ module.exports.putBrand = (req, res, next) => {
         brandIdx,
         name,
         englishName,
-        startChar,
+        firstInitial,
         imageUrl,
         description,
     })
@@ -96,6 +96,17 @@ module.exports.deleteBrand = (req, res, next) => {
         .then(() => {
             res.status(OK).json({
                 message: '브랜드 삭제 성공',
+            });
+        })
+        .catch((err) => next(err));
+};
+
+module.exports.getFilterBrand = (req, res, next) => {
+    Brand.getFilterBrand()
+        .then((response) => {
+            res.status(OK).json({
+                message: '브랜드 필터 조회 성공',
+                data: response,
             });
         })
         .catch((err) => next(err));

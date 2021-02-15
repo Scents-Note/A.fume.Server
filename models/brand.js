@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            startCharacter: {
+            firstInitial: {
                 type: DataTypes.CHAR(1),
                 allowNull: false,
                 comment: '첫글자 카테고리',

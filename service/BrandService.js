@@ -44,14 +44,14 @@ exports.getBrandByIdx = (brandIdx) => {
 exports.insertBrand = ({
     name,
     englishName,
-    startCharacter,
+    firstInitial,
     imageUrl,
     description,
 }) => {
     return brandDao.create({
         name,
         englishName,
-        startCharacter,
+        firstInitial,
         imageUrl,
         description,
     });
@@ -67,7 +67,7 @@ exports.putBrand = ({
     brandIdx,
     name,
     englishName,
-    startCharacter,
+    firstInitial,
     imageUrl,
     description,
 }) => {
@@ -75,7 +75,7 @@ exports.putBrand = ({
         brandIdx,
         name,
         englishName,
-        startCharacter,
+        firstInitial,
         imageUrl,
         description,
     });
@@ -89,4 +89,21 @@ exports.putBrand = ({
  **/
 exports.deleteBrand = (brandIdx) => {
     return brandDao.delete(brandIdx);
+};
+
+/**
+ * 브랜드 필터 조회
+ *
+ * @returns {Promise}
+ */
+exports.getFilterBrand = () => {
+    return brandDao.readAll().then((result) => {
+        result.rows = result.rows.map((it) => {
+            return {
+                firstInitial: it.firstInitial,
+                brand: it,
+            };
+        });
+        return result;
+    });
 };
