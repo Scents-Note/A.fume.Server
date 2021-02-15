@@ -8,6 +8,8 @@ const {
     Ingredient,
     SearchHistory,
     PerfumeSurvey,
+    Keyword,
+    JoinPerfumeKeyword,
     Sequelize,
     sequelize,
 } = require('../../models');
@@ -20,7 +22,7 @@ module.exports = () => {
             Brand.upsert({
                 brandIdx: i,
                 name: `브랜드${i}`,
-                startCharacter: 'ㅂ',
+                firstInitial: 'ㅂ',
                 englishName: 'brand english-name',
                 imageUrl: `http://image-url/${i}`,
                 description: '브랜드 설명 텍스트',
@@ -40,6 +42,14 @@ module.exports = () => {
                 email: `email${i}@afume.com`,
                 birth: '1995',
                 grade: 1,
+            }),
+            Keyword.upsert({
+                id: i,
+                name: `키워드${i}`
+            }),
+            JoinPerfumeKeyword.upsert({
+                perfumeIdx: i,
+                keywordIdx: i
             })
         );
     }
