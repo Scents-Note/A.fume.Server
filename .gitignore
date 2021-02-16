@@ -109,3 +109,9 @@ package-lock.json
 # config files
 config/
 configs/
+
+# pm2 ecosystem
+ecosystem.json
+
+# certificate files
+sslcert

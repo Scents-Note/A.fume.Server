@@ -1,59 +1,74 @@
 'use strict';
 
-const utils = require('../utils/writer.js');
 const Wishlist = require('../service/WishlistService');
+const { OK, INTERNAL_SERVER_ERROR } = require('../utils/statusCode.js');
 
 module.exports.createWishlist = (req, res, next) => {
-  const { userIdx, perfumeIdx, priority } = req.swagger.params['body'].value;
-  Wishlist.createWishlist({ userIdx, perfumeIdx, priority })
-    .then(function () {
-      utils.writeJson(res, utils.respondWithCode(200, {message: '위시 리스트에 성공적으로 추가했습니다.'}));
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+    const { perfumeIdx, priority } = req.body;
+    const loginUserIdx = req.middlewareToken.loginUserIdx;
+    Wishlist.createWishlist(perfumeIdx, loginUserIdx, priority)
+        .then(() => {
+            res.status(OK).json({
+                message: '위시 리스트에 성공적으로 추가했습니다.',
+            });
+        })
+        .catch((err) => {
+            next(err);
+        });
 };
 
 module.exports.updateWishlist = (req, res, next) => {
-  const { userIdx, perfumeIdx, priority } = req.swagger.params['body'].value;
-  Wishlist.updateWishlist({ userIdx, perfumeIdx, priority })
-    .then(function () {
-      utils.writeJson(res, utils.respondWithCode(200, {message: '위시 리스트에 성공적으로 수정했습니다.'}));
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+    const { perfumeIdx, priority } = req.swagger.params['body'].value;
+    const loginUserIdx = req.middlewareToken.loginUserIdx;
+    Wishlist.updateWishlist(perfumeIdx, loginUserIdx, priority)
+        .then(() => {
+            res.status(OK).json({
+                message: '위시 리스트에 성공적으로 수정했습니다.',
+            });
+        })
+        .catch((err) => {
+            next(err);
+        });
 };
 
 module.exports.deleteWishlist = (req, res, next) => {
-  const { userIdx, perfumeIdx} = req.swagger.params['body'].value;
-  Wishlist.deleteWishlist({ userIdx, perfumeIdx })
-    .then(function () {
-      utils.writeJson(res, utils.respondWithCode(200, {message: '위시 리스트에 성공적으로 삭제했습니다.'}));
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+    const perfumeIdx = req.swagger.params['perfumeIdx'].value;
+    const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
+    Wishlist.deleteWishlist(perfumeIdx, loginUserIdx)
+        .then(() => {
+            res.status(OK).json({
+                message: '위시 리스트에 성공적으로 삭제했습니다.',
+            });
+        })
+        .catch((err) => {
+            next(err);
+        });
 };
 
 module.exports.readWishlistByUser = (req, res, next) => {
-  const userIdx = req.swagger.params['userIdx'].value;
-  Wishlist.readWishlistByUser(userIdx)
-    .then(function (response) {
-      utils.writeJson(res, utils.respondWithCode(200, {message: '(임시)유저가 가지고 있는 위시 리스트 조회', data: response}));
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+    const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
+    Wishlist.readWishlistByUser(loginUserIdx)
+        .then((response) => {
+            res.status(OK).json({
+                message: '유저가 가지고 있는 위시 리스트 조회',
+                data: response,
+            });
+        })
+        .catch((err) => {
+            next(err);
+        });
 };
 
 module.exports.deleteWishlistByUser = (req, res, next) => {
-  var userIdx = req.swagger.params['userIdx'].value;
-  Wishlist.deleteWishlistByUser(userIdx)
-    .then(function (response) {
-      utils.writeJson(res, utils.respondWithCode(200, {message: '유저가 가지고 있는 위시 리스트 삭제했습니다', data: response}));
-    })
-    .catch(function (response) {
-      utils.writeJson(res, response);
-    });
+    const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
+    Wishlist.deleteWishlistByUser(loginUserIdx)
+        .then((response) => {
+            res.status(OK).json({
+                message: '유저가 가지고 있는 위시 리스트 삭제했습니다',
+                data: response,
+            });
+        })
+        .catch((err) => {
+            next(err);
+        });
 };

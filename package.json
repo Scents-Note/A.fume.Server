@@ -4,9 +4,9 @@
   "description": "향수 정보 서비스 A.fume Server Api 문서",
   "main": "index.js",
   "scripts": {
-    "prestart": "npm install",
+    "_prestart": "npm install",
     "start": "node index.js",
-    "test": "mocha --recursive"
+    "test": "mocha --recursive --exit -t 5000"
   },
   "keywords": [
     "swagger"
@@ -16,9 +16,21 @@
   "dependencies": {
     "chai": "^4.2.0",
     "connect": "^3.2.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "js-yaml": "^3.3.0",
-    "node": "^13.14.0",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.20",
+    "mongoose": "^5.11.15",
+    "mysql2": "^2.2.5",
+    "node-cron": "^2.0.3",
     "promise-mysql": "^4.1.3",
+    "sequelize": "^6.3.5",
     "swagger-tools": "^0.10.4"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^6.2.0"
   }
 }

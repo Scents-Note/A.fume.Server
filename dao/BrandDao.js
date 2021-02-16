@@ -1,80 +1,120 @@
-const pool = require('../utils/db/pool.js');
-
 const {
     NotMatchedError,
-    FailedToCreateError,
+    DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
+
+const { Brand } = require('../models');
 
 /**
  * 브랜드 생성
- * @param {} param0 
+ *
+ * @param {Object} brand
+ * @param {Promise}
+ * @returns {integer} brandIdx
  */
-const SQL_BRAND_INSERT = 'INSERT brand(name, english_name, start_character, image_url, description) VALUES(?, ?, ?, ?, ?)';
-module.exports.create = async ({
+module.exports.create = ({
     name,
     englishName,
-    startCharacter,
+    firstInitial,
     imageUrl,
-    description
+    description,
 }) => {
-    const { insertId } = await pool.queryParam_Parse(SQL_BRAND_INSERT, [name, englishName, startCharacter, imageUrl, description]);
-    if(insertId == 0) {
-        throw new FailedToCreateError();
-    }
-    return insertId;
-}
+    return Brand.create({
+        name,
+        englishName,
+        firstInitial,
+        imageUrl,
+        description,
+    })
+        .then((brand) => {
+            return brand.dataValues.brandIdx;
+        })
+        .catch((err) => {
+            if (
+                err.parent.errno === 1062 ||
+                err.parent.code === 'ER_DUP_ENTRY'
+            ) {
+                throw new DuplicatedEntryError();
+            }
+            throw err;
+        });
+};
 
 /**
- * 브랜드 세부 조회 
- * 
+ * 브랜드 세부 조회
+ *
+ * @param {number} brandIdx
+ * @returns {Promise<Brand>}
  */
-const SQL_BRAND_SELECT_BY_IDX = 'SELECT brand_idx as brandIdx, name, english_name as englishName, start_character as startCharacter, image_url as imageUrl, description FROM brand WHERE brand_idx = ?';
 module.exports.read = async (brandIdx) => {
-    const result = await pool.queryParam_Parse(SQL_BRAND_SELECT_BY_IDX, [brandIdx]);
-    if (result.length == 0) {
+    const result = await Brand.findByPk(brandIdx);
+    if (!result) {
         throw new NotMatchedError();
     }
-    return result[0];
-}
+    return result.dataValues;
+};
+
+/**
+ * 브랜드 검색
+ *
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @param {array} order
+ * @returns {Promise<Brand[]>}
+ */
+module.exports.search = (pagingIndex, pagingSize, order) => {
+    return Brand.findAndCountAll({
+        offset: (pagingIndex - 1) * pagingSize,
+        limit: pagingSize,
+        order,
+    });
+};
 
 /**
  * 브랜드 전체 목록 조회
- * 
+ *
+ * @returns {Promise<Brand[]>}
  */
-const SQL_BRAND_SELECT_ALL = 'SELECT brand_idx as brandIdx , name, start_character as startCharacter, image_url as imageUrl, description FROM brand';
-module.exports.readAll = () => {
-    return pool.queryParam_None(SQL_BRAND_SELECT_ALL);
-}
+module.exports.readAll = async () => {
+    return Brand.findAndCountAll();
+};
 
 /**
  * 브랜드 수정
- * 
+ *
+ * @param {Object} Brand
+ * @return {Promise}
  */
-const SQL_BRAND_UPDATE = 'UPDATE brand SET name = ?, english_name = ?, start_character = ?, image_url = ?, description = ? WHERE brand_idx = ?';
 module.exports.update = async ({
     brandIdx,
     name,
     englishName,
-    startCharacter,
+    firstInitial,
     imageUrl,
-    description
+    description,
 }) => {
-    const { affectedRows } = await pool.queryParam_Parse(SQL_BRAND_UPDATE, [name, englishName, startCharacter, imageUrl, description, brandIdx]);
+    const [affectedRows] = await Brand.update(
+        {
+            name,
+            englishName,
+            firstInitial,
+            imageUrl,
+            description,
+        },
+        { where: { brandIdx } }
+    );
     if (affectedRows == 0) {
         throw new NotMatchedError();
     }
     return affectedRows;
-}
+};
 
 /**
  * 브랜드 전체 삭제
- * 
+ *
+ * @param {number} brandIdx
+ * @returns {Promise}
  */
-const SQL_BRAND_DELETE = 'DELETE FROM brand WHERE brand_idx = ?';
-module.exports.delete = async (brandIdx) => {
-    const { affectedRows } = await pool.queryParam_Parse(SQL_BRAND_DELETE, [brandIdx]);
-    if (affectedRows == 0) {
-        throw new NotMatchedError();
-    }
-    return affectedRows;
-}
+module.exports.delete = (brandIdx) => {
+    return Brand.destroy({ where: { brandIdx } });
+};

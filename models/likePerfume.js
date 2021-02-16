@@ -1,0 +1,43 @@
+'use strict';
+const { Model } = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+    class likePerfume extends Model {
+        static associate(models) {
+            models.User.belongsToMany(models.Perfume, {
+                foreignKey: 'perfumeIdx',
+                through: 'LikePerfume',
+                as: 'MyLikePerfumes',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            });
+            models.Perfume.belongsToMany(models.User, {
+                foreignKey: 'userIdx',
+                through: 'LikePerfume',
+                as: 'LikedUsers',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            });
+        }
+    }
+    likePerfume.init(
+        {
+            userIdx: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+                allowNull: false,
+            },
+            perfumeIdx: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+                allowNull: false,
+            },
+        },
+        {
+            sequelize,
+            modelName: 'LikePerfume',
+            timestamps: true,
+            underscored: true,
+        }
+    );
+    return likePerfume;
+};
