@@ -41,6 +41,8 @@ tags:
   description: 브랜드 for Web
 - name: WEB_user
   description: 사용자 for Web
+- name: WEB_keyword
+  description: 키워드 for Web
 
 schemes:
 #- https
@@ -1745,13 +1747,13 @@ paths:
     post:
       tags:
       - WEB_keyword
-      summary: 키워드 추가
+      summary: 향수별 키워드 추가
       description : 특정 향수에 키워드 추가하기
-      operationId: postKeyword
+      operationId: postPerfumeKeyword
       security:
         - userToken: []
       x-security-scopes:
-        - user
+        - admin
       consumes:
       - application/json
       produces:
@@ -1775,37 +1777,127 @@ paths:
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Keyword
-  /keyword:
     get:
       tags:
-      - keyword
-      summary: 전체 키워드 목록 반환
-      operationId: getKeywordAll
+      - WEB_keyword
+      summary: 향수별 키워드 전체 조회
+      description : 특정 함수의 키워드 목록 조회하기
+      operationId: getKeywordOfPerfume
       produces:
       - application/json
+      parameters:
+      - name: perfumeIdx
+        in: path
+        description: 향수 Idx
+        required: true
+        type: integer
+        format: int64
       responses:
         200:
           description: 성공
           schema:
-            type: array
-            items:
-              allOf:
-              - $ref: '#/definitions/KeywordInfo'
-              - type: object
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수별 키워드 전체 조회 성공
+              data:
+                type: array
+                items:
+                  allOf:
+                  - $ref: '#/definitions/KeywordInfo'
+                  - type: object
+                    properties:
+                      keywordIdx:
+                        type: integer
+                    example:
+                      keywordIdx: 1 
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Keyword
+  /keyword:
+    post:
+      tags:
+      - WEB_keyword
+      summary: 키워드 추가
+      description : 키워드 추가하기
+      operationId: postKeyword
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: body
+        in: body
+        description: 키워드 정보
+        required: true
+        schema:
+          $ref: '#/definitions/KeywordInfo'
+      responses:
+        200:
+          description: 성공
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Keyword
+    get:
+      tags:
+      - keyword
+      summary: 키워드 목록 전체 조회
+      operationId: getKeywordAll
+      produces:
+      - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 키워드 목록 전체 조회 성공
+              data:
+                type: object
                 properties:
-                  keywordIdx:
+                  count:
                     type: integer
-                example:
-                  keywordIdx: 1
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                      - $ref: '#/definitions/KeywordInfo'
+                      - type: object
+                        properties:
+                          keywordIdx:
+                            type: integer
+                        example:
+                          keywordIdx: 1
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Keyword
   /keyword/{keywordIdx}:
     put:
       tags:
-      - keyword
+      - WEB_keyword
       summary: 키워드 수정
       operationId: putKeyword
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
       consumes:
       - application/json
       produces:
@@ -1832,10 +1924,14 @@ paths:
       x-swagger-router-controller: Keyword
     delete:
       tags:
-      - keyword
+      - WEB_keyword
       summary: 키워드 삭제
       description: 키워드 삭제하기
       operationId: deleteKeyword
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
       consumes:
       - application/json
       produces:
@@ -2312,10 +2408,10 @@ definitions:
   KeywordInfo:
     type: object
     properties:
-      keyword:
+      name:
         type: string
     example:
-      keyword: 달달한
+      name: 달달한
   PerfumeInfo:
     type: object
     properties:
