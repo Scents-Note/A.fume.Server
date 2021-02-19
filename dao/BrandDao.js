@@ -76,7 +76,11 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
  * @returns {Promise<Brand[]>}
  */
 module.exports.readAll = async () => {
-    return Brand.findAndCountAll();
+    return Brand.findAndCountAll({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+    });
 };
 
 /**

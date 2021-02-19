@@ -114,15 +114,18 @@ module.exports.create = ({
  * 향수 검색
  *
  * @param {Object} Filter - series, brands, keywords
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
  * @param {array} sort - 정렬 조건
- * @param {number} [userIdx=-1]
  * @returns {Promise<Perfume[]>} perfumeList
  */
 module.exports.search = async (
     { series = [], brands = [], keywords = [] },
-    sort = [['createdAt', 'asc']]
+    pagingIndex,
+    pagingSize,
+    sort = [['createdAt', 'desc']]
 ) => {
-    sort.forEach((it) => {
+    order.forEach((it) => {
         it[0] = sequelize.literal(it[0]);
     });
     const options = Object.assign({}, defaultOption, {
@@ -162,13 +165,72 @@ module.exports.search = async (
                 },
             },
         ],
+        offset: (pagingIndex - 1) * pagingSize,
+        limit: pagingSize,
         order: sort,
     });
     options.include.forEach((it) => {
         if (!it.where || it.where[Op.or].length > 0) return;
         delete it.where;
     });
-    return Perfume.findAndCountAll(options);
+    return Perfume.findAndCountAll(options).then((result) => {
+        result.rows.forEach((it) => {
+            delete it.createdAt;
+            delete it.updatedAt;
+        });
+        return result;
+    });
+};
+
+/**
+ * 새로 등록된 향수 조회
+ *
+ * @param {Date} fromDate
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>} perfumeList
+ */
+module.exports.readNewPerfume = async (fromDate, pagingIndex, pagingSize) => {
+    const options = Object.assign({}, defaultOption, {
+        where: {
+            createdAt: {
+                [Op.gte]: fromDate,
+            },
+        },
+        include: [
+            {
+                model: Brand,
+                as: 'Brand',
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+            },
+            {
+                model: Series,
+                as: 'MainSeries',
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+            },
+            {
+                model: PerfumeDetail,
+                as: 'PerfumeDetail',
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+            },
+        ],
+        offset: (pagingIndex - 1) * pagingSize,
+        limit: pagingSize,
+        order: [['createdAt', 'desc']],
+    });
+    return Perfume.findAndCountAll(options).then((result) => {
+        result.rows.forEach((it) => {
+            delete it.createdAt;
+            delete it.updatedAt;
+        });
+        return result;
+    });
 };
 
 /**
@@ -179,6 +241,9 @@ module.exports.search = async (
  */
 module.exports.readByPerfumeIdx = async (perfumeIdx) => {
     const options = _.merge({}, defaultOption, {
+        attributes: {
+            exclude: ['updatedAt', 'createdAt'],
+        },
         where: { perfumeIdx },
     });
     const perfume = await Perfume.findOne(options);
@@ -197,10 +262,18 @@ module.exports.readByPerfumeIdx = async (perfumeIdx) => {
  * 위시 리스트에 속하는 향수 조회
  *
  * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
  * @returns {Promise<Perfume[]>} perfumeList
  */
-module.exports.readAllOfWishlist = async (userIdx) => {
-    const options = _.merge({}, defaultOption);
+module.exports.readAllOfWishlist = async (userIdx, pagingIndex, pagingSize) => {
+    const options = _.merge({}, defaultOption, {
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        offset: (pagingIndex - 1) * pagingSize,
+        limit: pagingSize,
+    });
     options.include.push({
         model: LikePerfume,
         as: 'Wishlist',
@@ -211,8 +284,7 @@ module.exports.readAllOfWishlist = async (userIdx) => {
             userIdx,
         },
     });
-    const perfumeList = await Perfume.findAndCountAll(options);
-    return perfumeList;
+    return Perfume.findAndCountAll(options);
 };
 
 /**

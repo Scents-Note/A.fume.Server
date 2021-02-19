@@ -100,7 +100,7 @@ describe('# perfumeDao Test', () => {
                     brands: ['브랜드1', '브랜드2', '브랜드3'],
                 };
                 perfumeDao
-                    .search(filter, [['createdAt', 'asc']])
+                    .search(filter, 1, 100, [['createdAt', 'asc']])
                     .then((result) => {
                         expect(result.rows.length).to.gte(3);
                         result.rows.forEach((it) => {
@@ -121,7 +121,7 @@ describe('# perfumeDao Test', () => {
             });
             it('# success case (empty filter)', (done) => {
                 perfumeDao
-                    .search({})
+                    .search({}, 1, 100)
                     .then((result) => {
                         expect(result.rows.length).gt(3);
                         done();
@@ -134,7 +134,7 @@ describe('# perfumeDao Test', () => {
                     series: ['계열1', '계열2', '계열3'],
                 };
                 perfumeDao
-                    .search(filter)
+                    .search(filter, 1, 100)
                     .then((result) => {
                         expect(result.rows.length).gte(3);
                         result.rows.forEach((it) => {
@@ -154,7 +154,7 @@ describe('# perfumeDao Test', () => {
                     brands: ['브랜드1'],
                 };
                 perfumeDao
-                    .search(filter)
+                    .search(filter, 1, 100)
                     .then((result) => {
                         expect(result.rows.length).to.gte(2);
                         result.rows.forEach((it) => {
@@ -174,7 +174,7 @@ describe('# perfumeDao Test', () => {
                     series: ['계열1'],
                 };
                 perfumeDao
-                    .search(filter, [['likeCnt', 'asc']])
+                    .search(filter, 1, 100, [['likeCnt', 'asc']])
                     .then((result) => {
                         expect(result.rows.length).gte(2);
                         result.rows.forEach((it) => {
@@ -191,7 +191,7 @@ describe('# perfumeDao Test', () => {
 
             it('# success case (order by recent)', (done) => {
                 perfumeDao
-                    .search({}, [['releaseDate', 'desc']])
+                    .search({}, 1, 100, [['releaseDate', 'desc']])
                     .then((result) => {
                         expect(result.rows.length).gte(3);
                         const str1 = result.rows
@@ -210,7 +210,7 @@ describe('# perfumeDao Test', () => {
 
             it('# success case (order by like) ', (done) => {
                 perfumeDao
-                    .search({}, [['likeCnt', 'asc']])
+                    .search({}, 1, 100, [['likeCnt', 'asc']])
                     .then((result) => {
                         expect(result.rows.length).gte(3);
                         const str1 = result.rows.map((it) => it.like).join(',');
@@ -227,9 +227,9 @@ describe('# perfumeDao Test', () => {
 
             it('# success case (order by random) ', (done) => {
                 Promise.all([
-                    perfumeDao.search({}, [Sequelize.fn('RAND')]),
-                    perfumeDao.search({}, [Sequelize.fn('RAND')]),
-                    perfumeDao.search({}, [Sequelize.fn('RAND')]),
+                    perfumeDao.search({}, 1, 100, [Sequelize.fn('RAND')]),
+                    perfumeDao.search({}, 1, 100, [Sequelize.fn('RAND')]),
+                    perfumeDao.search({}, 1, 100, [Sequelize.fn('RAND')]),
                 ])
                     .then(([result1, result2, result3]) => {
                         expect(result1.rows.length).gte(3);
@@ -249,6 +249,18 @@ describe('# perfumeDao Test', () => {
                     })
                     .catch((err) => done(err));
             });
+        });
+
+        it('# read new Perfume', (done) => {
+            const fromDate = new Date();
+            fromDate.setDate(fromDate.getDate() - 7);
+            perfumeDao
+                .readNewPerfume(fromDate, 1, 100)
+                .then((result) => {
+                    expect(result.rows.length).gte(1);
+                    done();
+                })
+                .catch((err) => done(err));
         });
 
         it('# read all of wishlist', (done) => {

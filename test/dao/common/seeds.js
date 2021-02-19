@@ -4,6 +4,7 @@ const {
     Perfume,
     PerfumeDetail,
     User,
+    Note,
     LikePerfume,
     Ingredient,
     SearchHistory,
@@ -88,7 +89,9 @@ module.exports = () => {
             LikePerfume.upsert({ userIdx: 1, perfumeIdx: i }),
             SearchHistory.upsert({ userIdx: i, perfumeIdx: i }),
             SearchHistory.upsert({ userIdx: 1, perfumeIdx: i }),
-            PerfumeSurvey.upsert({ perfumeIdx: i, gender: GENDER_WOMAN })
+            PerfumeSurvey.upsert({ perfumeIdx: i, gender: GENDER_WOMAN }),
+            Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: (i % 4) + 1 }),
+            Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: 1 })
         );
     }
     return Promise.all(firstJob)

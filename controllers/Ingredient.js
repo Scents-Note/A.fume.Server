@@ -85,7 +85,7 @@ module.exports.deleteIngredient = (req, res, next) => {
     Ingredient.deleteIngredient(ingredientIdx)
         .then(() => {
             res.status(OK).json({
-                message: 'ingredient delete 성공',
+                message: 'ingredient 필터 조회 성공',
             });
         })
         .catch((err) => next(err));

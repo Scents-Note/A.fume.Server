@@ -3,6 +3,7 @@
 const perfumeDao = require('../dao/PerfumeDao.js');
 const noteDao = require('../dao/NoteDao.js');
 const reviewDao = require('../dao/ReviewDao.js');
+const ingredientDao = require('../dao/IngredientDao.js');
 const likePerfumeDao = require('../dao/LikePerfumeDao.js');
 const searchHistoryDao = require('../dao/SearchHistoryDao.js');
 const userDao = require('../dao/UserDao.js');
@@ -135,35 +136,34 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
     const perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
     // to do
 
-    let notes = await noteDao.read(perfumeIdx);
-    notes = notes.map((it) => {
-        it.type = noteTypeArr[it.type - 1];
-        return it;
-    });
-    const ingredients = notes.reduce(
-        (prev, cur) => {
-            let type = cur.type;
-            delete cur.type;
-            prev[type].push(cur);
-            return prev;
-        },
-        makeInitMap(noteTypeArr, () => {
-            return [];
+    const noteMap = (await ingredientDao.readByPerfumeIdx(perfumeIdx))
+        .map((it) => {
+            it.type = noteTypeArr[it.Perfumes.Note.type - 1];
+            delete it.Perfumes;
+            return it;
         })
-    );
+        .reduce(
+            (prev, cur) => {
+                let type = cur.type;
+                delete cur.type;
+                prev[type].push(cur);
+                return prev;
+            },
+            makeInitMap(noteTypeArr, () => [])
+        );
 
     let noteType;
-    if (ingredients.single.length == notes.length) {
+    if (noteMap.single.length > 0) {
         noteType = 1;
-        delete ingredients.top;
-        delete ingredients.middle;
-        delete ingredients.base;
+        delete noteMap.top;
+        delete noteMap.middle;
+        delete noteMap.base;
     } else {
         noteType = 0;
-        delete ingredients.single;
+        delete noteMap.single;
     }
     perfume.noteType = noteType;
-    perfume.ingredients = ingredients;
+    perfume.Notes = noteMap;
 
     let reviews = await reviewDao.readAllOrderByLike(perfumeIdx);
     let sum = 0,
@@ -209,15 +209,23 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
  * 향수 검색
  *
  * @param {Object} Filter
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
  * @param {array} sort
  * @param {number} userIdx
  * @returns {Promise<Perfume[]>}
  **/
-exports.searchPerfume = (filter, sort, userIdx) => {
+exports.searchPerfume = (filter, pagingIndex, pagingSize, sort, userIdx) => {
     const order = parseSortToOrder(sort);
-    return perfumeDao.search(filter, order).then((result) => {
-        return updateIsLike(result, userIdx);
-    });
+    return perfumeDao
+        .search(filter, pagingIndex, pagingSize, order)
+        .then((result) => {
+            result.rows.forEach((it) => {
+                delete it.createdAt;
+                delete it.updatedAt;
+            });
+            return updateIsLike(result, userIdx);
+        });
 };
 
 /**
@@ -276,23 +284,23 @@ exports.updatePerfume = ({
 /**
  * 향수 좋아요
  *
- * @param {number} perfumeIdx
  * @param {number} userIdx
+ * @param {number} perfumeIdx
  * @returns {Promise}
  **/
-exports.likePerfume = (perfumeIdx, userIdx) => {
+exports.likePerfume = (userIdx, perfumeIdx) => {
     return new Promise((resolve, reject) => {
         let isExist = false;
         likePerfumeDao
             .read(userIdx, perfumeIdx)
             .then((res) => {
                 isExist = true;
-                return likePerfumeDao.delete(perfumeIdx, userIdx);
+                return likePerfumeDao.delete(userIdx, perfumeIdx);
             })
             .catch((err) => {
                 isExist = false;
                 if (err instanceof NotMatchedError) {
-                    return likePerfumeDao.create(perfumeIdx, userIdx);
+                    return likePerfumeDao.create(userIdx, perfumeIdx);
                 }
                 reject(new FailedToCreateError());
             })
@@ -312,8 +320,9 @@ exports.likePerfume = (perfumeIdx, userIdx) => {
  * @returns {Promise<Perfume[]>}
  **/
 exports.recentSearch = (userIdx) => {
-    const perfumeList = perfumeDao.recentSearchPerfumeList(userIdx);
-    return updateIsLike(perfumeList, userIdx);
+    return perfumeDao.recentSearchPerfumeList(userIdx).then((result) => {
+        return updateIsLike(result, userIdx);
+    });
 };
 
 /**
@@ -364,4 +373,29 @@ exports.recommendByGenderAgeAndGender = (
         pagingIndex,
         pagingSize
     );
+};
+
+/**
+ * 새로 추가된 향수 조회
+ *
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>}
+ **/
+exports.getNewPerfume = (pagingIndex, pagingSize) => {
+    const fromDate = new Date();
+    fromDate.setDate(fromDate.getDate() - 7);
+    return perfumeDao.readNewPerfume(fromDate, pagingIndex, pagingSize);
+};
+
+/**
+ * 유저가 좋아요한 향수 조회
+ *
+ * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>}
+ **/
+exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
+    return perfumeDao.readAllOfWishlist(userIdx, pagingIndex, pagingSize);
 };
