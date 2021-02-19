@@ -16,6 +16,7 @@ const {
 const { Op } = Sequelize;
 
 const { ranking } = require('../mongoose_models');
+const perfume = require('../models/perfume.js');
 
 const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
     'SELECT ' +
@@ -50,6 +51,7 @@ const defaultOption = {
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
             },
+            required: true,
         },
         {
             model: Series,
@@ -57,6 +59,7 @@ const defaultOption = {
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
             },
+            required: true,
         },
         {
             model: PerfumeDetail,
@@ -64,6 +67,7 @@ const defaultOption = {
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
             },
+            required: true,
         },
     ],
     raw: true,
@@ -123,7 +127,7 @@ module.exports.search = async (
     { series = [], brands = [], keywords = [] },
     pagingIndex,
     pagingSize,
-    sort = [['createdAt', 'desc']]
+    order = [['createdAt', 'desc']]
 ) => {
     order.forEach((it) => {
         it[0] = sequelize.literal(it[0]);
@@ -167,7 +171,7 @@ module.exports.search = async (
         ],
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
-        order: sort,
+        order,
     });
     options.include.forEach((it) => {
         if (!it.where || it.where[Op.or].length > 0) return;
@@ -266,7 +270,7 @@ module.exports.readByPerfumeIdx = async (perfumeIdx) => {
  * @param {number} pagingSize
  * @returns {Promise<Perfume[]>} perfumeList
  */
-module.exports.readAllOfWishlist = async (userIdx, pagingIndex, pagingSize) => {
+module.exports.readLikedPerfume = async (userIdx, pagingIndex, pagingSize) => {
     const options = _.merge({}, defaultOption, {
         attributes: {
             exclude: ['createdAt', 'updatedAt'],
@@ -276,13 +280,14 @@ module.exports.readAllOfWishlist = async (userIdx, pagingIndex, pagingSize) => {
     });
     options.include.push({
         model: LikePerfume,
-        as: 'Wishlist',
+        as: 'LikePerfume',
         attributes: {
             exclude: ['createdAt', 'updatedAt'],
         },
         where: {
             userIdx,
         },
+        required: true,
     });
     return Perfume.findAndCountAll(options);
 };
@@ -291,25 +296,29 @@ module.exports.readAllOfWishlist = async (userIdx, pagingIndex, pagingSize) => {
  * 최근에 검색한 향수 조회
  *
  * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
  * @returns {Promise<Perfume[]>}
  */
-module.exports.recentSearchPerfumeList = async (userIdx) => {
-    const options = Object.assign({}, defaultOption, {
-        limit: 10,
+module.exports.recentSearchPerfumeList = async (
+    userIdx,
+    pagingIndex,
+    pagingSize
+) => {
+    const options = _.merge({}, defaultOption, {
         order: [
             [{ model: SearchHistory, as: 'SearchHistory' }, 'createdAt', 'asc'],
         ],
+        offset: (pagingIndex - 1) * pagingSize,
+        limit: pagingSize,
     });
     options.include.push({
         model: SearchHistory,
         as: 'SearchHistory',
-        include: {
-            model: User,
-            as: 'User',
-            where: {
-                userIdx,
-            },
+        where: {
+            userIdx,
         },
+        required: true,
     });
     return Perfume.findAndCountAll(options).then((result) => {
         result.rows.forEach((it) => {
@@ -390,6 +399,7 @@ module.exports.readPerfumeSurvey = async (gender) => {
         where: {
             gender,
         },
+        require: true,
     });
     const perfumeList = await Perfume.findAndCountAll(options);
     return perfumeList;
@@ -424,15 +434,15 @@ module.exports.update = async ({
                 imageThumbnailUrl,
                 releaseDate,
             },
-            { where: { perfumeIdx } }
+            { where: { perfumeIdx }, transaction: t }
         );
         if (perfumeAffectedRows == 0) {
             throw new NotMatchedError();
         }
         const detailAffectedRows = (
             await PerfumeDetail.update(
-                { story, abundanceRate, volumeAndPrice, imageUrl, perfumeIdx },
-                { where: { perfumeIdx } }
+                { story, abundanceRate, volumeAndPrice, imageUrl },
+                { where: { perfumeIdx }, transaction: t }
             )
         )[0];
         return [perfumeAffectedRows, detailAffectedRows];
