@@ -168,7 +168,7 @@ module.exports.getLikedPerfume = (req, res, next) => {
         });
         return;
     }
-    Perfume.getLikedPerfume(loginUserIdx)
+    Perfume.getLikedPerfume(loginUserIdx, pagingIndex, pagingSize)
         .then((response) => {
             res.status(OK).json({
                 message: '유저가 가지고 있는 위시 리스트 조회',
