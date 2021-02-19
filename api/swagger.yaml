@@ -2345,31 +2345,19 @@ paths:
             properties:
               message:
                 type: string
-                example: 마이퍼퓸 조회 성공
+                example: 유저가 좋아요한 향수 조회 성공
               data:
                 type: array
-                items:
+                items:               
                   allOf:
-                  - $ref: '#/definitions/ReviewInfo'
+                  - $ref: '#/definitions/PerfumeInfo'
+                  - $ref: '#/definitions/PerfumeDetailInfo'
                   - type: object
                     properties:
-                      reviewIdx:
+                      perfumeIdx:
                         type: integer
-                        format: int64
-                      imageUrl:
-                        type: string
-                      brandName:
-                        type: string
-                      name:
-                        type: string
-                      createTime:
-                        type: string
                     example:
-                      reviewIdx: 349
-                      imageUrl: 
-                      brandName: JoMalone
-                      name: 넥타린 블로썸 앤 허니 코롱
-                      createTime: '2020-12-07 00:11:41'
+                      perfumeIdx: 1
         default:
           description: successful operation
       x-swagger-router-controller: Perfume
@@ -2575,7 +2563,7 @@ definitions:
       noteType:
         type: integer
         description: 0은 일반 노트, 1은 single 노트
-      ingredients:
+      notes:
         $ref: '#/definitions/PerfumeDetailInfo_ingredients'
     allOf:
     - $ref: '#/definitions/PerfumeInfo'
