@@ -17,6 +17,14 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
+
+            models.Perfume.hasMany(models.LikePerfume, {
+                as: 'LikePerfume',
+                sourceKey: 'perfumeIdx',
+                foreignKey: 'perfumeIdx',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            });
         }
     }
     likePerfume.init(

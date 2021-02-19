@@ -317,12 +317,16 @@ exports.likePerfume = (userIdx, perfumeIdx) => {
  * 유저의 최근 검색한 향수 조회
  *
  * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
  * @returns {Promise<Perfume[]>}
  **/
-exports.recentSearch = (userIdx) => {
-    return perfumeDao.recentSearchPerfumeList(userIdx).then((result) => {
-        return updateIsLike(result, userIdx);
-    });
+exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
+    return perfumeDao
+        .recentSearchPerfumeList(userIdx, pagingIndex, pagingSize)
+        .then((result) => {
+            return updateIsLike(result, userIdx);
+        });
 };
 
 /**
@@ -342,7 +346,7 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
     if (cached) {
         return updateIsLike(cached, userIdx);
     }
-    this.recommendByGenderAgeAndGender(
+    return this.recommendByGenderAgeAndGender(
         user.gender,
         ageGroup,
         pagingIndex,
@@ -397,5 +401,5 @@ exports.getNewPerfume = (pagingIndex, pagingSize) => {
  * @returns {Promise<Perfume[]>}
  **/
 exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
-    return perfumeDao.readAllOfWishlist(userIdx, pagingIndex, pagingSize);
+    return perfumeDao.readLikedPerfume(userIdx, pagingIndex, pagingSize);
 };

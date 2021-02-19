@@ -3,6 +3,7 @@ dotenv.config({ path: './config/.env.test' });
 
 const chai = require('chai');
 const { expect } = chai;
+
 const perfumeDao = require('../../dao/PerfumeDao.js');
 const { Perfume, PerfumeDetail, Sequelize } = require('../../models');
 
@@ -263,9 +264,9 @@ describe('# perfumeDao Test', () => {
                 .catch((err) => done(err));
         });
 
-        it('# read all of wishlist', (done) => {
+        it('# read likedPerfume', (done) => {
             perfumeDao
-                .readAllOfWishlist(1)
+                .readLikedPerfume(1, 1, 100)
                 .then((result) => {
                     expect(result.rows.length).gte(3);
                     done();
@@ -275,7 +276,7 @@ describe('# perfumeDao Test', () => {
 
         it('# recent search perfume List', (done) => {
             perfumeDao
-                .recentSearchPerfumeList(1)
+                .recentSearchPerfumeList(1, 1, 100)
                 .then((result) => {
                     expect(result.rows.length).gte(5);
                     const originString = result.rows
@@ -416,9 +417,7 @@ describe('# perfumeDao Test', () => {
                         where: { perfumeIdx: perfumeIdx },
                     });
                 })
-                .then((it) => {
-                    done();
-                })
+                .then((it) => done())
                 .catch((err) => done(err));
         });
         after(() => {

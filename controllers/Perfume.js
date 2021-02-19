@@ -79,7 +79,10 @@ module.exports.likePerfume = (req, res, next) => {
 
 module.exports.getRecentPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    Perfume.recentSearch(loginUserIdx)
+    let { pagingIndex, pagingSize } = req.query;
+    pagingIndex = parseInt(pagingIndex) || 1;
+    pagingSize = parseInt(pagingSize) || 100;
+    Perfume.recentSearch(loginUserIdx, pagingIndex, pagingSize)
         .then((result) => {
             res.status(OK).json({
                 message: '최근 검색한 향수 조회',
@@ -171,7 +174,7 @@ module.exports.getLikedPerfume = (req, res, next) => {
     Perfume.getLikedPerfume(loginUserIdx, pagingIndex, pagingSize)
         .then((response) => {
             res.status(OK).json({
-                message: '유저가 가지고 있는 위시 리스트 조회',
+                message: '유저가 좋아요한 향수 조회',
                 data: response,
             });
         })
