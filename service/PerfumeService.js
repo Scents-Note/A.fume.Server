@@ -3,6 +3,7 @@
 const perfumeDao = require('../dao/PerfumeDao.js');
 const noteDao = require('../dao/NoteDao.js');
 const reviewDao = require('../dao/ReviewDao.js');
+const ingredientDao = require('../dao/IngredientDao.js');
 const likePerfumeDao = require('../dao/LikePerfumeDao.js');
 const searchHistoryDao = require('../dao/SearchHistoryDao.js');
 const userDao = require('../dao/UserDao.js');
@@ -135,35 +136,34 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
     const perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
     // to do
 
-    let notes = await noteDao.read(perfumeIdx);
-    notes = notes.map((it) => {
-        it.type = noteTypeArr[it.type - 1];
-        return it;
-    });
-    const ingredients = notes.reduce(
-        (prev, cur) => {
-            let type = cur.type;
-            delete cur.type;
-            prev[type].push(cur);
-            return prev;
-        },
-        makeInitMap(noteTypeArr, () => {
-            return [];
+    const noteMap = (await ingredientDao.readByPerfumeIdx(perfumeIdx))
+        .map((it) => {
+            it.type = noteTypeArr[it.Perfumes.Note.type - 1];
+            delete it.Perfumes;
+            return it;
         })
-    );
+        .reduce(
+            (prev, cur) => {
+                let type = cur.type;
+                delete cur.type;
+                prev[type].push(cur);
+                return prev;
+            },
+            makeInitMap(noteTypeArr, () => [])
+        );
 
     let noteType;
-    if (ingredients.single.length == notes.length) {
+    if (noteMap.single.length > 0) {
         noteType = 1;
-        delete ingredients.top;
-        delete ingredients.middle;
-        delete ingredients.base;
+        delete noteMap.top;
+        delete noteMap.middle;
+        delete noteMap.base;
     } else {
         noteType = 0;
-        delete ingredients.single;
+        delete noteMap.single;
     }
     perfume.noteType = noteType;
-    perfume.ingredients = ingredients;
+    perfume.Notes = noteMap;
 
     let reviews = await reviewDao.readAllOrderByLike(perfumeIdx);
     let sum = 0,
