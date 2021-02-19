@@ -41,12 +41,14 @@ tags:
   description: 브랜드 for Web
 - name: WEB_user
   description: 사용자 for Web
+- name: WEB_keyword
+  description: 키워드 for Web
 
 schemes:
 #- https
 - http
 security:
-  - userToken: []
+- userToken: []
 paths:
   /perfume:
     post:
@@ -1749,13 +1751,13 @@ paths:
     post:
       tags:
       - WEB_keyword
-      summary: 키워드 추가
+      summary: 향수별 키워드 추가
       description : 특정 향수에 키워드 추가하기
-      operationId: postKeyword
+      operationId: postPerfumeKeyword
       security:
         - userToken: []
       x-security-scopes:
-        - user
+        - admin
       consumes:
       - application/json
       produces:
@@ -1779,37 +1781,127 @@ paths:
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Keyword
-  /keyword:
     get:
       tags:
-      - keyword
-      summary: 전체 키워드 목록 반환
-      operationId: getKeywordAll
+      - WEB_keyword
+      summary: 향수별 키워드 전체 조회
+      description : 특정 함수의 키워드 목록 조회하기
+      operationId: getKeywordOfPerfume
       produces:
       - application/json
+      parameters:
+      - name: perfumeIdx
+        in: path
+        description: 향수 Idx
+        required: true
+        type: integer
+        format: int64
       responses:
         200:
           description: 성공
           schema:
-            type: array
-            items:
-              allOf:
-              - $ref: '#/definitions/KeywordInfo'
-              - type: object
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수별 키워드 전체 조회 성공
+              data:
+                type: array
+                items:
+                  allOf:
+                  - $ref: '#/definitions/KeywordInfo'
+                  - type: object
+                    properties:
+                      keywordIdx:
+                        type: integer
+                    example:
+                      keywordIdx: 1 
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Keyword
+  /keyword:
+    post:
+      tags:
+      - WEB_keyword
+      summary: 키워드 추가
+      description : 키워드 추가하기
+      operationId: postKeyword
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: body
+        in: body
+        description: 키워드 정보
+        required: true
+        schema:
+          $ref: '#/definitions/KeywordInfo'
+      responses:
+        200:
+          description: 성공
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Keyword
+    get:
+      tags:
+      - keyword
+      summary: 키워드 목록 전체 조회
+      operationId: getKeywordAll
+      produces:
+      - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 키워드 목록 전체 조회 성공
+              data:
+                type: object
                 properties:
-                  keywordIdx:
+                  count:
                     type: integer
-                example:
-                  keywordIdx: 1
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                      - $ref: '#/definitions/KeywordInfo'
+                      - type: object
+                        properties:
+                          keywordIdx:
+                            type: integer
+                        example:
+                          keywordIdx: 1
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Keyword
   /keyword/{keywordIdx}:
     put:
       tags:
-      - keyword
+      - WEB_keyword
       summary: 키워드 수정
       operationId: putKeyword
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
       consumes:
       - application/json
       produces:
@@ -1836,10 +1928,14 @@ paths:
       x-swagger-router-controller: Keyword
     delete:
       tags:
-      - keyword
+      - WEB_keyword
       summary: 키워드 삭제
       description: 키워드 삭제하기
       operationId: deleteKeyword
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
       consumes:
       - application/json
       produces:
@@ -2218,13 +2314,13 @@ paths:
         404:
           description: User not found
       x-swagger-router-controller: User
-  /user/{userIdx}/perfume/wishlist:
+  /user/{userIdx}/perfume/liked:
     get:
       tags:
       - perfume
-      summary: read user's wishlist
-      description: 유저가 가지고 있는 위시 리스트 전체 조회하기
-      operationId: getWishlist
+      summary: read user's likedPerfume
+      description: 유저가 좋아요한 향수 조회
+      operationId: getLikedPerfume
       security:
         - userToken: []
       x-security-scopes:
@@ -2252,31 +2348,19 @@ paths:
             properties:
               message:
                 type: string
-                example: 마이퍼퓸 조회 성공
+                example: 유저가 좋아요한 향수 조회 성공
               data:
                 type: array
-                items:
+                items:               
                   allOf:
-                  - $ref: '#/definitions/ReviewInfo'
+                  - $ref: '#/definitions/PerfumeInfo'
+                  - $ref: '#/definitions/PerfumeDetailInfo'
                   - type: object
                     properties:
-                      reviewIdx:
+                      perfumeIdx:
                         type: integer
-                        format: int64
-                      imageUrl:
-                        type: string
-                      brandName:
-                        type: string
-                      name:
-                        type: string
-                      createTime:
-                        type: string
                     example:
-                      reviewIdx: 349
-                      imageUrl: 
-                      brandName: JoMalone
-                      name: 넥타린 블로썸 앤 허니 코롱
-                      createTime: '2020-12-07 00:11:41'
+                      perfumeIdx: 1
         default:
           description: successful operation
       x-swagger-router-controller: Perfume
@@ -2316,10 +2400,10 @@ definitions:
   KeywordInfo:
     type: object
     properties:
-      keyword:
+      name:
         type: string
     example:
-      keyword: 달달한
+      name: 달달한
   PerfumeInfo:
     type: object
     properties:
@@ -2482,7 +2566,7 @@ definitions:
       noteType:
         type: integer
         description: 0은 일반 노트, 1은 single 노트
-      ingredients:
+      notes:
         $ref: '#/definitions/PerfumeDetailInfo_ingredients'
     allOf:
     - $ref: '#/definitions/PerfumeInfo'

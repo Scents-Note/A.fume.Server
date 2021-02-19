@@ -4,10 +4,13 @@ const {
     Perfume,
     PerfumeDetail,
     User,
+    Note,
     LikePerfume,
     Ingredient,
     SearchHistory,
     PerfumeSurvey,
+    Keyword,
+    JoinPerfumeKeyword,
     Sequelize,
     sequelize,
 } = require('../../../models');
@@ -20,7 +23,7 @@ module.exports = () => {
             Brand.upsert({
                 brandIdx: i,
                 name: `브랜드${i}`,
-                startCharacter: 'ㅂ',
+                firstInitial: 'ㅂ',
                 englishName: 'brand english-name',
                 imageUrl: `http://image-url/${i}`,
                 description: '브랜드 설명 텍스트',
@@ -40,6 +43,14 @@ module.exports = () => {
                 email: `email${i}@afume.com`,
                 birth: '1995',
                 grade: 1,
+            }),
+            Keyword.upsert({
+                id: i,
+                name: `키워드${i}`
+            }),
+            JoinPerfumeKeyword.upsert({
+                perfumeIdx: i,
+                keywordIdx: i
             })
         );
     }
@@ -78,7 +89,9 @@ module.exports = () => {
             LikePerfume.upsert({ userIdx: 1, perfumeIdx: i }),
             SearchHistory.upsert({ userIdx: i, perfumeIdx: i }),
             SearchHistory.upsert({ userIdx: 1, perfumeIdx: i }),
-            PerfumeSurvey.upsert({ perfumeIdx: i, gender: GENDER_WOMAN })
+            PerfumeSurvey.upsert({ perfumeIdx: i, gender: GENDER_WOMAN }),
+            Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: (i % 4) + 1 }),
+            Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: 1 })
         );
     }
     return Promise.all(firstJob)
