@@ -37,6 +37,8 @@ module.exports.searchPerfume = (req, res, next) => {
     keyword = (keyword && keyword.split('%')) || [];
     Perfume.searchPerfume(
         { series, brands: brand, keywords: keyword },
+        pagingIndex,
+        pagingSize,
         sort,
         loginUserIdx
     )
@@ -63,10 +65,10 @@ module.exports.putPerfume = (req, res, next) => {
 module.exports.likePerfume = (req, res, next) => {
     const perfumeIdx = req.swagger.params['perfumeIdx'].value;
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    Perfume.likePerfume(perfumeIdx, loginUserIdx)
+    Perfume.likePerfume(loginUserIdx, perfumeIdx)
         .then((result) => {
             res.status(OK).json({
-                message: '향수 좋아요',
+                message: `향수 좋아요${result ? '' : ' 취소'}`,
                 data: result,
             });
         })

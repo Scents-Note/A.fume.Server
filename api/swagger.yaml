@@ -47,8 +47,8 @@ tags:
 schemes:
 #- https
 - http
-# security:
-# - APIKeyHeader: []
+security:
+- userToken: []
 paths:
   /perfume:
     post:
@@ -236,6 +236,7 @@ paths:
                       $ref: '#/definitions/Perfume'
         401:
           description: Token is missing or invalid
+      x-swagger-router-controller: Perfume
   /perfume/survey:
     get:
       tags:
