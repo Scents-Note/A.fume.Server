@@ -140,7 +140,20 @@ module.exports.deletePerfume = (req, res, next) => {
         .catch((err) => next(err));
 };
 
-module.exports.getWishlist = (req, res, next) => {};
+module.exports.getNewPerfume = (req, res, next) => {
+    let { pagingIndex, pagingSize } = req.query;
+    pagingIndex = parseInt(pagingIndex) || 1;
+    pagingSize = parseInt(pagingSize) || 10;
+    Perfume.getNewPerfume(pagingIndex, pagingSize)
+        .then((result) => {
+            res.status(OK).json({
+                message: '새로 등록된 향수 조회 성공',
+                data: result,
+            });
+        })
+        .catch((err) => next(err));
+};
+
 module.exports.getLikedPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
     const userIdx = req.swagger.params['userIdx'].value;

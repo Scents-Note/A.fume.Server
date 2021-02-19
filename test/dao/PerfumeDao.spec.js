@@ -251,6 +251,18 @@ describe('# perfumeDao Test', () => {
             });
         });
 
+        it('# read new Perfume', (done) => {
+            const fromDate = new Date();
+            fromDate.setDate(fromDate.getDate() - 7);
+            perfumeDao
+                .readNewPerfume(fromDate, 1, 100)
+                .then((result) => {
+                    expect(result.rows.length).gte(1);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
         it('# read all of wishlist', (done) => {
             perfumeDao
                 .readAllOfWishlist(1)

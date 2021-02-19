@@ -375,6 +375,19 @@ exports.recommendByGenderAgeAndGender = (
 };
 
 /**
+ * 새로 추가된 향수 조회
+ *
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>}
+ **/
+exports.getNewPerfume = (pagingIndex, pagingSize) => {
+    const fromDate = new Date();
+    fromDate.setDate(fromDate.getDate() - 7);
+    return perfumeDao.readNewPerfume(fromDate, pagingIndex, pagingSize);
+};
+
+/**
  * 유저가 좋아요한 향수 조회
  *
  * @param {number} userIdx
