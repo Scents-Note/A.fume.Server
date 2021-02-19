@@ -1,7 +1,7 @@
 'use strict';
 
 const Perfume = require('../service/PerfumeService');
-const { OK } = require('../utils/statusCode.js');
+const { OK, FORBIDDEN } = require('../utils/statusCode.js');
 
 module.exports.postPerfume = (req, res, next) => {
     const body = req.body;
@@ -141,3 +141,26 @@ module.exports.deletePerfume = (req, res, next) => {
 };
 
 module.exports.getWishlist = (req, res, next) => {};
+module.exports.getLikedPerfume = (req, res, next) => {
+    const loginUserIdx = req.middlewareToken.loginUserIdx;
+    const userIdx = req.swagger.params['userIdx'].value;
+    let { pagingIndex, pagingSize } = req.query;
+    pagingIndex = parseInt(pagingIndex) || 1;
+    pagingSize = parseInt(pagingSize) || 10;
+    if (loginUserIdx != userIdx) {
+        res.status(FORBIDDEN).json({
+            message: '비정상적인 접근입니다.',
+        });
+        return;
+    }
+    Perfume.getLikedPerfume(loginUserIdx)
+        .then((response) => {
+            res.status(OK).json({
+                message: '유저가 가지고 있는 위시 리스트 조회',
+                data: response,
+            });
+        })
+        .catch((err) => {
+            next(err);
+        });
+};

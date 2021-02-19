@@ -2311,13 +2311,13 @@ paths:
         404:
           description: User not found
       x-swagger-router-controller: User
-  /user/{userIdx}/perfume/wishlist:
+  /user/{userIdx}/perfume/liked:
     get:
       tags:
       - perfume
-      summary: read user's wishlist
-      description: 유저가 가지고 있는 위시 리스트 전체 조회하기
-      operationId: getWishlist
+      summary: read user's likedPerfume
+      description: 유저가 좋아요한 향수 조회
+      operationId: getLikedPerfume
       security:
         - userToken: []
       x-security-scopes:

@@ -373,3 +373,15 @@ exports.recommendByGenderAgeAndGender = (
         pagingSize
     );
 };
+
+/**
+ * 유저가 좋아요한 향수 조회
+ *
+ * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>}
+ **/
+exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
+    return perfumeDao.readAllOfWishlist(userIdx, pagingIndex, pagingSize);
+};
