@@ -117,7 +117,7 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readByPerfumeIdx(1)
                 .then((result) => {
-                    console.log(result);
+                    expect(result.length).to.be.gte(3);
                     done();
                 })
                 .catch((err) => done(err));
