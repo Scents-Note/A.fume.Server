@@ -4,7 +4,7 @@ const {
     DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
 
-const { Ingredient, Series, Perfume, Sequelize } = require('../models');
+const { Ingredient, Series, Note, Sequelize } = require('../models');
 const { Op } = Sequelize;
 
 /**
@@ -176,8 +176,8 @@ module.exports.readByPerfumeIdx = async (perfumeIdx) => {
         },
         include: [
             {
-                model: Perfume,
-                as: 'Perfumes',
+                model: Note,
+                as: 'Notes',
                 where: {
                     perfumeIdx,
                 },

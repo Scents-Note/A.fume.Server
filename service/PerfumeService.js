@@ -1,7 +1,6 @@
 'use strict';
 
 const perfumeDao = require('../dao/PerfumeDao.js');
-const noteDao = require('../dao/NoteDao.js');
 const reviewDao = require('../dao/ReviewDao.js');
 const ingredientDao = require('../dao/IngredientDao.js');
 const likePerfumeDao = require('../dao/LikePerfumeDao.js');
@@ -134,12 +133,11 @@ function normalize(obj) {
  **/
 exports.getPerfumeById = async (perfumeIdx, userIdx) => {
     const perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
-    // to do
 
     const noteMap = (await ingredientDao.readByPerfumeIdx(perfumeIdx))
         .map((it) => {
-            it.type = noteTypeArr[it.Perfumes.Note.type - 1];
-            delete it.Perfumes;
+            it.type = noteTypeArr[it.Notes.type - 1];
+            delete it.Notes;
             return it;
         })
         .reduce(

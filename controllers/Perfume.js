@@ -1,6 +1,7 @@
 'use strict';
 
 const Perfume = require('../service/PerfumeService');
+const SearchHistory = require('../service/SearchHistoryService');
 const { OK, FORBIDDEN } = require('../utils/statusCode.js');
 
 module.exports.postPerfume = (req, res, next) => {
@@ -19,8 +20,11 @@ module.exports.postPerfume = (req, res, next) => {
 module.exports.getPerfume = (req, res, next) => {
     const perfumeIdx = req.swagger.params['perfumeIdx'].value;
     const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
-    Perfume.getPerfumeById(perfumeIdx, loginUserIdx)
-        .then((response) => {
+    Promise.all([
+        Perfume.getPerfumeById(perfumeIdx, loginUserIdx),
+        SearchHistory.incrementCount(loginUserIdx, perfumeIdx),
+    ])
+        .then(([response]) => {
             res.status(OK).json({
                 message: '향수 조회 성공',
                 data: response,

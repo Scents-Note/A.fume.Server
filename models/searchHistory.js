@@ -48,10 +48,17 @@ module.exports = (sequelize, DataTypes) => {
             userIdx: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
+                allowNull: false,
             },
             perfumeIdx: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
+                allowNull: false,
+            },
+            count: {
+                type: DataTypes.INTEGER,
+                defaultValue: 0,
+                allowNull: false,
             },
             createdAt: {
                 type: DataTypes.DATE,
@@ -61,7 +68,6 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             modelName: 'SearchHistory',
-            timestamps: false,
             underscored: true,
             sequelize,
         }

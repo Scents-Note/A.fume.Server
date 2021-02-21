@@ -307,7 +307,11 @@ module.exports.recentSearchPerfumeList = async (
 ) => {
     const options = _.merge({}, defaultOption, {
         order: [
-            [{ model: SearchHistory, as: 'SearchHistory' }, 'createdAt', 'asc'],
+            [
+                { model: SearchHistory, as: 'SearchHistory' },
+                'updatedAt',
+                'desc',
+            ],
         ],
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
