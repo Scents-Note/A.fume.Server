@@ -87,8 +87,8 @@ module.exports = () => {
                 volumeAndPrice: '{"30":"95000","100":"190000"}',
             }),
             LikePerfume.upsert({ userIdx: 1, perfumeIdx: i }),
-            SearchHistory.upsert({ userIdx: i, perfumeIdx: i }),
-            SearchHistory.upsert({ userIdx: 1, perfumeIdx: i }),
+            SearchHistory.upsert({ userIdx: i, perfumeIdx: i, count: 1 }),
+            SearchHistory.upsert({ userIdx: 1, perfumeIdx: i, count: 1 }),
             PerfumeSurvey.upsert({ perfumeIdx: i, gender: GENDER_WOMAN }),
             Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: (i % 4) + 1 }),
             Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: 1 })
