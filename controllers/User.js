@@ -1,6 +1,5 @@
 'use strict';
 
-const { validateType } = require('../utils/validation.js');
 const User = require('../service/UserService');
 const { OK, CONFLICT } = require('../utils/statusCode.js');
 
@@ -135,10 +134,10 @@ module.exports.validateName = (req, res, next) => {
 
 module.exports.postSurvey = (req, res, next) => {
     const userIdx = req.middlewareToken.loginUserIdx;
-    if (!validateType(req.body, 'keywordList', Array, next)) return;
-    if (!validateType(req.body, 'perfumeList', Array, next)) return;
-    if (!validateType(req.body, 'seriesList', Array, next)) return;
-    const { keywordList, perfumeList, seriesList } = req.body;
+    let { keywordList, perfumeList, seriesList } = req.body;
+    keywordList = keywordList || [];
+    perfumeList = perfumeList || [];
+    seriesList = seriesList || [];
     User.addSurvey(userIdx, keywordList, perfumeList, seriesList)
         .then((response) => {
             console.log(response);
