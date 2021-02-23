@@ -34,15 +34,18 @@ module.exports.getPerfume = (req, res, next) => {
 };
 
 module.exports.searchPerfume = (req, res, next) => {
-    let { series, brand, keyword, pagingIndex, pagingSize, sort } = req.query;
     const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
-    series = (series && series.split('%')) || [];
-    brand = (brand && brand.split('%')) || [];
-    keyword = (keyword && keyword.split('%')) || [];
+    let { pagingIndex, pagingSize, sort } = req.query;
+    let { keywordList, brandList, ingredientList } = req.body;
     pagingIndex = parseInt(pagingIndex) || 1;
     pagingSize = parseInt(pagingSize) || 100;
+    brandList = brandList || [];
+    ingredientList = brandList || [];
+    keywordList = keywordList || [];
     Perfume.searchPerfume(
-        { series, brands: brand, keywords: keyword },
+        brandList,
+        ingredientList,
+        keywordList,
         pagingIndex,
         pagingSize,
         sort,
