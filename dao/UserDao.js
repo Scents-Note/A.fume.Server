@@ -12,7 +12,7 @@ const { user: MongooseUser } = require('../mongoose_models');
  * @param {Object} User
  * @returns {Promise}
  */
-module.exports.create = async ({
+module.exports.create = ({
     nickname,
     password,
     gender,
@@ -23,7 +23,7 @@ module.exports.create = async ({
     accessTime,
 }) => {
     accessTime = accessTime || sequelize.literal('CURRENT_TIMESTAMP');
-    const { dataValues } = await User.create({
+    return User.create({
         nickname,
         password,
         gender,
@@ -32,8 +32,19 @@ module.exports.create = async ({
         birth,
         grade,
         accessTime,
-    });
-    return dataValues.userIdx;
+    })
+        .then((it) => {
+            return it.userIdx;
+        })
+        .catch((err) => {
+            if (
+                err.parent.errno === 1062 ||
+                err.parent.code === 'ER_DUP_ENTRY'
+            ) {
+                throw new DuplicatedEntryError();
+            }
+            throw err;
+        });
 };
 
 /**
