@@ -2,40 +2,41 @@ const dotenv = require('dotenv');
 dotenv.config({ path: './config/.env.test' });
 
 const chai = require('chai');
-const should = chai.should();
 const { expect } = chai;
 const reviewDao = require('../../dao/ReviewDao.js');
-const {
-    DuplicatedEntryError,
-    NotMatchedError,
-} = require('../../utils/errors/errors.js');
-const pool = require('../../utils/db/pool.js');
+const { Review, Perfume, User } = require('../../models');
+const {DuplicatedEntryError} = require('../../utils/errors/errors.js');
 
 describe('# reviewDao Test', () => {
+    before(async function () {
+        await require('./common/presets.js')(this);
+    });
     describe('# create Test', () => {
+        before(async () => {
+            await Review.destroy({ where: { content: '리뷰생성테스트' } });
+        });
         it('# success case', (done) => {
             reviewDao
                 .create({
                     perfumeIdx: 2,
-                    userIdx: 4,
-                    score: 4,
-                    longevity: '강함',
-                    sillage: '가벼움',
-                    seasonal: ['봄', '여름'],
-                    gender: '여성',
-                    access: true,
-                    content: '리뷰추가테스트',
+                    userIdx: 2,
+                    score: 2,
+                    longevity: 2,
+                    sillage: 2,
+                    seasonal: 2,
+                    gender: 2,
+                    access: 2,
+                    content: '리뷰생성테스트',
                 })
                 .then((result) => {
-                    //console.log(result)
-                    expect(result.affectedRows).eq(1);
+                    console.log(result)
+                    expect(result.dataValues.content).eq('리뷰생성테스트');
                     done();
                 })
-                .catch((err) => {
-                    console.log(err);
-                    expect(false).true();
-                    done();
-                });
+                .catch((err) => done(err));
+        });
+        after(async () => {
+            await Review.destroy({ where: { content: '리뷰생성테스트' } });
         });
     });
 
@@ -45,93 +46,36 @@ describe('# reviewDao Test', () => {
             reviewDao
                 .read(reviewIdx)
                 .then((result) => {
-                    //console.log(result)
-                    expect(result.content).eq('시향노트 내용');
+                    expect(result.content).eq('시향노트1');
                     done();
                 })
-                .catch((err) => {
-                    console.log(err);
-                    expect(false).true();
-                    done();
-                });
+                .catch((err) => done(err));
         });
     });
 
-    describe('# readAllByUser Test', () => {
+    describe('# readAllOfUser Test', () => {
         let userIdx = 1;
         it('# success case', (done) => {
             reviewDao
-                .readAllByUser(userIdx)
+                .readAllOfUser(userIdx)
                 .then((result) => {
-                    //console.log(result)
                     expect(result.length).greaterThan(0);
                     done();
                 })
-                .catch((err) => {
-                    console.log(err);
-                    expect(false).true();
-                    done();
-                });
+                .catch((err) => done(err));
         });
     });
 
-    describe('# readAll Test', () => {
+    describe('# readAllOfPerfume Test', () => {
         let perfumeIdx = 1;
         it('# success case', (done) => {
             reviewDao
-                .readAllOrderByLike(perfumeIdx)
+                .readAllOfPerfume(perfumeIdx)
                 .then((result) => {
-                    //console.log(result)
-                    expect(result.length).greaterThan(0);
+                    expect(result.length).gt(0);
                     done();
                 })
-                .catch((err) => {
-                    console.log(err);
-                    expect(false).true();
-                    done();
-                });
-        });
-    });
-
-    describe('# readAllOrderByScore Test', () => {
-        let perfumeIdx = 1;
-        it('# success case', (done) => {
-            reviewDao
-                .readAllOrderByScore(perfumeIdx)
-                .then((result) => {
-                    //console.log(result)
-                    expect(result.length).greaterThan(0);
-                    done();
-                })
-                .catch((err) => {
-                    console.log(err);
-                    expect(false).true();
-                    done();
-                });
-        });
-    });
-
-    describe('# readAllOrderByRecent Test', () => {
-        let perfumeIdx = 1;
-        it('# success case', (done) => {
-            reviewDao
-                .readAllOrderByRecent(perfumeIdx)
-                .then((result) => {
-                    expect(result.length).gte(2);
-                    const str1 = result.map((it) => it.createTime).join(',');
-                    const str2 = result
-                        .map((it) => it.createTime)
-                        .sort()
-                        .reverse()
-                        .join(',');
-                    expect(str1).eq(str2);
-                    done();
-                })
-                .catch((err) => {
-                    console.log(err);
-                    expect(false).true();
-                    done();
-                });
+                .catch((err) => done(err));
         });
     });
 
@@ -141,124 +85,50 @@ describe('# reviewDao Test', () => {
             reviewDao
                 .update({
                     reviewIdx,
-                    score: 4,
-                    longevity: '매우 약함',
-                    sillage: '가벼움',
-                    seasonal: ['가을', '겨울'],
-                    gender: '여성',
-                    access: true,
+                    perfumeIdx: 1,
+                    userIdx: 1,
+                    score: 1,
+                    longevity: 1,
+                    sillage: 1,
+                    seasonal: 1,
+                    gender: 1,
+                    access: 1,
                     content: '리뷰수정테스트',
                 })
                 .then((result) => {
-                    expect(result.affectedRows).eq(1);
+                    expect(result[0]).eq(1);
                     done();
                 })
-                .catch((err) => {
-                    console.log(err);
-                    expect(false).true();
-                    done();
-                });
+                .catch((err) => done(err));
         });
     });
 
     describe('# delete Test', () => {
-        let reviewIdx;
         before(async () => {
-            const result = await pool.queryParam_None(
-                `INSERT review(perfume_idx, user_idx, score, longevity, sillage, seasonal, gender, access, content) values(1, 1, 1, "약함", "가벼움", null, "중성", false, "리뷰삭제테스트")`
-            );
-            reviewIdx = result.insertId;
+            result = await reviewDao.create({
+                userIdx: 3,
+                perfumeIdx :3,
+                score: 3,
+                longevity: 3,
+                sillage: 3,
+                seasonal: 3,
+                gender: 1,
+                access: 1,
+                content: '리뷰삭제테스트',
+            });
+            reviewIdx = result.dataValues.id;
         });
         it('# success case', (done) => {
             reviewDao
                 .delete(reviewIdx)
                 .then((result) => {
-                    //console.log(result)
-                    expect(result.affectedRows).eq(1);
+                    expect(result).eq(1);
                     done();
                 })
-                .catch((err) => {
-                    console.log(err);
-                    expect(false).true();
-                    done();
-                });
+                .catch((err) => done(err));
         });
-        // after(async () => {
-        //     if(!reviewIdx) return;
-        //     await pool.queryParam_None(`DELETE FROM review WHERE review_idx = ${reviewIdx}`);
-        // });
-    });
-
-    describe('# createLike Test', () => {
-        it('# success case', (done) => {
-            reviewDao
-                .createLike({ userIdx: 1, reviewIdx: 1 })
-                .then((result) => {
-                    expect(result.affectedRows).gt(0);
-                    done();
-                })
-                .catch((err) => {
-                    console.log(err);
-                    expect(false).true();
-                    done();
-                });
-        });
-        it('# DuplicatedEntryError case', (done) => {
-            reviewDao
-                .createLike({ userIdx: 1, reviewIdx: 1 })
-                .then(() => {
-                    expect(false).true();
-                    done();
-                })
-                .catch((err) => {
-                    //console.log(err)
-                    expect(err).instanceOf(DuplicatedEntryError);
-                    done();
-                });
-        });
-    });
-
-    describe('# readLike case', () => {
-        it('# success case', (done) => {
-            reviewDao.readLike({ userIdx: 1, reviewIdx: 1 }).then((result) => {
-                expect(result.userIdx).eq(1);
-                expect(result.reviewIdx).eq(1);
-                done();
-            });
-        });
-        it('# fail case', (done) => {
-            reviewDao
-                .readLike({ userIdx: -1, reviewIdx: 1 }) //로그인하지 않은 사용자(-1)가 시향노트를 좋아요 할 수 없으므로
-                .then(() => {
-                    expect(false).true();
-                    done();
-                })
-                .catch((err) => {
-                    //console.log(err)
-                    expect(err).instanceof(NotMatchedError);
-                    done();
-                });
-        });
-    });
-
-    describe('# deleteLike Test', () => {
-        before(async () => {
-            await pool.queryParam_None(
-                'INSERT IGNORE like_review(user_idx, review_idx) VALUES(1, 1)'
-            );
-        });
-        it('# success case', (done) => {
-            reviewDao
-                .deleteLike({ userIdx: 1, reviewIdx: 1 })
-                .then((result) => {
-                    expect(result.affectedRows).eq(1);
-                    done();
-                })
-                .catch((err) => {
-                    console.log(err);
-                    expect(false).true();
-                    done();
-                });
+        after(async () => {
+            await Review.destroy({ where: { content: '리뷰삭제테스트' } });
         });
     });
 });
