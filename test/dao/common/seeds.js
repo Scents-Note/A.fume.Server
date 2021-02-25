@@ -6,11 +6,13 @@ const {
     User,
     Note,
     LikePerfume,
+    LikeReview,
     Ingredient,
     SearchHistory,
     PerfumeSurvey,
     Keyword,
     JoinPerfumeKeyword,
+    Review,
     Sequelize,
     sequelize,
 } = require('../../../models');
@@ -87,6 +89,27 @@ module.exports = () => {
                 volumeAndPrice: '{"30":"95000","100":"190000"}',
             }),
             LikePerfume.upsert({ userIdx: 1, perfumeIdx: i }),
+            SearchHistory.upsert({ userIdx: i, perfumeIdx: i }),
+            SearchHistory.upsert({ userIdx: 1, perfumeIdx: i }),
+            PerfumeSurvey.upsert({ perfumeIdx: i, gender: GENDER_WOMAN }),
+            Review.upsert({
+                id: i,
+                perfumeIdx: i,
+                userIdx: i,
+                score: i,
+                longevity: i,
+                sillage: i,
+                seasonal: 4,
+                gender: 1,
+                access: 1,
+                content: `시향노트${i}`,
+            })
+        );
+    }
+    const fourthJob = [];
+    for (let i = 1; i <= 5; i++) {
+        fourthJob.push(
+            LikeReview.upsert({reviewIdx: i, userIdx: i}),
             SearchHistory.upsert({ userIdx: i, perfumeIdx: i, count: 1 }),
             SearchHistory.upsert({ userIdx: 1, perfumeIdx: i, count: 1 }),
             PerfumeSurvey.upsert({ perfumeIdx: i, gender: GENDER_WOMAN }),
@@ -97,6 +120,7 @@ module.exports = () => {
     return Promise.all(firstJob)
         .then((it) => Promise.all(secondJob))
         .then((it) => Promise.all(thirdJob))
+        .then((it) => Promise.all(fourthJob))
         .catch((err) => {
             console.log(err);
         });
