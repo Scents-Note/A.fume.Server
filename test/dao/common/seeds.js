@@ -4,6 +4,7 @@ const {
     Perfume,
     PerfumeDetail,
     User,
+    Note,
     LikePerfume,
     LikeReview,
     Ingredient,
@@ -108,7 +109,12 @@ module.exports = () => {
     const fourthJob = [];
     for (let i = 1; i <= 5; i++) {
         fourthJob.push(
-            LikeReview.upsert({reviewIdx: i, userIdx: i})
+            LikeReview.upsert({reviewIdx: i, userIdx: i}),
+            SearchHistory.upsert({ userIdx: i, perfumeIdx: i, count: 1 }),
+            SearchHistory.upsert({ userIdx: 1, perfumeIdx: i, count: 1 }),
+            PerfumeSurvey.upsert({ perfumeIdx: i, gender: GENDER_WOMAN }),
+            Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: (i % 4) + 1 }),
+            Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: 1 })
         );
     }
     return Promise.all(firstJob)

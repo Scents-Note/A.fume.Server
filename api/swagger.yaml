@@ -47,8 +47,8 @@ tags:
 schemes:
 #- https
 - http
-# security:
-# - APIKeyHeader: []
+security:
+- userToken: []
 paths:
   /perfume:
     post:
@@ -198,6 +198,7 @@ paths:
                       $ref: '#/definitions/Perfume'
         401:
           description: Token is missing or invalid
+      x-swagger-router-controller: Perfume
   /perfume/new:
     get:
       tags:
@@ -236,6 +237,7 @@ paths:
                       $ref: '#/definitions/Perfume'
         401:
           description: Token is missing or invalid
+      x-swagger-router-controller: Perfume
   /perfume/survey:
     get:
       tags:
@@ -362,6 +364,8 @@ paths:
       - perfume
       summary: 향수 세부 정보 조회
       operationId: getPerfume
+      security:
+        - userToken: []
       produces:
       - application/json
       parameters:
@@ -2310,13 +2314,13 @@ paths:
         404:
           description: User not found
       x-swagger-router-controller: User
-  /user/{userIdx}/perfume/wishlist:
+  /user/{userIdx}/perfume/liked:
     get:
       tags:
       - perfume
-      summary: read user's wishlist
-      description: 유저가 가지고 있는 위시 리스트 전체 조회하기
-      operationId: getWishlist
+      summary: read user's likedPerfume
+      description: 유저가 좋아요한 향수 조회
+      operationId: getLikedPerfume
       security:
         - userToken: []
       x-security-scopes:
@@ -2344,31 +2348,19 @@ paths:
             properties:
               message:
                 type: string
-                example: 마이퍼퓸 조회 성공
+                example: 유저가 좋아요한 향수 조회 성공
               data:
                 type: array
-                items:
+                items:               
                   allOf:
-                  - $ref: '#/definitions/ReviewInfo'
+                  - $ref: '#/definitions/PerfumeInfo'
+                  - $ref: '#/definitions/PerfumeDetailInfo'
                   - type: object
                     properties:
-                      reviewIdx:
+                      perfumeIdx:
                         type: integer
-                        format: int64
-                      imageUrl:
-                        type: string
-                      brandName:
-                        type: string
-                      name:
-                        type: string
-                      createTime:
-                        type: string
                     example:
-                      reviewIdx: 349
-                      imageUrl: 
-                      brandName: JoMalone
-                      name: 넥타린 블로썸 앤 허니 코롱
-                      createTime: '2020-12-07 00:11:41'
+                      perfumeIdx: 1
         default:
           description: successful operation
       x-swagger-router-controller: Perfume
@@ -2574,7 +2566,7 @@ definitions:
       noteType:
         type: integer
         description: 0은 일반 노트, 1은 single 노트
-      ingredients:
+      notes:
         $ref: '#/definitions/PerfumeDetailInfo_ingredients'
     allOf:
     - $ref: '#/definitions/PerfumeInfo'

@@ -112,6 +112,18 @@ describe('# ingredientDao Test', () => {
         });
     });
 
+    describe('# read By perfumeIdx Test', () => {
+        it('# success case', (done) => {
+            ingredientDao
+                .readByPerfumeIdx(1)
+                .then((result) => {
+                    expect(result.length).to.be.gte(3);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+    });
+
     describe('# update Test', () => {
         let ingredientIdx;
         before(async () => {

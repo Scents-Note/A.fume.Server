@@ -4,7 +4,7 @@ const {
     DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
 
-const { Ingredient, Series, Sequelize } = require('../models');
+const { Ingredient, Series, Note, Sequelize } = require('../models');
 const { Op } = Sequelize;
 
 /**
@@ -154,6 +154,32 @@ module.exports.readBySeriesIdxList = async (seriesIdxList) => {
                     seriesIdx: {
                         [Op.in]: seriesIdxList,
                     },
+                },
+            },
+        ],
+        raw: true,
+        nest: true,
+    });
+    return result;
+};
+
+/**
+ * 향수에 해당하는 재료 조회
+ *
+ * @param {number} perfumeIdx
+ * @return {Promise<Ingredients[]>}
+ */
+module.exports.readByPerfumeIdx = async (perfumeIdx) => {
+    const result = await Ingredient.findAll({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        include: [
+            {
+                model: Note,
+                as: 'Notes',
+                where: {
+                    perfumeIdx,
                 },
             },
         ],

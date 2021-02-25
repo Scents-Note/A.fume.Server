@@ -28,13 +28,20 @@ module.exports.create = ({ ingredientIdx, perfumeIdx, type }) => {
 };
 
 /**
- * 향수 정보로 노트 전체 조회
+ * 노트 조회
  *
- * @param {number} perfumeIdx
+ * @param {Object} where
  * @returns {Promise<Note[]>}
  */
-module.exports.read = (perfumeIdx) => {
-    return Note.findAll({ where: { perfumeIdx } });
+module.exports.read = (where) => {
+    return Note.findAll({
+        attributes: {
+            exclude: ['updatedAt', 'createdAt'],
+        },
+        where,
+        nest: false,
+        raw: false,
+    });
 };
 
 /**

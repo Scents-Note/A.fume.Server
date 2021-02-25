@@ -17,6 +17,12 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
+            models.Ingredient.hasMany(this, {
+                foreignKey: 'ingredientIdx',
+                as: 'Notes',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            });
         }
     }
     Note.init(
