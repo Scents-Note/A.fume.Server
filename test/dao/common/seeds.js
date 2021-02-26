@@ -48,11 +48,11 @@ module.exports = () => {
             }),
             Keyword.upsert({
                 id: i,
-                name: `키워드${i}`
+                name: `키워드${i}`,
             }),
             JoinPerfumeKeyword.upsert({
                 perfumeIdx: i,
-                keywordIdx: i
+                keywordIdx: i,
             })
         );
     }
@@ -72,7 +72,7 @@ module.exports = () => {
                 mainSeriesIdx: i,
                 name: `향수${i}`,
                 englishName: 'perfume english name',
-                imageThumbnailUrl: `http://perfume-image/${i}`,
+                imageUrl: `http://perfume-image/${i}`,
                 releaseDate: `2021-01-1${i}`,
                 likeCnt: 1,
             })
@@ -85,7 +85,6 @@ module.exports = () => {
                 perfumeIdx: i,
                 story: `스토리${i}`,
                 abundanceRate: 1,
-                imageUrl: '',
                 volumeAndPrice: '{"30":"95000","100":"190000"}',
             }),
             LikePerfume.upsert({ userIdx: 1, perfumeIdx: i }),
@@ -109,12 +108,32 @@ module.exports = () => {
     const fourthJob = [];
     for (let i = 1; i <= 5; i++) {
         fourthJob.push(
-            LikeReview.upsert({reviewIdx: i, userIdx: i}),
+            LikeReview.upsert({ reviewIdx: i, userIdx: i }),
             SearchHistory.upsert({ userIdx: i, perfumeIdx: i, count: 1 }),
             SearchHistory.upsert({ userIdx: 1, perfumeIdx: i, count: 1 }),
             PerfumeSurvey.upsert({ perfumeIdx: i, gender: GENDER_WOMAN }),
             Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: (i % 4) + 1 }),
-            Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: 1 })
+            Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: 1 }),
+            Note.upsert({
+                perfumeIdx: 2,
+                ingredientIdx: i,
+                type: ((i + 1) % 4) + 1,
+            }),
+            Note.upsert({
+                perfumeIdx: 3,
+                ingredientIdx: i,
+                type: ((i + 2) % 4) + 1,
+            }),
+            Note.upsert({
+                perfumeIdx: 4,
+                ingredientIdx: i,
+                type: ((i + 3) % 4) + 1,
+            }),
+            Note.upsert({
+                perfumeIdx: 5,
+                ingredientIdx: i,
+                type: ((i + 4) % 4) + 1,
+            })
         );
     }
     return Promise.all(firstJob)

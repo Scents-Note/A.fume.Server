@@ -134,10 +134,7 @@ module.exports.validateName = (req, res, next) => {
 
 module.exports.postSurvey = (req, res, next) => {
     const userIdx = req.middlewareToken.loginUserIdx;
-    let { keywordList, perfumeList, seriesList } = req.body;
-    keywordList = keywordList || [];
-    perfumeList = perfumeList || [];
-    seriesList = seriesList || [];
+    const { keywordList, perfumeList, seriesList } = req.body;
     User.addSurvey(userIdx, keywordList, perfumeList, seriesList)
         .then((response) => {
             console.log(response);

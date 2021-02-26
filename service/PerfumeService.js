@@ -93,7 +93,9 @@ function makeInitMap(arr, initFunc) {
 }
 
 function updateCount(obj, prop) {
-    if (!prop) return;
+    if (!obj[prop]) {
+        obj[prop] = 0;
+    }
     obj[prop] = obj[prop] + 1;
 }
 
@@ -159,62 +161,79 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
         noteType = 0;
         delete noteMap.single;
     }
-    perfume.noteType = noteType;
-    perfume.Notes = noteMap;
 
-    let reviews = await reviewDao.readAllOrderByLike(perfumeIdx);
+    perfume.Notes = { noteType, ingredients: noteMap };
+
     let sum = 0,
         cnt = 0;
-    let seasonal = makeZeroMap(seasonalArr);
-    let sillage = makeZeroMap(sillageArr);
-    let longevity = makeZeroMap(longevityArr);
-    let gender = makeZeroMap(genderArr);
-    reviews = reviews.map((it) => {
-        it.seasonal = seasonalArr[it.seasonal - 1];
-        it.sillage = sillageArr[it.sillage - 1];
-        it.longevity = longevityArr[it.longevity - 1];
-        it.gender = genderArr[it.gender - 1];
-        return it;
-    });
+    let seasonalMap = makeZeroMap(seasonalArr);
+    let sillageMap = makeZeroMap(sillageArr);
+    let longevityMap = makeZeroMap(longevityArr);
+    let genderMap = makeZeroMap(genderArr);
 
-    for (const review of reviews) {
-        if (review.score) {
-            sum += review.score;
-            cnt++;
-            updateCount(longevity, review.longevity);
-            updateCount(sillage, review.sillage);
-            updateCount(seasonal, review.seasonal);
-            updateCount(gender, review.gender);
-        }
-    }
+    (await reviewDao.readAllOfPerfume(perfumeIdx))
+        .map((it) => {
+            it.seasonal = seasonalArr[it.seasonal - 1];
+            it.sillage = sillageArr[it.sillage - 1];
+            it.longevity = longevityArr[it.longevity - 1];
+            it.gender = genderArr[it.gender - 1];
+            return it;
+        })
+        .forEach((review) => {
+            if (review.score) {
+                sum += review.score;
+                cnt++;
+                updateCount(longevityMap, review.longevity);
+                updateCount(sillageMap, review.sillage);
+                updateCount(seasonalMap, review.seasonal);
+                updateCount(genderMap, review.gender);
+            }
+        });
 
-    longevity = normalize(longevity);
-    sillage = normalize(sillage);
-    seasonal = normalize(seasonal);
-    gender = normalize(gender);
-    perfume.score = parseFloat((parseFloat(sum) / cnt).toFixed(2));
-    perfume.seasonal = seasonal;
-    perfume.sillage = sillage;
-    perfume.longevity = longevity;
-    perfume.gender = gender;
+    perfume.Summary = {
+        score: parseFloat((parseFloat(sum) / cnt).toFixed(2)) || 0,
+        seasonal: normalize(seasonalMap),
+        sillage: normalize(sillageMap),
+        longevity: normalize(longevityMap),
+        gender: normalize(genderMap),
+    };
 
+    const likePerfumeList = await likePerfumeDao.read(userIdx, perfumeIdx);
+    perfume.isLiked = likePerfumeList ? true : false;
     return perfume;
 };
 
 /**
  * 향수 검색
  *
- * @param {Object} Filter
+ * @param {number[]} brandIdxList
+ * @param {number[]} ingredientIdxList
+ * @param {number[]} keywordIdxList
  * @param {number} pagingIndex
  * @param {number} pagingSize
  * @param {array} sort
  * @param {number} userIdx
  * @returns {Promise<Perfume[]>}
  **/
-exports.searchPerfume = (filter, pagingIndex, pagingSize, sort, userIdx) => {
+exports.searchPerfume = (
+    brandIdxList,
+    ingredientIdxList,
+    keywordIdxList,
+    pagingIndex,
+    pagingSize,
+    sort,
+    userIdx
+) => {
     const order = parseSortToOrder(sort);
     return perfumeDao
-        .search(filter, pagingIndex, pagingSize, order)
+        .search(
+            brandIdxList,
+            ingredientIdxList,
+            keywordIdxList,
+            pagingIndex,
+            pagingSize,
+            order
+        )
         .then((result) => {
             result.rows.forEach((it) => {
                 delete it.createdAt;

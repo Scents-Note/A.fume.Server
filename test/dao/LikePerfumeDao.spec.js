@@ -56,11 +56,8 @@ describe('# likeDao Test', () => {
         it('# fail case', (done) => {
             likePerfumeDao
                 .read(-1, 1)
-                .then(() =>
-                    done(new Error('must be expected DuplicatedEntryError'))
-                )
-                .catch((err) => {
-                    expect(err).instanceof(NotMatchedError);
+                .then((it) => {
+                    expect(it).not.be.ok;
                     done();
                 })
                 .catch((err) => done(err));

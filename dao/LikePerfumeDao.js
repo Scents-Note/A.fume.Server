@@ -53,14 +53,10 @@ module.exports.create = (userIdx, perfumeIdx) => {
  * @param {number} perfumeIdx
  * @returns {Promise}
  */
-module.exports.read = async (userIdx, perfumeIdx) => {
-    const result = await LikePerfume.findOne({
+module.exports.read = (userIdx, perfumeIdx) => {
+    return LikePerfume.findOne({
         where: { userIdx, perfumeIdx },
     });
-    if (!result) {
-        throw new NotMatchedError();
-    }
-    return result;
 };
 
 /**

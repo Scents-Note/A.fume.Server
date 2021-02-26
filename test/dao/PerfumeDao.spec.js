@@ -5,9 +5,11 @@ const chai = require('chai');
 const { expect } = chai;
 
 const perfumeDao = require('../../dao/PerfumeDao.js');
-const { Perfume, PerfumeDetail, Sequelize } = require('../../models');
+const { Perfume, PerfumeDetail, Note, Sequelize } = require('../../models');
+const { Op } = Sequelize;
 
 const { GENDER_WOMAN } = require('../../utils/code.js');
+const { NotMatchedError } = require('../../utils/errors/errors.js');
 
 describe('# perfumeDao Test', () => {
     before(async function () {
@@ -24,10 +26,9 @@ describe('# perfumeDao Test', () => {
                 brandIdx: 1,
                 englishName: 'insert Test',
                 volumeAndPrice: {},
-                imageThumbnailUrl: 'URL',
+                imageUrl: 'URL',
                 story: '스토리',
                 abundanceRate: 2,
-                imageUrl: 'image_url',
                 releaseDate: '2020-11-29',
             };
             perfumeDao
@@ -54,10 +55,9 @@ describe('# perfumeDao Test', () => {
                     brandIdx: 1,
                     englishName: 'insert Test',
                     volumeAndPrice: '{}',
-                    imageThumbnailUrl: 'URL',
+                    imageUrl: 'URL',
                     story: '스토리',
                     abundanceRate: 2,
-                    imageUrl: 'image_url',
                     releaseDate: '2020-11-29',
                 })
                 .then(() => {
@@ -96,25 +96,33 @@ describe('# perfumeDao Test', () => {
 
         describe('# search Test', () => {
             it('# success case (series & grand & order by recent)', (done) => {
-                const filter = {
-                    series: ['계열1', '계열2'],
-                    brands: ['브랜드1', '브랜드2', '브랜드3'],
-                };
+                const ingredients = [1, 2, 3, 4, 5];
+                const brands = [1, 2, 3, 4, 5];
                 perfumeDao
-                    .search(filter, 1, 100, [['createdAt', 'asc']])
+                    .search(brands, ingredients, [], 1, 100, [
+                        ['releaseDate', 'asc'],
+                    ])
                     .then((result) => {
-                        expect(result.rows.length).to.gte(3);
+                        expect(result.rows.length).to.gte(1);
+                        const arr = [];
                         result.rows.forEach((it) => {
-                            filter.series &&
-                                filter.series.length > 0 &&
-                                expect(
-                                    filter.series.indexOf(it.MainSeries.name)
-                                ).to.not.eq(-1);
-                            filter.brands &&
-                                filter.brands.length > 0 &&
-                                expect(
-                                    filter.brands.indexOf(it.Brand.name)
-                                ).to.not.eq(-1);
+                            arr.push(
+                                Note.findAll({
+                                    where: {
+                                        perfumeIdx: it.perfumeIdx,
+                                        ingredientIdx: {
+                                            [Op.in]: ingredients,
+                                        },
+                                    },
+                                })
+                            );
+                            expect(brands.indexOf(it.brandIdx)).to.not.eq(-1);
+                        });
+                        return Promise.all(arr);
+                    })
+                    .then((result) => {
+                        result.forEach((it) => {
+                            expect(it.length).gte(ingredients.length);
                         });
                         done();
                     })
@@ -122,7 +130,7 @@ describe('# perfumeDao Test', () => {
             });
             it('# success case (empty filter)', (done) => {
                 perfumeDao
-                    .search({}, 1, 100)
+                    .search([], [], [], 1, 100)
                     .then((result) => {
                         expect(result.rows.length).gt(3);
                         done();
@@ -131,19 +139,29 @@ describe('# perfumeDao Test', () => {
             });
 
             it('# success case (series)', (done) => {
-                const filter = {
-                    series: ['계열1', '계열2', '계열3'],
-                };
+                const ingredients = [1, 2, 3, 4, 5];
                 perfumeDao
-                    .search(filter, 1, 100)
+                    .search([], ingredients, [], 1, 100)
                     .then((result) => {
-                        expect(result.rows.length).gte(3);
+                        expect(result.rows.length).to.gte(3);
+                        const arr = [];
                         result.rows.forEach((it) => {
-                            filter.series &&
-                                filter.series.length > 0 &&
-                                expect(
-                                    filter.series.indexOf(it.MainSeries.name)
-                                ).to.not.eq(-1);
+                            arr.push(
+                                Note.findAll({
+                                    where: {
+                                        perfumeIdx: it.perfumeIdx,
+                                        ingredientIdx: {
+                                            [Op.in]: ingredients,
+                                        },
+                                    },
+                                })
+                            );
+                        });
+                        return Promise.all(arr);
+                    })
+                    .then((result) => {
+                        result.forEach((it) => {
+                            expect(it.length).gte(ingredients.length);
                         });
                         done();
                     })
@@ -151,19 +169,13 @@ describe('# perfumeDao Test', () => {
             });
 
             it('# success case (brand)', (done) => {
-                const filter = {
-                    brands: ['브랜드1'],
-                };
+                const brands = [1];
                 perfumeDao
-                    .search(filter, 1, 100)
+                    .search(brands, [], [], 1, 100)
                     .then((result) => {
                         expect(result.rows.length).to.gte(2);
                         result.rows.forEach((it) => {
-                            filter.brands &&
-                                filter.brands.length > 0 &&
-                                expect(
-                                    filter.brands.indexOf(it.Brand.name)
-                                ).to.not.eq(-1);
+                            expect(brands.indexOf(it.brandIdx)).to.not.eq(-1);
                         });
                         done();
                     })
@@ -171,19 +183,29 @@ describe('# perfumeDao Test', () => {
             });
 
             it('# success case (series & order by like) ', (done) => {
-                const filter = {
-                    series: ['계열1'],
-                };
+                const ingredients = [1];
                 perfumeDao
-                    .search(filter, 1, 100, [['likeCnt', 'asc']])
+                    .search([], ingredients, [], 1, 100, [['likeCnt', 'asc']])
                     .then((result) => {
-                        expect(result.rows.length).gte(2);
+                        expect(result.rows.length).to.gte(3);
+                        const arr = [];
                         result.rows.forEach((it) => {
-                            filter.series &&
-                                filter.series.length > 0 &&
-                                expect(
-                                    filter.series.indexOf(it.MainSeries.name)
-                                ).to.not.eq(-1);
+                            arr.push(
+                                Note.findAll({
+                                    where: {
+                                        perfumeIdx: it.perfumeIdx,
+                                        ingredientIdx: {
+                                            [Op.in]: ingredients,
+                                        },
+                                    },
+                                })
+                            );
+                        });
+                        return Promise.all(arr);
+                    })
+                    .then((result) => {
+                        result.forEach((it) => {
+                            expect(it.length).gte(ingredients.length);
                         });
                         done();
                     })
@@ -192,7 +214,7 @@ describe('# perfumeDao Test', () => {
 
             it('# success case (order by recent)', (done) => {
                 perfumeDao
-                    .search({}, 1, 100, [['releaseDate', 'desc']])
+                    .search([], [], [], 1, 100, [['releaseDate', 'desc']])
                     .then((result) => {
                         expect(result.rows.length).gte(3);
                         const str1 = result.rows
@@ -211,7 +233,7 @@ describe('# perfumeDao Test', () => {
 
             it('# success case (order by like) ', (done) => {
                 perfumeDao
-                    .search({}, 1, 100, [['likeCnt', 'asc']])
+                    .search([], [], [], 1, 100, [['likeCnt', 'asc']])
                     .then((result) => {
                         expect(result.rows.length).gte(3);
                         const str1 = result.rows.map((it) => it.like).join(',');
@@ -228,9 +250,15 @@ describe('# perfumeDao Test', () => {
 
             it('# success case (order by random) ', (done) => {
                 Promise.all([
-                    perfumeDao.search({}, 1, 100, [Sequelize.fn('RAND')]),
-                    perfumeDao.search({}, 1, 100, [Sequelize.fn('RAND')]),
-                    perfumeDao.search({}, 1, 100, [Sequelize.fn('RAND')]),
+                    perfumeDao.search([], [], [], 1, 100, [
+                        Sequelize.fn('RAND'),
+                    ]),
+                    perfumeDao.search([], [], [], 1, 100, [
+                        Sequelize.fn('RAND'),
+                    ]),
+                    perfumeDao.search([], [], [], 1, 100, [
+                        Sequelize.fn('RAND'),
+                    ]),
                 ])
                     .then(([result1, result2, result3]) => {
                         expect(result1.rows.length).gte(3);
@@ -338,7 +366,7 @@ describe('# perfumeDao Test', () => {
                 mainSeriesIdx: 1,
                 name: '수정 테스트',
                 englishName: 'perfume_delete_test',
-                imageThumbnailUrl: 'URL',
+                imageUrl: 'URL',
                 releaseDate: '2021-01-01',
             });
             perfumeIdx = dataValues.perfumeIdx;
@@ -347,7 +375,6 @@ describe('# perfumeDao Test', () => {
                 story: '향수 수정 스토리',
                 abundanceRate: 2,
                 volumeAndPrice: '{}',
-                imageUrl: '이미지 URL',
             });
         });
         it('# success case', (done) => {
@@ -358,10 +385,9 @@ describe('# perfumeDao Test', () => {
                 brandIdx: 2,
                 englishName: '수정된 영어이름',
                 volumeAndPrice: '{}',
-                imageThumbnailUrl: '수정된url',
+                imageUrl: '수정된url',
                 story: '수정된스토리',
                 abundanceRate: 2,
-                imageUrl: '수정된 이미지',
                 releaseDate: '2020-11-29',
             };
             perfumeDao
@@ -395,7 +421,7 @@ describe('# perfumeDao Test', () => {
                 mainSeriesIdx: 1,
                 name: '향수 삭제 테스트',
                 englishName: 'perfume_delete_test',
-                imageThumbnailUrl: 'URL',
+                imageUrl: 'URL',
                 releaseDate: '2021-01-01',
             });
             perfumeIdx = perfume.perfumeIdx;
@@ -404,7 +430,6 @@ describe('# perfumeDao Test', () => {
                 story: '향수 삭제 테스트 용',
                 abundanceRate: 2,
                 volumeAndPrice: '{}',
-                imageUrl: '이미지 URL',
             });
         });
 

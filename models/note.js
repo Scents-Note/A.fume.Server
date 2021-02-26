@@ -23,6 +23,12 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
+            models.Perfume.hasMany(this, {
+                foreignKey: 'perfumeIdx',
+                as: 'Notes',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            });
         }
     }
     Note.init(
