@@ -4,7 +4,6 @@ const perfumeDao = require('../dao/PerfumeDao.js');
 const reviewDao = require('../dao/ReviewDao.js');
 const ingredientDao = require('../dao/IngredientDao.js');
 const likePerfumeDao = require('../dao/LikePerfumeDao.js');
-const searchHistoryDao = require('../dao/SearchHistoryDao.js');
 const userDao = require('../dao/UserDao.js');
 
 const { parseSortToOrder } = require('../utils/parser.js');
@@ -199,7 +198,6 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
     perfume.longevity = longevity;
     perfume.gender = gender;
 
-    if (userIdx > 0) searchHistoryDao.create(userIdx, perfumeIdx);
     return perfume;
 };
 

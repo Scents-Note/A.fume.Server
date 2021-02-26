@@ -6,10 +6,9 @@ const { expect } = require('chai');
 const { sequelize } = require('../../models');
 
 describe('# KeywordDao Test', () => {
-  before(async () => {
-    await sequelize.sync()
-    await require('./seeds')()
-  })
+  before(async function () {
+    await require('./common/presets.js')(this);
+});
   describe('# readAll Test', () => {
     it('# success case', (done) => {
       keywordDao
