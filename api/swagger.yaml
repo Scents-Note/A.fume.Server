@@ -2525,8 +2525,6 @@ definitions:
         - 오 드 뜨왈렛
         - 오 드 퍼퓸
         - 퍼퓸
-      imageUrl:
-        type: string
       volumeAndPrice:
         type: array
         items:

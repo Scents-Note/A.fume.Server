@@ -19,7 +19,7 @@ const { ranking } = require('../mongoose_models');
 const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
     'SELECT ' +
     'COUNT(*) AS "SearchHistory.weight", ' +
-    'p.perfume_idx AS perfumeIdx, p.main_series_idx AS mainSeriesIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_thumbnail_url AS imageUrl, p.release_date AS releaseDate, p.like_cnt AS likeCnt, ' +
+    'p.perfume_idx AS perfumeIdx, p.main_series_idx AS mainSeriesIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.release_date AS releaseDate, p.like_cnt AS likeCnt, ' +
     'b.brand_idx AS "Brand.brandIdx", ' +
     'b.name AS "Brand.name", ' +
     'b.english_name AS "Brand.englishName", ' +
@@ -43,7 +43,7 @@ const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
 
 const SQL_SEARCH_PERFUME_SELECT =
     'SELECT ' +
-    'p.perfume_idx AS perfumeIdx, p.main_series_idx AS mainSeriesIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_thumbnail_url AS imageUrl, p.release_date AS releaseDate, p.like_cnt AS likeCnt, ' +
+    'p.perfume_idx AS perfumeIdx, p.main_series_idx AS mainSeriesIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.release_date AS releaseDate, p.like_cnt AS likeCnt, ' +
     'b.brand_idx AS "Brand.brandIdx", ' +
     'b.name AS "Brand.name", ' +
     'b.english_name AS "Brand.englishName", ' +
@@ -122,11 +122,10 @@ module.exports.create = ({
     name,
     englishName,
     volumeAndPrice,
-    imageThumbnailUrl,
+    imageUrl,
     mainSeriesIdx,
     story,
     abundanceRate,
-    imageUrl,
     releaseDate,
 }) => {
     volumeAndPrice = JSON.stringify(volumeAndPrice);
@@ -137,14 +136,14 @@ module.exports.create = ({
                 mainSeriesIdx,
                 name,
                 englishName,
-                imageThumbnailUrl,
+                imageUrl,
                 releaseDate,
             },
             { transaction: t }
         );
         const perfumeIdx = perfumeResult.perfumeIdx;
         await PerfumeDetail.create(
-            { perfumeIdx, story, abundanceRate, volumeAndPrice, imageUrl },
+            { perfumeIdx, story, abundanceRate, volumeAndPrice },
             { transaction: t }
         );
         return perfumeIdx;
@@ -481,10 +480,9 @@ module.exports.update = async ({
     brandIdx,
     englishName,
     volumeAndPrice,
-    imageThumbnailUrl,
+    imageUrl,
     story,
     abundanceRate,
-    imageUrl,
     releaseDate,
 }) => {
     const result = await sequelize.transaction(async (t) => {
@@ -494,7 +492,7 @@ module.exports.update = async ({
                 mainSeriesIdx,
                 name,
                 englishName,
-                imageThumbnailUrl,
+                imageUrl,
                 releaseDate,
             },
             { where: { perfumeIdx }, transaction: t }
@@ -504,7 +502,7 @@ module.exports.update = async ({
         }
         const detailAffectedRows = (
             await PerfumeDetail.update(
-                { story, abundanceRate, volumeAndPrice, imageUrl },
+                { story, abundanceRate, volumeAndPrice },
                 { where: { perfumeIdx }, transaction: t }
             )
         )[0];

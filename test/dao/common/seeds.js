@@ -72,7 +72,7 @@ module.exports = () => {
                 mainSeriesIdx: i,
                 name: `향수${i}`,
                 englishName: 'perfume english name',
-                imageThumbnailUrl: `http://perfume-image/${i}`,
+                imageUrl: `http://perfume-image/${i}`,
                 releaseDate: `2021-01-1${i}`,
                 likeCnt: 1,
             })
@@ -85,7 +85,6 @@ module.exports = () => {
                 perfumeIdx: i,
                 story: `스토리${i}`,
                 abundanceRate: 1,
-                imageUrl: '',
                 volumeAndPrice: '{"30":"95000","100":"190000"}',
             }),
             LikePerfume.upsert({ userIdx: 1, perfumeIdx: i }),

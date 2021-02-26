@@ -26,10 +26,9 @@ describe('# perfumeDao Test', () => {
                 brandIdx: 1,
                 englishName: 'insert Test',
                 volumeAndPrice: {},
-                imageThumbnailUrl: 'URL',
+                imageUrl: 'URL',
                 story: '스토리',
                 abundanceRate: 2,
-                imageUrl: 'image_url',
                 releaseDate: '2020-11-29',
             };
             perfumeDao
@@ -56,10 +55,9 @@ describe('# perfumeDao Test', () => {
                     brandIdx: 1,
                     englishName: 'insert Test',
                     volumeAndPrice: '{}',
-                    imageThumbnailUrl: 'URL',
+                    imageUrl: 'URL',
                     story: '스토리',
                     abundanceRate: 2,
-                    imageUrl: 'image_url',
                     releaseDate: '2020-11-29',
                 })
                 .then(() => {
@@ -368,7 +366,7 @@ describe('# perfumeDao Test', () => {
                 mainSeriesIdx: 1,
                 name: '수정 테스트',
                 englishName: 'perfume_delete_test',
-                imageThumbnailUrl: 'URL',
+                imageUrl: 'URL',
                 releaseDate: '2021-01-01',
             });
             perfumeIdx = dataValues.perfumeIdx;
@@ -377,7 +375,6 @@ describe('# perfumeDao Test', () => {
                 story: '향수 수정 스토리',
                 abundanceRate: 2,
                 volumeAndPrice: '{}',
-                imageUrl: '이미지 URL',
             });
         });
         it('# success case', (done) => {
@@ -388,10 +385,9 @@ describe('# perfumeDao Test', () => {
                 brandIdx: 2,
                 englishName: '수정된 영어이름',
                 volumeAndPrice: '{}',
-                imageThumbnailUrl: '수정된url',
+                imageUrl: '수정된url',
                 story: '수정된스토리',
                 abundanceRate: 2,
-                imageUrl: '수정된 이미지',
                 releaseDate: '2020-11-29',
             };
             perfumeDao
@@ -425,7 +421,7 @@ describe('# perfumeDao Test', () => {
                 mainSeriesIdx: 1,
                 name: '향수 삭제 테스트',
                 englishName: 'perfume_delete_test',
-                imageThumbnailUrl: 'URL',
+                imageUrl: 'URL',
                 releaseDate: '2021-01-01',
             });
             perfumeIdx = perfume.perfumeIdx;
@@ -434,7 +430,6 @@ describe('# perfumeDao Test', () => {
                 story: '향수 삭제 테스트 용',
                 abundanceRate: 2,
                 volumeAndPrice: '{}',
-                imageUrl: '이미지 URL',
             });
         });
 
