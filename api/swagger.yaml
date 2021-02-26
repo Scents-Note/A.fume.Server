@@ -388,9 +388,68 @@ paths:
             properties:
               message:
                 type: string
-                example: 향수 세부 회 성공
+                example: 향수 세부 조회 성공
               data:
-                $ref: '#/definitions/PerfumeDetail'
+                allOf:
+                - $ref: '#/definitions/PerfumeInfo'
+                - type: object
+                  properties:
+                    perfumeIdx:
+                      type: integer
+                  example:
+                    perfumeIdx: 1
+                - type: object
+                  properties:
+                    PerfumeDetail:
+                      $ref: '#/definitions/PerfumeDetailInfo'
+                    Keywords:
+                      type: array
+                      items:
+                        $ref: '#/definitions/KeywordInfo'
+                    Notes:
+                      $ref: '#/definitions/PerfumeNote'
+                  example:
+                    PerfumeDetail:
+                      story: 조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트\
+                            , 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다.
+                      abundanceRate: 코롱
+                      volumeAndPrice:
+                      - volume: 30
+                        price: 90000
+                      - volume: 30
+                        price: 90000
+                      - volume: 30
+                        price: 90000
+                    Keywords:
+                    - 시원한
+                    - 차가운
+                    Notes:
+                      noteType: 0
+                      ingredients:
+                        top:
+                        - ingredientIdx: 1
+                          name: 재료1
+                          description: 향긋
+                        - ingredientIdx: 5
+                          name: 재료5
+                          description: 향긋
+                        middle:
+                        - ingredientIdx: 2
+                          name: 재료2
+                          description: 향긋
+                        - ingredientIdx: 6
+                          name: 재료6
+                          description: 향긋
+                        base:
+                        - ingredientIdx: 3
+                          name: 재료3
+                          description: 향긋
+                        - ingredientIdx: 4
+                          name: 재료4
+                          description: 향긋
+                        - ingredientIdx: 7
+                          name: 재료7
+                          description: 향긋
         401:
           description: Token is missing or invalid
         404:
@@ -2406,10 +2465,12 @@ definitions:
   KeywordInfo:
     type: object
     properties:
+      keywordIdx:
+        type: number
+        example: 1
       name:
         type: string
-    example:
-      name: 달달한
+        example: 달달한
   PerfumeInfo:
     type: object
     properties:
@@ -2486,7 +2547,7 @@ definitions:
         price: 90000
       - volume: 30
         price: 90000
-  PerfumeDetail:
+  PerfumeSummary:
     properties:
       score:
         type: number
@@ -2564,28 +2625,8 @@ definitions:
             minimum: 0
             maximum: 100
             description: 겨울
-      keywords:
-        type: array
-        items:
-          type: string
-          example: 
-      noteType:
-        type: integer
-        description: 0은 일반 노트, 1은 single 노트
-      notes:
-        $ref: '#/definitions/PerfumeDetailInfo_ingredients'
-    allOf:
-    - $ref: '#/definitions/PerfumeInfo'
-    - $ref: '#/definitions/PerfumeDetailInfo'
-    - type: object
-      properties:
-        perfumeIdx:
-          type: integer
-      example:
-        perfumeIdx: 1
     example:
       score: 5.4
-      abundanceRate: 오 드 퍼퓸
       seasonal:
         spring: 0
         summer: 30
@@ -2601,32 +2642,13 @@ definitions:
         normal: 20
         strong: 20
         veryStrong: 10
-      noteType: 0
+  PerfumeNote:
+    properties:
+      noteType:
+        type: integer
+        description: 0은 일반 노트, 1은 single 노트
       ingredients:
-        top:
-        - ingredientIdx: 1
-          name: 재료1
-          description: 향긋
-        - ingredientIdx: 5
-          name: 재료5
-          description: 향긋
-        middle:
-        - ingredientIdx: 2
-          name: 재료2
-          description: 향긋
-        - ingredientIdx: 6
-          name: 재료6
-          description: 향긋
-        base:
-        - ingredientIdx: 3
-          name: 재료3
-          description: 향긋
-        - ingredientIdx: 4
-          name: 재료4
-          description: 향긋
-        - ingredientIdx: 7
-          name: 재료7
-          description: 향긋
+        $ref: '#/definitions/IngredientMap'
   SeriesInfo:
     type: object
     properties:
@@ -2770,16 +2792,7 @@ definitions:
     - {}
     example:
       nickname: 향린이S2
-  ApiResponse:
-    type: object
-    properties:
-      message:
-        type: string
-        example: 메세지
-      data:
-        type: string
-        example: 0
-  PerfumeDetailInfo_ingredients:
+  IngredientMap:
     type: object
     properties:
       top:
@@ -2798,6 +2811,15 @@ definitions:
         type: array
         items:
           $ref: '#/definitions/IngredientInfo'
+  ApiResponse:
+    type: object
+    properties:
+      message:
+        type: string
+        example: 메세지
+      data:
+        type: string
+        example: 0
 externalDocs:
   description: Afume Server Git Wiki
   url: https://github.com/A-fume/A.fume.Server/wiki

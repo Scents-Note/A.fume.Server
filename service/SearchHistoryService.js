@@ -10,6 +10,7 @@ const searchHistoryDao = require('../dao/SearchHistoryDao.js');
  * @returns {Promise}
  **/
 exports.incrementCount = async (userIdx, perfumeIdx) => {
+    if (userIdx == -1) return;
     return searchHistoryDao.read(userIdx, perfumeIdx).then((result) => {
         if (!result) {
             return searchHistoryDao.create(userIdx, perfumeIdx, 1);
