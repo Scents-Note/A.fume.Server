@@ -132,6 +132,7 @@ describe('# ingredientDao Test', () => {
                     name: '테스트 데이터',
                     englishName: 'Test Data',
                     description: '',
+                    seriesIdx: 1,
                     imageUrl: '',
                 })
             )[0].ingredientIdx;
@@ -167,6 +168,7 @@ describe('# ingredientDao Test', () => {
                     name: '삭제 데이터',
                     englishName: 'Delete Data',
                     description: '',
+                    seriesIdx: 1,
                     imageUrl: '',
                 })
             )[0].ingredientIdx;

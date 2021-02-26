@@ -48,11 +48,11 @@ module.exports = () => {
             }),
             Keyword.upsert({
                 id: i,
-                name: `키워드${i}`
+                name: `키워드${i}`,
             }),
             JoinPerfumeKeyword.upsert({
                 perfumeIdx: i,
-                keywordIdx: i
+                keywordIdx: i,
             })
         );
     }
@@ -109,7 +109,7 @@ module.exports = () => {
     const fourthJob = [];
     for (let i = 1; i <= 5; i++) {
         fourthJob.push(
-            LikeReview.upsert({reviewIdx: i, userIdx: i}),
+            LikeReview.upsert({ reviewIdx: i, userIdx: i }),
             SearchHistory.upsert({ userIdx: i, perfumeIdx: i, count: 1 }),
             SearchHistory.upsert({ userIdx: 1, perfumeIdx: i, count: 1 }),
             PerfumeSurvey.upsert({ perfumeIdx: i, gender: GENDER_WOMAN }),

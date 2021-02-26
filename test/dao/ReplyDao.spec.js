@@ -7,7 +7,7 @@ const { expect } = chai;
 const replyDao = require('../../dao/ReplyDao.js');
 const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
 const pool = require('../../utils/db/pool.js');
-
+/*
 describe('# replyDao Test', () => {
     describe('# create Test', () => {
         it('# success case', (done) => {
@@ -110,3 +110,4 @@ describe('# replyDao Test', () => {
         });
     });
 });
+*/
