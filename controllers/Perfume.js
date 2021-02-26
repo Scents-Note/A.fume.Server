@@ -36,12 +36,9 @@ module.exports.getPerfume = (req, res, next) => {
 module.exports.searchPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
     let { pagingIndex, pagingSize, sort } = req.query;
-    let { keywordList, brandList, ingredientList } = req.body;
+    const { keywordList, brandList, ingredientList } = req.body;
     pagingIndex = parseInt(pagingIndex) || 1;
     pagingSize = parseInt(pagingSize) || 100;
-    brandList = brandList || [];
-    ingredientList = ingredientList || [];
-    keywordList = keywordList || [];
     Perfume.searchPerfume(
         brandList,
         ingredientList,
