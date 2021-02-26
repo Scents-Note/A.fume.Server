@@ -206,17 +206,34 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
 /**
  * 향수 검색
  *
- * @param {Object} Filter
+ * @param {number[]} brandIdxList
+ * @param {number[]} ingredientIdxList
+ * @param {number[]} keywordIdxList
  * @param {number} pagingIndex
  * @param {number} pagingSize
  * @param {array} sort
  * @param {number} userIdx
  * @returns {Promise<Perfume[]>}
  **/
-exports.searchPerfume = (filter, pagingIndex, pagingSize, sort, userIdx) => {
+exports.searchPerfume = (
+    brandIdxList,
+    ingredientIdxList,
+    keywordIdxList,
+    pagingIndex,
+    pagingSize,
+    sort,
+    userIdx
+) => {
     const order = parseSortToOrder(sort);
     return perfumeDao
-        .search(filter, pagingIndex, pagingSize, order)
+        .search(
+            brandIdxList,
+            ingredientIdxList,
+            keywordIdxList,
+            pagingIndex,
+            pagingSize,
+            order
+        )
         .then((result) => {
             result.rows.forEach((it) => {
                 delete it.createdAt;

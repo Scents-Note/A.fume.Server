@@ -91,7 +91,7 @@ paths:
           description: Token is missing or invalid
       x-swagger-router-controller: Perfume
   /perfume/search:
-    get:
+    post:
       tags:
       - perfume
       summary: 향수 검색
@@ -101,21 +101,27 @@ paths:
       produces:
       - application/json
       parameters:
-      - name: brand
-        in: query
-        type: string
-        description: 브랜드이름을 delimiter(%)로 연결
-        required: false
-      - name: series
-        in: query
-        type: string
-        description: 계열 이름을 delimiter(%)로 연결
-        required: false
-      - name: keyword
-        in: query
-        type: string
-        description: 키워드를 delimiter(%)로 연결
-        required: false
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            keywordList:
+              type: array
+              items:
+                type: integer
+              example: [1, 2]
+            ingredientList:
+              type: array
+              items:
+                type: integer
+              example: [1, 2]
+            brandList:
+              type: array
+              items: 
+                type: integer
+              example: [1, 2]
       - name: sort
         in: query
         type: string

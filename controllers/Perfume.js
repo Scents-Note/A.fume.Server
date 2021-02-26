@@ -40,7 +40,7 @@ module.exports.searchPerfume = (req, res, next) => {
     pagingIndex = parseInt(pagingIndex) || 1;
     pagingSize = parseInt(pagingSize) || 100;
     brandList = brandList || [];
-    ingredientList = brandList || [];
+    ingredientList = ingredientList || [];
     keywordList = keywordList || [];
     Perfume.searchPerfume(
         brandList,

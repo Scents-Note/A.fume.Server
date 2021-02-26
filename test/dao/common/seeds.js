@@ -91,7 +91,27 @@ module.exports = () => {
             SearchHistory.upsert({ userIdx: 1, perfumeIdx: i, count: 1 }),
             PerfumeSurvey.upsert({ perfumeIdx: i, gender: GENDER_WOMAN }),
             Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: (i % 4) + 1 }),
-            Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: 1 })
+            Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: 1 }),
+            Note.upsert({
+                perfumeIdx: 2,
+                ingredientIdx: i,
+                type: ((i + 1) % 4) + 1,
+            }),
+            Note.upsert({
+                perfumeIdx: 3,
+                ingredientIdx: i,
+                type: ((i + 2) % 4) + 1,
+            }),
+            Note.upsert({
+                perfumeIdx: 4,
+                ingredientIdx: i,
+                type: ((i + 3) % 4) + 1,
+            }),
+            Note.upsert({
+                perfumeIdx: 5,
+                ingredientIdx: i,
+                type: ((i + 4) % 4) + 1,
+            })
         );
     }
     return Promise.all(firstJob)
