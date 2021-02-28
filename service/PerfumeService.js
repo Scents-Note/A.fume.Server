@@ -4,6 +4,7 @@ const perfumeDao = require('../dao/PerfumeDao.js');
 const reviewDao = require('../dao/ReviewDao.js');
 const ingredientDao = require('../dao/IngredientDao.js');
 const likePerfumeDao = require('../dao/LikePerfumeDao.js');
+const keywordDao = require('../dao/KeywordDao.js');
 const userDao = require('../dao/UserDao.js');
 
 const { parseSortToOrder } = require('../utils/parser.js');
@@ -28,6 +29,20 @@ async function updateIsLike(result, userIdx) {
         return it;
     });
     return result;
+}
+
+function removeUselessKey(array, additional = []) {
+    return array.map((it) => {
+        let ret = Object.assign({}, it);
+        delete ret.mainSeriesIdx;
+        delete ret.releaseDate;
+        delete ret.englishName;
+        delete ret.perfume_idx;
+        additional.forEach((it) => {
+            delete ret[it];
+        });
+        return ret;
+    });
 }
 
 /**
@@ -106,9 +121,7 @@ function normalize(obj) {
         return prev + cur[1];
     }, 0);
     if (total == 0) {
-        return entries.map((it) => {
-            return 0;
-        });
+        return obj;
     }
     let remain = 100;
     let maxKey = 0;
@@ -133,7 +146,13 @@ function normalize(obj) {
  * @returns {Promise<Perfume>}
  **/
 exports.getPerfumeById = async (perfumeIdx, userIdx) => {
-    const perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
+    const _perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
+    const [perfume] = removeUselessKey([_perfume]);
+
+    const likePerfumeList = await likePerfumeDao.read(userIdx, perfumeIdx);
+    perfume.isLiked = likePerfumeList ? true : false;
+
+    perfume.Keywords = await keywordDao.readAllOfPerfume(perfumeIdx);
 
     const noteMap = (await ingredientDao.readByPerfumeIdx(perfumeIdx))
         .map((it) => {
@@ -235,10 +254,7 @@ exports.searchPerfume = (
             order
         )
         .then((result) => {
-            result.rows.forEach((it) => {
-                delete it.createdAt;
-                delete it.updatedAt;
-            });
+            result.rows = removeUselessKey(result.rows);
             return updateIsLike(result, userIdx);
         });
 };
@@ -256,10 +272,7 @@ exports.getSurveyPerfume = (userIdx) => {
             return perfumeDao.readPerfumeSurvey(it.gender);
         })
         .then((result) => {
-            result.rows = result.rows.map((it) => {
-                delete it.PerfumeSurvey;
-                return it;
-            });
+            result.rows = removeUselessKey(result.rows, ['PerfumeSurvey']);
             return updateIsLike(result, userIdx);
         });
 };
@@ -340,6 +353,7 @@ exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
     return perfumeDao
         .recentSearchPerfumeList(userIdx, pagingIndex, pagingSize)
         .then((result) => {
+            result.rows = removeUselessKey(result.rows);
             return updateIsLike(result, userIdx);
         });
 };
@@ -359,6 +373,7 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
     const ageGroup = parseInt(age / 10) * 10;
     const cached = await perfumeDao.recommendPerfumeByAgeAndGenderCached();
     if (cached) {
+        cached.rows = removeUselessKey(cached.rows);
         return updateIsLike(cached, userIdx);
     }
     return this.recommendByGenderAgeAndGender(
@@ -367,6 +382,7 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
         pagingIndex,
         pagingSize
     ).then((result) => {
+        result.rows = removeUselessKey(result.rows);
         return updateIsLike(result, userIdx);
     });
 };
@@ -397,14 +413,20 @@ exports.recommendByGenderAgeAndGender = (
 /**
  * 새로 추가된 향수 조회
  *
+ * @param {number} userIdx
  * @param {number} pagingIndex
  * @param {number} pagingSize
  * @returns {Promise<Perfume[]>}
  **/
-exports.getNewPerfume = (pagingIndex, pagingSize) => {
+exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
     const fromDate = new Date();
     fromDate.setDate(fromDate.getDate() - 7);
-    return perfumeDao.readNewPerfume(fromDate, pagingIndex, pagingSize);
+    return perfumeDao
+        .readNewPerfume(fromDate, pagingIndex, pagingSize)
+        .then((it) => {
+            it.rows = removeUselessKey(it.rows);
+            return updateIsLike(it, userIdx);
+        });
 };
 
 /**
@@ -416,5 +438,10 @@ exports.getNewPerfume = (pagingIndex, pagingSize) => {
  * @returns {Promise<Perfume[]>}
  **/
 exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
-    return perfumeDao.readLikedPerfume(userIdx, pagingIndex, pagingSize);
+    return perfumeDao
+        .readLikedPerfume(userIdx, pagingIndex, pagingSize)
+        .then((it) => {
+            it.rows = removeUselessKey(it.rows);
+            return updateIsLike(it, userIdx);
+        });
 };
