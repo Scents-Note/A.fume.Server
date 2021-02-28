@@ -391,87 +391,82 @@ paths:
                 example: 향수 세부 조회 성공
               data:
                 allOf:
-                - $ref: '#/definitions/PerfumeInfo'
+                - $ref: '#/definitions/Perfume'
                 - type: object
                   properties:
                     perfumeIdx:
                       type: integer
                   example:
                     perfumeIdx: 1
-                - type: object
-                  properties:
-                    isLike:
-                      type: integer
-                    PerfumeDetail:
-                      $ref: '#/definitions/PerfumeDetailInfo'
-                    Keywords:
-                      type: array
-                      items:
-                        $ref: '#/definitions/KeywordInfo'
-                    Notes:
-                      $ref: '#/definitions/PerfumeNote'
-                    Summary:
-                      $ref: '#/definitions/PerfumeSummary'
+                - allOf:
+                  - type: object
+                    properties:
+                      isLike:
+                        type: integer
+                      Keywords:
+                        type: array
+                        items:
+                          $ref: '#/definitions/KeywordInfo'
+                  - $ref: '#/definitions/PerfumeDetailInfo'
+                  - $ref: '#/definitions/PerfumeNote'
+                  - $ref: '#/definitions/PerfumeSummary'
                   example:
                     isLike: true
-                    PerfumeDetail:
-                      story: 조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트\
-                            , 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다.
-                      abundanceRate: 코롱
-                      volumeAndPrice:
-                      - volume: 30
-                        price: 90000
-                      - volume: 30
-                        price: 90000
-                      - volume: 30
-                        price: 90000
+                    story: 조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트\
+                          , 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다.
+                    abundanceRate: 코롱
+                    volumeAndPrice:
+                    - volume: 30
+                      price: 90000
+                    - volume: 30
+                      price: 90000
+                    - volume: 30
+                      price: 90000
                     Keywords:
                     - 시원한
                     - 차가운
-                    Notes:
-                      noteType: 0
-                      ingredients:
-                        top:
-                        - ingredientIdx: 1
-                          name: 재료1
-                          description: 향긋
-                        - ingredientIdx: 5
-                          name: 재료5
-                          description: 향긋
-                        middle:
-                        - ingredientIdx: 2
-                          name: 재료2
-                          description: 향긋
-                        - ingredientIdx: 6
-                          name: 재료6
-                          description: 향긋
-                        base:
-                        - ingredientIdx: 3
-                          name: 재료3
-                          description: 향긋
-                        - ingredientIdx: 4
-                          name: 재료4
-                          description: 향긋
-                        - ingredientIdx: 7
-                          name: 재료7
-                          description: 향긋
-                    Summary:
-                      score: 5.4
-                      seasonal:
-                        spring: 0
-                        summer: 30
-                        fall: 30
-                        winter: 40
-                      sillage:
-                        light: 40
-                        medium: 20
-                        heavy: 40
-                      longevity:
-                        veryWeak: 10
-                        weak: 10
-                        normal: 20
-                        strong: 20
-                        veryStrong: 10
+                    noteType: 0
+                    ingredients:
+                      top:
+                      - ingredientIdx: 1
+                        name: 재료1
+                        description: 향긋
+                      - ingredientIdx: 5
+                        name: 재료5
+                        description: 향긋
+                      middle:
+                      - ingredientIdx: 2
+                        name: 재료2
+                        description: 향긋
+                      - ingredientIdx: 6
+                        name: 재료6
+                        description: 향긋
+                      base:
+                      - ingredientIdx: 3
+                        name: 재료3
+                        description: 향긋
+                      - ingredientIdx: 4
+                        name: 재료4
+                        description: 향긋
+                      - ingredientIdx: 7
+                        name: 재료7
+                        description: 향긋
+                    score: 5.4
+                    seasonal:
+                      spring: 0
+                      summer: 30
+                      fall: 30
+                      winter: 40
+                    sillage:
+                      light: 40
+                      medium: 20
+                      heavy: 40
+                    longevity:
+                      veryWeak: 10
+                      weak: 10
+                      normal: 20
+                      strong: 20
+                      veryStrong: 10
         401:
           description: Token is missing or invalid
         404:
@@ -2208,7 +2203,7 @@ paths:
                   token:
                     type: string
                     description: login용 userToken
-                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWR4IjoxLCJlbWFpbCI6ImhlZS55b3VuQHNhbXN1bmcuY29tIiwibmlja25hbWUiOiLsv7zsubTrp6giLCJnZW5kZXIiOjEsInBob25lIjoiMDEwLTIwODEtMzgxOCIsImJpcnRoIjoxOTk1LCJncmFkZSI6MCwiYWNjZXNzVGltZSI6IjIwMjEtMDEtMDVUMTM6MDM6NDAuMDAwWiIsImNyZWF0ZWRBdCI6IjIwMjEtMDEtMDVUMTM6MDM6NDAuMDAwWiIsInVwZGF0ZWRBdCI6IjIwMjEtMDEtMDVUMTM6MDM6NDAuMDAwWiIsImlhdCI6MTYwOTg1MTgyMywiZXhwIjoxNjExNTc5ODIzLCJpc3MiOiJhZnVtZS1qYWNrcG90In0.cElGHvQZ0rcuow_LyKhHdKzcDPY70VzzukxzIXuyML4
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWR4IjoyOSwiZW1haWwiOiJoZWUueW91bkBzYW1zdW5nLmNvbSIsIm5pY2tuYW1lIjoi7L-87Lm066eoIiwiZ2VuZGVyIjoxLCJwaG9uZSI6IjAxMC0yMDgxLTM4MTgiLCJiaXJ0aCI6MTk5NSwiZ3JhZGUiOjAsImFjY2Vzc1RpbWUiOiIyMDIxLTAyLTI4VDA4OjEwOjI4LjAwMFoiLCJjcmVhdGVkQXQiOiIyMDIxLTAyLTI4VDAwOjUyOjI4LjAwMFoiLCJ1cGRhdGVkQXQiOiIyMDIxLTAyLTI4VDA4OjEwOjI4LjAwMFoiLCJpYXQiOjE2MTQ0OTk5OTQsImV4cCI6MTYxNjIyNzk5NCwiaXNzIjoiYWZ1bWUtamFja3BvdCJ9.lztExrMNy-HCeaDDheos-EXRQEHMdVmQNiaYvKBPHGw
                   refreshToken:
                     type: string
                     description: token 재발급 용 
@@ -2440,8 +2435,7 @@ paths:
                 type: array
                 items:               
                   allOf:
-                  - $ref: '#/definitions/PerfumeInfo'
-                  - $ref: '#/definitions/PerfumeDetailInfo'
+                  - $ref: '#/definitions/Perfume'
                   - type: object
                     properties:
                       perfumeIdx:
@@ -2498,12 +2492,15 @@ definitions:
     properties:
       name:
         type: string
+      englishName:
+        type: string
       brandIdx:
         type: integer
       imageUrl:
         type: string
     example:
       name: 154 코롱
+      englishName: 154 kolon
       brandIdx: 1
       imageUrl: https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554
   Perfume:
@@ -2514,27 +2511,15 @@ definitions:
         type: integer
       isLiked:
         type: boolean
-      Brand:
-        allOf:
-        - $ref: '#/definitions/BrandInfo'
-        - type: object
-          properties:
-            brandIdx:
-              type: integer
-          example: 1
+      brandName:
+        type: string
     allOf:
     - $ref: '#/definitions/PerfumeInfo'
     example:
       perfumeIdx: 1
       likeCnt: 4
       isLiked: true
-      Brand: 
-        brandIdx: 1
-        name: (테스트)조말론
-        englishName: (테스트)Jo Malone
-        firstInitial: ㅌ
-        description: (테스트)런던 브랜드
-        imageUrl: (테스트)
+      brandName: (테스트)조말론
   PerfumeDetailInfo:
     properties:
       story:

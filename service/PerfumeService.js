@@ -13,36 +13,68 @@ const {
     NotMatchedError,
     FailedToCreateError,
 } = require('../utils/errors/errors.js');
-async function updateIsLike(result, userIdx) {
+
+function updateRows(result, ...jobs) {
     const perfumeList = result.rows;
-    const perfumeIdxList = perfumeList.map((it) => it.perfumeIdx);
-    const likePerfumeList = await likePerfumeDao.readLikeInfo(
-        userIdx,
-        perfumeIdxList
-    );
-    const likeMap = likePerfumeList.reduce((prev, cur) => {
-        prev[cur] = true;
-        return prev;
-    }, {});
     result.rows = perfumeList.map((it) => {
-        it.isLiked = likeMap[it.perfumeIdx] ? true : false;
+        jobs.forEach((job) => {
+            it = job(it);
+        });
         return it;
     });
     return result;
 }
 
-function removeUselessKey(array, additional = []) {
-    return array.map((it) => {
-        let ret = Object.assign({}, it);
-        delete ret.mainSeriesIdx;
-        delete ret.releaseDate;
-        delete ret.englishName;
-        delete ret.perfume_idx;
-        additional.forEach((it) => {
+function isLikeJob(likePerfumeList) {
+    const likeMap = likePerfumeList.reduce((prev, cur) => {
+        prev[cur] = true;
+        return prev;
+    }, {});
+    return (obj) => {
+        const ret = Object.assign({}, obj);
+        ret.isLiked = likeMap[obj.perfumeIdx] ? true : false;
+        return ret;
+    };
+}
+
+function removeKeyJob(...keys) {
+    return (obj) => {
+        const ret = Object.assign({}, obj);
+        keys.forEach((it) => {
             delete ret[it];
         });
         return ret;
-    });
+    };
+}
+
+function extractJob(key, ...fields) {
+    return (obj) => {
+        const ret = Object.assign({}, obj);
+        fields.forEach((it) => {
+            ret[it[1]] = obj[key][it[0]];
+        });
+        delete ret[key];
+        return ret;
+    };
+}
+
+function flatJob(...keys) {
+    return (obj) => {
+        let ret = Object.assign({}, obj);
+        keys.forEach((key) => {
+            ret = Object.assign(ret, obj[key]);
+            delete ret[key];
+        });
+        return ret;
+    };
+}
+
+function commonJob() {
+    return (obj) => {
+        obj = extractJob('Brand', ['name', 'brandName'])(obj);
+        obj = removeKeyJob('perfume_idx', 'mainSeries', 'releaseDate')(obj);
+        return obj;
+    };
 }
 
 /**
@@ -138,22 +170,7 @@ function normalize(obj) {
     return result;
 }
 
-/**
- * 향수 세부 정보 조회
- *
- * @param {number} perfumeIdx
- * @param {number} userIdx
- * @returns {Promise<Perfume>}
- **/
-exports.getPerfumeById = async (perfumeIdx, userIdx) => {
-    const _perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
-    const [perfume] = removeUselessKey([_perfume]);
-
-    const likePerfumeList = await likePerfumeDao.read(userIdx, perfumeIdx);
-    perfume.isLiked = likePerfumeList ? true : false;
-
-    perfume.Keywords = await keywordDao.readAllOfPerfume(perfumeIdx);
-
+async function generateNote(perfumeIdx) {
     const noteMap = (await ingredientDao.readByPerfumeIdx(perfumeIdx))
         .map((it) => {
             it.type = noteTypeArr[it.Notes.type - 1];
@@ -180,9 +197,10 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
         noteType = 0;
         delete noteMap.single;
     }
+    return { noteType, ingredients: noteMap };
+}
 
-    perfume.Notes = { noteType, ingredients: noteMap };
-
+async function generateSummary(perfumeIdx) {
     let sum = 0,
         cnt = 0;
     let seasonalMap = makeZeroMap(seasonalArr);
@@ -209,13 +227,31 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
             }
         });
 
-    perfume.Summary = {
+    return {
         score: parseFloat((parseFloat(sum) / cnt).toFixed(2)) || 0,
         seasonal: normalize(seasonalMap),
         sillage: normalize(sillageMap),
         longevity: normalize(longevityMap),
         gender: normalize(genderMap),
     };
+}
+/**
+ * 향수 세부 정보 조회
+ *
+ * @param {number} perfumeIdx
+ * @param {number} userIdx
+ * @returns {Promise<Perfume>}
+ **/
+exports.getPerfumeById = async (perfumeIdx, userIdx) => {
+    let perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
+    perfume = commonJob()(perfume);
+    perfume = flatJob('PerfumeDetail')(perfume);
+
+    const likePerfumeList = await likePerfumeDao.read(userIdx, perfumeIdx);
+    perfume.isLiked = likePerfumeList ? true : false;
+    perfume.Keywords = await keywordDao.readAllOfPerfume(perfumeIdx);
+    Object.assign(perfume, await generateNote(perfumeIdx));
+    Object.assign(perfume, await generateSummary(perfumeIdx));
 
     return perfume;
 };
@@ -251,9 +287,18 @@ exports.searchPerfume = (
             pagingSize,
             order
         )
-        .then((result) => {
-            result.rows = removeUselessKey(result.rows);
-            return updateIsLike(result, userIdx);
+        .then(async (result) => {
+            const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
+            const likePerfumeList = await likePerfumeDao.readLikeInfo(
+                userIdx,
+                perfumeIdxList
+            );
+            return updateRows(
+                result,
+                commonJob(),
+                removeKeyJob('SearchHistory', 'Score'),
+                isLikeJob(likePerfumeList)
+            );
         });
 };
 
@@ -269,9 +314,18 @@ exports.getSurveyPerfume = (userIdx) => {
         .then((it) => {
             return perfumeDao.readPerfumeSurvey(it.gender);
         })
-        .then((result) => {
-            result.rows = removeUselessKey(result.rows, ['PerfumeSurvey']);
-            return updateIsLike(result, userIdx);
+        .then(async (result) => {
+            const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
+            const likePerfumeList = await likePerfumeDao.readLikeInfo(
+                userIdx,
+                perfumeIdxList
+            );
+            return updateRows(
+                result,
+                commonJob(),
+                removeKeyJob('PerfumeSurvey'),
+                isLikeJob(likePerfumeList)
+            );
         });
 };
 
@@ -350,9 +404,18 @@ exports.likePerfume = (userIdx, perfumeIdx) => {
 exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
     return perfumeDao
         .recentSearchPerfumeList(userIdx, pagingIndex, pagingSize)
-        .then((result) => {
-            result.rows = removeUselessKey(result.rows);
-            return updateIsLike(result, userIdx);
+        .then(async (result) => {
+            const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
+            const likePerfumeList = await likePerfumeDao.readLikeInfo(
+                userIdx,
+                perfumeIdxList
+            );
+            return updateRows(
+                result,
+                commonJob(),
+                removeKeyJob('SearchHistory'),
+                isLikeJob(likePerfumeList)
+            );
         });
 };
 
@@ -371,17 +434,35 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
     const ageGroup = parseInt(age / 10) * 10;
     const cached = await perfumeDao.recommendPerfumeByAgeAndGenderCached();
     if (cached) {
-        cached.rows = removeUselessKey(cached.rows);
-        return updateIsLike(cached, userIdx);
+        const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
+        const likePerfumeList = await likePerfumeDao.readLikeInfo(
+            userIdx,
+            perfumeIdxList
+        );
+        return updateRows(
+            cached,
+            commonJob(),
+            removeKeyJob('SearchHistory'),
+            isLikeJob(likePerfumeList)
+        );
     }
     return this.recommendByGenderAgeAndGender(
         user.gender,
         ageGroup,
         pagingIndex,
         pagingSize
-    ).then((result) => {
-        result.rows = removeUselessKey(result.rows);
-        return updateIsLike(result, userIdx);
+    ).then(async (result) => {
+        const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
+        const likePerfumeList = await likePerfumeDao.readLikeInfo(
+            userIdx,
+            perfumeIdxList
+        );
+        return updateRows(
+            result,
+            commonJob(),
+            removeKeyJob('SearchHistory'),
+            isLikeJob(likePerfumeList)
+        );
     });
 };
 
@@ -421,9 +502,13 @@ exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
     fromDate.setDate(fromDate.getDate() - 7);
     return perfumeDao
         .readNewPerfume(fromDate, pagingIndex, pagingSize)
-        .then((it) => {
-            it.rows = removeUselessKey(it.rows);
-            return updateIsLike(it, userIdx);
+        .then(async (result) => {
+            const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
+            const likePerfumeList = await likePerfumeDao.readLikeInfo(
+                userIdx,
+                perfumeIdxList
+            );
+            return updateRows(result, commonJob(), isLikeJob(likePerfumeList));
         });
 };
 
@@ -438,8 +523,17 @@ exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
 exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
     return perfumeDao
         .readLikedPerfume(userIdx, pagingIndex, pagingSize)
-        .then((it) => {
-            it.rows = removeUselessKey(it.rows);
-            return updateIsLike(it, userIdx);
+        .then(async (result) => {
+            const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
+            const likePerfumeList = await likePerfumeDao.readLikeInfo(
+                userIdx,
+                perfumeIdxList
+            );
+            return updateRows(
+                result,
+                commonJob(),
+                isLikeJob(likePerfumeList),
+                removeKeyJob('LikePerfume')
+            );
         });
 };

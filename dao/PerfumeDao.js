@@ -244,13 +244,6 @@ module.exports.readNewPerfume = async (fromDate, pagingIndex, pagingSize) => {
                     exclude: ['createdAt', 'updatedAt'],
                 },
             },
-            {
-                model: PerfumeDetail,
-                as: 'PerfumeDetail',
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt'],
-                },
-            },
         ],
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
