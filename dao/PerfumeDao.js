@@ -83,14 +83,6 @@ const defaultOption = {
             },
             required: true,
         },
-        {
-            model: PerfumeDetail,
-            as: 'PerfumeDetail',
-            attributes: {
-                exclude: ['createdAt', 'updatedAt'],
-            },
-            required: true,
-        },
     ],
     raw: true,
     nest: true,
@@ -282,6 +274,14 @@ module.exports.readNewPerfume = async (fromDate, pagingIndex, pagingSize) => {
 module.exports.readByPerfumeIdx = async (perfumeIdx) => {
     const options = _.merge({}, defaultOption, {
         where: { perfumeIdx },
+    });
+    options.include.push({
+        model: PerfumeDetail,
+        as: 'PerfumeDetail',
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        required: true,
     });
     const perfume = await Perfume.findOne(options);
     if (!perfume) {
