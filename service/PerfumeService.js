@@ -217,8 +217,6 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
         gender: normalize(genderMap),
     };
 
-    const likePerfumeList = await likePerfumeDao.read(userIdx, perfumeIdx);
-    perfume.isLiked = likePerfumeList ? true : false;
     return perfume;
 };
 
