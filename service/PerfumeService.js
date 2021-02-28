@@ -4,6 +4,7 @@ const perfumeDao = require('../dao/PerfumeDao.js');
 const reviewDao = require('../dao/ReviewDao.js');
 const ingredientDao = require('../dao/IngredientDao.js');
 const likePerfumeDao = require('../dao/LikePerfumeDao.js');
+const keywordDao = require('../dao/KeywordDao.js');
 const userDao = require('../dao/UserDao.js');
 
 const { parseSortToOrder } = require('../utils/parser.js');
@@ -148,6 +149,9 @@ function normalize(obj) {
  **/
 exports.getPerfumeById = async (perfumeIdx, userIdx) => {
     const perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
+
+
+    perfume.Keywords = await keywordDao.readAllOfPerfume(perfumeIdx);
 
     const noteMap = (await ingredientDao.readByPerfumeIdx(perfumeIdx))
         .map((it) => {
