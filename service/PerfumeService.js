@@ -121,9 +121,7 @@ function normalize(obj) {
         return prev + cur[1];
     }, 0);
     if (total == 0) {
-        return entries.map((it) => {
-            return 0;
-        });
+        return obj;
     }
     let remain = 100;
     let maxKey = 0;
@@ -148,8 +146,11 @@ function normalize(obj) {
  * @returns {Promise<Perfume>}
  **/
 exports.getPerfumeById = async (perfumeIdx, userIdx) => {
-    const perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
+    const _perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
+    const [perfume] = removeUselessKey([_perfume]);
 
+    const likePerfumeList = await likePerfumeDao.read(userIdx, perfumeIdx);
+    perfume.isLiked = likePerfumeList ? true : false;
 
     perfume.Keywords = await keywordDao.readAllOfPerfume(perfumeIdx);
 
