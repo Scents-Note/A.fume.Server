@@ -235,10 +235,6 @@ exports.searchPerfume = (
             order
         )
         .then((result) => {
-            result.rows.forEach((it) => {
-                delete it.createdAt;
-                delete it.updatedAt;
-            });
             return updateIsLike(result, userIdx);
         });
 };

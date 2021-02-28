@@ -81,6 +81,9 @@ const SQL_SEARCH_PERFUME_SELECT_COUNT =
     ':whereCondition ';
 
 const defaultOption = {
+    attributes: {
+        exclude: ['createdAt', 'updatedAt'],
+    },
     include: [
         {
             model: Brand,
@@ -167,7 +170,7 @@ module.exports.search = async (
     keywordIdxList,
     pagingIndex,
     pagingSize,
-    order = [] // = [['createdAt', 'desc']]
+    order = []
 ) => {
     let orderCondition = '';
     if (!order || order.length == 0) {
@@ -303,9 +306,6 @@ module.exports.readNewPerfume = async (fromDate, pagingIndex, pagingSize) => {
  */
 module.exports.readByPerfumeIdx = async (perfumeIdx) => {
     const options = _.merge({}, defaultOption, {
-        attributes: {
-            exclude: ['updatedAt', 'createdAt'],
-        },
         where: { perfumeIdx },
     });
     const perfume = await Perfume.findOne(options);
@@ -330,9 +330,6 @@ module.exports.readByPerfumeIdx = async (perfumeIdx) => {
  */
 module.exports.readLikedPerfume = async (userIdx, pagingIndex, pagingSize) => {
     const options = _.merge({}, defaultOption, {
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
     });
