@@ -19,21 +19,16 @@ const { ranking } = require('../mongoose_models');
 const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
     'SELECT ' +
     'COUNT(*) AS "SearchHistory.weight", ' +
-    'p.perfume_idx AS perfumeIdx, p.main_series_idx AS mainSeriesIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.release_date AS releaseDate, p.like_cnt AS likeCnt, ' +
+    'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.release_date AS releaseDate, p.like_cnt AS likeCnt, ' +
     'b.brand_idx AS "Brand.brandIdx", ' +
     'b.name AS "Brand.name", ' +
     'b.english_name AS "Brand.englishName", ' +
     'b.first_initial AS "Brand.firstInitial", ' +
     'b.image_url AS "Brand.imageUrl", ' +
-    'b.description AS "Brand.description", ' +
-    's.series_idx AS "MainSeries.seriesIdx", ' +
-    's.name AS "MainSeries.name", ' +
-    's.english_name AS "MainSeries.englishName", ' +
-    's.description AS "MainSeries.description" ' +
+    'b.description AS "Brand.description" ' +
     'FROM search_histories sh ' +
     'INNER JOIN perfumes p ON sh.perfume_idx = p.perfume_idx ' +
     'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
-    'INNER JOIN series s ON p.main_series_idx = s.series_idx ' +
     'INNER JOIN users u ON sh.user_idx = u.user_idx ' +
     'WHERE u.gender = $1 AND (u.birth BETWEEN $2 AND $3) ' +
     'GROUP BY sh.perfume_idx ' +
@@ -43,23 +38,18 @@ const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
 
 const SQL_SEARCH_PERFUME_SELECT =
     'SELECT ' +
-    'p.perfume_idx AS perfumeIdx, p.main_series_idx AS mainSeriesIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.release_date AS releaseDate, p.like_cnt AS likeCnt, ' +
+    'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.release_date AS releaseDate, p.like_cnt AS likeCnt, ' +
     'b.brand_idx AS "Brand.brandIdx", ' +
     'b.name AS "Brand.name", ' +
     'b.english_name AS "Brand.englishName", ' +
     'b.first_initial AS "Brand.firstInitial", ' +
     'b.image_url AS "Brand.imageUrl", ' +
     'b.description AS "Brand.description", ' +
-    's.series_idx AS "MainSeries.seriesIdx", ' +
-    's.name AS "MainSeries.name", ' +
-    's.english_name AS "MainSeries.englishName", ' +
-    's.description AS "MainSeries.description", ' +
     'IFNULL((SELECT COUNT(jpk.keyword_idx) FROM join_perfume_keywords jpk WHERE jpk.perfume_idx = p.perfume_idx AND jpk.keyword_idx IN (:keywords) GROUP BY jpk.perfume_idx), 0) AS "Score.keyword", ' +
     'IFNULL((SELECT COUNT(n.ingredient_idx) FROM notes n WHERE n.perfume_idx = p.perfume_idx AND n.ingredient_idx IN (:ingredients) GROUP BY n.perfume_idx), 0) AS "Score.ingredient", ' +
     '(IFNULL((SELECT COUNT(jpk.keyword_idx) FROM join_perfume_keywords jpk WHERE jpk.perfume_idx = p.perfume_idx AND jpk.keyword_idx IN (:keywords) GROUP BY jpk.perfume_idx), 0) + IFNULL((SELECT COUNT(n.ingredient_idx) FROM notes n WHERE n.perfume_idx = p.perfume_idx AND n.ingredient_idx IN (:ingredients) GROUP BY n.perfume_idx), 0)) AS "Score.total" ' +
     'FROM perfumes p ' +
     'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
-    'INNER JOIN series s ON p.main_series_idx = s.series_idx ' +
     ':whereCondition ' +
     'ORDER BY :orderCondition ' +
     'LIMIT :limit ' +
@@ -82,20 +72,12 @@ const SQL_SEARCH_PERFUME_SELECT_COUNT =
 
 const defaultOption = {
     attributes: {
-        exclude: ['createdAt', 'updatedAt'],
+        exclude: ['createdAt', 'updatedAt', 'mainSeriesIdx'],
     },
     include: [
         {
             model: Brand,
             as: 'Brand',
-            attributes: {
-                exclude: ['createdAt', 'updatedAt'],
-            },
-            required: true,
-        },
-        {
-            model: Series,
-            as: 'MainSeries',
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
             },
@@ -266,13 +248,6 @@ module.exports.readNewPerfume = async (fromDate, pagingIndex, pagingSize) => {
             {
                 model: Brand,
                 as: 'Brand',
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt'],
-                },
-            },
-            {
-                model: Series,
-                as: 'MainSeries',
                 attributes: {
                     exclude: ['createdAt', 'updatedAt'],
                 },

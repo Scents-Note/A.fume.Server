@@ -39,7 +39,6 @@ describe('# perfumeDao Test', () => {
                 .then((result) => {
                     expect(result.name).to.equal('삽입테스트');
                     expect(result.Brand.name).to.equal('브랜드1');
-                    expect(result.MainSeries.name).to.equal('계열1');
                     expect(result.PerfumeDetail.volumeAndPrice).to.deep.equal(
                         []
                     );
@@ -79,7 +78,6 @@ describe('# perfumeDao Test', () => {
                     .then((result) => {
                         expect(result.name).to.equal('향수1');
                         expect(result.Brand.name).to.equal('브랜드1');
-                        expect(result.MainSeries.name).to.equal('계열1');
                         expect(result.PerfumeDetail.story).to.equal('스토리1');
                         expect(result.PerfumeDetail.abundanceRate).to.equal(1);
                         expect(
