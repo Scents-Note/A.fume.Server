@@ -408,14 +408,20 @@ exports.recommendByGenderAgeAndGender = (
 /**
  * 새로 추가된 향수 조회
  *
+ * @param {number} userIdx
  * @param {number} pagingIndex
  * @param {number} pagingSize
  * @returns {Promise<Perfume[]>}
  **/
-exports.getNewPerfume = (pagingIndex, pagingSize) => {
+exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
     const fromDate = new Date();
     fromDate.setDate(fromDate.getDate() - 7);
-    return perfumeDao.readNewPerfume(fromDate, pagingIndex, pagingSize);
+    return perfumeDao
+        .readNewPerfume(fromDate, pagingIndex, pagingSize)
+        .then((it) => {
+            it.rows = removeUselessKey(it.rows);
+            return updateIsLike(it, userIdx);
+        });
 };
 
 /**

@@ -349,6 +349,9 @@ module.exports.recentSearchPerfumeList = async (
     options.include.push({
         model: SearchHistory,
         as: 'SearchHistory',
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
         where: {
             userIdx,
         },

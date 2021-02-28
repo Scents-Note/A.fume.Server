@@ -111,17 +111,17 @@ paths:
               type: array
               items:
                 type: integer
-              example: [1, 2]
+              example: []
             ingredientList:
               type: array
               items:
                 type: integer
-              example: [1, 2]
+              example: []
             brandList:
               type: array
               items: 
                 type: integer
-              example: [1, 2]
+              example: []
       - name: sort
         in: query
         type: string
