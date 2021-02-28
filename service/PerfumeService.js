@@ -17,10 +17,9 @@ const {
 function updateRows(result, ...jobs) {
     const perfumeList = result.rows;
     result.rows = perfumeList.map((it) => {
-        jobs.forEach((job) => {
-            it = job(it);
-        });
-        return it;
+        return jobs.reduce((prev, cur) => {
+            return cur(prev);
+        }, it);
     });
     return result;
 }
