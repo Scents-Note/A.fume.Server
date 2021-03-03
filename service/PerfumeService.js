@@ -9,21 +9,19 @@ const userDao = require('../dao/UserDao.js');
 
 const { parseSortToOrder } = require('../utils/parser.js');
 
+const { GENDER_WOMAN } = require('../utils/code.js');
+
 const {
     NotMatchedError,
     FailedToCreateError,
 } = require('../utils/errors/errors.js');
 
-function updateRows(result, ...jobs) {
-    const perfumeList = result.rows;
-    result.rows = perfumeList.map((it) => {
-        jobs.forEach((job) => {
-            it = job(it);
-        });
-        return it;
-    });
-    return result;
-}
+const {
+    updateRows,
+    removeKeyJob,
+    extractJob,
+    flatJob,
+} = require('../utils/func.js');
 
 function isLikeJob(likePerfumeList) {
     const likeMap = likePerfumeList.reduce((prev, cur) => {
@@ -37,45 +35,17 @@ function isLikeJob(likePerfumeList) {
     };
 }
 
-function removeKeyJob(...keys) {
-    return (obj) => {
-        const ret = Object.assign({}, obj);
-        keys.forEach((it) => {
-            delete ret[it];
-        });
-        return ret;
-    };
-}
-
-function extractJob(key, ...fields) {
-    return (obj) => {
-        const ret = Object.assign({}, obj);
-        fields.forEach((it) => {
-            ret[it[1]] = obj[key][it[0]];
-        });
-        delete ret[key];
-        return ret;
-    };
-}
-
-function flatJob(...keys) {
-    return (obj) => {
-        let ret = Object.assign({}, obj);
-        keys.forEach((key) => {
-            ret = Object.assign(ret, obj[key]);
-            delete ret[key];
-        });
-        return ret;
-    };
-}
-
-function commonJob() {
-    return (obj) => {
-        obj = extractJob('Brand', ['name', 'brandName'])(obj);
-        obj = removeKeyJob('perfume_idx', 'mainSeries', 'releaseDate')(obj);
-        return obj;
-    };
-}
+const commonJob = [
+    extractJob('Brand', ['name', 'brandName']),
+    removeKeyJob(
+        'perfume_idx',
+        'mainSeries',
+        'releaseDate',
+        'englishName',
+        'brandIdx',
+        'likeCnt'
+    ),
+];
 
 /**
  * 향수 정보 추가
@@ -243,9 +213,11 @@ async function generateSummary(perfumeIdx) {
  * @returns {Promise<Perfume>}
  **/
 exports.getPerfumeById = async (perfumeIdx, userIdx) => {
-    let perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
-    perfume = commonJob()(perfume);
-    perfume = flatJob('PerfumeDetail')(perfume);
+    let _perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
+    const perfume = [...commonJob, flatJob('PerfumeDetail')].reduce(
+        (prev, cur) => cur(prev),
+        _perfume
+    );
 
     const likePerfumeList = await likePerfumeDao.read(userIdx, perfumeIdx);
     perfume.isLiked = likePerfumeList ? true : false;
@@ -295,7 +267,7 @@ exports.searchPerfume = (
             );
             return updateRows(
                 result,
-                commonJob(),
+                ...commonJob,
                 removeKeyJob('SearchHistory', 'Score'),
                 isLikeJob(likePerfumeList)
             );
@@ -322,9 +294,8 @@ exports.getSurveyPerfume = (userIdx) => {
             );
             return updateRows(
                 result,
-                commonJob(),
-                removeKeyJob('PerfumeSurvey'),
-                isLikeJob(likePerfumeList)
+                ...commonJob,
+                removeKeyJob('PerfumeSurvey')
             );
         });
 };
@@ -412,7 +383,7 @@ exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
             );
             return updateRows(
                 result,
-                commonJob(),
+                ...commonJob,
                 removeKeyJob('SearchHistory'),
                 isLikeJob(likePerfumeList)
             );
@@ -428,38 +399,52 @@ exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
  * @returns {Promise<Perfume[]>}
  **/
 exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
-    const user = await userDao.readByIdx(userIdx);
-    const today = new Date();
-    const age = today.getFullYear() - user.birth + 1;
-    const ageGroup = parseInt(age / 10) * 10;
+    let ageGroup, gender;
+    if (userIdx == -1) {
+        gender = GENDER_WOMAN;
+        ageGroup = 20;
+    } else {
+        const user = await userDao.readByIdx(userIdx);
+        const today = new Date();
+        const age = today.getFullYear() - user.birth + 1;
+        gender = user.gender;
+        ageGroup = parseInt(age / 10) * 10;
+    }
+
     const cached = await perfumeDao.recommendPerfumeByAgeAndGenderCached();
     if (cached) {
         const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
-        const likePerfumeList = await likePerfumeDao.readLikeInfo(
-            userIdx,
-            perfumeIdxList
-        );
+        let likePerfumeList = [];
+        if (userIdx > -1) {
+            likePerfumeList = await likePerfumeDao.readLikeInfo(
+                userIdx,
+                perfumeIdxList
+            );
+        }
         return updateRows(
             cached,
-            commonJob(),
+            ...commonJob,
             removeKeyJob('SearchHistory'),
             isLikeJob(likePerfumeList)
         );
     }
     return this.recommendByGenderAgeAndGender(
-        user.gender,
+        gender,
         ageGroup,
         pagingIndex,
         pagingSize
     ).then(async (result) => {
         const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
-        const likePerfumeList = await likePerfumeDao.readLikeInfo(
-            userIdx,
-            perfumeIdxList
-        );
+        let likePerfumeList = [];
+        if (userIdx > -1) {
+            likePerfumeList = await likePerfumeDao.readLikeInfo(
+                userIdx,
+                perfumeIdxList
+            );
+        }
         return updateRows(
             result,
-            commonJob(),
+            ...commonJob,
             removeKeyJob('SearchHistory'),
             isLikeJob(likePerfumeList)
         );
@@ -508,7 +493,7 @@ exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
                 userIdx,
                 perfumeIdxList
             );
-            return updateRows(result, commonJob(), isLikeJob(likePerfumeList));
+            return updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
         });
 };
 
@@ -531,8 +516,7 @@ exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
             );
             return updateRows(
                 result,
-                commonJob(),
-                isLikeJob(likePerfumeList),
+                ...commonJob,
                 removeKeyJob('LikePerfume')
             );
         });
