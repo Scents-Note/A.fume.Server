@@ -95,6 +95,7 @@ paths:
       tags:
       - perfume
       summary: 향수 검색
+      description: 카테코리(키워드, 브랜드, 재료)는 AND 검색이며 카테고리 내 선택은 OR 검색이다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
       operationId: searchPerfume
       security:
         - userToken: []
@@ -157,7 +158,14 @@ paths:
                   rows:
                     type: array
                     items:
-                      $ref: '#/definitions/Perfume'
+                      allOf:
+                      - $ref: '#/definitions/Perfume'
+                      - type: object
+                        properties:
+                          isLike:
+                            type: boolean
+                        example: 
+                          isLike: true
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Perfume
@@ -166,7 +174,7 @@ paths:
       tags:
       - perfume
       summary: 최근 조회한 향수 조회
-      description: 최근에 조회한 향수를 조회한다.
+      description: 🎫로그인 토큰 필수🎫 <br/> 최근에 향수 세부 보기를 수행한 향수들을 조회한다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
       operationId: getRecentPerfume
       security:
         - userToken: []
@@ -201,7 +209,14 @@ paths:
                   rows:
                     type: array
                     items:
-                      $ref: '#/definitions/Perfume'
+                      allOf:
+                      - $ref: '#/definitions/Perfume'
+                      - type: object
+                        properties:
+                          isLike:
+                            type: boolean
+                        example: 
+                          isLike: true
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Perfume
@@ -210,6 +225,7 @@ paths:
       tags:
       - perfume
       summary: 새로 등록한 향수 조회
+      description: 최근에 서버에 등록된 향수를 조회한다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
       operationId: getNewPerfume
       produces:
       - application/json
@@ -240,7 +256,14 @@ paths:
                   rows:
                     type: array
                     items:
-                      $ref: '#/definitions/Perfume'
+                      allOf:
+                      - $ref: '#/definitions/Perfume'
+                      - type: object
+                        properties:
+                          isLike:
+                            type: boolean
+                        example: 
+                          isLike: true
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Perfume
@@ -249,6 +272,7 @@ paths:
       tags:
       - perfume
       summary: 서베이 추천 향수 조회 
+      description: 🎫로그인 토큰 필수🎫 <br/> 유저의 성별에 따라서 다른 향수 리스트를 반환한다. <br/> 반환 되는 정보 [향수]
       operationId: getSurveyPerfume
       security:
         - userToken: []
@@ -283,12 +307,10 @@ paths:
       tags:
       - perfume
       summary: 향수 일반 추천 (성별, 나이 반영)
-      description: 유저 연령, 성별에 따른 향수를 추천해준다.
+      description: 유저 연령, 성별에 따른 향수를 추천해준다. (로그인 이전의 경우 20대 여성 기본 값) <br/> 반환 되는 정보 [향수, 좋아요 여부]
       operationId: recommendCommonPerfume
       security:
         - userToken: []
-      x-security-scopes:
-        - user
       produces:
       - application/json
       parameters:
@@ -318,19 +340,24 @@ paths:
                   rows:
                     type: array
                     items:
-                      $ref: '#/definitions/Perfume'
+                      allOf:
+                      - $ref: '#/definitions/Perfume'
+                      - type: object
+                        properties:
+                          isLike:
+                            type: boolean
+                        example: 
+                          isLike: true
       x-swagger-router-controller: Perfume
   /perfume/recommend/personal:
     get:
       tags:
       - perfume
       summary: 향수 개인 맞춤 추천
-      description: 향수를 추천해준다.
+      description: 🎫로그인 토큰 필수🎫 <br/> 데이터를 활용해서 향수를 추천해준다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
       operationId: recommendPersonalPerfume
       security:
         - userToken: []
-      x-security-scopes:
-        - user
       produces:
       - application/json
       parameters:
@@ -360,7 +387,14 @@ paths:
                   rows:
                     type: array
                     items:
-                      $ref: '#/definitions/Perfume'
+                      allOf:
+                      - $ref: '#/definitions/Perfume'
+                      - type: object
+                        properties:
+                          isLike: 
+                            type: boolean
+                        example:
+                          isLike: true
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Perfume
@@ -394,79 +428,72 @@ paths:
                 - $ref: '#/definitions/Perfume'
                 - type: object
                   properties:
-                    perfumeIdx:
+                    isLike:
                       type: integer
-                  example:
-                    perfumeIdx: 1
-                - allOf:
-                  - type: object
-                    properties:
-                      isLike:
-                        type: integer
-                      Keywords:
-                        type: array
-                        items:
-                          $ref: '#/definitions/KeywordInfo'
-                  - $ref: '#/definitions/PerfumeDetailInfo'
-                  - $ref: '#/definitions/PerfumeNote'
-                  - $ref: '#/definitions/PerfumeSummary'
-                  example:
-                    isLike: true
-                    story: 조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트\
-                          , 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다.
-                    abundanceRate: 코롱
-                    volumeAndPrice:
-                    - volume: 30
-                      price: 90000
-                    - volume: 30
-                      price: 90000
-                    - volume: 30
-                      price: 90000
                     Keywords:
-                    - 시원한
-                    - 차가운
-                    noteType: 0
-                    ingredients:
-                      top:
-                      - ingredientIdx: 1
-                        name: 재료1
-                        description: 향긋
-                      - ingredientIdx: 5
-                        name: 재료5
-                        description: 향긋
-                      middle:
-                      - ingredientIdx: 2
-                        name: 재료2
-                        description: 향긋
-                      - ingredientIdx: 6
-                        name: 재료6
-                        description: 향긋
-                      base:
-                      - ingredientIdx: 3
-                        name: 재료3
-                        description: 향긋
-                      - ingredientIdx: 4
-                        name: 재료4
-                        description: 향긋
-                      - ingredientIdx: 7
-                        name: 재료7
-                        description: 향긋
-                    score: 5.4
-                    seasonal:
-                      spring: 0
-                      summer: 30
-                      fall: 30
-                      winter: 40
-                    sillage:
-                      light: 40
-                      medium: 20
-                      heavy: 40
-                    longevity:
-                      veryWeak: 10
-                      weak: 10
-                      normal: 20
-                      strong: 20
-                      veryStrong: 10
+                      type: array
+                      items:
+                        $ref: '#/definitions/KeywordInfo'
+                - $ref: '#/definitions/PerfumeDetailInfo'
+                - $ref: '#/definitions/PerfumeNote'
+                - $ref: '#/definitions/PerfumeSummary'
+                example:
+                  isLike: true
+                  story: 조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트\
+                        , 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다.
+                  abundanceRate: 코롱
+                  volumeAndPrice:
+                  - volume: 30
+                    price: 90000
+                  - volume: 30
+                    price: 90000
+                  - volume: 30
+                    price: 90000
+                  Keywords:
+                  - 시원한
+                  - 차가운
+                  noteType: 0
+                  ingredients:
+                    top:
+                    - ingredientIdx: 1
+                      name: 재료1
+                      description: 향긋
+                    - ingredientIdx: 5
+                      name: 재료5
+                      description: 향긋
+                    middle:
+                    - ingredientIdx: 2
+                      name: 재료2
+                      description: 향긋
+                    - ingredientIdx: 6
+                      name: 재료6
+                      description: 향긋
+                    base:
+                    - ingredientIdx: 3
+                      name: 재료3
+                      description: 향긋
+                    - ingredientIdx: 4
+                      name: 재료4
+                      description: 향긋
+                    - ingredientIdx: 7
+                      name: 재료7
+                      description: 향긋
+                  score: 5.4
+                  seasonal:
+                    spring: 0
+                    summer: 30
+                    fall: 30
+                    winter: 40
+                  sillage:
+                    light: 40
+                    medium: 20
+                    heavy: 40
+                  longevity:
+                    veryWeak: 10
+                    weak: 10
+                    normal: 20
+                    strong: 20
+                    veryStrong: 10
         401:
           description: Token is missing or invalid
         404:
@@ -536,7 +563,7 @@ paths:
       tags:
       - perfume
       summary: 향수 좋아요
-      description: 향수 좋아요 상태를 반환한다.
+      description: 🎫로그인 토큰 필수🎫 <br/> 향수 좋아요 / 좋아요 취소를 수행한다. <br/> 반환 되는 정보 [최종 좋아요 상태]
       security:
         - userToken: []
       x-security-scopes:
@@ -573,6 +600,7 @@ paths:
       tags:
       - brand
       summary: 브랜드 전체 조회
+      description: 브랜드 조회 <br/> 반환 되는 정보 [브랜드]
       operationId: getBrandAll
       produces:
       - application/json
@@ -804,7 +832,8 @@ paths:
     get:
       tags:
       - ingredient
-      summary: 향료 목록 전체 조회
+      summary: 재료 목록 조회
+      description: 재료 리스트 조회 <br /> 반환 되는 정보 [재료]
       operationId: getIngredientAll
       produces:
       - application/json
@@ -1052,6 +1081,7 @@ paths:
       tags:
       - series
       summary: 계열 전체 목록 조회
+      description: 계열 조회 <br/> 반환 되는 정보 [계열]
       operationId: getSeriesAll
       produces:
       - application/json
@@ -1189,7 +1219,7 @@ paths:
   /series/{seriesIdx}:
     get:
       tags:
-      - series
+      - WEB_series
       summary: 특정 계열 조회
       description: 특정 계열 조회
       operationId: getSeries
@@ -1407,6 +1437,7 @@ paths:
       tags:
       - review
       summary: 시향노트 추가
+      description: 🎫로그인 토큰 필수🎫 <br/> 시향노트를 작성한다.
       operationId: postReview
       security:
         - userToken: []
@@ -1440,6 +1471,7 @@ paths:
       tags:
       - review
       summary: 향수별 시향 노트 전체 조회 
+      description: 해당 향수에 작성된 시향 노트 리스트를 반환한다. <br/> 반환되는 정보 [시향노트]
       operationId: getPerfumeReview
       consumes:
       - application/json
@@ -1512,7 +1544,7 @@ paths:
       tags:
       - review
       summary: 시향노트 반환
-      description: 특정 시향노트 가져오기
+      description: 특정 시향노트 가져오기 <br/> 반환 되는 정보 [시향 노트]
       operationId: getReview
       consumes:
       - application/json
@@ -1570,6 +1602,7 @@ paths:
       tags:
       - review
       summary: 시향노트 수정
+      description: 🎫로그인 토큰 필수🎫 <br/> 시향 노트를 수정한다.
       operationId: putReview
       security:
         - userToken: []
@@ -1609,7 +1642,7 @@ paths:
       tags:
       - review
       summary: 시향노트 삭제
-      description: 시향노트 삭제하기
+      description: 🎫로그인 토큰 필수🎫 <br/> 시향노트 삭제하기
       operationId: deleteReview
       security:
         - userToken: []
@@ -1645,7 +1678,7 @@ paths:
       tags:
       - review
       summary:  시향노트 좋아요
-      description: 시향노트 좋아요 상태 변경하기.
+      description: 🎫로그인 토큰 필수🎫 <br/> 시향노트 좋아요 상태 변경하기. <br/> 반환 되는 정보 [최종 좋아요 상태]
       security:
         - userToken: []
       x-security-scopes:
@@ -1712,6 +1745,7 @@ paths:
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Reply
+      deprecated: true
     get:
       tags:
       - reply
@@ -1745,6 +1779,7 @@ paths:
                 example:
                   replyIdx: 1
       x-swagger-router-controller: Reply
+      deprecated: true
   /reply/{replyIdx}:
     get:
       tags:
@@ -1775,6 +1810,7 @@ paths:
         404:
           description: Reply not found
       x-swagger-router-controller: Reply
+      deprecated: true
     put:
       tags:
       - reply
@@ -1804,6 +1840,7 @@ paths:
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Reply
+      deprecated: true
     delete:
       tags:
       - reply
@@ -1829,6 +1866,7 @@ paths:
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Reply
+      deprecated: true
   /perfume/{perfumeIdx}/keyword:
     post:
       tags:
@@ -2042,6 +2080,7 @@ paths:
       tags:
       - series
       summary: 필터를 위한 series 리스트
+      description: 향수 검색 화면에서 제공되는 계열 + 재료 리스트 <br/> 반환 되는 정보 [계열 x 재료 리스트]
       operationId: getFilterSeries
       produces:
       - application/json
@@ -2073,6 +2112,7 @@ paths:
       tags:
       - brand
       summary: 필터를 위한 brand 리스트
+      description: 향수 검색 화면에서 제공되는 브랜드 리스트 <br/> 반환 되는 정보 [브랜드 + 초성]
       operationId: getFilterBrand
       produces:
       - application/json
@@ -2100,7 +2140,7 @@ paths:
     post:
       tags:
       - user
-      description: 사용자 survey
+      description: 🎫로그인 토큰 필수🎫 <br/> 사용자 서베이를 등록한다. <br/>
       operationId: postSurvey
       security:
         - userToken: []
@@ -2170,7 +2210,7 @@ paths:
     post:
       tags:
       - user
-      description: 로그인
+      description: 로그인 <br/> 반환 되는 정보 [유저 정보 + Token + refresh Token] <br/> 발행된 로그인 토큰은 헤더[x-access-token="Bearer " + Token]에 넣어주세요.
       operationId: loginUser
       produces:
       - application/json
@@ -2401,7 +2441,7 @@ paths:
       tags:
       - perfume
       summary: read user's likedPerfume
-      description: 유저가 좋아요한 향수 조회
+      description: 🎫로그인 토큰 필수🎫 <br/> 유저가 좋아요한 향수 조회 <br/> 반환 되는 정보 [향수]
       operationId: getLikedPerfume
       security:
         - userToken: []
@@ -2436,12 +2476,6 @@ paths:
                 items:               
                   allOf:
                   - $ref: '#/definitions/Perfume'
-                  - type: object
-                    properties:
-                      perfumeIdx:
-                        type: integer
-                    example:
-                      perfumeIdx: 1
         default:
           description: successful operation
       x-swagger-router-controller: Perfume
@@ -2507,18 +2541,16 @@ definitions:
     properties:
       perfumeIdx:
         type: integer
-      likeCnt:
-        type: integer
-      isLiked:
-        type: boolean
+      name:
+        type: string
+      imageUrl:
+        type: string
       brandName:
         type: string
-    allOf:
-    - $ref: '#/definitions/PerfumeInfo'
     example:
       perfumeIdx: 1
-      likeCnt: 4
-      isLiked: true
+      name: 154 코롱
+      imageUrl: https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554
       brandName: (테스트)조말론
   PerfumeDetailInfo:
     properties:
