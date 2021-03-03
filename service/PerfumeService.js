@@ -33,13 +33,10 @@ function isLikeJob(likePerfumeList) {
     };
 }
 
-function commonJob() {
-    return (obj) => {
-        obj = extractJob('Brand', ['name', 'brandName'])(obj);
-        obj = removeKeyJob('perfume_idx', 'mainSeries', 'releaseDate')(obj);
-        return obj;
-    };
-}
+const commonJob = [
+    extractJob('Brand', ['name', 'brandName']),
+    removeKeyJob('perfume_idx', 'mainSeries', 'releaseDate'),
+];
 
 /**
  * 향수 정보 추가
@@ -208,7 +205,7 @@ async function generateSummary(perfumeIdx) {
  **/
 exports.getPerfumeById = async (perfumeIdx, userIdx) => {
     let perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
-    perfume = commonJob()(perfume);
+    perfume = commonJob.reduce((prev, cur) => cur(prev), perfume);
     perfume = flatJob('PerfumeDetail')(perfume);
 
     const likePerfumeList = await likePerfumeDao.read(userIdx, perfumeIdx);
@@ -259,7 +256,7 @@ exports.searchPerfume = (
             );
             return updateRows(
                 result,
-                commonJob(),
+                ...commonJob,
                 removeKeyJob('SearchHistory', 'Score'),
                 isLikeJob(likePerfumeList)
             );
@@ -286,7 +283,7 @@ exports.getSurveyPerfume = (userIdx) => {
             );
             return updateRows(
                 result,
-                commonJob(),
+                ...commonJob,
                 removeKeyJob('PerfumeSurvey'),
                 isLikeJob(likePerfumeList)
             );
@@ -376,7 +373,7 @@ exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
             );
             return updateRows(
                 result,
-                commonJob(),
+                ...commonJob,
                 removeKeyJob('SearchHistory'),
                 isLikeJob(likePerfumeList)
             );
@@ -405,7 +402,7 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
         );
         return updateRows(
             cached,
-            commonJob(),
+            ...commonJob,
             removeKeyJob('SearchHistory'),
             isLikeJob(likePerfumeList)
         );
@@ -423,7 +420,7 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
         );
         return updateRows(
             result,
-            commonJob(),
+            ...commonJob,
             removeKeyJob('SearchHistory'),
             isLikeJob(likePerfumeList)
         );
@@ -472,7 +469,7 @@ exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
                 userIdx,
                 perfumeIdxList
             );
-            return updateRows(result, commonJob(), isLikeJob(likePerfumeList));
+            return updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
         });
 };
 
@@ -495,7 +492,7 @@ exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
             );
             return updateRows(
                 result,
-                commonJob(),
+                ...commonJob,
                 isLikeJob(likePerfumeList),
                 removeKeyJob('LikePerfume')
             );
