@@ -81,7 +81,10 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
     app.use(function (err, req, res, next) {
         if (!err.status || err.status >= 500) {
             process.env.NODE_ENV === 'development' && console.log(err);
-            err = new Error('Internal Server Error');
+            process.env.NODE_ENV === 'production' &&
+                (() => {
+                    err = new Error('Internal Server Error');
+                })();
         }
 
         res.writeHead(err.status || 500, {
