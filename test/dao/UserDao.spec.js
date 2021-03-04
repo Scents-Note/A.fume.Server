@@ -23,7 +23,6 @@ describe('# userDao Test', () => {
                     nickname: '생성 테스트',
                     password: 'hashed',
                     gender: 1,
-                    phone: '010-2081-3818',
                     email: 'createTest@afume.com',
                     birth: '1995',
                     grade: 1,
@@ -39,7 +38,6 @@ describe('# userDao Test', () => {
                 nickname: '생성 테스트',
                 password: 'hashed',
                 gender: GENDER_MAN,
-                phone: '010-2081-3818',
                 email: 'createTest@afume.com',
                 birth: '1995',
                 grade: 1,
@@ -66,7 +64,6 @@ describe('# userDao Test', () => {
                     .read({ email: 'email1@afume.com' })
                     .then((result) => {
                         expect(result.nickname).eq('user1');
-                        expect(result.phone).eq('010-0000-0001');
                         done();
                     })
                     .catch((err) => done(err));
@@ -90,7 +87,6 @@ describe('# userDao Test', () => {
                     .readByIdx(1)
                     .then((result) => {
                         expect(result.nickname).eq('user1');
-                        expect(result.phone).eq('010-0000-0001');
                         expect(result.email).eq('email1@afume.com');
                         done();
                     })
@@ -118,7 +114,6 @@ describe('# userDao Test', () => {
                 nickname: '수정 테스트',
                 password: 'hashed',
                 gender: GENDER_MAN,
-                phone: '010-2081-3818',
                 email: 'updateTest@afume.com',
                 birth: '1995',
                 grade: 1,
@@ -131,7 +126,6 @@ describe('# userDao Test', () => {
                     nickname: '수정 테스트(完)',
                     password: '변경',
                     gender: GENDER_WOMAN,
-                    phone: '010-1234-1234',
                     email: 'updateTest@afume.com',
                     birth: '1995',
                     grade: 0,
@@ -164,7 +158,6 @@ describe('# userDao Test', () => {
                 nickname: '삭제 테스트',
                 password: 'hashed',
                 gender: GENDER_MAN,
-                phone: '010-2081-3818',
                 email: 'deleteTest@afume.com',
                 birth: '1995',
                 grade: 0,

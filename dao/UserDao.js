@@ -16,7 +16,6 @@ module.exports.create = ({
     nickname,
     password,
     gender,
-    phone,
     email,
     birth,
     grade,
@@ -27,7 +26,6 @@ module.exports.create = ({
         nickname,
         password,
         gender,
-        phone,
         email,
         birth,
         grade,
@@ -86,13 +84,12 @@ module.exports.update = async ({
     nickname,
     password,
     gender,
-    phone,
     birth,
     email,
     grade,
 }) => {
     const result = await User.update(
-        { nickname, password, gender, phone, email, birth, grade },
+        { nickname, password, gender, email, birth, grade },
         { where: { userIdx } }
     );
     const affectedRows = result[0];
