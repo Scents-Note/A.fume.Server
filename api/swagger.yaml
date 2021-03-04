@@ -174,7 +174,7 @@ paths:
       tags:
       - perfume
       summary: 최근 조회한 향수 조회
-      description: 🎫로그인 토큰 필수🎫 <br/> 최근에 향수 세부 보기를 수행한 향수들을 조회한다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 최근에 향수 세부 보기를 수행한 향수들을 조회한다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
       operationId: getRecentPerfume
       security:
         - userToken: []
@@ -272,7 +272,7 @@ paths:
       tags:
       - perfume
       summary: 서베이 추천 향수 조회 
-      description: 🎫로그인 토큰 필수🎫 <br/> 유저의 성별에 따라서 다른 향수 리스트를 반환한다. <br/> 반환 되는 정보 [향수]
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저의 성별에 따라서 다른 향수 리스트를 반환한다. <br/> 반환 되는 정보 [향수]
       operationId: getSurveyPerfume
       security:
         - userToken: []
@@ -354,7 +354,7 @@ paths:
       tags:
       - perfume
       summary: 향수 개인 맞춤 추천
-      description: 🎫로그인 토큰 필수🎫 <br/> 데이터를 활용해서 향수를 추천해준다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 데이터를 활용해서 향수를 추천해준다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
       operationId: recommendPersonalPerfume
       security:
         - userToken: []
@@ -563,7 +563,7 @@ paths:
       tags:
       - perfume
       summary: 향수 좋아요
-      description: 🎫로그인 토큰 필수🎫 <br/> 향수 좋아요 / 좋아요 취소를 수행한다. <br/> 반환 되는 정보 [최종 좋아요 상태]
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 향수 좋아요 / 좋아요 취소를 수행한다. <br/> 반환 되는 정보 [최종 좋아요 상태]
       security:
         - userToken: []
       x-security-scopes:
@@ -1437,7 +1437,7 @@ paths:
       tags:
       - review
       summary: 시향노트 추가
-      description: 🎫로그인 토큰 필수🎫 <br/> 시향노트를 작성한다.
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 시향노트를 작성한다.
       operationId: postReview
       security:
         - userToken: []
@@ -1602,7 +1602,7 @@ paths:
       tags:
       - review
       summary: 시향노트 수정
-      description: 🎫로그인 토큰 필수🎫 <br/> 시향 노트를 수정한다.
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 시향 노트를 수정한다.
       operationId: putReview
       security:
         - userToken: []
@@ -1642,7 +1642,7 @@ paths:
       tags:
       - review
       summary: 시향노트 삭제
-      description: 🎫로그인 토큰 필수🎫 <br/> 시향노트 삭제하기
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 시향노트 삭제하기
       operationId: deleteReview
       security:
         - userToken: []
@@ -1678,7 +1678,7 @@ paths:
       tags:
       - review
       summary:  시향노트 좋아요
-      description: 🎫로그인 토큰 필수🎫 <br/> 시향노트 좋아요 상태 변경하기. <br/> 반환 되는 정보 [최종 좋아요 상태]
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 시향노트 좋아요 상태 변경하기. <br/> 반환 되는 정보 [최종 좋아요 상태]
       security:
         - userToken: []
       x-security-scopes:
@@ -2140,7 +2140,7 @@ paths:
     post:
       tags:
       - user
-      description: 🎫로그인 토큰 필수🎫 <br/> 사용자 서베이를 등록한다. <br/>
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 사용자 서베이를 등록한다. <br/>
       operationId: postSurvey
       security:
         - userToken: []
@@ -2441,7 +2441,7 @@ paths:
       tags:
       - perfume
       summary: read user's likedPerfume
-      description: 🎫로그인 토큰 필수🎫 <br/> 유저가 좋아요한 향수 조회 <br/> 반환 되는 정보 [향수]
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저가 좋아요한 향수 조회 <br/> 반환 되는 정보 [향수]
       operationId: getLikedPerfume
       security:
         - userToken: []
@@ -2499,18 +2499,16 @@ definitions:
         type: string
       gender:
         type: string
-      phone:
-        type: string
+        enum: [MAN, WOMAN]
       birth:
         type: integer
       grade:
-        type: integer
+        type: string
+        enum: [USER, OPERATOR, SYSTEM]
     example:
       email: hee.youn@samsung.com
       nickname: 쿼카맨
-      gender: 남자
-      phone: 010-2081-3818
-      grade: 0
+      gender: MAN
       birth: 1995
   KeywordInfo:
     type: object

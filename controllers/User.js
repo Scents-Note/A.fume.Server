@@ -1,16 +1,28 @@
 'use strict';
 
 const User = require('../service/UserService');
-const { OK, CONFLICT } = require('../utils/statusCode.js');
+const { UnAuthorizedError } = require('../utils/errors/errors');
+const { OK, CONFLICT, BAD_REQUEST } = require('../utils/statusCode.js');
 
 const genderMap = {
-    남자: 1,
-    여자: 2,
+    MAN: 1,
+    WOMAN: 2,
+};
+
+const gradeMap = {
+    USER: 0,
+    OPERATOR: 1,
+    SYSTEM: 9,
 };
 
 module.exports.registerUser = (req, res, next) => {
     const body = req.swagger.params['body'].value;
-    body.grade = 0;
+    body.grade = body.grade || 'USER';
+    body.grade = gradeMap[body.grade];
+    if (body.grade > 0) {
+        next(new UnAuthorizedError());
+        return;
+    }
     body.gender = genderMap[body.gender] || 0;
     User.createUser(body)
         .then(() => {

@@ -28,10 +28,6 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 comment: '1: 남자, 2: 여자',
             },
-            phone: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
             birth: {
                 type: DataTypes.INTEGER,
                 allowNull: false,

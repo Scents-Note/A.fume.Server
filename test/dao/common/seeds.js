@@ -41,7 +41,6 @@ module.exports = () => {
                 nickname: `user${i}`,
                 password: 'test',
                 gender: (i % 2) + 1,
-                phone: `010-0000-000${i}`,
                 email: `email${i}@afume.com`,
                 birth: '1995',
                 grade: 1,
