@@ -2499,18 +2499,16 @@ definitions:
         type: string
       gender:
         type: string
-      phone:
-        type: string
+        enum: [MAN, WOMAN]
       birth:
         type: integer
       grade:
-        type: integer
+        type: string
+        enum: [USER, OPERATOR, SYSTEM]
     example:
       email: hee.youn@samsung.com
       nickname: 쿼카맨
-      gender: 남자
-      phone: 010-2081-3818
-      grade: 0
+      gender: MAN
       birth: 1995
   KeywordInfo:
     type: object
