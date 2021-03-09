@@ -108,6 +108,19 @@ class WrongPasswordError extends Error {
     }
 }
 
+class PasswordPolicyError extends Error {
+    constructor(code = 'GENERIC', status = statusCode.BAD_REQUEST, ...params) {
+        super(...params);
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, PasswordPolicyError);
+        }
+        this.code = code;
+        this.status = status;
+        this.message =
+            '사용할 수 없는 패스워드입니다. 패스워드 정책을 확인해주세요.';
+    }
+}
+
 class UnAuthorizedError extends Error {
     constructor(code = 'GENERIC', status = statusCode.UNAUTHORIZED, ...params) {
         super(...params);
@@ -149,4 +162,5 @@ module.exports.InvalidTokenError = InvalidTokenError;
 module.exports.ExpiredTokenError = ExpiredTokenError;
 module.exports.WrongPasswordError = WrongPasswordError;
 module.exports.UnAuthorizedError = UnAuthorizedError;
+module.exports.PasswordPolicyError = PasswordPolicyError;
 module.exports.InvalidRequestError = InvalidRequestError;

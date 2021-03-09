@@ -79,16 +79,33 @@ module.exports.logoutUser = (req, res, next) => {
 
 module.exports.updateUser = (req, res, next) => {
     const userIdx = req.swagger.params['userIdx'].value;
+    const _userIdx = req.middlewareToken.loginUserIdx;
+    if (userIdx != _userIdx) {
+        throw UnAuthorizedError('유효하지 않는 접근입니다.');
+    }
     const body = req.swagger.params['body'].value;
     body.gender = genderMap[body.gender] || 0;
     const payload = Object.assign(body, {
         userIdx,
     });
+    delete payload.password;
     User.updateUser(payload)
         .then((response) => {
             res.status(OK).json({
                 message: '유저 수정 성공',
                 data: response,
+            });
+        })
+        .catch((err) => next(err));
+};
+
+module.exports.changePassword = (req, res, next) => {
+    const userIdx = req.middlewareToken.loginUserIdx;
+    const { prevPassword, newPassword } = req.swagger.params['body'].value;
+    User.changePassword(userIdx, prevPassword, newPassword)
+        .then((response) => {
+            res.status(OK).json({
+                message: '비밀번호 변경 성공',
             });
         })
         .catch((err) => next(err));

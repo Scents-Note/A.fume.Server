@@ -2319,6 +2319,38 @@ paths:
                 description: 사용 가능 여부
                 example: true
       x-swagger-router-controller: User
+  /user/changePassword:
+    put:
+      tags:
+      - user
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저 비밀번호 변경 <br/>
+      operationId: changePassword
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            prevPassword:
+              type: string
+            newPassword:
+              type: string
+          example:
+            prevPassword: test
+            newPassword: change
+      responses:
+        default:
+          description: successful operation
+      x-swagger-router-controller: User
   /user/auth:
     post:
       tags:
@@ -2387,9 +2419,12 @@ paths:
     put:
       tags:
       - user
-      summary: Updated user
-      description: This can only be done by the logged in user.
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저 정보 수정 <br/>
       operationId: putUser
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       produces:
       - application/json
       parameters:
