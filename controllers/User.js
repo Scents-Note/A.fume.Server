@@ -94,6 +94,18 @@ module.exports.updateUser = (req, res, next) => {
         .catch((err) => next(err));
 };
 
+module.exports.changePassword = (req, res, next) => {
+    const userIdx = req.middlewareToken.loginUserIdx;
+    const { prevPassword, newPassword } = req.swagger.params['body'].value;
+    User.changePassword(userIdx, prevPassword, newPassword)
+        .then((response) => {
+            res.status(OK).json({
+                message: '비밀번호 변경 성공',
+            });
+        })
+        .catch((err) => next(err));
+};
+
 module.exports.authUser = (req, res, next) => {
     const { token } = req.body;
     User.authUser(token)
