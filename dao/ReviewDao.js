@@ -1,5 +1,5 @@
 const { NotMatchedError } = require('../utils/errors/errors.js');
-const { sequelize, Review, Perfume, User} = require('../models');
+const { sequelize, Review, Perfume, Brand } = require('../models');
 
 /**
  * 시향노트 작성
@@ -41,10 +41,10 @@ module.exports.create = async ({
  * @returns {Promise<Review>}
  */
 
- // const SQL_REVIEW_SELECT_BY_IDX = `SELECT p.image_thumbnail_url as imageUrl, b.english_name as brandName, p.name, rv.score, rv.content, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, rv.create_time as createTime, u.user_idx as userIdx, u.nickname FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx JOIN user u ON rv.user_idx = u.user_idx WHERE review_idx = ?`;
+// const SQL_REVIEW_SELECT_BY_IDX = `SELECT p.image_thumbnail_url as imageUrl, b.english_name as brandName, p.name, rv.score, rv.content, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, rv.create_time as createTime, u.user_idx as userIdx, u.nickname FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx JOIN user u ON rv.user_idx = u.user_idx WHERE review_idx = ?`;
 module.exports.read = async (reviewIdx) => {
     const result = await Review.findByPk(reviewIdx, {
-        where: {id: reviewIdx},
+        where: { id: reviewIdx },
         include: [
             {
                 model: Perfume,
@@ -57,16 +57,16 @@ module.exports.read = async (reviewIdx) => {
                 attributes: {
                     exclude: ['createdAt', 'updatedAt'],
                 },
-            }
+            },
         ],
         raw: true,
-        nest: true
+        nest: true,
     });
 
     if (result.length == 0) {
         throw new NotMatchedError();
     }
-    
+
     return result;
 };
 
@@ -77,21 +77,29 @@ module.exports.read = async (reviewIdx) => {
  *  @returns {Promise<Review[]>} reviewList
  */
 
- // const SQL_REVIEW_SELECT_BY_USER = `SELECT review_idx as reviewIdx, p.image_thumbnail_url as imageUrl, b.english_name as brandName, p.name, rv.score, rv.content, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, rv.create_time as createTime FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx WHERE user_idx = ?`;
-module.exports.readAllOfUser = async (userIdx, sort = [['createdAt', 'desc']]) => {
+module.exports.readAllOfUser = async (
+    userIdx,
+    sort = [['createdAt', 'desc']]
+) => {
     let result = await Review.findAll({
-        where: {userIdx},
+        where: { userIdx },
         include: {
-            model: Perfume
+            model: Perfume,
+            attributes: {
+                exclude: ['createdAt', 'updatedAt'],
+            },
+            include: {
+                model: Brand,
+                as: 'Brand',
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+            },
         },
         order: sort,
         raw: true,
-        nest: true
+        nest: true,
     });
-
-    if (result.length == 0) {
-        throw new NotMatchedError();
-    }
 
     return result;
 };
@@ -100,7 +108,7 @@ module.exports.readAllOfUser = async (userIdx, sort = [['createdAt', 'desc']]) =
  * 특정 상품의 시향노트 전체 조회(인기순 정렬, 디폴트)
  * 좋아요 개수가 0인 시향노트들은 맨 후반부에 출력됨.
  * 1차 정렬 기준은 좋아요 개수순, 만약 좋아요 개수가 같거나 없는 경우는 최신 순으로 해당부분만 2차 정렬됨.
- * 
+ *
  * @param {number} perfumeIdx
  * @returns {Promise<Review[]>} reviewList
  */
@@ -130,22 +138,17 @@ SQL_READ_ALL_OF_PERFUME = `
     left outer join like_reviews lr on r.id = lr.review_idx 
     where perfume_idx = $1
     group by lr.review_idx 
-    order by "LikeReview.likeCount" desc;`
+    order by "LikeReview.likeCount" desc;`;
 
 module.exports.readAllOfPerfume = async (perfumeIdx) => {
-    let reviewList = await sequelize.query(
-        SQL_READ_ALL_OF_PERFUME,
-        {
-            bind: [
-                perfumeIdx
-            ],
-            nest: true,
-            raw: true,
-            model: Review,
-            mapToModel: true,
-            type: sequelize.QueryTypes.SELECT,
-        }
-    );
+    let reviewList = await sequelize.query(SQL_READ_ALL_OF_PERFUME, {
+        bind: [perfumeIdx],
+        nest: true,
+        raw: true,
+        model: Review,
+        mapToModel: true,
+        type: sequelize.QueryTypes.SELECT,
+    });
     // sequelize 시도
     // let result = await Review.findAll({
     //     attributes: {
@@ -171,7 +174,7 @@ module.exports.readAllOfPerfume = async (perfumeIdx) => {
     //     nest: true
     // });
     return reviewList;
-}
+};
 
 /**
  * 시향노트 수정
@@ -189,26 +192,27 @@ module.exports.update = async ({
     access,
     content,
     reviewIdx,
-}) => { 
+}) => {
     const result = await Review.update(
-        {score, longevity, sillage, seasonal, gender, access, content},
-        {where: {id: reviewIdx}}
-    )
+        { score, longevity, sillage, seasonal, gender, access, content },
+        { where: { id: reviewIdx } }
+    );
 
-    if (result[0] == 0) { //update result[0]가 곧 affectedRow
+    if (result[0] == 0) {
+        //update result[0]가 곧 affectedRow
         throw new NotMatchedError();
     }
-    
+
     return result;
 };
 
 /**
  * 시향노트 삭제
- * 
+ *
  * @param {number} reviewIdx
  * @return {Promise}
  */
 
 module.exports.delete = async (reviewIdx) => {
-    return await Review.destroy({ where: {id: reviewIdx} });
+    return await Review.destroy({ where: { id: reviewIdx } });
 };
