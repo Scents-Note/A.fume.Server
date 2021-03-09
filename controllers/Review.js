@@ -1,7 +1,7 @@
 'use strict';
 
 var Review = require('../service/ReviewService');
-const { OK, INTERNAL_SERVER_ERROR } = require('../utils/statusCode.js');
+const { OK } = require('../utils/statusCode.js');
 
 module.exports.postReview = function postReview(req, res, next) {
     const perfumeIdx = req.swagger.params['perfumeIdx'].value;
@@ -31,11 +31,7 @@ module.exports.postReview = function postReview(req, res, next) {
                 message: '시향노트 추가 성공',
             });
         })
-        .catch(function (response) {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.getReviewByIdx = function getReviewByIdx(req, res, next) {
@@ -47,11 +43,7 @@ module.exports.getReviewByIdx = function getReviewByIdx(req, res, next) {
                 data: response,
             });
         })
-        .catch(function (response) {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.getReviewOfPerfumeByLike = function getReviewOfPerfumeByLike(
@@ -67,11 +59,7 @@ module.exports.getReviewOfPerfumeByLike = function getReviewOfPerfumeByLike(
                 data: response,
             });
         })
-        .catch(function (response) {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.getReviewOfPerfumeByScore = function getReviewOfPerfumeByScore(
@@ -87,27 +75,19 @@ module.exports.getReviewOfPerfumeByScore = function getReviewOfPerfumeByScore(
                 data: response,
             });
         })
-        .catch(function (response) {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
-module.exports.getReviewByUser = function getReviewByUser(req, res, next) {
+module.exports.getReviewOfUser = function getReviewOfUser(req, res, next) {
     const userIdx = req.middlewareToken.loginUserIdx;
-    Review.getReviewByUser(userIdx)
+    Review.getReviewOfUser(userIdx)
         .then((response) => {
             res.status(OK).json({
                 message: '마이퍼퓸 조회 성공',
                 data: response,
             });
         })
-        .catch(function (response) {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.getReviewOfPerfumeByRecent = function getReviewOfPerfumeByRecent(
@@ -123,11 +103,7 @@ module.exports.getReviewOfPerfumeByRecent = function getReviewOfPerfumeByRecent(
                 data: response,
             });
         })
-        .catch(function (response) {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.updateReview = (req, res, next) => {
@@ -158,11 +134,7 @@ module.exports.updateReview = (req, res, next) => {
                 message: '시향노트 수정 성공',
             });
         })
-        .catch(function (response) {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.deleteReview = (req, res, next) => {
@@ -174,11 +146,7 @@ module.exports.deleteReview = (req, res, next) => {
                 message: '시향노트 삭제 성공',
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };
 
 module.exports.likeReview = (req, res, next) => {
@@ -191,9 +159,5 @@ module.exports.likeReview = (req, res, next) => {
                 data: result,
             });
         })
-        .catch((response) => {
-            res.status(response.status || INTERNAL_SERVER_ERROR).json({
-                message: response.message,
-            });
-        });
+        .catch((err) => next(err));
 };

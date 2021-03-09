@@ -2479,6 +2479,62 @@ paths:
         default:
           description: successful operation
       x-swagger-router-controller: Perfume
+  /user/{userIdx}/review:
+    get:
+      tags:
+      - review
+      summary: 마이퍼퓸 조회
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저가 작성한 리뷰 전체 조회
+      operationId: getReviewOfUser
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      produces:
+      - application/json
+      parameters:
+      - name: userIdx
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 마이퍼퓸 조회 성공
+              data:
+                type: array
+                items:
+                  type: object
+                  properties: 
+                    reviewIdx: 
+                      type: integer
+                      example: 1
+                    score:
+                      type: number
+                      example: 4.5
+                    perfumeIdx:
+                      type: integer
+                      example: 1
+                    perfumeName:
+                      type: string
+                      example: 154 코롱
+                    imageUrl:
+                      type: string
+                      example: https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554
+                    brandIdx: 
+                      type: integer
+                      example: 1
+                    englishName:
+                      type: string
+                      example: 154 kolon
+        default:
+          description: successful operation
+      x-swagger-router-controller: Review
 securityDefinitions:
   userToken:
       type: apiKey
