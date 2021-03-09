@@ -2419,9 +2419,12 @@ paths:
     put:
       tags:
       - user
-      summary: Updated user
-      description: This can only be done by the logged in user.
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저 정보 수정 <br/>
       operationId: putUser
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
       produces:
       - application/json
       parameters:

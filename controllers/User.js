@@ -79,11 +79,16 @@ module.exports.logoutUser = (req, res, next) => {
 
 module.exports.updateUser = (req, res, next) => {
     const userIdx = req.swagger.params['userIdx'].value;
+    const _userIdx = req.middlewareToken.loginUserIdx;
+    if (userIdx != _userIdx) {
+        throw UnAuthorizedError('유효하지 않는 접근입니다.');
+    }
     const body = req.swagger.params['body'].value;
     body.gender = genderMap[body.gender] || 0;
     const payload = Object.assign(body, {
         userIdx,
     });
+    delete payload.password;
     User.updateUser(payload)
         .then((response) => {
             res.status(OK).json({

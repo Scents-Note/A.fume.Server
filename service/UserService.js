@@ -21,7 +21,6 @@ exports.createUser = ({
     nickname,
     password,
     gender,
-    phone,
     email,
     birth,
     grade,
@@ -32,7 +31,6 @@ exports.createUser = ({
         nickname,
         password,
         gender,
-        phone,
         email,
         birth,
         grade,
@@ -133,7 +131,6 @@ exports.logoutUser = () => {
 exports.updateUser = ({
     userIdx,
     nickname,
-    password,
     gender,
     phone,
     email,
@@ -143,7 +140,6 @@ exports.updateUser = ({
     return userDao.update({
         userIdx,
         nickname,
-        password,
         gender,
         phone,
         email,
