@@ -5,6 +5,7 @@ const crypto = require('../lib/crypto.js');
 const userDao = require('../dao/UserDao.js');
 const {
     WrongPasswordError,
+    PasswordPolicyError,
     NotMatchedError,
 } = require('../utils/errors/errors.js');
 const user = require('../mongoose_models/user.js');
@@ -20,7 +21,6 @@ exports.createUser = ({
     nickname,
     password,
     gender,
-    phone,
     email,
     birth,
     grade,
@@ -31,7 +31,6 @@ exports.createUser = ({
         nickname,
         password,
         gender,
-        phone,
         email,
         birth,
         grade,
@@ -132,7 +131,6 @@ exports.logoutUser = () => {
 exports.updateUser = ({
     userIdx,
     nickname,
-    password,
     gender,
     phone,
     email,
@@ -142,12 +140,35 @@ exports.updateUser = ({
     return userDao.update({
         userIdx,
         nickname,
-        password,
         gender,
         phone,
         email,
         birth,
         grade,
+    });
+};
+
+/**
+ * 유저 비밀번호 변경
+ *
+ * @param {number} userIdx
+ * @param {string} prevPassword
+ * @param {string} newPassword
+ * @returns {}
+ **/
+exports.changePassword = async (userIdx, prevPassword, newPassword) => {
+    const user = await userDao.readByIdx(userIdx);
+    const dbPassword = crypto.decrypt(user.password);
+    if (dbPassword !== prevPassword) {
+        throw new WrongPasswordError();
+    }
+    if (dbPassword === newPassword) {
+        throw new PasswordPolicyError();
+    }
+    const password = crypto.encrypt(newPassword);
+    return userDao.update({
+        userIdx,
+        password,
     });
 };
 
