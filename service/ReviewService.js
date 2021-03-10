@@ -61,7 +61,7 @@ exports.getReviewOfUser = async (userIdx) => {
             perfumeName: it.Perfume.name,
             imageUrl: it.Perfume.imageUrl,
             brandIdx: it.Perfume.brandIdx,
-            englishName: it.Perfume.englishName,
+            brandName: it.Perfume.Brand.englishName,
         };
     });
 };
