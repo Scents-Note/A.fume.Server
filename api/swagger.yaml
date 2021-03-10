@@ -2564,9 +2564,9 @@ paths:
                     brandIdx: 
                       type: integer
                       example: 1
-                    englishName:
+                    brandName:
                       type: string
-                      example: 154 kolon
+                      example: (테스트)조말론
         default:
           description: successful operation
       x-swagger-router-controller: Review
