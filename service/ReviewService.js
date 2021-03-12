@@ -49,11 +49,21 @@ exports.getReviewByIdx = (reviewIdx) => {
  * 내가 쓴 시향기 전체 조회
  *  = 마이퍼퓸 조회
  *
- * userIdx Long 유저 Idx
- * returns List
+ * @param {number} userIdx
+ * @returns {Promise<Review[]>} reviewList
  **/
-exports.getReviewByUser = (userIdx) => {
-    return reviewDao.readAllByUser(userIdx);
+exports.getReviewOfUser = async (userIdx) => {
+    return (await reviewDao.readAllOfUser(userIdx)).map((it) => {
+        return {
+            reviewIdx: it.id,
+            score: it.score,
+            perfumeIdx: it.perfumeIdx,
+            perfumeName: it.Perfume.name,
+            imageUrl: it.Perfume.imageUrl,
+            brandIdx: it.Perfume.brandIdx,
+            brandName: it.Perfume.Brand.englishName,
+        };
+    });
 };
 
 /**
