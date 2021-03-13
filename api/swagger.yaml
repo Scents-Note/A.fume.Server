@@ -1543,9 +1543,9 @@ paths:
     get:
       tags:
       - review
-      summary: 시향노트 반환
+      summary: 시향노트 조회
       description: 특정 시향노트 가져오기 <br/> 반환 되는 정보 [시향 노트]
-      operationId: getReview
+      operationId: getReviewByIdx
       consumes:
       - application/json
       produces:
@@ -1571,26 +1571,51 @@ paths:
                 - $ref: '#/definitions/ReviewInfo'
                 - type: object
                   properties: 
-                    imageUrl:
-                      type: string
-                    brandName: 
-                      type: string
-                    name:
-                      type: string
-                    userIdx:
+                    reviewIdx:
                       type: integer
                       format: int64
-                    nickname:
-                      type: string
-                    createTime:
-                      type: string
+                    Perfume:
+                      type: object
+                      properties:
+                        perfumeIdx:
+                          type: integer
+                          format: int64
+                        perfumeName:
+                          type: integer
+                          format: int64
+                        imageUrl:
+                          type: string
+                    KeywordList: 
+                      type: array
+                      items: 
+                        type: object
+                        properties:
+                          keywordIdx:
+                            type: integer
+                            format: int64
+                          keyword:
+                            type: string
+                    Brand:
+                      type: object
+                      properties:
+                        brandIdx:
+                          type: integer
+                          format: int64
+                        brandName:
+                          type: string
                   example:
-                    imageUrl: 
-                    brandName: Jo Malone
-                    name: 154 코롱
-                    userIdx: 339
-                    nickname: 홍길동
-                    createTime: '2020-12-07 00:11:41'
+                    reviewIdx: 1
+                    Perfume:
+                      perfumeIdx: 1
+                      perfumeName:  154 코롱
+                      imageUrl: https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554
+                    KeywordList:
+                      -
+                        keywordIdx: 1
+                        keyword: 달달한
+                    Brand:
+                      brandIdx: 1
+                      brandName: Jo Malone
         400:
           description: Invalid ID supplied
         401:
@@ -2514,7 +2539,7 @@ paths:
         default:
           description: successful operation
       x-swagger-router-controller: Perfume
-  /user/{userIdx}/review:
+  /user/review:
     get:
       tags:
       - review
@@ -2527,11 +2552,6 @@ paths:
         - user
       produces:
       - application/json
-      parameters:
-      - name: userIdx
-        in: path
-        required: true
-        type: string
       responses:
         200:
           description: successful operation
