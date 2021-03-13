@@ -1,5 +1,13 @@
 const { NotMatchedError } = require('../utils/errors/errors.js');
-const { sequelize, Review, Perfume, Brand } = require('../models');
+const {
+    sequelize,
+    Review,
+    Perfume,
+    Brand,
+    User,
+    JoinReviewKeyword,
+    Keyword,
+} = require('../models');
 
 /**
  * 시향노트 작성
@@ -43,13 +51,23 @@ module.exports.create = async ({
 
 // const SQL_REVIEW_SELECT_BY_IDX = `SELECT p.image_thumbnail_url as imageUrl, b.english_name as brandName, p.name, rv.score, rv.content, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, rv.create_time as createTime, u.user_idx as userIdx, u.nickname FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx JOIN user u ON rv.user_idx = u.user_idx WHERE review_idx = ?`;
 module.exports.read = async (reviewIdx) => {
-    const result = await Review.findByPk(reviewIdx, {
+    const reviewList = await Review.findByPk(reviewIdx, {
         where: { id: reviewIdx },
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
         include: [
             {
                 model: Perfume,
                 attributes: {
                     exclude: ['createdAt', 'updatedAt'],
+                },
+                include: {
+                    model: Brand,
+                    as: 'Brand',
+                    attributes: {
+                        exclude: ['createdAt', 'updatedAt'],
+                    },
                 },
             },
             {
@@ -63,11 +81,35 @@ module.exports.read = async (reviewIdx) => {
         nest: true,
     });
 
-    if (result.length == 0) {
+    const keywordList = await JoinReviewKeyword.findAll({
+        where: { reviewIdx },
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        include: [
+            {
+                model: Keyword,
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+            },
+        ],
+        raw: true,
+        nest: true,
+    });
+
+    reviewList.keywordList = await keywordList.map((it) => {
+        return {
+            keywordIdx: it.Keyword.id,
+            keyword: it.Keyword.name,
+        };
+    });
+
+    if (reviewList.length == 0) {
         throw new NotMatchedError();
     }
 
-    return result;
+    return reviewList;
 };
 
 /**

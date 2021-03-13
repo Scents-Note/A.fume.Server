@@ -41,12 +41,15 @@ describe('# reviewDao Test', () => {
     });
 
     describe('# read Test', () => {
-        let reviewIdx = 70;
+        let reviewIdx = 1;
         it('# success case', (done) => {
             reviewDao
                 .read(reviewIdx)
                 .then((result) => {
-                    //expect(result.content).eq('시향노트1');
+                    expect(result.content).eq('시향노트1');
+                    expect(result.score).eq(1);
+                    expect(result.keywordList[0].keywordIdx).eq(1);
+                    expect(result.keywordList[0].keyword).eq('키워드1');
                     done();
                 })
                 .catch((err) => done(err));

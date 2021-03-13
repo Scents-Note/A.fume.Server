@@ -2,23 +2,17 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-    class JoinPerfumeKeyword extends Model {
+    class JoinReviewKeyword extends Model {
         static associate(models) {
-            models.Perfume.belongsToMany(models.Keyword, {
-                through: 'JoinPerfumeKeyword',
-                foreignKey: 'perfumeIdx',
+            models.Review.belongsToMany(models.Keyword, {
+                through: 'JoinReviewKeyword',
+                foreignKey: 'reviewIdx',
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
-            models.Keyword.belongsToMany(models.Perfume, {
-                through: 'JoinPerfumeKeyword',
+            models.Keyword.belongsToMany(models.Review, {
+                through: 'JoinReviewKeyword',
                 foreignKey: 'keywordIdx',
-                onUpdate: 'CASCADE',
-                onDelete: 'CASCADE',
-            });
-            models.Perfume.hasMany(this, {
-                as: 'JoinPerfumeKeywords',
-                foreignKey: 'perfumeIdx',
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
@@ -29,29 +23,25 @@ module.exports = (sequelize, DataTypes) => {
             });
         }
     }
-    JoinPerfumeKeyword.init(
+    JoinReviewKeyword.init(
         {
-            perfumeIdx: {
+            reviewIdx: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 primaryKey: true,
             },
             keywordIdx: {
-                type: DataTypes.STRING,
+                type: DataTypes.INTEGER,
                 allowNull: false,
                 primaryKey: true,
             },
-            count: {
-                type: DataTypes.INTEGER,
-                defaultValue: 0,
-            },
         },
         {
-            modelName: 'JoinPerfumeKeyword',
+            modelName: 'JoinReviewKeyword',
             timestamps: true,
             underscored: true,
             sequelize,
         }
     );
-    return JoinPerfumeKeyword;
+    return JoinReviewKeyword;
 };

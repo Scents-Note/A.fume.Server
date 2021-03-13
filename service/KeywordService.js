@@ -6,12 +6,13 @@ const keywordDao = require('../dao/KeywordDao');
  * @returns {Promise<Keyword[]>}
  **/
 exports.getKeywordAll = async (pagingIndex, pagingSize) => {
-  let result = await keywordDao.readAll(pagingIndex, pagingSize);
-  return result.rows.map((it) => {
-    it.keywordIdx = it.id
-    delete it.id;
-    return it;
-  });
+    const result = await keywordDao.readAll(pagingIndex, pagingSize);
+    result.rows = await result.rows.map((it) => {
+        it.keywordIdx = it.id;
+        delete it.id;
+        return it;
+    });
+    return result;
 };
 
 /**
@@ -20,6 +21,10 @@ exports.getKeywordAll = async (pagingIndex, pagingSize) => {
  * @param {number} perfumeIdx
  * @returns {Promise<keyword[]>}
  */
-exports.getKeywordOfPerfume = (perfumeIdx) => {
-  return keywordDao.readAllOfPerfume(perfumeIdx);
-}
+exports.getKeywordOfPerfume = async (perfumeIdx) => {
+    return (await keywordDao.readAllOfPerfume(perfumeIdx)).map((it) => {
+        it.keywordIdx = it.id;
+        delete it.id;
+        return it;
+    });
+};
