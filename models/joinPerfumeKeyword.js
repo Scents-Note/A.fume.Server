@@ -22,6 +22,11 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
+            this.belongsTo(models.Keyword, {
+                foreignKey: 'keywordIdx',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            });
         }
     }
     JoinPerfumeKeyword.init(
@@ -35,6 +40,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
                 primaryKey: true,
+            },
+            count: {
+                type: DataTypes.INTEGER,
+                defaultValue: 0,
             },
         },
         {
