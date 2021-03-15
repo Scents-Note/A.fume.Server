@@ -2266,6 +2266,15 @@ paths:
                   userIdx:
                     type: integer
                     example: 29
+                  nickname:
+                    type: string
+                    example: nickname
+                  gender:
+                    type: string
+                    example: MAN
+                  birth:
+                    type: integer
+                    example: 1995
                   token:
                     type: string
                     description: login용 userToken
@@ -2276,6 +2285,12 @@ paths:
                     example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZWZyZXNoVG9rZW4iOnsidXNlcklkeCI6MSwiZW1haWwiOiJoZWUueW91bkBzYW1zdW5nLmNvbSIsIm5pY2tuYW1lIjoi7L-87Lm066eoIiwiZ2VuZGVyIjoxLCJwaG9uZSI6IjAxMC0yMDgxLTM4MTgiLCJiaXJ0aCI6MTk5NSwiZ3JhZGUiOjAsImFjY2Vzc1RpbWUiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoiLCJjcmVhdGVkQXQiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoiLCJ1cGRhdGVkQXQiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoifSwiaWF0IjoxNjA5ODUxODIzLCJleHAiOjE2MTE1Nzk4MjMsImlzcyI6ImFmdW1lLWphY2twb3QifQ.Vb9-KO1DWOBhuVAoBzh0USybt5b5YpZqfqG1OU3snUY    
         400:
           description: Invalid username/password supplied
+        401:
+          description: 비밀번호가 잘못된 경우 / 아이디가 존재하지 않는 경우
+          schema:
+            type: object
+            example: 
+              message: 비밀번호가 잘못되었습니다 / 해당 조건에 일치하는 데이터가 없습니다.
       x-swagger-router-controller: User
   /user/logout:
     get:
@@ -2486,15 +2501,15 @@ paths:
               data:
                 userIdx: 1
                 nickname: nickname
-                gender: gender
+                gender: WOMAN
                 birth: 1995
                 email: email
         401:
-          description: login Token 의 UserIdx와 일치하지 않는 경우
+          description: login Token 의 UserIdx와 일치하지 않는 경우 /  login Token이 없는 경우
           schema:
             type: object
             example: 
-              message: 권한이 없습니다
+              message: 권한이 없습니다 / 유효하지 않는 토큰입니다.
         404:
           description: User not found
       x-swagger-router-controller: User
