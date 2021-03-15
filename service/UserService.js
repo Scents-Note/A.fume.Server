@@ -8,7 +8,8 @@ const {
     PasswordPolicyError,
     NotMatchedError,
 } = require('../utils/errors/errors.js');
-const user = require('../mongoose_models/user.js');
+
+const { removeKeyJob } = require('../utils/func.js');
 
 /**
  * 유저 회원 가입
@@ -128,7 +129,7 @@ exports.logoutUser = () => {
  * @param {Object} User
  * @returns {}
  **/
-exports.updateUser = ({
+exports.updateUser = async ({
     userIdx,
     nickname,
     gender,
@@ -137,7 +138,7 @@ exports.updateUser = ({
     birth,
     grade,
 }) => {
-    return userDao.update({
+    await userDao.update({
         userIdx,
         nickname,
         gender,
@@ -146,6 +147,17 @@ exports.updateUser = ({
         birth,
         grade,
     });
+    return userDao
+        .readByIdx(userIdx)
+        .then(
+            removeKeyJob(
+                'password',
+                'grade',
+                'accessTime',
+                'createdAt',
+                'updatedAt'
+            )
+        );
 };
 
 /**

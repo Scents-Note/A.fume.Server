@@ -2263,8 +2263,9 @@ paths:
               data:
                 type: object
                 properties:
-                  user:
-                    $ref: '#/definitions/User'
+                  userIdx:
+                    type: integer
+                    example: 29
                   token:
                     type: string
                     description: login용 userToken
@@ -2444,8 +2445,9 @@ paths:
     put:
       tags:
       - user
+      summary: 유저 정보 수정
       description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저 정보 수정 <br/>
-      operationId: putUser
+      operationId: updateUser
       security:
         - userToken: []
       x-security-scopes:
@@ -2462,18 +2464,37 @@ paths:
         name: body
         description: Updated user object
         required: true
-        schema:
-          allOf:
-          - $ref: '#/definitions/User'
-          - type: object
-            properties:
-              userIdx:
-                type: integer
-            example:
-              userIdx: 1
+        schema: 
+          $ref: '#/definitions/User'
       responses:
-        400:
-          description: Invalid user supplied
+        200:
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              data:
+                allOf:
+                - $ref: '#/definitions/User'
+                - type: object
+                  properties:
+                    userIdx:
+                      type: integer
+            example: 
+              message: 유저 수정 성공
+              data:
+                userIdx: 1
+                nickname: nickname
+                gender: gender
+                birth: 1995
+                email: email
+        401:
+          description: login Token 의 UserIdx와 일치하지 않는 경우
+          schema:
+            type: object
+            example: 
+              message: 권한이 없습니다
         404:
           description: User not found
       x-swagger-router-controller: User
