@@ -111,7 +111,11 @@ exports.loginUser = async (email, password) => {
     delete user.password;
     const payload = Object.assign({}, user);
     userDao.updateAccessTime(user.userIdx);
-    return Object.assign({ userIdx: user.userIdx }, jwt.publish(payload));
+    const { userIdx, nickname, gender, birth } = user;
+    return Object.assign(
+        { userIdx, nickname, gender, birth },
+        jwt.publish(payload)
+    );
 };
 
 /**
