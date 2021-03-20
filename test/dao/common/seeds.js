@@ -103,6 +103,7 @@ module.exports = () => {
                 gender: 1,
                 access: 1,
                 content: `시향노트${i}`,
+                likeCnt: 5,
             })
         );
     }
