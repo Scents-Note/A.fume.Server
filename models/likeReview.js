@@ -6,27 +6,27 @@ module.exports = (sequelize, DataTypes) => {
     class LikeReview extends Model {
         static associate(models) {
             models.User.belongsToMany(models.Review, {
-            through: 'LikeReview',
-            foreignKey: 'userIdx',
-            onUpdate: 'CASCADE',
-            onDelete: 'CASCADE',
+                through: 'UserReview',
+                foreignKey: 'userIdx',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
             });
             models.Review.belongsToMany(models.User, {
-                through: 'LikeReview',
+                through: 'ReviewUser',
                 foreignKey: 'reviewIdx',
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
             models.Review.hasMany(this, {
                 foreignKey: 'reviewIdx',
-                as: 'LikeReview',
-                sourceKey: 'id'
-            })
+                as: 'ReviewLike',
+                sourceKey: 'id',
+            });
             this.belongsTo(models.Review, {
                 foreignKey: 'reviewIdx',
-                as: 'LikeReview',
-                targetKey: 'id'
-            })
+                as: 'LikeToReview',
+                targetKey: 'id',
+            });
         }
     }
     LikeReview.init(
@@ -50,4 +50,4 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
     return LikeReview;
-}
+};

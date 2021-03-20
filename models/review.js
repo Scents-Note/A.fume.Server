@@ -57,11 +57,16 @@ module.exports = (sequelize, DataTypes) => {
             },
             access: {
                 type: DataTypes.INTEGER,
+                defaultValue: 0,
                 comment: '0: false, 1: true',
             },
             content: {
                 type: DataTypes.STRING,
                 allowNull: false,
+            },
+            likeCnt: {
+                type: DataTypes.INTEGER,
+                defaultValue: 0,
             },
         },
         {
