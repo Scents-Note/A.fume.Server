@@ -35,14 +35,28 @@ exports.deleteReview = ({ reviewIdx, userIdx }) => {
 };
 
 /**
- * 시향노트 반환
- * 특정 시향노트 가져오기
+ * 시향노트 조회
  *
- * reviewIdx Long 시향노트 Idx
- * returns ReviewInfo
+ * @param {Object} whereObj
+ * @returns {Promise<Review>}
  **/
-exports.getReviewByIdx = (reviewIdx) => {
-    return reviewDao.read(reviewIdx);
+exports.getReviewByIdx = async (reviewIdx) => {
+    const result = await reviewDao.read(reviewIdx);
+    result.reviewIdx = result.id;
+    delete result.id;
+    delete result.perfumeIdx;
+    delete result.userIdx;
+    result.Brand = {
+        brandIdx: result.Perfume.Brand.brandIdx,
+        brandName: result.Perfume.Brand.name,
+    };
+    result.Perfume = {
+        perfumeIdx: result.Perfume.perfumeIdx,
+        perfumeName: result.Perfume.name,
+        imageUrl: result.Perfume.imageUrl,
+    };
+    delete result.Users;
+    return result;
 };
 
 /**

@@ -12,6 +12,7 @@ const {
     PerfumeSurvey,
     Keyword,
     JoinPerfumeKeyword,
+    JoinReviewKeyword,
     Review,
     Sequelize,
     sequelize,
@@ -52,6 +53,7 @@ module.exports = () => {
             JoinPerfumeKeyword.upsert({
                 perfumeIdx: i,
                 keywordIdx: i,
+                count: i,
             })
         );
     }
@@ -101,6 +103,7 @@ module.exports = () => {
                 gender: 1,
                 access: 1,
                 content: `시향노트${i}`,
+                likeCnt: 5,
             })
         );
     }
@@ -108,6 +111,7 @@ module.exports = () => {
     for (let i = 1; i <= 5; i++) {
         fourthJob.push(
             LikeReview.upsert({ reviewIdx: i, userIdx: i }),
+            JoinReviewKeyword.upsert({ reviewIdx: i, keywordIdx: i }),
             SearchHistory.upsert({ userIdx: i, perfumeIdx: i, count: 1 }),
             SearchHistory.upsert({ userIdx: 1, perfumeIdx: i, count: 1 }),
             PerfumeSurvey.upsert({ perfumeIdx: i, gender: GENDER_WOMAN }),
