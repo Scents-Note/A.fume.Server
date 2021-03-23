@@ -70,7 +70,7 @@ module.exports = () => {
                 brandIdx: i,
                 mainSeriesIdx: i,
                 name: `향수${i}`,
-                englishName: 'perfume english name',
+                englishName: `perfume-${i}`,
                 imageUrl: `http://perfume-image/${i}`,
                 releaseDate: `2021-01-1${i}`,
                 likeCnt: 1,
