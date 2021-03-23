@@ -107,3 +107,13 @@ exports.getFilterBrand = () => {
         return result;
     });
 };
+
+/**
+ * 브랜드 영어 이름으로 조회
+ *
+ * @param {string} englishName
+ * @returns {Promise<Brand>}
+ **/
+exports.findBrandByEnglishName = (englishName) => {
+    return brandDao.findBrand({ englishName });
+};
