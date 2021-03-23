@@ -733,6 +733,41 @@ paths:
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Brand
+  /brand/find:
+    post:
+      tags:
+      - SUB_brand
+      summary: 브랜드 조회
+      operationId: getBrandByEnglishName
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            englishName:
+              type: string
+              example: GALIMARD
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 브랜드 조회 성공
+              data:
+                allOf:
+                - $ref: '#/definitions/BrandInfo'
+                - type: object
+                  properties:
+                    brandIdx:
+                      type: integer
+                  example:
+                    brandIdx: 1
+      x-swagger-router-controller: Brand
   /brand/{brandIdx}:
     get:
       tags:

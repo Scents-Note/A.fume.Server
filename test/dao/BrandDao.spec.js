@@ -5,7 +5,10 @@ const chai = require('chai');
 const { expect } = chai;
 const brandDao = require('../../dao/BrandDao.js');
 const { Brand } = require('../../models');
-const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
+const {
+    DuplicatedEntryError,
+    NotMatchedError,
+} = require('../../utils/errors/errors.js');
 
 describe('# brandDao Test', () => {
     before(async function () {
@@ -58,6 +61,33 @@ describe('# brandDao Test', () => {
                     expect(result.name).eq('브랜드2');
                     expect(result.firstInitial).eq('ㅂ');
                     expect(result.description.length).gt(0);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it('# findBrand success case', (done) => {
+            brandDao
+                .findBrand({
+                    name: '브랜드1',
+                })
+                .then((result) => {
+                    expect(result.name).eq('브랜드1');
+                    expect(result.brandIdx).eq(1);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+        it('# findBrand not found case', (done) => {
+            brandDao
+                .findBrand({
+                    name: '브랜드10',
+                })
+                .then(() => {
+                    throw new Error('Must be occur NotMatchedError');
+                })
+                .catch((err) => {
+                    expect(err).instanceOf(NotMatchedError);
                     done();
                 })
                 .catch((err) => done(err));

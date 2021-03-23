@@ -122,3 +122,18 @@ module.exports.update = async ({
 module.exports.delete = (brandIdx) => {
     return Brand.destroy({ where: { brandIdx } });
 };
+
+/**
+ * 브랜드 검색
+ *
+ * @param {Object} condition
+ * @returns {Promise<Brand>}
+ */
+module.exports.findBrand = (condition) => {
+    return Brand.findOne({ where: condition }).then((it) => {
+        if (!it) {
+            throw new NotMatchedError();
+        }
+        return it;
+    });
+};
