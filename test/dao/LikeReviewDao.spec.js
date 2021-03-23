@@ -3,7 +3,7 @@ dotenv.config({ path: './config/.env.test' });
 
 const chai = require('chai');
 const { expect } = chai;
-const likeReviewDao = require('../../dao/likeReviewDao.js');
+const likeReviewDao = require('../../dao/LikeReviewDao.js');
 const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
 const { LikeReview } = require('../../models');
 
