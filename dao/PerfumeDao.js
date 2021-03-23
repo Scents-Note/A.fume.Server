@@ -492,3 +492,18 @@ module.exports.delete = async (perfumeIdx) => {
     ]);
     return result[0];
 };
+
+/**
+ * 향수 Index 조회
+ *
+ * @param {Object} condition
+ * @returns {Promise<number>} perfumeIdx
+ */
+module.exports.findPerfumeIdx = ({ englishName }) => {
+    return Perfume.findOne({ where: { englishName } }).then((it) => {
+        if (!it) {
+            throw new NotMatchedError();
+        }
+        return it.perfumeIdx;
+    });
+};

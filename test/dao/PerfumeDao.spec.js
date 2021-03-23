@@ -344,6 +344,32 @@ describe('# perfumeDao Test', () => {
                 })
                 .catch((err) => done(err));
         });
+
+        it('# findPerfumeIdx success case', (done) => {
+            perfumeDao
+                .findPerfumeIdx({
+                    englishName: 'perfume-1',
+                })
+                .then((result) => {
+                    expect(result).eq(1);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+        it('# findPerfumeIdx not found case', (done) => {
+            perfumeDao
+                .findPerfumeIdx({
+                    englishName: 'perfume-10',
+                })
+                .then(() => {
+                    throw new Error('Must be occur NotMatchedError');
+                })
+                .catch((err) => {
+                    expect(err).instanceOf(NotMatchedError);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
     });
 
     describe('# update Test', () => {
