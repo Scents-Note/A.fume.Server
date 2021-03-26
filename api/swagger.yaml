@@ -1251,6 +1251,41 @@ paths:
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Series
+  /series/find:
+    post:
+      tags:
+      - SUB_series
+      summary: 계열 조회
+      operationId: getSeriesByEnglishName
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            englishName:
+              type: string
+              example: Floral
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 계열 조회 성공
+              data:
+                allOf:
+                - $ref: '#/definitions/SeriesInfo'
+                - type: object
+                  properties:
+                    seriesIdx:
+                      type: integer
+                  example:
+                    seriesIdx: 2
+      x-swagger-router-controller: Series
   /series/{seriesIdx}:
     get:
       tags:
