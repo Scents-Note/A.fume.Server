@@ -104,3 +104,17 @@ module.exports.getFilterSeries = (req, res, next) => {
         })
         .catch((err) => next(err));
 };
+
+module.exports.getSeriesByEnglishName = (req, res, next) => {
+    const { englishName } = req.body;
+    Series.findSeriesByEnglishName(englishName)
+        .then((response) => {
+            res.status(OK).json({
+                message: '계열 조회 성공',
+                data: response,
+            });
+        })
+        .catch((err) => {
+            next(err);
+        });
+};
