@@ -188,3 +188,18 @@ module.exports.readByPerfumeIdx = async (perfumeIdx) => {
     });
     return result;
 };
+
+/**
+ * 재료 검색
+ *
+ * @param {Object} condition
+ * @returns {Promise<Ingredient>}
+ */
+module.exports.findIngredient = (condition) => {
+    return Ingredient.findOne({ where: condition }).then((it) => {
+        if (!it) {
+            throw new NotMatchedError();
+        }
+        return it;
+    });
+};
