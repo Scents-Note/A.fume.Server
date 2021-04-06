@@ -35,6 +35,20 @@ function isLikeJob(likePerfumeList) {
     };
 }
 
+function addKeyword(joinKeywordList) {
+    const keywordMap = joinKeywordList.reduce((prev, cur) => {
+        if (!prev[cur.perfumeIdx]) prev[cur.perfumeIdx] = [];
+        prev[cur.perfumeIdx].push(cur.Keyword.name);
+        return prev;
+    }, {});
+
+    return (obj) => {
+        const ret = Object.assign({}, obj);
+        ret.keywordList = keywordMap[obj.perfumeIdx] || [];
+        return ret;
+    };
+}
+
 const commonJob = [
     extractJob('Brand', ['name', 'brandName']),
     removeKeyJob(
@@ -427,11 +441,17 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
                 perfumeIdxList
             );
         }
+
+        const joinKeywordList = await keywordDao.readAllOfPerfumeIdxList(
+            perfumeIdxList
+        );
+
         return updateRows(
             result,
             ...commonJob,
             removeKeyJob('SearchHistory'),
-            isLikeJob(likePerfumeList)
+            isLikeJob(likePerfumeList),
+            addKeyword(joinKeywordList)
         );
     });
 };
