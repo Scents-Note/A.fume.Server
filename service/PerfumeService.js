@@ -411,29 +411,14 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
         ageGroup = parseInt(age / 10) * 10;
     }
 
-    const cached = await perfumeDao.recommendPerfumeByAgeAndGenderCached();
-    if (cached) {
-        const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
-        let likePerfumeList = [];
-        if (userIdx > -1) {
-            likePerfumeList = await likePerfumeDao.readLikeInfo(
-                userIdx,
-                perfumeIdxList
-            );
-        }
-        return updateRows(
-            cached,
-            ...commonJob,
-            removeKeyJob('SearchHistory'),
-            isLikeJob(likePerfumeList)
-        );
-    }
-    return this.recommendByGenderAgeAndGender(
+    const recommendedList = this.recommendByGenderAgeAndGender(
         gender,
         ageGroup,
         pagingIndex,
         pagingSize
-    ).then(async (result) => {
+    );
+
+    return recommendedList.then(async (result) => {
         const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
         let likePerfumeList = [];
         if (userIdx > -1) {
