@@ -30,4 +30,16 @@ describe('# KeywordDao Test', () => {
                 .catch((err) => done(err));
         });
     });
+
+    describe('# readAllOfPerfume Test', () => {
+        it('# success case', (done) => {
+            keywordDao
+                .readAllOfPerfumeIdxList([1])
+                .then((result) => {
+                    expect(result.length).gt(1);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+    });
 });

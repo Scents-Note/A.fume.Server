@@ -57,3 +57,44 @@ module.exports.readAllOfPerfume = async (
         return it.Keyword;
     });
 };
+
+/**
+ * 향수 idx에 해당하는 모든 Join Keyword 목록 조회
+ *
+ * @param {number[]} perfumeIdxList
+ * @returns {Promise<JoinKeyword[]>}
+ */
+module.exports.readAllOfPerfumeIdxList = async (
+    perfumeIdxList,
+    sort = [['count', 'desc']],
+    condition = { [Op.gte]: 3 },
+    limitSize = 2
+) => {
+    let result = await JoinPerfumeKeyword.findAll({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        include: {
+            model: Keyword,
+            attributes: {
+                exclude: ['createdAt', 'updatedAt'],
+            },
+        },
+        order: sort,
+        where: {
+            perfumeIdx: {
+                [Op.in]: perfumeIdxList,
+            },
+            count: condition,
+        },
+        limit: limitSize,
+        raw: true, //Set this to true if you don't have a model definition for your query.
+        nest: true,
+    });
+
+    if (result === undefined) {
+        throw new NotMatchedError();
+    }
+
+    return result;
+};
