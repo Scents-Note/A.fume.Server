@@ -1537,7 +1537,7 @@ paths:
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Note
-  /review:
+  /perfume/{perfumeIdx}/review:
     post:
       tags:
       - review
@@ -1553,12 +1553,28 @@ paths:
       produces:
       - application/json
       parameters:
+      - name: perfumeIdx
+        in: path
+        description: 향수 Idx
+        required: true
+        type: integer
+        format: int64  
       - name: body
         in: body
         description: 시향노트 정보
         required: true
         schema:
-          $ref: '#/definitions/ReviewInfo'
+          allOf:
+            - $ref: '#/definitions/ReviewInfo'
+            - type: object
+              example:
+                keywordList:  [4, 11]
+              properties:
+                keywordList: 
+                  type: array
+                  items:
+                    type: integer
+                    format: int64
       responses:
         200:
           description: 성공
@@ -1571,7 +1587,6 @@ paths:
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Review
-  /perfume/{perfumeIdx}/review:
     get:
       tags:
       - review

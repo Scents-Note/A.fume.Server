@@ -29,8 +29,7 @@ describe('# reviewDao Test', () => {
                     keywordList: [1, 2],
                 })
                 .then((result) => {
-                    //console.log(result);
-                    //expect(result.dataValues.content).eq('리뷰생성테스트');
+                    expect(result.dataValues.content).eq('리뷰생성테스트');
                     done();
                 })
                 .catch((err) => done(err));
@@ -46,6 +45,7 @@ describe('# reviewDao Test', () => {
             reviewDao
                 .read(reviewIdx)
                 .then((result) => {
+                    console.log(result);
                     expect(result.content).eq('시향노트1');
                     expect(result.score).eq(1);
                     expect(result.keywordList[0].keywordIdx).eq(1);
@@ -62,6 +62,7 @@ describe('# reviewDao Test', () => {
             reviewDao
                 .readAllOfUser(userIdx)
                 .then((result) => {
+                    console.log(result);
                     expect(result).to.not.be.null;
                     done();
                 })
@@ -75,6 +76,7 @@ describe('# reviewDao Test', () => {
             reviewDao
                 .readAllOfPerfume(perfumeIdx)
                 .then((result) => {
+                    console.log(result);
                     expect(result.length).gt(0);
                     done();
                 })
@@ -99,6 +101,7 @@ describe('# reviewDao Test', () => {
                     content: '리뷰수정테스트',
                 })
                 .then((result) => {
+                    console.log(result);
                     expect(result[0]).eq(1);
                     done();
                 })
@@ -125,6 +128,7 @@ describe('# reviewDao Test', () => {
             reviewDao
                 .delete(reviewIdx)
                 .then((result) => {
+                    console.log(result);
                     expect(result).eq(1);
                     done();
                 })
