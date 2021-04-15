@@ -14,6 +14,7 @@ module.exports.postReview = function postReview(req, res, next) {
         gender,
         access,
         content,
+        keywordList,
     } = req.swagger.params['body'].value;
     Review.postReview({
         perfumeIdx,
@@ -25,6 +26,7 @@ module.exports.postReview = function postReview(req, res, next) {
         gender,
         access,
         content,
+        keywordList,
     })
         .then(() => {
             res.status(OK).json({

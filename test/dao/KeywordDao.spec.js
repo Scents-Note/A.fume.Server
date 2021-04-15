@@ -5,9 +5,9 @@ const keywordDao = require('../../dao/KeywordDao');
 const { expect } = require('chai');
 
 describe('# KeywordDao Test', () => {
-    // before(async function () {
-    //     await require('./common/presets.js')(this);
-    // });
+    before(async function () {
+        await require('./common/presets.js')(this);
+    });
     describe('# readAll Test', () => {
         it('# success case', (done) => {
             keywordDao
