@@ -70,12 +70,6 @@ module.exports.read = async (reviewIdx) => {
                     },
                 },
             },
-            {
-                model: User,
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt'],
-                },
-            },
         ],
         raw: true,
         nest: true,
@@ -169,8 +163,7 @@ SQL_READ_ALL_OF_PERFUME = `
     u.email as "User.email",
     u.nickname as "User.nickname", 
     u.password as "User.password", 
-    u.gender as "User.gender", 
-    u.phone as "User.phone", 
+    u.gender as "User.gender",  
     u.birth as "User.birth", 
     u.grade as "User.grade", 
     u.access_time as "User.accessTime",

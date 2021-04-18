@@ -10,12 +10,19 @@ const { parseSortToOrder } = require('../utils/parser.js');
  * @param {Object} ingredient
  * @return {Promise<number>}
  **/
-exports.postIngredient = ({ name, englishName, description, imageUrl }) => {
+exports.postIngredient = ({
+    name,
+    englishName,
+    description,
+    imageUrl,
+    seriesIdx,
+}) => {
     return ingredientDao.create({
         name,
         englishName,
         description,
         imageUrl,
+        seriesIdx,
     });
 };
 
@@ -94,4 +101,14 @@ exports.getSeriesList = (ingredientIdx) => {
         delete it.JoinSeriesIngredient;
         return it;
     });
+};
+
+/**
+ * 재료 영어 이름으로 조회
+ *
+ * @param {string} englishName
+ * @returns {Promise<Ingredient>}
+ **/
+exports.findIngredientByEnglishName = (englishName) => {
+    return ingredientDao.findIngredient({ englishName });
 };

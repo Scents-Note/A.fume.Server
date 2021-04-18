@@ -5,9 +5,9 @@ const keywordDao = require('../../dao/KeywordDao');
 const { expect } = require('chai');
 
 describe('# KeywordDao Test', () => {
-    // before(async function () {
-    //     await require('./common/presets.js')(this);
-    // });
+    before(async function () {
+        await require('./common/presets.js')(this);
+    });
     describe('# readAll Test', () => {
         it('# success case', (done) => {
             keywordDao
@@ -25,6 +25,18 @@ describe('# KeywordDao Test', () => {
             keywordDao
                 .readAllOfPerfume(1)
                 .then((result) => {
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+    });
+
+    describe('# readAllOfPerfume Test', () => {
+        it('# success case', (done) => {
+            keywordDao
+                .readAllOfPerfumeIdxList([1])
+                .then((result) => {
+                    expect(result.length).gt(1);
                     done();
                 })
                 .catch((err) => done(err));

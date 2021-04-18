@@ -4,7 +4,10 @@ dotenv.config({ path: './config/.env.test' });
 const chai = require('chai');
 const { expect } = chai;
 const ingredientDao = require('../../dao/IngredientDao.js');
-const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
+const {
+    DuplicatedEntryError,
+    NotMatchedError,
+} = require('../../utils/errors/errors.js');
 const { Ingredient } = require('../../models');
 
 describe('# ingredientDao Test', () => {
@@ -106,6 +109,33 @@ describe('# ingredientDao Test', () => {
                 .readBySeriesIdxList([1, 2, 3, 4, 5])
                 .then((result) => {
                     expect(result.length).eq(5);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it('# findIngredient success case', (done) => {
+            ingredientDao
+                .findIngredient({
+                    name: '재료1',
+                })
+                .then((result) => {
+                    expect(result.name).eq('재료1');
+                    expect(result.ingredientIdx).eq(1);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+        it('# findIngredient not found case', (done) => {
+            ingredientDao
+                .findIngredient({
+                    name: '재료10',
+                })
+                .then(() => {
+                    throw new Error('Must be occur NotMatchedError');
+                })
+                .catch((err) => {
+                    expect(err).instanceOf(NotMatchedError);
                     done();
                 })
                 .catch((err) => done(err));

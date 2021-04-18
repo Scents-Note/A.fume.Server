@@ -1,11 +1,48 @@
 'use strict';
 
 const reviewDao = require('../dao/ReviewDao.js');
+const keywordDao = require('../dao/KeywordDao');
 const {
     NotMatchedError,
     FailedToCreateError,
     UnAuthorizedError,
 } = require('../utils/errors/errors.js');
+
+/**
+ * 시향노트 작성
+ *
+ * @param {Object} Review
+ * @returns {Promise}
+ **/
+exports.postReview = async ({
+    perfumeIdx,
+    userIdx,
+    score,
+    longevity,
+    sillage,
+    seasonal,
+    gender,
+    access,
+    content,
+    keywordList,
+}) => {
+    const createReview = await reviewDao.create({
+        perfumeIdx,
+        userIdx,
+        score,
+        longevity,
+        sillage,
+        seasonal,
+        gender,
+        access,
+        content,
+    });
+    const reviewIdx = createReview.id;
+    const createReviewKeyword = keywordList.map((it) => {
+        keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx });
+    });
+    return createReviewKeyword;
+};
 
 /**
  * 시향노트 삭제
@@ -55,7 +92,6 @@ exports.getReviewByIdx = async (reviewIdx) => {
         perfumeName: result.Perfume.name,
         imageUrl: result.Perfume.imageUrl,
     };
-    delete result.Users;
     return result;
 };
 
@@ -111,38 +147,6 @@ exports.getReviewOfPerfumeByScore = (perfumeIdx) => {
  **/
 exports.getReviewOfPerfumeByRecent = (perfumeIdx) => {
     return reviewDao.readAllOrderByRecent(perfumeIdx);
-};
-
-/**
- * 시향노트 추가\"
- * 특정 향수에 시향노트 추가하기
- *
- * perfumeIdx Long 향수 Idx
- * body ReviewInfo 시향노트 정보
- * no response value expected for this operation
- **/
-exports.postReview = ({
-    perfumeIdx,
-    userIdx,
-    score,
-    longevity,
-    sillage,
-    seasonal,
-    gender,
-    access,
-    content,
-}) => {
-    return reviewDao.create({
-        perfumeIdx,
-        userIdx,
-        score,
-        longevity,
-        sillage,
-        seasonal,
-        gender,
-        access,
-        content,
-    });
 };
 
 /**
