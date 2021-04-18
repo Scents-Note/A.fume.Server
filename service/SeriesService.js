@@ -108,3 +108,13 @@ exports.getFilterSeries = async (pagingIndex, pagingSize) => {
     });
     return result;
 };
+
+/**
+ * 계열 영어 이름으로 조회
+ *
+ * @param {string} englishName
+ * @returns {Promise<Series>}
+ **/
+exports.findSeriesByEnglishName = (englishName) => {
+    return seriesDao.findSeries({ englishName });
+};

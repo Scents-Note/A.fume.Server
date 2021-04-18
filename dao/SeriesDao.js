@@ -125,3 +125,18 @@ module.exports.update = async ({
 module.exports.delete = (seriesIdx) => {
     return Series.destroy({ where: { seriesIdx } });
 };
+
+/**
+ * 계열 검색
+ *
+ * @param {Object} condition
+ * @returns {Promise<Series>}
+ */
+module.exports.findSeries = (condition) => {
+    return Series.findOne({ where: condition }).then((it) => {
+        if (!it) {
+            throw new NotMatchedError();
+        }
+        return it;
+    });
+};

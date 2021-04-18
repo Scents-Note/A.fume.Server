@@ -1,6 +1,53 @@
 const { NotMatchedError } = require('../utils/errors/errors.js');
-const { Keyword, Sequelize, JoinPerfumeKeyword } = require('../models');
+const {
+    Keyword,
+    Sequelize,
+    sequelize,
+    JoinPerfumeKeyword,
+    JoinReviewKeyword,
+} = require('../models');
 const { Op } = Sequelize;
+
+/**
+ * 시향노트에 키워드 추가
+ *
+ * @param {Object} Review
+ * @returns {Promise}
+ */
+module.exports.create = async ({ reviewIdx, keywordIdx, perfumeIdx }) => {
+    return sequelize.transaction(async (t) => {
+        try {
+            const createReviewKeyword = await JoinReviewKeyword.create(
+                {
+                    reviewIdx,
+                    keywordIdx,
+                },
+                { transaction: t }
+            );
+
+            const createPerfumeKeyword = await JoinPerfumeKeyword.findOrCreate({
+                where: { perfumeIdx, keywordIdx },
+            });
+
+            const updatePerfumeKeyword = await JoinPerfumeKeyword.update(
+                { count: sequelize.literal('count + 1') },
+                {
+                    where: { perfumeIdx, keywordIdx },
+                    transaction: t,
+                }
+            );
+            return Promise.all([
+                createReviewKeyword,
+                createPerfumeKeyword,
+                updatePerfumeKeyword,
+            ]).then((it) => {
+                return it;
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    });
+};
 
 /**
  * 키워드 전체 목록 조회
@@ -56,4 +103,45 @@ module.exports.readAllOfPerfume = async (
     return result.map((it) => {
         return it.Keyword;
     });
+};
+
+/**
+ * 향수 idx에 해당하는 모든 Join Keyword 목록 조회
+ *
+ * @param {number[]} perfumeIdxList
+ * @returns {Promise<JoinKeyword[]>}
+ */
+module.exports.readAllOfPerfumeIdxList = async (
+    perfumeIdxList,
+    sort = [['count', 'desc']],
+    condition = { [Op.gte]: 3 },
+    limitSize = 2
+) => {
+    let result = await JoinPerfumeKeyword.findAll({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        include: {
+            model: Keyword,
+            attributes: {
+                exclude: ['createdAt', 'updatedAt'],
+            },
+        },
+        order: sort,
+        where: {
+            perfumeIdx: {
+                [Op.in]: perfumeIdxList,
+            },
+            count: condition,
+        },
+        limit: limitSize,
+        raw: true, //Set this to true if you don't have a model definition for your query.
+        nest: true,
+    });
+
+    if (result === undefined) {
+        throw new NotMatchedError();
+    }
+
+    return result;
 };

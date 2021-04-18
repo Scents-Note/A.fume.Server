@@ -4,14 +4,19 @@ const Ingredient = require('../service/IngredientService');
 const { OK } = require('../utils/statusCode.js');
 
 module.exports.postIngredient = (req, res, next) => {
-    const { name, englishName, description, imageUrl } = req.swagger.params[
-        'body'
-    ].value;
+    const {
+        name,
+        englishName,
+        description,
+        imageUrl,
+        seriesIdx,
+    } = req.swagger.params['body'].value;
     Ingredient.postIngredient({
         name,
         englishName,
         description,
         imageUrl,
+        seriesIdx,
     })
         .then((response) => {
             res.status(OK).json({
@@ -89,4 +94,18 @@ module.exports.deleteIngredient = (req, res, next) => {
             });
         })
         .catch((err) => next(err));
+};
+
+module.exports.getIngredientByEnglishName = (req, res, next) => {
+    const { englishName } = req.body;
+    Ingredient.findIngredientByEnglishName(englishName)
+        .then((response) => {
+            res.status(OK).json({
+                message: '재료 조회 성공',
+                data: response,
+            });
+        })
+        .catch((err) => {
+            next(err);
+        });
 };

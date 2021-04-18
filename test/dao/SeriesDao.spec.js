@@ -4,7 +4,10 @@ dotenv.config({ path: './config/.env.test' });
 const chai = require('chai');
 const { expect } = chai;
 const seriesDao = require('../../dao/SeriesDao.js');
-const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
+const {
+    DuplicatedEntryError,
+    NotMatchedError,
+} = require('../../utils/errors/errors.js');
 const { Series } = require('../../models/index.js');
 
 describe('# seriesDao Test', () => {
@@ -113,6 +116,33 @@ describe('# seriesDao Test', () => {
                 expect(result.rows.length).gt(0);
                 done();
             });
+        });
+
+        it('# findSeries success case', (done) => {
+            seriesDao
+                .findSeries({
+                    name: '계열1',
+                })
+                .then((result) => {
+                    expect(result.name).eq('계열1');
+                    expect(result.seriesIdx).eq(1);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+        it('# findSeries not found case', (done) => {
+            seriesDao
+                .findSeries({
+                    name: '계열10',
+                })
+                .then(() => {
+                    throw new Error('Must be occur NotMatchedError');
+                })
+                .catch((err) => {
+                    expect(err).instanceOf(NotMatchedError);
+                    done();
+                })
+                .catch((err) => done(err));
         });
     });
 

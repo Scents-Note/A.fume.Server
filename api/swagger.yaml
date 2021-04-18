@@ -1003,6 +1003,41 @@ paths:
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Ingredient
+  /ingredient/find:
+    post:
+      tags:
+      - SUB_ingredient
+      summary: 재료 조회
+      operationId: getIngredientByEnglishName
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            englishName:
+              type: string
+              example: Grapefruit
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 재료 조회 성공
+              data:
+                allOf:
+                - $ref: '#/definitions/IngredientInfo'
+                - type: object
+                  properties:
+                    ingredientIdx:
+                      type: integer
+                  example:
+                    ingredientIdx: 1
+      x-swagger-router-controller: Ingredient
   /ingredient/{ingredientIdx}:
     get:
       tags:
@@ -1251,6 +1286,41 @@ paths:
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Series
+  /series/find:
+    post:
+      tags:
+      - SUB_series
+      summary: 계열 조회
+      operationId: getSeriesByEnglishName
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            englishName:
+              type: string
+              example: Floral
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 계열 조회 성공
+              data:
+                allOf:
+                - $ref: '#/definitions/SeriesInfo'
+                - type: object
+                  properties:
+                    seriesIdx:
+                      type: integer
+                  example:
+                    seriesIdx: 2
+      x-swagger-router-controller: Series
   /series/{seriesIdx}:
     get:
       tags:
@@ -1467,7 +1537,7 @@ paths:
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Note
-  /review:
+  /perfume/{perfumeIdx}/review:
     post:
       tags:
       - review
@@ -1483,12 +1553,28 @@ paths:
       produces:
       - application/json
       parameters:
+      - name: perfumeIdx
+        in: path
+        description: 향수 Idx
+        required: true
+        type: integer
+        format: int64  
       - name: body
         in: body
         description: 시향노트 정보
         required: true
         schema:
-          $ref: '#/definitions/ReviewInfo'
+          allOf:
+            - $ref: '#/definitions/ReviewInfo'
+            - type: object
+              example:
+                keywordList:  [4, 11]
+              properties:
+                keywordList: 
+                  type: array
+                  items:
+                    type: integer
+                    format: int64
       responses:
         200:
           description: 성공
@@ -1501,7 +1587,6 @@ paths:
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Review
-  /perfume/{perfumeIdx}/review:
     get:
       tags:
       - review
@@ -2904,10 +2989,13 @@ definitions:
         type: string
       description:
         type: string
+      imageUrl:
+        type: string
     example:
       name: 꿀
       englishName: Honey
       description: 화이트 허니, 허니
+      imageUrl: http://
   IngredientInfo:
     type: object
     properties:
@@ -2919,11 +3007,14 @@ definitions:
         type: string
       imageUrl:
         type: string
+      seriesIdx:
+        type: number
     example:
       name: 씨쏠트
       englishName: Sea Salt
       description: 바다 소금
       imageUrl: 'url'
+      seriesIdx: 4
   NoteInfo:
     type: object
     properties:

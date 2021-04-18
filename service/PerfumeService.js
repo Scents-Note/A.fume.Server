@@ -35,6 +35,20 @@ function isLikeJob(likePerfumeList) {
     };
 }
 
+function addKeyword(joinKeywordList) {
+    const keywordMap = joinKeywordList.reduce((prev, cur) => {
+        if (!prev[cur.perfumeIdx]) prev[cur.perfumeIdx] = [];
+        prev[cur.perfumeIdx].push(cur.Keyword.name);
+        return prev;
+    }, {});
+
+    return (obj) => {
+        const ret = Object.assign({}, obj);
+        ret.keywordList = keywordMap[obj.perfumeIdx] || [];
+        return ret;
+    };
+}
+
 const commonJob = [
     extractJob('Brand', ['name', 'brandName']),
     removeKeyJob(
@@ -411,29 +425,14 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
         ageGroup = parseInt(age / 10) * 10;
     }
 
-    const cached = await perfumeDao.recommendPerfumeByAgeAndGenderCached();
-    if (cached) {
-        const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
-        let likePerfumeList = [];
-        if (userIdx > -1) {
-            likePerfumeList = await likePerfumeDao.readLikeInfo(
-                userIdx,
-                perfumeIdxList
-            );
-        }
-        return updateRows(
-            cached,
-            ...commonJob,
-            removeKeyJob('SearchHistory'),
-            isLikeJob(likePerfumeList)
-        );
-    }
-    return this.recommendByGenderAgeAndGender(
+    const recommendedList = this.recommendByGenderAgeAndGender(
         gender,
         ageGroup,
         pagingIndex,
         pagingSize
-    ).then(async (result) => {
+    );
+
+    return recommendedList.then(async (result) => {
         const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
         let likePerfumeList = [];
         if (userIdx > -1) {
@@ -442,11 +441,17 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
                 perfumeIdxList
             );
         }
+
+        const joinKeywordList = await keywordDao.readAllOfPerfumeIdxList(
+            perfumeIdxList
+        );
+
         return updateRows(
             result,
             ...commonJob,
             removeKeyJob('SearchHistory'),
-            isLikeJob(likePerfumeList)
+            isLikeJob(likePerfumeList),
+            addKeyword(joinKeywordList)
         );
     });
 };

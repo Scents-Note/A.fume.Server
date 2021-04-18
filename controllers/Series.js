@@ -4,8 +4,10 @@ const Series = require('../service/SeriesService');
 const { OK } = require('../utils/statusCode.js');
 
 module.exports.postSeries = (req, res, next) => {
-    const { name, englishName, description } = req.swagger.params['body'].value;
-    Series.postSeries({ name, englishName, description })
+    const { name, englishName, description, imageUrl } = req.swagger.params[
+        'body'
+    ].value;
+    Series.postSeries({ name, englishName, description, imageUrl })
         .then((response) => {
             res.status(OK).json({
                 message: 'series post 성공',
@@ -103,4 +105,18 @@ module.exports.getFilterSeries = (req, res, next) => {
             });
         })
         .catch((err) => next(err));
+};
+
+module.exports.getSeriesByEnglishName = (req, res, next) => {
+    const { englishName } = req.body;
+    Series.findSeriesByEnglishName(englishName)
+        .then((response) => {
+            res.status(OK).json({
+                message: '계열 조회 성공',
+                data: response,
+            });
+        })
+        .catch((err) => {
+            next(err);
+        });
 };
