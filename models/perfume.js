@@ -13,15 +13,6 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE',
                 onDelete: 'RESTRICT',
             });
-            Perfume.belongsTo(models.Series, {
-                foreignKey: {
-                    name: 'mainSeriesIdx',
-                    allowNull: false,
-                },
-                as: 'MainSeries',
-                onUpdate: 'CASCADE',
-                onDelete: 'RESTRICT',
-            });
             Perfume.hasOne(models.PerfumeDetail, {
                 foreignKey: 'perfumeIdx',
                 as: 'PerfumeDetail',
