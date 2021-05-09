@@ -1,95 +1,189 @@
 const dotenv = require('dotenv');
-dotenv.config({path: './config/.env.tst'});
+dotenv.config({ path: './config/.env.test' });
 
 const chai = require('chai');
 const { expect } = chai;
 const brandDao = require('../../dao/BrandDao.js');
-const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
-const pool = require('../../utils/db/pool.js');
+const { Brand } = require('../../models');
+const {
+    DuplicatedEntryError,
+    NotMatchedError,
+} = require('../../utils/errors/errors.js');
 
 describe('# brandDao Test', () => {
+    before(async function () {
+        await require('./common/presets.js')(this);
+    });
     describe('# create Test', () => {
         before(async () => {
-            await pool.queryParam_None('DELETE FROM brand WHERE name="삽입테스트"');
+            await Brand.destroy({ where: { name: '삽입테스트' } });
         });
         it('# success case', (done) => {
-            brandDao.create({name: '삽입테스트', englishName: 'insert Test', startCharacter: 'ㅅ', imageUrl: '', description: 'brand 생성 테스트를 위한 더미데이터입니다.'})
-            .then((result) => {
-                expect(result).gt(0);
-                done();
-            });
+            brandDao
+                .create({
+                    name: '삽입테스트',
+                    englishName: 'insert Test',
+                    firstInitial: 'ㅅ',
+                    imageUrl: '',
+                    description: 'brand 생성 테스트를 위한 더미데이터입니다.',
+                })
+                .then((result) => {
+                    expect(result).gt(0);
+                    done();
+                })
+                .catch((err) => done(err));
         });
         it('# DuplicatedEntryError case', (done) => {
-            brandDao.create({name: '삽입테스트', englishName: 'insert Test', startCharacter: 'ㅅ', imageUrl: '', description: ''})
-            .then(() => {
-                expect(false).true();
-                done();
-            }).catch((err) => {
-                expect(err).instanceOf(DuplicatedEntryError);
-                done();
-            });
+            brandDao
+                .create({
+                    name: '삽입테스트',
+                    englishName: 'insert Test',
+                    firstInitial: 'ㅅ',
+                    imageUrl: '',
+                    description: '',
+                })
+                .then(() => {
+                    done(new Error('expected DuplicatedEntryError'));
+                })
+                .catch((err) => {
+                    expect(err).instanceOf(DuplicatedEntryError);
+                    done();
+                })
+                .catch((err) => done(err));
         });
     });
-    
+
     describe('# read Test', () => {
         it('# success case', (done) => {
-            brandDao.read(2).then((result) => {
-                expect(result.name).eq('르 라보');
-                expect(result.startCharacter).eq('ㄹ');
-                expect(result.description.length).gt(0);
-                done();
-            });
+            brandDao
+                .read(2)
+                .then((result) => {
+                    expect(result.name).eq('브랜드2');
+                    expect(result.firstInitial).eq('ㅂ');
+                    expect(result.description.length).gt(0);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it('# findBrand success case', (done) => {
+            brandDao
+                .findBrand({
+                    name: '브랜드1',
+                })
+                .then((result) => {
+                    expect(result.name).eq('브랜드1');
+                    expect(result.brandIdx).eq(1);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+        it('# findBrand not found case', (done) => {
+            brandDao
+                .findBrand({
+                    name: '브랜드10',
+                })
+                .then(() => {
+                    throw new Error('Must be occur NotMatchedError');
+                })
+                .catch((err) => {
+                    expect(err).instanceOf(NotMatchedError);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+    });
+
+    describe('# search Test', () => {
+        it('# success case', (done) => {
+            brandDao
+                .search(1, 10, [['createdAt', 'desc']])
+                .then((result) => {
+                    expect(result.count).gt(0);
+                    expect(result.rows.length).gt(0);
+                    done();
+                })
+                .catch((err) => done(err));
         });
     });
 
     describe('# readAll Test', () => {
         it('# success case', (done) => {
-            brandDao.readAll().then((result) => {
-                expect(result.length).gt(3);
-                done();
-            });
+            brandDao
+                .readAll([['createdAt', 'desc']])
+                .then((result) => {
+                    expect(result.rows.length).gt(0);
+                    done();
+                })
+                .catch((err) => done(err));
         });
     });
 
     describe('# update Test', () => {
         let brandIdx;
+        let origin = {
+            name: '수정테스트',
+            englishName: 'modify test',
+            firstInitial: 'ㅅ',
+            imageUrl: '',
+            description: '',
+        };
+
         before(async () => {
-            const result = await pool.queryParam_None('INSERT brand(name, english_name, start_character, image_url, description) values("수정테스트","modify test", "ㅅ", "", "")');
-            brandIdx = result.insertId;
+            let { dataValues } = await Brand.create(origin);
+            brandIdx = dataValues.brandIdx;
         });
         it('# success case', (done) => {
-            brandDao.update({brandIdx, name:'변경된 이름', englishName:'modified_name', startCharacter:'ㅂ', imageUrl: 'image_url', description: '변경완료'})
-            .then(async (result) => {
-                expect(result).eq(1);
-                const updated = await brandDao.read(brandIdx);
-                expect(updated.name).eq('변경된 이름');
-                expect(updated.englishName).eq('modified_name');
-                expect(updated.startCharacter).eq('ㅂ');
-                expect(updated.imageUrl).eq('image_url');
-                expect(updated.description).eq('변경완료');
-                done();
-            });
+            brandDao
+                .update({
+                    brandIdx,
+                    name: '변경된 이름',
+                    englishName: 'modified_name',
+                    firstInitial: 'ㅂ',
+                    imageUrl: 'image_url',
+                    description: '변경완료',
+                })
+                .then(async (result) => {
+                    expect(result).eq(1);
+                    const updated = await brandDao.read(brandIdx);
+                    expect(updated.name).eq('변경된 이름');
+                    expect(updated.englishName).eq('modified_name');
+                    expect(updated.firstInitial).eq('ㅂ');
+                    expect(updated.imageUrl).eq('image_url');
+                    expect(updated.description).eq('변경완료');
+                    done();
+                })
+                .catch((err) => done(err));
         });
         after(async () => {
-            await pool.queryParam_None(`DELETE FROM brand WHERE brand_idx=${brandIdx}`);
+            await Brand.destroy({ where: { brandIdx } });
         });
     });
-    
+
     describe('# delete Test', () => {
         let brandIdx;
         before(async () => {
-            const result = await pool.queryParam_None('INSERT brand(name, english_name, start_character, image_url, description) values("삭제테스트","delete test", "ㅅ", "", "") ON DUPLICATE KEY UPDATE name = "삭제테스트"');
-            brandIdx = result.insertId;
+            const { dataValues } = await Brand.create({
+                name: '삭제테스트',
+                englishName: 'delete test',
+                firstInitial: 'ㅅ',
+                imageUrl: '',
+                description: '',
+            });
+            brandIdx = dataValues.brandIdx;
         });
         it('# success case', (done) => {
-            brandDao.delete(brandIdx).then((result) => {
-                expect(result).eq(1);
-                done();
-            });
+            brandDao
+                .delete(brandIdx)
+                .then((result) => {
+                    expect(result).eq(1);
+                    done();
+                })
+                .catch((err) => done(err));
         });
         after(async () => {
-            if(!brandIdx) return;
-            await pool.queryParam_None(`DELETE FROM brand WHERE brand_idx = ${brandIdx}`);
+            if (!brandIdx) return;
+            await Brand.destroy({ where: { brandIdx } });
         });
     });
-})
+});

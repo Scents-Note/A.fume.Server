@@ -1,170 +1,509 @@
-const pool = require('../utils/db/pool.js');
+const _ = require('lodash');
+const { NotMatchedError } = require('../utils/errors/errors.js');
 
-const { NotMatchedError, FailedToCreateError } = require('../utils/errors/errors.js');
+const {
+    Perfume,
+    PerfumeDetail,
+    PerfumeSurvey,
+    Brand,
+    Series,
+    LikePerfume,
+    SearchHistory,
+    sequelize,
+    Sequelize,
+} = require('../models');
+const { Op } = Sequelize;
+
+const { ranking } = require('../mongoose_models');
+
+const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
+    'SELECT ' +
+    'COUNT(*) AS "SearchHistory.weight", ' +
+    'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.release_date AS releaseDate, p.like_cnt AS likeCnt, ' +
+    'b.brand_idx AS "Brand.brandIdx", ' +
+    'b.name AS "Brand.name", ' +
+    'b.english_name AS "Brand.englishName", ' +
+    'b.first_initial AS "Brand.firstInitial", ' +
+    'b.image_url AS "Brand.imageUrl", ' +
+    'b.description AS "Brand.description" ' +
+    'FROM search_histories sh ' +
+    'INNER JOIN perfumes p ON sh.perfume_idx = p.perfume_idx ' +
+    'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
+    'INNER JOIN users u ON sh.user_idx = u.user_idx ' +
+    'WHERE u.gender = $1 AND (u.birth BETWEEN $2 AND $3) ' +
+    'GROUP BY sh.perfume_idx ' +
+    'ORDER BY "SearchHistory.weight" DESC ' +
+    'LIMIT $4 ' +
+    'OFFSET $5';
+
+const SQL_SEARCH_PERFUME_SELECT =
+    'SELECT ' +
+    'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.release_date AS releaseDate, p.like_cnt AS likeCnt, ' +
+    'b.brand_idx AS "Brand.brandIdx", ' +
+    'b.name AS "Brand.name", ' +
+    'b.english_name AS "Brand.englishName", ' +
+    'b.first_initial AS "Brand.firstInitial", ' +
+    'b.image_url AS "Brand.imageUrl", ' +
+    'b.description AS "Brand.description", ' +
+    'IFNULL((SELECT COUNT(jpk.keyword_idx) FROM join_perfume_keywords jpk WHERE jpk.perfume_idx = p.perfume_idx AND jpk.keyword_idx IN (:keywords) GROUP BY jpk.perfume_idx), 0) AS "Score.keyword", ' +
+    'IFNULL((SELECT COUNT(n.ingredient_idx) FROM notes n WHERE n.perfume_idx = p.perfume_idx AND n.ingredient_idx IN (:ingredients) GROUP BY n.perfume_idx), 0) AS "Score.ingredient", ' +
+    '(IFNULL((SELECT COUNT(jpk.keyword_idx) FROM join_perfume_keywords jpk WHERE jpk.perfume_idx = p.perfume_idx AND jpk.keyword_idx IN (:keywords) GROUP BY jpk.perfume_idx), 0) + IFNULL((SELECT COUNT(n.ingredient_idx) FROM notes n WHERE n.perfume_idx = p.perfume_idx AND n.ingredient_idx IN (:ingredients) GROUP BY n.perfume_idx), 0)) AS "Score.total" ' +
+    'FROM perfumes p ' +
+    'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
+    ':whereCondition ' +
+    'ORDER BY :orderCondition ' +
+    'LIMIT :limit ' +
+    'OFFSET :offset';
+const SQL_ORDER_DEFAULT =
+    '(IFNULL((SELECT COUNT(jpk.keyword_idx) FROM join_perfume_keywords jpk WHERE jpk.perfume_idx = p.perfume_idx AND jpk.keyword_idx IN (:keywords) GROUP BY jpk.perfume_idx), 0) + IFNULL((SELECT COUNT(n.ingredient_idx) FROM notes n WHERE n.perfume_idx = p.perfume_idx AND n.ingredient_idx IN (:ingredients) GROUP BY n.perfume_idx), 0)) DESC';
+const SQL_SEARCH_BRAND_CONDITION = ' p.brand_idx IN (:brands)';
+const SQL_SEARCH_KEYWORD_CONDITION =
+    'IFNULL((SELECT COUNT(jpk.keyword_idx) FROM join_perfume_keywords jpk WHERE jpk.perfume_idx = p.perfume_idx AND jpk.keyword_idx IN (:keywords) GROUP BY jpk.perfume_idx), 0) > 0 ';
+const SQL_SEARCH_INGREDIENT_CONDITION =
+    'IFNULL((SELECT COUNT(n.ingredient_idx) FROM notes n WHERE n.perfume_idx = p.perfume_idx AND n.ingredient_idx IN (:ingredients) GROUP BY n.perfume_idx), 0) > 0 ';
+
+const SQL_SEARCH_PERFUME_SELECT_COUNT =
+    'SELECT ' +
+    'COUNT(p.perfume_idx) as count ' +
+    'FROM perfumes p ' +
+    'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
+    'INNER JOIN series s ON p.main_series_idx = s.series_idx ' +
+    ':whereCondition ';
+
+const defaultOption = {
+    attributes: {
+        exclude: ['createdAt', 'updatedAt', 'mainSeriesIdx'],
+    },
+    include: [
+        {
+            model: Brand,
+            as: 'Brand',
+            attributes: {
+                exclude: ['createdAt', 'updatedAt'],
+            },
+            required: true,
+        },
+    ],
+    raw: true,
+    nest: true,
+};
 
 /**
  * 향수 추가
- * - 향수 목록에서 보여지는 정보는 perfume 테이블
- *   향수 세부 정보에서 보여지는 정보는 perfume_detail 테이블로 저장한다.
- * @Transaction
+ *
+ * @param {Object} perfume
+ * @returns {Promise}
  */
-const SQL_PERFUME_INSERT = 'INSERT perfume(brand_idx, main_series_idx, name, english_name, image_thumbnail_url, release_date) VALUES(?, ?, ?, ?, ?, ?)';
-const SQL_PERFUME_DETAIL_INSERT = 'INSERT perfume_detail(perfume_idx, story, abundance_rate, volume_and_price, image_url) VALUES(?, ?, ?, ?, ?)';
-module.exports.create = async ({brandIdx, name, englishName, volumeAndPrice, imageThumbnailUrl, mainSeriesIdx, story, abundanceRate, imageUrl, releaseDate}) => {
+module.exports.create = ({
+    brandIdx,
+    name,
+    englishName,
+    volumeAndPrice,
+    imageUrl,
+    mainSeriesIdx,
+    story,
+    abundanceRate,
+    releaseDate,
+}) => {
     volumeAndPrice = JSON.stringify(volumeAndPrice);
-    const result = await pool.Transaction(async (connection) => {
-        const perfumeResult = await connection.query(SQL_PERFUME_INSERT, [brandIdx, mainSeriesIdx, name, englishName, imageThumbnailUrl, releaseDate]);
-        if(perfumeResult.insertId == 0) {
-            throw new FailedToCreateError();
-        }
-        const perfumeIdx = perfumeResult.insertId;
-        const perfumeDetailResult = await connection.query(SQL_PERFUME_DETAIL_INSERT, [perfumeIdx, story, abundanceRate, volumeAndPrice, imageUrl]);
-        if(perfumeDetailResult.affectedRows == 0) {
-            throw new FailedToCreateError();
-        }
+    return sequelize.transaction(async (t) => {
+        const { dataValues: perfumeResult } = await Perfume.create(
+            {
+                brandIdx,
+                mainSeriesIdx,
+                name,
+                englishName,
+                imageUrl,
+                releaseDate,
+            },
+            { transaction: t }
+        );
+        const perfumeIdx = perfumeResult.perfumeIdx;
+        await PerfumeDetail.create(
+            { perfumeIdx, story, abundanceRate, volumeAndPrice },
+            { transaction: t }
+        );
         return perfumeIdx;
     });
-    return result[0];
-}
+};
 
 /**
  * 향수 검색
- * - 필터 및 정렬 조건을 받아서 해당하는 향수를 검색한다.
+ *
+ * @param {number[]} brandIdxList
+ * @param {number[]} ingredientIdxList
+ * @param {number[]} keywordIdxList
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @param {array} sort - 정렬 조건
+ * @returns {Promise<Perfume[]>} perfumeList
  */
-const SQL_PERFUME_SELECT_BY_FILTER = 'SELECT p.perfume_idx as perfumeIdx, p.main_series_idx as mainSeriesIdx, p.brand_idx as brandIdx, p.name, p.english_name as englishName, p.image_thumbnail_url as imageUrl, p.release_Date as releaseDate, '+
-'b.name as brandName, '+
-'s.name as mainSeriesName, '+
-'(SELECT COUNT(*) FROM like_perfume lp WHERE lp.perfume_idx = p.perfume_idx) as likeCnt, ' +
-'(SELECT COUNT(*) FROM like_perfume lp WHERE lp.perfume_idx = p.perfume_idx AND lp.user_idx = ?) as isLiked ' +
-'FROM perfume p ' +
-'INNER JOIN brand b ON p.brand_idx = b.brand_idx ' + 
-'INNER JOIN series s ON p.main_series_idx = s.series_idx ';
-module.exports.search = async ({userIdx = -1, series = [], brands = [], keywords = [], sortBy}) => {
-    let condition = '';
-    let orderBy = '';
-    if(series.length + brands.length + keywords.length > 0) {
-        const conditions = [];
-        if(series.length > 0) {
-            conditions.push('(' + series.map(it => `s.name = '${it}'`).join(' OR ') + ')');
-        }
-        if(brands.length > 0) {
-            conditions.push('(' + brands.map(it => `b.name = '${it}'`).join(' OR ') + ')');
-        }
-        if(keywords.length > 0) {
-            // TODO Keyword
-        }
-        condition = 'WHERE ' + conditions.join(' AND ');
+module.exports.search = async (
+    brandIdxList,
+    ingredientIdxList,
+    keywordIdxList,
+    pagingIndex,
+    pagingSize,
+    order = []
+) => {
+    let orderCondition = '';
+    if (!order || order.length == 0) {
+        orderCondition = SQL_ORDER_DEFAULT;
+    } else {
+        orderCondition = order
+            .map((it) => {
+                if (it.fn) {
+                    return `${it.fn}(${it.args})`;
+                }
+                return `${it[0]} ${it[1]}`;
+            })
+            .join(' ');
     }
-    if(sortBy) {
-        switch(sortBy){
-            case 'like':
-                orderBy = ' ORDER BY likeCnt DESC';
-                break;
-            case 'recent':
-                orderBy = ' ORDER BY p.release_date DESC';
-                break;
-            case 'random':
-                orderBy = ' ORDER BY RAND()';
-                break;
-        }
+
+    let whereCondition = '';
+    if (
+        ingredientIdxList.length + keywordIdxList.length + brandIdxList.length >
+        0
+    ) {
+        const arr = [ingredientIdxList, keywordIdxList, brandIdxList];
+        const conditionSQL = [
+            SQL_SEARCH_INGREDIENT_CONDITION,
+            SQL_SEARCH_KEYWORD_CONDITION,
+            SQL_SEARCH_BRAND_CONDITION,
+        ];
+        whereCondition =
+            'WHERE ' +
+            arr
+                .reduce((prev, cur, index) => {
+                    if (cur.length > 0) {
+                        prev.push(conditionSQL[index]);
+                    }
+                    return prev;
+                }, [])
+                .join(' AND ');
     }
-    const result = await pool.queryParam_Parse(SQL_PERFUME_SELECT_BY_FILTER + condition + orderBy, [userIdx]);
-    result.map(it => {
-        it.isLiked = it.isLiked == 1;
-        return it;
-    })
-    return result;
-}
+    const countSQL = SQL_SEARCH_PERFUME_SELECT_COUNT.replace(
+        ':whereCondition',
+        whereCondition
+    );
+    const selectSQL = SQL_SEARCH_PERFUME_SELECT.replace(
+        ':whereCondition',
+        whereCondition
+    ).replace(':orderCondition', orderCondition);
+
+    if (ingredientIdxList.length == 0) ingredientIdxList.push(-1);
+    if (brandIdxList.length == 0) brandIdxList.push(-1);
+    if (keywordIdxList.length == 0) keywordIdxList.push(-1);
+    const [{ count }] = await sequelize.query(countSQL, {
+        replacements: {
+            keywords: keywordIdxList,
+            brands: brandIdxList,
+            ingredients: ingredientIdxList,
+        },
+        type: sequelize.QueryTypes.SELECT,
+        raw: true,
+    });
+    const rows = await sequelize.query(selectSQL, {
+        replacements: {
+            keywords: keywordIdxList,
+            brands: brandIdxList,
+            ingredients: ingredientIdxList,
+            limit: pagingSize,
+            offset: (pagingIndex - 1) * pagingSize,
+        },
+        type: sequelize.QueryTypes.SELECT,
+        raw: true,
+        nest: true,
+    });
+    return {
+        count,
+        rows,
+    };
+};
+
+/**
+ * 새로 등록된 향수 조회
+ *
+ * @param {Date} fromDate
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>} perfumeList
+ */
+module.exports.readNewPerfume = async (fromDate, pagingIndex, pagingSize) => {
+    const options = Object.assign({}, defaultOption, {
+        where: {
+            createdAt: {
+                [Op.gte]: fromDate,
+            },
+        },
+        include: [
+            {
+                model: Brand,
+                as: 'Brand',
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+            },
+        ],
+        offset: (pagingIndex - 1) * pagingSize,
+        limit: pagingSize,
+        order: [['createdAt', 'desc']],
+    });
+    return Perfume.findAndCountAll(options).then((result) => {
+        result.rows.forEach((it) => {
+            delete it.createdAt;
+            delete it.updatedAt;
+        });
+        return result;
+    });
+};
 
 /**
  * 향수 세부 조회
- * 향수 세부 정보를 조회한다.
- *  + brand 정보 join해서 가져오기
- *  + ingredient 정보 조회
- *  + series 정보 join해서 가져오기 (대표 계열)
+ *
+ * @param {number} perfumeIdx
+ * @returns {Promise<Perfume>}
  */
-const SQL_PERFUME_SELECT_BY_PERFUME_IDX = 'SELECT p.perfume_idx as perfumeIdx, p.brand_idx as brandIdx, p.main_series_idx as mainSeriesIdx, p.name, p.english_name as englishName, p.release_date as releaseDate, '+
-'pd.story, pd.abundance_rate as abundanceRate, pd.volume_and_price as volumeAndPrice, pd.image_url as imageUrl, ' +
-'b.name as brandName, '+
-'s.name as seriesName, ' +
-'(SELECT COUNT(*) FROM like_perfume lp WHERE lp.perfume_idx = p.perfume_idx) as likeCnt, ' +
-'(SELECT COUNT(*) FROM like_perfume lp WHERE lp.perfume_idx = p.perfume_idx AND lp.user_idx = ?) as isLiked ' +
-'FROM perfume p ' +
-'INNER JOIN perfume_detail pd ON p.perfume_idx = pd.perfume_idx ' +
-'INNER JOIN brand b ON p.brand_idx = b.brand_idx ' +
-'INNER JOIN series s ON p.main_series_idx = s.series_idx ' +
-'WHERE p.perfume_idx = ?';
-module.exports.readByPerfumeIdx = async ({ userIdx, perfumeIdx }) => {
-    const result = await pool.queryParam_Parse(SQL_PERFUME_SELECT_BY_PERFUME_IDX, [userIdx, perfumeIdx]);
-    if(result.length == 0) {
+module.exports.readByPerfumeIdx = async (perfumeIdx) => {
+    const options = _.merge({}, defaultOption, {
+        where: { perfumeIdx },
+    });
+    options.include.push({
+        model: PerfumeDetail,
+        as: 'PerfumeDetail',
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        required: true,
+    });
+    const perfume = await Perfume.findOne(options);
+    if (!perfume) {
         throw new NotMatchedError();
     }
-    result[0].volumeAndPrice = Object.entries(JSON.parse(result[0].volumeAndPrice)).map(([volume, price]) => {
+    perfume.PerfumeDetail.volumeAndPrice = Object.entries(
+        JSON.parse(perfume.PerfumeDetail.volumeAndPrice)
+    ).map(([volume, price]) => {
         return { volume: parseInt(volume), price: parseInt(price) };
     });
-    result[0].isLiked = result[0].isLiked == 1;
-    return result[0];
-}
+    return perfume;
+};
 
 /**
  * 위시 리스트에 속하는 향수 조회
- * 
+ *
+ * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>} perfumeList
  */
-const SQL_WISHLIST_PERFUME = 'SELECT ' +
-'p.perfume_idx as perfumeIdx, p.main_series_idx as mainSeriesIdx, p.brand_idx as brandIdx, p.name, p.english_name as englishName, p.image_thumbnail_url as imageUrl, p.release_date as releaseDate, ' +
-'b.name as brandName, ' +
-'s.name as mainSeriesName, ' +
-'(SELECT COUNT(*) FROM like_perfume lp WHERE lp.perfume_idx = p.perfume_idx) as likeCnt, ' +
-'(SELECT COUNT(*) FROM like_perfume lp WHERE lp.perfume_idx = p.perfume_idx AND lp.user_idx = ?) as isLiked ' +
-'FROM wishlist w ' +
-'INNER JOIN perfume p ON w.perfume_idx = p.perfume_idx ' +
-'INNER JOIN brand b ON p.brand_idx = b.brand_idx ' +
-'INNER JOIN series s ON p.main_series_idx = s.series_idx ' +
-'WHERE w.user_idx = ? ' +
-'ORDER BY w.priority DESC';
-module.exports.readAllOfWishlist = async (userIdx) => {
-    const result = await pool.queryParam_Parse(SQL_WISHLIST_PERFUME, [userIdx, userIdx]);
-    result.map(it => {
-        it.isLiked = it.isLiked == 1;
-        return it;
-    })
+module.exports.readLikedPerfume = async (userIdx, pagingIndex, pagingSize) => {
+    const options = _.merge({}, defaultOption, {
+        offset: (pagingIndex - 1) * pagingSize,
+        limit: pagingSize,
+    });
+    options.include.push({
+        model: LikePerfume,
+        as: 'LikePerfume',
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        where: {
+            userIdx,
+        },
+        required: true,
+    });
+    return Perfume.findAndCountAll(options);
+};
+
+/**
+ * 최근에 검색한 향수 조회
+ *
+ * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>}
+ */
+module.exports.recentSearchPerfumeList = async (
+    userIdx,
+    pagingIndex,
+    pagingSize
+) => {
+    const options = _.merge({}, defaultOption, {
+        order: [
+            [
+                { model: SearchHistory, as: 'SearchHistory' },
+                'updatedAt',
+                'desc',
+            ],
+        ],
+        offset: (pagingIndex - 1) * pagingSize,
+        limit: pagingSize,
+    });
+    options.include.push({
+        model: SearchHistory,
+        as: 'SearchHistory',
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        where: {
+            userIdx,
+        },
+        required: true,
+    });
+    return Perfume.findAndCountAll(options).then((result) => {
+        result.rows.forEach((it) => {
+            delete it.createTime;
+        });
+        return result;
+    });
+};
+
+/**
+ * 나이 및 성별에 기반한 향수 추천
+ *
+ * @param {string} gender
+ * @param {number} ageGroup
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>}
+ */
+module.exports.recommendPerfumeByAgeAndGender = async (
+    gender,
+    ageGroup,
+    pagingIndex,
+    pagingSize
+) => {
+    const today = new Date();
+    const startYear = today.getFullYear() - ageGroup - 8;
+    const endYear = today.getFullYear() - ageGroup + 1;
+    let perfumeList = await sequelize.query(
+        SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT,
+        {
+            bind: [
+                gender,
+                startYear,
+                endYear,
+                pagingSize,
+                (pagingIndex - 1) * pagingSize,
+            ],
+            type: sequelize.QueryTypes.SELECT,
+            raw: true,
+            nest: true,
+        }
+    );
+    perfumeList.forEach((it) => {
+        delete it.SearchHistory;
+    });
+    const result = {
+        count: Math.min(pagingSize, perfumeList.length),
+        rows: perfumeList,
+    };
+    await ranking.upsert(
+        { gender, ageGroup },
+        { title: '나이 및 성별에 따른 추천', result }
+    );
     return result;
-}
+};
+/**
+ * 나이 및 성별에 기반한 향수 추천(MongoDB)
+ *
+ * @param {string} gender
+ * @param {number} ageGroup
+ * @returns {Promise<Perfume[]>}
+ */
+module.exports.recommendPerfumeByAgeAndGenderCached = (gender, ageGroup) => {
+    return ranking.findItem({ gender, ageGroup });
+};
+
+/**
+ * 서베이 추천 향수 조회
+ *
+ * @param {number} gender
+ * @returns {Promise<Perfume[]>}
+ */
+module.exports.readPerfumeSurvey = async (gender) => {
+    const options = _.merge({}, defaultOption);
+    options.include.push({
+        model: PerfumeSurvey,
+        as: 'PerfumeSurvey',
+        where: {
+            gender,
+        },
+        require: true,
+    });
+    const perfumeList = await Perfume.findAndCountAll(options);
+    return perfumeList;
+};
 
 /**
  * 향수 수정
- * - perfume 테이블과 perfume_detail 테이블을 모두 수정한다.
- * @Transaction
+ *
+ * @param {Object} perfume - perfume & perfumeDetail을 합친 정보
+ * @returns {Promise}
  */
-const SQL_PERFUME_UPDATE = 'UPDATE perfume SET brand_idx = ?, main_series_idx = ?, name = ?, english_name = ?, image_thumbnail_url = ?, release_date = ? WHERE perfume_idx = ?';
-const SQL_PERFUME_DETAIL_UPDATE = 'UPDATE perfume_detail SET story = ?, abundance_rate = ?, volume_and_price = ?, image_url = ? WHERE perfume_idx = ?';
-module.exports.update = ({perfumeIdx, name, mainSeriesIdx, brandIdx, englishName, volumeAndPrice, imageThumbnailUrl, story, abundanceRate, imageUrl, releaseDate}) => {
-    return pool.Transaction(async (connection) => {
-        const { affectedRows } = await connection.query(SQL_PERFUME_UPDATE, [brandIdx, mainSeriesIdx, name, englishName, imageThumbnailUrl, releaseDate, perfumeIdx]);
-        if (affectedRows == 0) {
+module.exports.update = async ({
+    perfumeIdx,
+    name,
+    mainSeriesIdx,
+    brandIdx,
+    englishName,
+    volumeAndPrice,
+    imageUrl,
+    story,
+    abundanceRate,
+    releaseDate,
+}) => {
+    const result = await sequelize.transaction(async (t) => {
+        const [perfumeAffectedRows] = await Perfume.update(
+            {
+                brandIdx,
+                mainSeriesIdx,
+                name,
+                englishName,
+                imageUrl,
+                releaseDate,
+            },
+            { where: { perfumeIdx }, transaction: t }
+        );
+        if (perfumeAffectedRows == 0) {
             throw new NotMatchedError();
         }
-        return affectedRows;
-    }, async (connection) => {
-        const { affectedRows } = await connection.query(SQL_PERFUME_DETAIL_UPDATE, [story, abundanceRate, volumeAndPrice, imageUrl, perfumeIdx]);
-        if (affectedRows == 0) {
-            throw new NotMatchedError();
-        }
-        return affectedRows;
+        const detailAffectedRows = (
+            await PerfumeDetail.update(
+                { story, abundanceRate, volumeAndPrice },
+                { where: { perfumeIdx }, transaction: t }
+            )
+        )[0];
+        return [perfumeAffectedRows, detailAffectedRows];
     });
-}
+    return result;
+};
 
 /**
  * 향수 삭제
- * - 향수 Primary Key를 이용해서 향수를 삭제한다.
- * ※ perfume table을 삭제하면 perfume_idx를 외래키로 가지고 있는 다른 테이블도 삭제된다.
- *   ex) perfume_detail, like_perfume, wishlist, etc
+ *
+ * @param {number} perfumeIdx
+ * @return {Promise<number>}
  */
-const SQL_PERFUME_DELETE = 'DELETE FROM perfume WHERE perfume_idx = ?';
-module.exports.delete = async (perfumeIdx) => {   
-    const { affectedRows } = await pool.queryParam_Parse(SQL_PERFUME_DELETE, [perfumeIdx]);
-    if (affectedRows == 0) {
-        throw new NotMatchedError();
-    }
-    return affectedRows;
-}
+module.exports.delete = async (perfumeIdx) => {
+    const result = await Promise.all([
+        Perfume.destroy({ where: { perfumeIdx } }),
+        PerfumeDetail.destroy({ where: { perfumeIdx } }),
+    ]);
+    return result[0];
+};
+
+/**
+ * 향수 Index 조회
+ *
+ * @param {Object} condition
+ * @returns {Promise<number>} perfumeIdx
+ */
+module.exports.findPerfumeIdx = ({ englishName }) => {
+    return Perfume.findOne({ where: { englishName } }).then((it) => {
+        if (!it) {
+            throw new NotMatchedError();
+        }
+        return it.perfumeIdx;
+    });
+};

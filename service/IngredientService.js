@@ -1,63 +1,114 @@
 'use strict';
-const ingredientDAO = require('../dao/IngredientDao.js');
 
+const ingredientDao = require('../dao/IngredientDao.js');
+const seriesDao = require('../dao/SeriesDao.js');
+const { parseSortToOrder } = require('../utils/parser.js');
 
 /**
  * 향료 삽입
- * 향료 삽입
  *
- * body IngredientInfo Insert new ingredient info (optional)
- * no response value expected for this operation
+ * @param {Object} ingredient
+ * @return {Promise<number>}
  **/
-exports.postIngredient = ({name, englishName, description, seriesName}) => {
-  return ingredientDAO.create({name, englishName, description, seriesName});
+exports.postIngredient = ({
+    name,
+    englishName,
+    description,
+    imageUrl,
+    seriesIdx,
+}) => {
+    return ingredientDao.create({
+        name,
+        englishName,
+        description,
+        imageUrl,
+        seriesIdx,
+    });
 };
 
-
 /**
  * 특정 향료 조회
- * 특정 향료 조회
  *
- * ingredientIdx Long 향료 ID
- * returns IngredientInfo
+ * @param {number} ingredientIdx
+ * @returns {Promise<Ingredient>}
  **/
 exports.getIngredientByIdx = (ingredientIdx) => {
-  return ingredientDAO.read(ingredientIdx);
+    return ingredientDao.readByIdx(ingredientIdx);
 };
-
 
 /**
  * 향료 목록 조회
- * 향료 목록 반환
  *
- * returns List
+ * @returns {Promise<Ingredient[]>}
  **/
-exports.getIngredientList = () => {
-  return ingredientDAO.readAll();
+exports.getIngredientAll = () => {
+    return ingredientDao.readAll();
 };
 
-
+/**
+ * 재료 검색
+ *
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @param {string} sort
+ * @returns {Promise<Ingredient[]>}
+ **/
+exports.searchIngredient = (pagingIndex, pagingSize, sort) => {
+    const order = parseSortToOrder(sort);
+    return ingredientDao.search(pagingIndex, pagingSize, order);
+};
 
 /**
  * 향료 수정
- * 향료 수정
  *
- * ingredientIdx Long 향료 ID
- * body IngredientInfo Updated series info (optional)
- * no response value expected for this operation
+ * @param {Object} Ingredient
+ * @returns {Promise<number>} affectedRows
  **/
-exports.putIngredient = ({ingredientIdx, name, englishName, description}) => {
-  return ingredientDAO.update({ingredientIdx, name, englishName, description});
+exports.putIngredient = ({
+    ingredientIdx,
+    name,
+    englishName,
+    imageUrl,
+    description,
+}) => {
+    return ingredientDao.update({
+        ingredientIdx,
+        name,
+        englishName,
+        imageUrl,
+        description,
+    });
 };
-
 
 /**
  * 향료 삭제
- * 향료 삭제
  *
- * ingredientIdx Long 향료 ID
- * no response value expected for this operation
+ * @param {number} ingredientIdx
+ * @returns {Promise<number>}
  **/
 exports.deleteIngredient = (ingredientIdx) => {
-  return ingredientDAO.delete(ingredientIdx);
+    return ingredientDao.delete(ingredientIdx);
+};
+
+/**
+ * 재료에 해당하는 계열 조회
+ *
+ * @param {number} ingredientIdx
+ * @returns {Promise<Series[]>}
+ */
+exports.getSeriesList = (ingredientIdx) => {
+    return seriesDao.readByIngredientIdx(ingredientIdx).then((it) => {
+        delete it.JoinSeriesIngredient;
+        return it;
+    });
+};
+
+/**
+ * 재료 영어 이름으로 조회
+ *
+ * @param {string} englishName
+ * @returns {Promise<Ingredient>}
+ **/
+exports.findIngredientByEnglishName = (englishName) => {
+    return ingredientDao.findIngredient({ englishName });
 };

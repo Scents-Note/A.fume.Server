@@ -1,71 +1,160 @@
-const pool = require('../utils/db/pool.js');
-const {NotMatchedError, FailedToCreateError} = require('../utils/errors/errors.js');
+const {
+    NotMatchedError,
+    DuplicatedEntryError,
+} = require('../utils/errors/errors.js');
+
+const { sequelize, User } = require('../models');
+const { user: MongooseUser } = require('../mongoose_models');
 
 /**
  * 유저 생성
- * 
+ *
+ * @param {Object} User
+ * @returns {Promise}
  */
-const SQL_USER_INSERT = 'INSERT user(nickname, password, gender, phone, email, birth) VALUES(?,?,?,?,?,?)';
-module.exports.create = async ({nickname, password, gender, phone, email, birth}) => {
-    gender = gender == 'male' ? 1 : 2;
-    const result = await pool.queryParam_Parse(SQL_USER_INSERT, [nickname, password, gender, phone, email, birth]);
-    if(result.insertId == 0) {
-        throw new FailedToCreateError();
-    }
-    return result.insertId;
-}
+module.exports.create = ({
+    nickname,
+    password,
+    gender,
+    email,
+    birth,
+    grade,
+    accessTime,
+}) => {
+    accessTime = accessTime || sequelize.literal('CURRENT_TIMESTAMP');
+    return User.create({
+        nickname,
+        password,
+        gender,
+        email,
+        birth,
+        grade,
+        accessTime,
+    })
+        .then((it) => {
+            return it.userIdx;
+        })
+        .catch((err) => {
+            if (
+                err.parent.errno === 1062 ||
+                err.parent.code === 'ER_DUP_ENTRY'
+            ) {
+                throw new DuplicatedEntryError();
+            }
+            throw err;
+        });
+};
 
 /**
  * 유저 조회
- * 
+ *
+ * @param {Object} whereObj
+ * @returns {Promise<User>}
  */
-const SQL_USER_SELECT_BY_EMAIL = 'SELECT user_idx AS userIdx, nickname, password, IF(gender = 1, "male", "female") AS gender, phone, email, birth FROM user WHERE email = ?';
-module.exports.readByEmail = async (email) => {
-    const result = await pool.queryParam_Parse(SQL_USER_SELECT_BY_EMAIL, [email]);
-    if(result.length == 0) {
+module.exports.read = async (where) => {
+    const result = await User.findOne({ where });
+    if (!result) {
         throw new NotMatchedError();
     }
-    const res = result[0];
-    return res;
-}
+    return result.dataValues;
+};
 
 /**
  * 유저 조회
- * 
+ *
+ * @param {number} userIdx
+ * @returns {Promise}
  */
-const SQL_USER_SELECT_BY_IDX = 'SELECT user_idx AS userIdx, nickname, password, IF(gender = 1, "male", "female") AS gender, phone, email, birth FROM user WHERE user_idx = ?';
 module.exports.readByIdx = async (userIdx) => {
-    const result = await pool.queryParam_Parse(SQL_USER_SELECT_BY_IDX, [userIdx]);
-    if(result.length == 0) {
+    const result = await User.findByPk(userIdx);
+    if (!result) {
         throw new NotMatchedError();
     }
-    const res = result[0];
-    return res;
-}
+    return result.dataValues;
+};
 
 /**
  * 유저 수정
- * 
+ *
+ * @param {Object} User
+ * @return {Promise}
  */
-const SQL_USER_UPDATE = 'UPDATE user SET nickname = ?, password = ?, gender = ?, phone = ?, email = ?, birth = ? WHERE user_idx = ?';
-module.exports.update = async ({userIdx, nickname, password, gender, phone, birth, email}) => {
-    gender = gender == 'male' ? 1 : 2;
-    const { affectedRows } = await pool.queryParam_Parse(SQL_USER_UPDATE, [nickname, password, gender, phone, email, birth, userIdx]);
+module.exports.update = async ({
+    userIdx,
+    nickname,
+    password,
+    gender,
+    birth,
+    email,
+    grade,
+}) => {
+    const result = await User.update(
+        { nickname, password, gender, email, birth, grade },
+        { where: { userIdx } }
+    );
+    const affectedRows = result[0];
     if (affectedRows == 0) {
         throw new NotMatchedError();
     }
     return affectedRows;
-}
+};
+
+/**
+ * 유저 access Time 갱신
+ *
+ * @param {number} userIdx
+ * @return {Promise}
+ */
+module.exports.updateAccessTime = async (userIdx) => {
+    const accessTime = sequelize.literal('CURRENT_TIMESTAMP');
+    const result = await User.update(
+        { accessTime },
+        { where: { userIdx }, silent: true }
+    );
+    const affectedRows = result[0];
+    if (affectedRows == 0) {
+        throw new NotMatchedError();
+    }
+    return affectedRows;
+};
 
 /**
  * 유저 삭제
- * 
+ *
+ * @param {number} userIdx
+ * @return {Promise}
  */
-const SQL_USER_DELETE = 'DELETE FROM user WHERE user_idx = ?';
-module.exports.delete = async (userIdx) => {   
-    const { affectedRows } = await pool.queryParam_Parse(SQL_USER_DELETE, [userIdx]); 
-    if (affectedRows == 0) {
-        throw new NotMatchedError();
-    }
-    return affectedRows;
-}
+module.exports.delete = (userIdx) => {
+    return User.destroy({ where: { userIdx } });
+};
+
+/**
+ * 서베이 등록
+ *
+ * @param {number[]} keywordIdxList
+ * @param {number[]} perfumeIdxList
+ * @param {number[]} seriesIdxList
+ * @return {Promise}
+ */
+module.exports.postSurvey = (
+    userIdx,
+    surveyKeywordList,
+    surveyPerfumeList,
+    surveySeriesList
+) => {
+    return MongooseUser.create({
+        userIdx,
+        surveyKeywordList,
+        surveyPerfumeList,
+        surveySeriesList,
+    }).catch((err) => {
+        if (err.code == 11000) {
+            return MongooseUser.updateByPk(userIdx, {
+                surveyKeywordList,
+                surveyPerfumeList,
+                surveySeriesList,
+            });
+        }
+        throw err;
+    });
+};

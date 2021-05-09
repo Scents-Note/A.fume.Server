@@ -1,78 +1,205 @@
-const pool = require('../utils/db/pool.js');
-const { NotMatchedError, FailedToCreateError } = require('../utils/errors/errors.js');
+const {
+    NotMatchedError,
+    FailedToCreateError,
+    DuplicatedEntryError,
+} = require('../utils/errors/errors.js');
+
+const { Ingredient, Series, Note, Sequelize } = require('../models');
+const { Op } = Sequelize;
 
 /**
  * 재료 생성
- * - Ingredient Table에 재료 추가
- * - join_series_ingredient 테이블에 재료가 어떤 Series인지도 추가
- * - Transaction 처리 부탁드립니다.
+ *
+ * @param {Object} Series
+ * @return {Promise<number>}
  */
-const SQL_INGREDIENT_INSERT = "INSERT INTO ingredient(name, english_name, description) VALUES(?, ?, ?)"
-const SQL_SERIES_INGREDIENT_INSERT = "INSERT INTO join_series_ingredient(ingredient_idx, series_idx) " + 
-"VALUES (?, (SELECT series_idx FROM series WHERE name = ? OR english_name = ?))"
-module.exports.create = async ({name, englishName, description, seriesName}) => {
-    const result = await pool.Transaction(async (connection) => {
-        const ingredientResult = await connection.query(SQL_INGREDIENT_INSERT, [name, englishName, description]);
-        if(ingredientResult.insertId == 0){
-            throw new FailedToCreateError();
-        }
-        const ingredientIdx = ingredientResult.insertId;
-        const ingredientSeriesResult = await connection.query(SQL_SERIES_INGREDIENT_INSERT, [ingredientIdx, seriesName, seriesName]);
-        if(ingredientSeriesResult.affectedRows==0){
-            throw new FailedToCreateError();
-        }
-        return ingredientIdx;
-    });
-    return result[0];
-}
+module.exports.create = ({
+    seriesIdx,
+    name,
+    englishName,
+    description,
+    imageUrl,
+}) => {
+    return Ingredient.create({
+        seriesIdx,
+        name,
+        englishName,
+        description,
+        imageUrl,
+    })
+        .then((ingredient) => {
+            if (!ingredient) {
+                throw new FailedToCreateError();
+            }
+            return ingredient.ingredientIdx;
+        })
+        .catch((err) => {
+            if (
+                err.parent &&
+                (err.parent.errno === 1062 ||
+                    err.parent.code === 'ER_DUP_ENTRY')
+            ) {
+                throw new DuplicatedEntryError();
+            }
+            throw err;
+        });
+};
 
+/**
+ * 재료 PK로 조회
+ *
+ * @param {number} ingredientIdx
+ * @return {Promise<Ingredient>}
+ */
+module.exports.readByIdx = async (ingredientIdx) => {
+    const result = await Ingredient.findByPk(ingredientIdx);
+    if (!result) {
+        throw new NotMatchedError();
+    }
+    return result;
+};
+
+/**
+ * 재료 이름으로 조회
+ *
+ * @param {string} ingredientName
+ * @return {Promise<Ingredient>}
+ */
+module.exports.readByName = async (ingredientName) => {
+    const result = await Ingredient.findOne({
+        where: { name: ingredientName },
+    });
+    if (!result) {
+        throw new NotMatchedError();
+    }
+    return result;
+};
 
 /**
  * 재료 조회
- * 
  */
-const SQL_INGREDIENT_SELECT_BY_IDX = "SELECT ingredient_idx as ingredientIdx, name, english_name as englishName FROM ingredient WHERE ingredient_idx = ?";
-module.exports.read = async (ingredientIdx) => {
-    const result = await pool.queryParam_Parse(SQL_INGREDIENT_SELECT_BY_IDX, [ingredientIdx]);
-    if(result.length == 0) {
+module.exports.readAll = async (where) => {
+    const result = await Ingredient.findAndCountAll({
+        where,
+    });
+    if (!result) {
         throw new NotMatchedError();
     }
-    return result[0];
-}
-
+    return result;
+};
 
 /**
- * 재료 전체 조회
+ * 재료 검색
+ *
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @param {array} order
+ * @returns {Promise<Ingredient[]>}
  */
-const SQL_INGREDIENT_SELECT_ALL = "SELECT ingredient_idx as ingredientIdx, name, english_name as englishName FROM ingredient";
-module.exports.readAll = async () => {
-    const result = await pool.queryParam_None(SQL_INGREDIENT_SELECT_ALL);
-    return result;
-}
-
+module.exports.search = (pagingIndex, pagingSize, order) => {
+    return Ingredient.findAndCountAll({
+        offset: (pagingIndex - 1) * pagingSize,
+        limit: pagingSize,
+        order,
+    });
+};
 
 /**
  * 재료 수정
- * 
+ *
  */
-const SQL_INGREDIENT_UPDATE = "UPDATE ingredient SET name = ?, english_name = ?, description = ? WHERE ingredient_idx = ?"
-module.exports.update = async({ingredientIdx, name, englishName, description}) => {
-    const {affectedRows} = await pool.queryParam_Parse(SQL_INGREDIENT_UPDATE, [name, englishName, description, ingredientIdx]);
+module.exports.update = async ({
+    ingredientIdx,
+    name,
+    englishName,
+    description,
+    imageUrl,
+}) => {
+    const [affectedRows] = await Ingredient.update(
+        { name, englishName, description, imageUrl },
+        { where: { ingredientIdx } }
+    );
     if (affectedRows == 0) {
         throw new NotMatchedError();
     }
     return affectedRows;
-}
-
+};
 
 /**
  * 재료 삭제
+ *
+ * @param {number} ingredientIdx
+ * @returns {Promise<number>} affectedRow
  */
-const SQL_INGREDIENT_DELETE = "DELETE FROM ingredient WHERE ingredient_idx = ?"
-module.exports.delete = async(ingredientIdx) => {  
-    const {affectedRows} = await pool.queryParam_Parse(SQL_INGREDIENT_DELETE, [ingredientIdx]); 
-    if (affectedRows == 0) {
-        throw new NotMatchedError();
-    }
-    return affectedRows;
-}
+module.exports.delete = (ingredientIdx) => {
+    return Ingredient.destroy({ where: { ingredientIdx } });
+};
+
+/**
+ * 계열 목록에 해당하는 재료 조회
+ *
+ * @param {number[]} seriesIdxList
+ * @return {Promise<Ingredients[]>}
+ */
+module.exports.readBySeriesIdxList = async (seriesIdxList) => {
+    const result = await Ingredient.findAll({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        include: [
+            {
+                model: Series,
+                as: 'Series',
+                where: {
+                    seriesIdx: {
+                        [Op.in]: seriesIdxList,
+                    },
+                },
+            },
+        ],
+        raw: true,
+        nest: true,
+    });
+    return result;
+};
+
+/**
+ * 향수에 해당하는 재료 조회
+ *
+ * @param {number} perfumeIdx
+ * @return {Promise<Ingredients[]>}
+ */
+module.exports.readByPerfumeIdx = async (perfumeIdx) => {
+    const result = await Ingredient.findAll({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        include: [
+            {
+                model: Note,
+                as: 'Notes',
+                where: {
+                    perfumeIdx,
+                },
+            },
+        ],
+        raw: true,
+        nest: true,
+    });
+    return result;
+};
+
+/**
+ * 재료 검색
+ *
+ * @param {Object} condition
+ * @returns {Promise<Ingredient>}
+ */
+module.exports.findIngredient = (condition) => {
+    return Ingredient.findOne({ where: condition }).then((it) => {
+        if (!it) {
+            throw new NotMatchedError();
+        }
+        return it;
+    });
+};

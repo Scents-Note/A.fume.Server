@@ -112,3 +112,6 @@ configs/
 
 # pm2 ecosystem
 ecosystem.json
+
+# certificate files
+sslcert

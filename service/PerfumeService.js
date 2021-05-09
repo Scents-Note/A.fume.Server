@@ -1,32 +1,107 @@
 'use strict';
 
 const perfumeDao = require('../dao/PerfumeDao.js');
-const noteDao = require('../dao/NoteDao.js');
 const reviewDao = require('../dao/ReviewDao.js');
+const ingredientDao = require('../dao/IngredientDao.js');
+const likePerfumeDao = require('../dao/LikePerfumeDao.js');
+const keywordDao = require('../dao/KeywordDao.js');
+const userDao = require('../dao/UserDao.js');
+
+const { parseSortToOrder } = require('../utils/parser.js');
+
+const { GENDER_WOMAN } = require('../utils/code.js');
+
+const {
+    NotMatchedError,
+    FailedToCreateError,
+} = require('../utils/errors/errors.js');
+
+const {
+    updateRows,
+    removeKeyJob,
+    extractJob,
+    flatJob,
+} = require('../utils/func.js');
+
+function isLikeJob(likePerfumeList) {
+    const likeMap = likePerfumeList.reduce((prev, cur) => {
+        prev[cur] = true;
+        return prev;
+    }, {});
+    return (obj) => {
+        const ret = Object.assign({}, obj);
+        ret.isLiked = likeMap[obj.perfumeIdx] ? true : false;
+        return ret;
+    };
+}
+
+function addKeyword(joinKeywordList) {
+    const keywordMap = joinKeywordList.reduce((prev, cur) => {
+        if (!prev[cur.perfumeIdx]) prev[cur.perfumeIdx] = [];
+        prev[cur.perfumeIdx].push(cur.Keyword.name);
+        return prev;
+    }, {});
+
+    return (obj) => {
+        const ret = Object.assign({}, obj);
+        ret.keywordList = keywordMap[obj.perfumeIdx] || [];
+        return ret;
+    };
+}
+
+const commonJob = [
+    extractJob('Brand', ['name', 'brandName']),
+    removeKeyJob(
+        'perfume_idx',
+        'mainSeries',
+        'releaseDate',
+        'englishName',
+        'brandIdx',
+        'likeCnt'
+    ),
+];
 
 /**
  * 향수 정보 추가
- * 향수 정보를 추가한다.
  *
- * body Perfume  (optional)
- * no response value expected for this operation
+ * @param {Object} Perfume
+ * @returns {Promise}
  **/
-exports.createPerfume = ({brandIdx, name, englishName, volumeAndPrice, imageThumbnailUrl, mainSeriesIdx, story, abundanceRate, imageUrl}) => {
-  return perfumeDao.create({brandIdx, name, englishName, volumeAndPrice, imageThumbnailUrl, mainSeriesIdx, story, abundanceRate, imageUrl});
-}
-
+exports.createPerfume = ({
+    brandIdx,
+    name,
+    englishName,
+    volumeAndPrice,
+    imageThumbnailUrl,
+    mainSeriesIdx,
+    story,
+    abundanceRate,
+    imageUrl,
+    releaseDate,
+}) => {
+    return perfumeDao.create({
+        brandIdx,
+        name,
+        englishName,
+        volumeAndPrice,
+        imageThumbnailUrl,
+        mainSeriesIdx,
+        story,
+        abundanceRate,
+        imageUrl,
+        releaseDate,
+    });
+};
 
 /**
- * Deletes a perfume
- * 
+ * 향수 삭제
  *
- * perfumeIdx Long Pet id to delete
- * api_key String  (optional)
- * no response value expected for this operation
+ * @param {number} perfumeIdx
+ * @returns {Promise}
  **/
 exports.deletePerfume = (perfumeIdx) => {
-  return perfumeDao.delete(perfumeIdx);
-}
+    return perfumeDao.delete(perfumeIdx);
+};
 
 const seasonalArr = ['spring', 'summer', 'fall', 'winter'];
 const sillageArr = ['light', 'normal', 'heavy'];
@@ -35,126 +110,429 @@ const genderArr = ['male', 'neutral', 'female'];
 const noteTypeArr = ['top', 'middle', 'base', 'single'];
 
 function makeZeroMap(arr) {
-  return arr.reduce((prev, cur) => {prev[cur] = 0; return prev},{});
+    return arr.reduce((prev, cur) => {
+        prev[cur] = 0;
+        return prev;
+    }, {});
 }
 
 function makeInitMap(arr, initFunc) {
-  return arr.reduce((prev, cur) => {prev[cur] = initFunc(); return prev},{});
+    return arr.reduce((prev, cur) => {
+        prev[cur] = initFunc();
+        return prev;
+    }, {});
 }
 
 function updateCount(obj, prop) {
-  if(!prop) return;
-  obj[prop] = obj[prop] + 1;
+    if (!obj[prop]) {
+        obj[prop] = 0;
+    }
+    obj[prop] = obj[prop] + 1;
 }
 
-function normalize(obj){
-  const result = {};
-  const entries = Object.entries(obj);
-  const total = entries.reduce((prev, cur) => { return prev + cur[1]; }, 0);
-  for (const [key, value] of entries) {
-    if(total == 0){
-      result[key] = 0;
-      continue;
-    } 
-    result[key] = parseFloat((parseFloat(value) / total).toFixed(2));
-  }
-  return result;
+function normalize(obj) {
+    const result = {};
+    const entries = Object.entries(obj);
+    const total = entries.reduce((prev, cur) => {
+        return prev + cur[1];
+    }, 0);
+    if (total == 0) {
+        return obj;
+    }
+    let remain = 100;
+    let maxKey = 0;
+    let max = 0;
+    for (const [key, value] of entries) {
+        result[key] = parseInt((parseFloat(value) / total) * 100);
+        remain -= result[key];
+        if (max < value) {
+            max = value;
+            maxKey = key;
+        }
+    }
+    result[maxKey] += remain;
+    return result;
 }
 
+async function generateNote(perfumeIdx) {
+    const noteMap = (await ingredientDao.readByPerfumeIdx(perfumeIdx))
+        .map((it) => {
+            it.type = noteTypeArr[it.Notes.type - 1];
+            delete it.Notes;
+            return it;
+        })
+        .reduce(
+            (prev, cur) => {
+                let type = cur.type;
+                delete cur.type;
+                prev[type].push(cur);
+                return prev;
+            },
+            makeInitMap(noteTypeArr, () => [])
+        );
+
+    let noteType;
+    if (noteMap.single.length > 0) {
+        noteType = 1;
+        delete noteMap.top;
+        delete noteMap.middle;
+        delete noteMap.base;
+    } else {
+        noteType = 0;
+        delete noteMap.single;
+    }
+    return { noteType, ingredients: noteMap };
+}
+
+async function generateSummary(perfumeIdx) {
+    let sum = 0,
+        cnt = 0;
+    let seasonalMap = makeZeroMap(seasonalArr);
+    let sillageMap = makeZeroMap(sillageArr);
+    let longevityMap = makeZeroMap(longevityArr);
+    let genderMap = makeZeroMap(genderArr);
+
+    (await reviewDao.readAllOfPerfume(perfumeIdx))
+        .map((it) => {
+            it.seasonal = seasonalArr[it.seasonal - 1];
+            it.sillage = sillageArr[it.sillage - 1];
+            it.longevity = longevityArr[it.longevity - 1];
+            it.gender = genderArr[it.gender - 1];
+            return it;
+        })
+        .forEach((review) => {
+            if (review.score) {
+                sum += review.score;
+                cnt++;
+                updateCount(longevityMap, review.longevity);
+                updateCount(sillageMap, review.sillage);
+                updateCount(seasonalMap, review.seasonal);
+                updateCount(genderMap, review.gender);
+            }
+        });
+
+    return {
+        score: parseFloat((parseFloat(sum) / cnt).toFixed(2)) || 0,
+        seasonal: normalize(seasonalMap),
+        sillage: normalize(sillageMap),
+        longevity: normalize(longevityMap),
+        gender: normalize(genderMap),
+    };
+}
 /**
  * 향수 세부 정보 조회
- * 향수 세부 정보를 반환한다.
  *
- * perfumeIdx Long ID of perfume to return
- * returns PerfumeDetail
+ * @param {number} perfumeIdx
+ * @param {number} userIdx
+ * @returns {Promise<Perfume>}
  **/
-exports.getPerfumeById = async ({userIdx, perfumeIdx}) => {
-  const perfume = await perfumeDao.readByPerfumeIdx({userIdx, perfumeIdx});
+exports.getPerfumeById = async (perfumeIdx, userIdx) => {
+    let _perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
+    const perfume = [...commonJob, flatJob('PerfumeDetail')].reduce(
+        (prev, cur) => cur(prev),
+        _perfume
+    );
 
-  let notes = await noteDao.read(perfumeIdx);
-  notes = notes.map(it => {
-    it.type = noteTypeArr[it.type - 1];
-    return it;
-  })
-  const ingredients = notes.reduce((prev, cur) => {
-    let type = cur.type;
-    delete cur.type;
-    prev[type].push(cur);
-    return prev;
-  }, makeInitMap(noteTypeArr, () => { return []; }));
+    const likePerfumeList = await likePerfumeDao.read(userIdx, perfumeIdx);
+    perfume.isLiked = likePerfumeList ? true : false;
+    perfume.Keywords = await keywordDao.readAllOfPerfume(perfumeIdx);
+    Object.assign(perfume, await generateNote(perfumeIdx));
+    Object.assign(perfume, await generateSummary(perfumeIdx));
 
-  let noteType;
-  if (ingredients.single.length == notes.length) {
-    noteType = 1;
-    delete ingredients.top;
-    delete ingredients.middle;
-    delete ingredients.base;
-  } else {
-    noteType = 0;
-    delete ingredients.single;
-  }
-  perfume.noteType = noteType;
-  perfume.ingredients = ingredients;
-  
-  let reviews = await reviewDao.readAll(perfumeIdx);
-  let sum = 0, cnt = 0;
-  let seasonal = makeZeroMap(seasonalArr);
-  let sillage = makeZeroMap(sillageArr);
-  let longevity = makeZeroMap(longevityArr);
-  let gender = makeZeroMap(genderArr);
-  reviews = reviews.map(it => {
-    it.seasonal = seasonalArr[it.seasonal - 1];
-    it.sillage = sillageArr[it.sillage - 1];
-    it.longevity = longevityArr[it.longevity - 1];
-    it.gender = genderArr[it.gender - 1];
-    return it;
-  })
-  
-  for(const review of reviews) {
-    if (review.score) {
-      sum += review.score;
-      cnt ++;
-      updateCount(longevity, review.longevity);
-      updateCount(sillage, review.sillage);
-      updateCount(seasonal, review.seasonal);
-      updateCount(gender, review.gender);
-    }
-  }
-  
-  longevity = normalize(longevity);
-  sillage = normalize(sillage);
-  seasonal = normalize(seasonal);
-  gender = normalize(gender);
-  perfume.score = parseFloat((parseFloat(sum) / cnt).toFixed(2));
-  perfume.seasonal = seasonal;
-  perfume.sillage = sillage;
-  perfume.longevity = longevity;
-  perfume.gender = gender;
-  return perfume;
-}
-
+    return perfume;
+};
 
 /**
  * 향수 검색
- * 검색 조건에 해당하는 향수를 반환한다.
  *
- * filter Filter 검색 필터 (optional)
- * returns List
+ * @param {number[]} brandIdxList
+ * @param {number[]} ingredientIdxList
+ * @param {number[]} keywordIdxList
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @param {array} sort
+ * @param {number} userIdx
+ * @returns {Promise<Perfume[]>}
  **/
-exports.searchPerfume = ({userIdx, filter}) => {
-  const {series, brands, keywords, sortBy} = filter;
-  return perfumeDao.search({userIdx, series, brands, keywords, sortBy});
-}
+exports.searchPerfume = (
+    brandIdxList,
+    ingredientIdxList,
+    keywordIdxList,
+    pagingIndex,
+    pagingSize,
+    sort,
+    userIdx
+) => {
+    const order = parseSortToOrder(sort);
+    return perfumeDao
+        .search(
+            brandIdxList,
+            ingredientIdxList,
+            keywordIdxList,
+            pagingIndex,
+            pagingSize,
+            order
+        )
+        .then(async (result) => {
+            const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
+            const likePerfumeList = await likePerfumeDao.readLikeInfo(
+                userIdx,
+                perfumeIdxList
+            );
+            return updateRows(
+                result,
+                ...commonJob,
+                removeKeyJob('SearchHistory', 'Score'),
+                isLikeJob(likePerfumeList)
+            );
+        });
+};
 
+/**
+ * Survey 향수 조회
+ *
+ * @param {number} userIdx
+ * @returns {Promise<Brand[]>}
+ **/
+exports.getSurveyPerfume = (userIdx) => {
+    return userDao
+        .readByIdx(userIdx)
+        .then((it) => {
+            return perfumeDao.readPerfumeSurvey(it.gender);
+        })
+        .then(async (result) => {
+            const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
+            const likePerfumeList = await likePerfumeDao.readLikeInfo(
+                userIdx,
+                perfumeIdxList
+            );
+            return updateRows(
+                result,
+                ...commonJob,
+                removeKeyJob('PerfumeSurvey')
+            );
+        });
+};
 
 /**
  * 향수 정보 업데이트
- * 
  *
- * body Perfume  (optional)
- * no response value expected for this operation
+ * @param {Object} Perfume
+ * @returns {Promise}
  **/
-exports.updatePerfume = ({perfumeIdx, name, mainSeriesIdx, brandIdx, englishName, volumeAndPrice, imageThumbnailUrl, story, abundanceRate, imageUrl}) => {
-  return perfumeDao.update({perfumeIdx, name, mainSeriesIdx, brandIdx, englishName, volumeAndPrice, imageThumbnailUrl, story, abundanceRate, imageUrl});
-}
+exports.updatePerfume = ({
+    perfumeIdx,
+    name,
+    mainSeriesIdx,
+    brandIdx,
+    englishName,
+    volumeAndPrice,
+    imageThumbnailUrl,
+    story,
+    abundanceRate,
+    imageUrl,
+}) => {
+    return perfumeDao.update({
+        perfumeIdx,
+        name,
+        mainSeriesIdx,
+        brandIdx,
+        englishName,
+        volumeAndPrice,
+        imageThumbnailUrl,
+        story,
+        abundanceRate,
+        imageUrl,
+    });
+};
 
+/**
+ * 향수 좋아요
+ *
+ * @param {number} userIdx
+ * @param {number} perfumeIdx
+ * @returns {Promise}
+ **/
+exports.likePerfume = (userIdx, perfumeIdx) => {
+    return new Promise((resolve, reject) => {
+        let isExist = false;
+        likePerfumeDao
+            .read(userIdx, perfumeIdx)
+            .then((res) => {
+                isExist = true;
+                return likePerfumeDao.delete(userIdx, perfumeIdx);
+            })
+            .catch((err) => {
+                isExist = false;
+                if (err instanceof NotMatchedError) {
+                    return likePerfumeDao.create(userIdx, perfumeIdx);
+                }
+                reject(new FailedToCreateError());
+            })
+            .then(() => {
+                resolve(!isExist);
+            })
+            .catch((err) => {
+                reject(err);
+            });
+    });
+};
+
+/**
+ * 유저의 최근 검색한 향수 조회
+ *
+ * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>}
+ **/
+exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
+    return perfumeDao
+        .recentSearchPerfumeList(userIdx, pagingIndex, pagingSize)
+        .then(async (result) => {
+            const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
+            const likePerfumeList = await likePerfumeDao.readLikeInfo(
+                userIdx,
+                perfumeIdxList
+            );
+            return updateRows(
+                result,
+                ...commonJob,
+                removeKeyJob('SearchHistory'),
+                isLikeJob(likePerfumeList)
+            );
+        });
+};
+
+/**
+ * 유저 연령대 및 성별에 따른 향수 추천
+ *
+ * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>}
+ **/
+exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
+    let ageGroup, gender;
+    if (userIdx == -1) {
+        gender = GENDER_WOMAN;
+        ageGroup = 20;
+    } else {
+        const user = await userDao.readByIdx(userIdx);
+        const today = new Date();
+        const age = today.getFullYear() - user.birth + 1;
+        gender = user.gender;
+        ageGroup = parseInt(age / 10) * 10;
+    }
+
+    const recommendedList = this.recommendByGenderAgeAndGender(
+        gender,
+        ageGroup,
+        pagingIndex,
+        pagingSize
+    );
+
+    return recommendedList.then(async (result) => {
+        const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
+        let likePerfumeList = [];
+        if (userIdx > -1) {
+            likePerfumeList = await likePerfumeDao.readLikeInfo(
+                userIdx,
+                perfumeIdxList
+            );
+        }
+
+        const joinKeywordList = await keywordDao.readAllOfPerfumeIdxList(
+            perfumeIdxList
+        );
+
+        return updateRows(
+            result,
+            ...commonJob,
+            removeKeyJob('SearchHistory'),
+            isLikeJob(likePerfumeList),
+            addKeyword(joinKeywordList)
+        );
+    });
+};
+
+/**
+ * 유저 연령대 및 성별에 따른 향수 추천
+ *
+ * @param {number} gender
+ * @param {number} ageGroup
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>}
+ **/
+exports.recommendByGenderAgeAndGender = (
+    gender,
+    ageGroup,
+    pagingIndex,
+    pagingSize
+) => {
+    return perfumeDao.recommendPerfumeByAgeAndGender(
+        gender,
+        ageGroup,
+        pagingIndex,
+        pagingSize
+    );
+};
+
+/**
+ * 새로 추가된 향수 조회
+ *
+ * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>}
+ **/
+exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
+    const fromDate = new Date();
+    fromDate.setDate(fromDate.getDate() - 7);
+    return perfumeDao
+        .readNewPerfume(fromDate, pagingIndex, pagingSize)
+        .then(async (result) => {
+            const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
+            const likePerfumeList = await likePerfumeDao.readLikeInfo(
+                userIdx,
+                perfumeIdxList
+            );
+            return updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
+        });
+};
+
+/**
+ * 유저가 좋아요한 향수 조회
+ *
+ * @param {number} userIdx
+ * @param {number} pagingIndex
+ * @param {number} pagingSize
+ * @returns {Promise<Perfume[]>}
+ **/
+exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
+    return perfumeDao
+        .readLikedPerfume(userIdx, pagingIndex, pagingSize)
+        .then(async (result) => {
+            const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
+            const likePerfumeList = await likePerfumeDao.readLikeInfo(
+                userIdx,
+                perfumeIdxList
+            );
+            return updateRows(
+                result,
+                ...commonJob,
+                removeKeyJob('LikePerfume')
+            );
+        });
+};
+
+/**
+ * 향수 idx값 조회
+ *
+ * @param {string} englishName
+ * @returns {Promise<number>}
+ **/
+exports.findPerfumeIdxByEnglishName = (englishName) => {
+    return perfumeDao.findPerfumeIdx({ englishName });
+};
