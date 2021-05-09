@@ -6,7 +6,6 @@ const { OK, FORBIDDEN } = require('../utils/statusCode.js');
 
 module.exports.postPerfume = (req, res, next) => {
     const body = req.body;
-    body.imageThumbnailUrl = body.imageUrl;
     Perfume.createPerfume(body)
         .then((response) => {
             res.status(OK).json({
