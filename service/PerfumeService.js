@@ -76,7 +76,6 @@ exports.createPerfume = ({
     name,
     englishName,
     volumeAndPrice,
-    imageThumbnailUrl,
     story,
     abundanceRate,
     imageUrl,
