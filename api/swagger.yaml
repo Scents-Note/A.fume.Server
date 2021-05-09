@@ -2869,8 +2869,10 @@ definitions:
       abundanceRate:
         type: string
         enum:
+        - None
+        - 오 드 코롱
         - 코롱
-        - 오 드 뜨왈렛
+        - 오 드 뚜왈렛
         - 오 드 퍼퓸
         - 퍼퓸
       volumeAndPrice:
