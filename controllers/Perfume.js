@@ -2,10 +2,30 @@
 
 const Perfume = require('../service/PerfumeService');
 const SearchHistory = require('../service/SearchHistoryService');
+const { InvalidInputError } = require('../utils/errors/errors');
 const { OK, FORBIDDEN } = require('../utils/statusCode.js');
+
+const abundanceRateArr = [
+    'None',
+    '오 드 코롱',
+    '코롱',
+    '오 드 뚜왈렛',
+    '오 드 퍼퓸',
+    '퍼퓸',
+];
 
 module.exports.postPerfume = (req, res, next) => {
     const body = req.body;
+    body.abundanceRate = abundanceRateArr.indexOf(body.abundanceRate);
+    if (body.abundanceRate == -1) {
+        throw InvalidInputError(
+            `abundanceRate is only allow ${abundanceRateArr}`
+        );
+    }
+    body.volumeAndPrice = body.volumeAndPrice.reduce((prev, cur) => {
+        prev['' + cur.volume] = '' + cur.price;
+        return prev;
+    }, {});
     Perfume.createPerfume(body)
         .then((response) => {
             res.status(OK).json({
