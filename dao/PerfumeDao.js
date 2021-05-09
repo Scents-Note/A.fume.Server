@@ -6,7 +6,6 @@ const {
     PerfumeDetail,
     PerfumeSurvey,
     Brand,
-    Series,
     LikePerfume,
     SearchHistory,
     sequelize,
@@ -67,12 +66,11 @@ const SQL_SEARCH_PERFUME_SELECT_COUNT =
     'COUNT(p.perfume_idx) as count ' +
     'FROM perfumes p ' +
     'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
-    'INNER JOIN series s ON p.main_series_idx = s.series_idx ' +
     ':whereCondition ';
 
 const defaultOption = {
     attributes: {
-        exclude: ['createdAt', 'updatedAt', 'mainSeriesIdx'],
+        exclude: ['createdAt', 'updatedAt'],
     },
     include: [
         {
@@ -100,7 +98,6 @@ module.exports.create = ({
     englishName,
     volumeAndPrice,
     imageUrl,
-    mainSeriesIdx,
     story,
     abundanceRate,
     releaseDate,
@@ -110,7 +107,6 @@ module.exports.create = ({
         const { dataValues: perfumeResult } = await Perfume.create(
             {
                 brandIdx,
-                mainSeriesIdx,
                 name,
                 englishName,
                 imageUrl,
@@ -444,7 +440,6 @@ module.exports.readPerfumeSurvey = async (gender) => {
 module.exports.update = async ({
     perfumeIdx,
     name,
-    mainSeriesIdx,
     brandIdx,
     englishName,
     volumeAndPrice,
@@ -457,7 +452,6 @@ module.exports.update = async ({
         const [perfumeAffectedRows] = await Perfume.update(
             {
                 brandIdx,
-                mainSeriesIdx,
                 name,
                 englishName,
                 imageUrl,

@@ -58,7 +58,6 @@ const commonJob = [
     extractJob('Brand', ['name', 'brandName']),
     removeKeyJob(
         'perfume_idx',
-        'mainSeries',
         'releaseDate',
         'englishName',
         'brandIdx',
@@ -78,7 +77,6 @@ exports.createPerfume = ({
     englishName,
     volumeAndPrice,
     imageThumbnailUrl,
-    mainSeriesIdx,
     story,
     abundanceRate,
     imageUrl,
@@ -90,7 +88,6 @@ exports.createPerfume = ({
         englishName,
         volumeAndPrice,
         imageThumbnailUrl,
-        mainSeriesIdx,
         story,
         abundanceRate,
         imageUrl,
@@ -335,7 +332,6 @@ exports.getSurveyPerfume = (userIdx) => {
 exports.updatePerfume = ({
     perfumeIdx,
     name,
-    mainSeriesIdx,
     brandIdx,
     englishName,
     volumeAndPrice,
@@ -347,7 +343,6 @@ exports.updatePerfume = ({
     return perfumeDao.update({
         perfumeIdx,
         name,
-        mainSeriesIdx,
         brandIdx,
         englishName,
         volumeAndPrice,
