@@ -185,6 +185,22 @@ describe('# ingredientDao Test', () => {
                 })
                 .catch((err) => done(err));
         });
+        it('# Duplicate Error case', (done) => {
+            ingredientDao
+                .update({
+                    ingredientIdx,
+                    name: '재료5',
+                    englishName: 'Update Data',
+                })
+                .then((result) => {
+                    throw new Error('Must be occur NotMatchedError');
+                })
+                .catch((err) => {
+                    expect(err).instanceOf(DuplicatedEntryError);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
         after(async () => {
             await Ingredient.destroy({ where: { ingredientIdx } });
         });
