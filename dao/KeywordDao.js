@@ -1,6 +1,53 @@
 const { NotMatchedError } = require('../utils/errors/errors.js');
-const { Keyword, Sequelize, JoinPerfumeKeyword } = require('../models');
+const {
+    Keyword,
+    Sequelize,
+    sequelize,
+    JoinPerfumeKeyword,
+    JoinReviewKeyword,
+} = require('../models');
 const { Op } = Sequelize;
+
+/**
+ * 시향노트에 키워드 추가
+ *
+ * @param {Object} Review
+ * @returns {Promise}
+ */
+module.exports.create = async ({ reviewIdx, keywordIdx, perfumeIdx }) => {
+    return sequelize.transaction(async (t) => {
+        try {
+            const createReviewKeyword = await JoinReviewKeyword.create(
+                {
+                    reviewIdx,
+                    keywordIdx,
+                },
+                { transaction: t }
+            );
+
+            const createPerfumeKeyword = await JoinPerfumeKeyword.findOrCreate({
+                where: { perfumeIdx, keywordIdx },
+            });
+
+            const updatePerfumeKeyword = await JoinPerfumeKeyword.update(
+                { count: sequelize.literal('count + 1') },
+                {
+                    where: { perfumeIdx, keywordIdx },
+                    transaction: t,
+                }
+            );
+            return Promise.all([
+                createReviewKeyword,
+                createPerfumeKeyword,
+                updatePerfumeKeyword,
+            ]).then((it) => {
+                return it;
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    });
+};
 
 /**
  * 키워드 전체 목록 조회
