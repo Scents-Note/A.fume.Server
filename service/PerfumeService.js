@@ -9,7 +9,7 @@ const userDao = require('../dao/UserDao.js');
 
 const { parseSortToOrder } = require('../utils/parser.js');
 
-const { GENDER_WOMAN } = require('../utils/code.js');
+const { GENDER_WOMAN, abundanceRateArr } = require('../utils/code.js');
 
 const {
     NotMatchedError,
@@ -235,6 +235,7 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
         (prev, cur) => cur(prev),
         _perfume
     );
+    perfume.abundanceRate = abundanceRateArr[perfume.abundanceRate];
 
     const likePerfumeList = await likePerfumeDao.read(userIdx, perfumeIdx);
     perfume.isLiked = likePerfumeList ? true : false;

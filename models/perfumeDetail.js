@@ -29,7 +29,8 @@ module.exports = (sequelize, DataTypes) => {
             abundanceRate: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
-                comment: '코롱/오 드 코롱/코롱 인텐스/오 드 퍼퓸/오 드 뚜왈렛',
+                comment:
+                    '0: None, 1: 오 드 코롱, 2: 코롱, 3: 오 드 뚜왈렛, 4: 오 드 퍼퓸, 5: 퍼퓸',
             },
             volumeAndPrice: {
                 type: DataTypes.STRING,
