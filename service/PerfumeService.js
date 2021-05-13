@@ -23,6 +23,11 @@ const {
     flatJob,
 } = require('../utils/func.js');
 
+function emptyCheck(x) {
+    if (x == null || x.length == 0) x = '정보 없음';
+    return x;
+}
+
 function isLikeJob(likePerfumeList) {
     const likeMap = likePerfumeList.reduce((prev, cur) => {
         prev[cur] = true;
@@ -164,23 +169,16 @@ async function generateNote(perfumeIdx) {
         .reduce(
             (prev, cur) => {
                 let type = cur.type;
-                delete cur.type;
-                prev[type].push(cur);
+                prev[type].push(cur.name);
                 return prev;
             },
             makeInitMap(noteTypeArr, () => [])
         );
-
-    let noteType;
-    if (noteMap.single.length > 0) {
-        noteType = 1;
-        delete noteMap.top;
-        delete noteMap.middle;
-        delete noteMap.base;
-    } else {
-        noteType = 0;
-        delete noteMap.single;
+    for (const key in noteMap) {
+        if (!noteMap[key] instanceof Array) throw 'Invalid Type Exception';
+        noteMap[key] = noteMap[key].join(', ');
     }
+    const noteType = noteMap.single.length > 0 ? 1 : 0;
     return { noteType, ingredients: noteMap };
 }
 
@@ -219,6 +217,11 @@ async function generateSummary(perfumeIdx) {
         gender: normalize(genderMap),
     };
 }
+
+function numberWithCommas(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
 /**
  * 향수 세부 정보 조회
  *
@@ -235,10 +238,18 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
 
     const likePerfumeList = await likePerfumeDao.read(userIdx, perfumeIdx);
     perfume.isLiked = likePerfumeList ? true : false;
-    perfume.Keywords = await keywordDao.readAllOfPerfume(perfumeIdx);
+    perfume.Keywords = (await keywordDao.readAllOfPerfume(perfumeIdx)).map(
+        (it) => it.name
+    );
+    perfume.volumeAndPrice = perfume.volumeAndPrice.map((it) => {
+        return `${numberWithCommas(it.price)}/${it.volume}ml`;
+    });
     Object.assign(perfume, await generateNote(perfumeIdx));
     Object.assign(perfume, await generateSummary(perfumeIdx));
-
+    for (const key in perfume) {
+        if (!perfume[key] instanceof String) continue;
+        perfume[key] = emptyCheck(perfume[key]);
+    }
     return perfume;
 };
 
