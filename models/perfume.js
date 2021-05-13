@@ -39,7 +39,6 @@ module.exports = (sequelize, DataTypes) => {
             englishName: {
                 type: DataTypes.STRING,
                 allowNull: false,
-                unique: true,
             },
             imageUrl: {
                 type: DataTypes.STRING,
