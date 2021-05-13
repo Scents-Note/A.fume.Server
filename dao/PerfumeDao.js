@@ -1,14 +1,12 @@
 const _ = require('lodash');
-const {
-    NotMatchedError,
-    DuplicatedEntryError,
-} = require('../utils/errors/errors.js');
+const { NotMatchedError } = require('../utils/errors/errors.js');
 
 const {
     Perfume,
     PerfumeDetail,
     PerfumeSurvey,
     Brand,
+    Series,
     LikePerfume,
     SearchHistory,
     sequelize,
@@ -69,11 +67,12 @@ const SQL_SEARCH_PERFUME_SELECT_COUNT =
     'COUNT(p.perfume_idx) as count ' +
     'FROM perfumes p ' +
     'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
+    'INNER JOIN series s ON p.main_series_idx = s.series_idx ' +
     ':whereCondition ';
 
 const defaultOption = {
     attributes: {
-        exclude: ['createdAt', 'updatedAt'],
+        exclude: ['createdAt', 'updatedAt', 'mainSeriesIdx'],
     },
     include: [
         {
@@ -101,39 +100,31 @@ module.exports.create = ({
     englishName,
     volumeAndPrice,
     imageUrl,
+    mainSeriesIdx,
     story,
     abundanceRate,
     releaseDate,
 }) => {
     volumeAndPrice = JSON.stringify(volumeAndPrice);
-    return sequelize
-        .transaction(async (t) => {
-            const { dataValues: perfumeResult } = await Perfume.create(
-                {
-                    brandIdx,
-                    name,
-                    englishName,
-                    imageUrl,
-                    releaseDate,
-                },
-                { transaction: t }
-            );
-            const perfumeIdx = perfumeResult.perfumeIdx;
-            await PerfumeDetail.create(
-                { perfumeIdx, story, abundanceRate, volumeAndPrice },
-                { transaction: t }
-            );
-            return perfumeIdx;
-        })
-        .catch((err) => {
-            if (
-                err.parent.errno === 1062 ||
-                err.parent.code === 'ER_DUP_ENTRY'
-            ) {
-                throw new DuplicatedEntryError();
-            }
-            throw err;
-        });
+    return sequelize.transaction(async (t) => {
+        const { dataValues: perfumeResult } = await Perfume.create(
+            {
+                brandIdx,
+                mainSeriesIdx,
+                name,
+                englishName,
+                imageUrl,
+                releaseDate,
+            },
+            { transaction: t }
+        );
+        const perfumeIdx = perfumeResult.perfumeIdx;
+        await PerfumeDetail.create(
+            { perfumeIdx, story, abundanceRate, volumeAndPrice },
+            { transaction: t }
+        );
+        return perfumeIdx;
+    });
 };
 
 /**
@@ -453,6 +444,7 @@ module.exports.readPerfumeSurvey = async (gender) => {
 module.exports.update = async ({
     perfumeIdx,
     name,
+    mainSeriesIdx,
     brandIdx,
     englishName,
     volumeAndPrice,
@@ -465,6 +457,7 @@ module.exports.update = async ({
         const [perfumeAffectedRows] = await Perfume.update(
             {
                 brandIdx,
+                mainSeriesIdx,
                 name,
                 englishName,
                 imageUrl,

@@ -9,10 +9,7 @@ const { Perfume, PerfumeDetail, Note, Sequelize } = require('../../models');
 const { Op } = Sequelize;
 
 const { GENDER_WOMAN } = require('../../utils/code.js');
-const {
-    NotMatchedError,
-    DuplicatedEntryError,
-} = require('../../utils/errors/errors.js');
+const { NotMatchedError } = require('../../utils/errors/errors.js');
 
 describe('# perfumeDao Test', () => {
     before(async function () {
@@ -25,6 +22,7 @@ describe('# perfumeDao Test', () => {
         it('# success case', (done) => {
             const perfumeObj = {
                 name: '삽입테스트',
+                mainSeriesIdx: 1,
                 brandIdx: 1,
                 englishName: 'insert Test',
                 volumeAndPrice: {},
@@ -52,6 +50,7 @@ describe('# perfumeDao Test', () => {
             perfumeDao
                 .create({
                     name: '삽입테스트',
+                    mainSeriesIdx: 1,
                     brandIdx: 1,
                     englishName: 'insert Test',
                     volumeAndPrice: '{}',
@@ -64,7 +63,8 @@ describe('# perfumeDao Test', () => {
                     throw new Error('Must be occur DuplicatedEntryError');
                 })
                 .catch((err) => {
-                    expect(err).instanceOf(DuplicatedEntryError);
+                    expect(err.parent.errno).eq(1062);
+                    expect(err.parent.code).eq('ER_DUP_ENTRY');
                     done();
                 })
                 .catch((err) => done(err));
@@ -387,6 +387,7 @@ describe('# perfumeDao Test', () => {
                 ));
             const { dataValues } = await Perfume.create({
                 brandIdx: 1,
+                mainSeriesIdx: 1,
                 name: '수정 테스트',
                 englishName: 'perfume_delete_test',
                 imageUrl: 'URL',
@@ -404,6 +405,7 @@ describe('# perfumeDao Test', () => {
             const perfumeObj = {
                 perfumeIdx,
                 name: '수정된 이름',
+                mainSeriesIdx: 2,
                 brandIdx: 2,
                 englishName: '수정된 영어이름',
                 volumeAndPrice: '{}',
@@ -440,6 +442,7 @@ describe('# perfumeDao Test', () => {
         before(async () => {
             const { dataValues: perfume } = await Perfume.create({
                 brandIdx: 1,
+                mainSeriesIdx: 1,
                 name: '향수 삭제 테스트',
                 englishName: 'perfume_delete_test',
                 imageUrl: 'URL',
