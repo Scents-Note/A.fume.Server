@@ -92,7 +92,7 @@ module.exports.patchIngredient = (req, res, next) => {
     Ingredient.patchIngredient(ingredientIdx, obj)
         .then(() => {
             res.status(OK).json({
-                message: 'ingredient fetch 성공',
+                message: 'ingredient 수정 성공',
             });
         })
         .catch((err) => next(err));
