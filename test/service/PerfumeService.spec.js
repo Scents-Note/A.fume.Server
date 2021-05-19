@@ -16,15 +16,19 @@ describe('# Perfume Service Test', () => {
                     expect(it.brandName).to.be.ok;
                     expect(it.story).to.be.ok;
                     if (it.noteType == 1) {
-                        expect(it.ingredients.top).not.be.ok;
-                        expect(it.ingredients.middle).not.be.ok;
-                        expect(it.ingredients.base).not.be.ok;
+                        expect(it.ingredients.top).be.empty;
+                        expect(it.ingredients.middle).be.empty;
+                        expect(it.ingredients.base).be.empty;
                         expect(it.ingredients.single).be.ok;
                     } else {
-                        expect(it.ingredients.top).be.ok;
-                        expect(it.ingredients.middle).be.ok;
-                        expect(it.ingredients.base).be.ok;
-                        expect(it.ingredients.single).not.be.ok;
+                        expect(
+                            [
+                                it.ingredients.top,
+                                it.ingredients.middle,
+                                it.ingredients.base,
+                            ].filter((it) => it.length > 0).length
+                        ).be.gt(0);
+                        expect(it.ingredients.single).be.empty;
                     }
                     expect(it.score).to.be.gte(0);
 
