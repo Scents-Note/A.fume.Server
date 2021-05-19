@@ -9,10 +9,7 @@ const { Perfume, PerfumeDetail, Note, Sequelize } = require('../../models');
 const { Op } = Sequelize;
 
 const { GENDER_WOMAN } = require('../../utils/code.js');
-const {
-    NotMatchedError,
-    DuplicatedEntryError,
-} = require('../../utils/errors/errors.js');
+const { NotMatchedError } = require('../../utils/errors/errors.js');
 
 describe('# perfumeDao Test', () => {
     before(async function () {
@@ -64,7 +61,8 @@ describe('# perfumeDao Test', () => {
                     throw new Error('Must be occur DuplicatedEntryError');
                 })
                 .catch((err) => {
-                    expect(err).instanceOf(DuplicatedEntryError);
+                    expect(err.parent.errno).eq(1062);
+                    expect(err.parent.code).eq('ER_DUP_ENTRY');
                     done();
                 })
                 .catch((err) => done(err));

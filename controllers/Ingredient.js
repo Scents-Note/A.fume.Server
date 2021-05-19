@@ -85,6 +85,19 @@ module.exports.putIngredient = (req, res, next) => {
         .catch((err) => next(err));
 };
 
+module.exports.patchIngredient = (req, res, next) => {
+    const ingredientIdx = req.swagger.params['ingredientIdx'].value;
+    const obj = req.swagger.params['body'].value;
+
+    Ingredient.patchIngredient(ingredientIdx, obj)
+        .then(() => {
+            res.status(OK).json({
+                message: 'ingredient 수정 성공',
+            });
+        })
+        .catch((err) => next(err));
+};
+
 module.exports.deleteIngredient = (req, res, next) => {
     const ingredientIdx = req.swagger.params['ingredientIdx'].value;
     Ingredient.deleteIngredient(ingredientIdx)

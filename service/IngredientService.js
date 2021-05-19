@@ -81,6 +81,16 @@ exports.putIngredient = ({
 };
 
 /**
+ * 향료 수정
+ *
+ * @param {Object} Ingredient
+ * @returns {Promise<number>} affectedRows
+ **/
+exports.patchIngredient = (ingredientIdx, obj) => {
+    return ingredientDao.update(Object.assign({ ingredientIdx }, obj));
+};
+
+/**
  * 향료 삭제
  *
  * @param {number} ingredientIdx

@@ -108,21 +108,33 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
  * 재료 수정
  *
  */
-module.exports.update = async ({
+module.exports.update = ({
     ingredientIdx,
     name,
     englishName,
     description,
     imageUrl,
 }) => {
-    const [affectedRows] = await Ingredient.update(
+    return Ingredient.update(
         { name, englishName, description, imageUrl },
         { where: { ingredientIdx } }
-    );
-    if (affectedRows == 0) {
-        throw new NotMatchedError();
-    }
-    return affectedRows;
+    )
+        .then(([affectedRows]) => {
+            if (affectedRows == 0) {
+                throw new NotMatchedError();
+            }
+            return affectedRows;
+        })
+        .catch((err) => {
+            if (
+                err.parent &&
+                (err.parent.errno === 1062 ||
+                    err.parent.code === 'ER_DUP_ENTRY')
+            ) {
+                throw new DuplicatedEntryError();
+            }
+            throw err;
+        });
 };
 
 /**
