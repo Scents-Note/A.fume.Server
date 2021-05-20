@@ -87,10 +87,9 @@ exports.createPerfume = ({
         name,
         englishName,
         volumeAndPrice,
-        imageThumbnailUrl,
+        imageUrl,
         story,
         abundanceRate,
-        imageUrl,
         releaseDate,
     });
 };
