@@ -2291,9 +2291,19 @@ paths:
                   properties: 
                     firstInitial: 
                       type: string
-                      example: 'ㅌ'
-                    brand:
-                      $ref: '#/definitions/BrandInfo'
+                      example: ㄷ 
+                    brands:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          brandIdx:
+                            type: integer
+                            example: 10
+                          name:
+                            type: string
+                            example: 다비도프
+                      
       x-swagger-router-controller: Brand
   /user/survey:
     post:
