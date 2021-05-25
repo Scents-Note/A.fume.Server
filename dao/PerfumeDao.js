@@ -1,5 +1,8 @@
 const _ = require('lodash');
-const { NotMatchedError } = require('../utils/errors/errors.js');
+const {
+    NotMatchedError,
+    DuplicatedEntryError,
+} = require('../utils/errors/errors.js');
 
 const {
     Perfume,
@@ -103,24 +106,34 @@ module.exports.create = ({
     releaseDate,
 }) => {
     volumeAndPrice = JSON.stringify(volumeAndPrice);
-    return sequelize.transaction(async (t) => {
-        const { dataValues: perfumeResult } = await Perfume.create(
-            {
-                brandIdx,
-                name,
-                englishName,
-                imageUrl,
-                releaseDate,
-            },
-            { transaction: t }
-        );
-        const perfumeIdx = perfumeResult.perfumeIdx;
-        await PerfumeDetail.create(
-            { perfumeIdx, story, abundanceRate, volumeAndPrice },
-            { transaction: t }
-        );
-        return perfumeIdx;
-    });
+    return sequelize
+        .transaction(async (t) => {
+            const { dataValues: perfumeResult } = await Perfume.create(
+                {
+                    brandIdx,
+                    name,
+                    englishName,
+                    imageUrl,
+                    releaseDate,
+                },
+                { transaction: t }
+            );
+            const perfumeIdx = perfumeResult.perfumeIdx;
+            await PerfumeDetail.create(
+                { perfumeIdx, story, abundanceRate, volumeAndPrice },
+                { transaction: t }
+            );
+            return perfumeIdx;
+        })
+        .catch((err) => {
+            if (
+                err.parent.errno === 1062 ||
+                err.parent.code === 'ER_DUP_ENTRY'
+            ) {
+                throw new DuplicatedEntryError();
+            }
+            throw err;
+        });
 };
 
 /**
