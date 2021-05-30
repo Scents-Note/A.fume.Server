@@ -27,6 +27,7 @@ module.exports.create = async ({ reviewIdx, keywordIdx, perfumeIdx }) => {
 
             const createPerfumeKeyword = await JoinPerfumeKeyword.findOrCreate({
                 where: { perfumeIdx, keywordIdx },
+                transaction: t,
             });
 
             const updatePerfumeKeyword = await JoinPerfumeKeyword.update(
@@ -36,13 +37,59 @@ module.exports.create = async ({ reviewIdx, keywordIdx, perfumeIdx }) => {
                     transaction: t,
                 }
             );
-            return Promise.all([
+            return [
                 createReviewKeyword,
                 createPerfumeKeyword,
                 updatePerfumeKeyword,
-            ]).then((it) => {
-                return it;
+            ]
+        } catch (err) {
+            console.log(err);
+        }
+    });
+};
+
+/**
+ * 시향노트에 키워드 삭제
+ *
+ * @param {Object} Review
+ * @returns {Promise}
+ */
+module.exports.deleteReviewKeyword = async ({ reviewIdx, perfumeIdx }) => {
+    return sequelize.transaction(async (t) => {
+        try {
+            const keywordList = await JoinReviewKeyword.findAll({
+                where: { reviewIdx },
+                attributes: {
+                    exclude: ['reviewIdx', 'createdAt', 'updatedAt'],
+                },
+                transaction: t,
             });
+            const deleteReviewKeyword = await JoinReviewKeyword.destroy({
+                where: { reviewIdx },
+                transaction: t,
+            });
+
+            const updatePerfumeKeyword = await Promise.all(keywordList.map((it) => {
+                return JoinPerfumeKeyword.update(
+                    { count: sequelize.literal('count - 1') },
+                    {
+                        where: { perfumeIdx, keywordIdx: it.keywordIdx },
+                        transaction: t,
+                    }
+                );
+            }));
+
+            // // 데이터 무결성을 위해, count가 0이하인 행 제거
+            const deleteZeroCount = await JoinPerfumeKeyword.destroy({
+                where: {
+                    count: {
+                        [Op.lte]: 0,
+                    },
+                },
+                transaction: t,
+            });
+
+            return updatePerfumeKeyword;
         } catch (err) {
             console.log(err);
         }

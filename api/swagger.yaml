@@ -1586,7 +1586,7 @@ paths:
             - $ref: '#/definitions/ReviewInfo'
             - type: object
               example:
-                keywordList:  [4, 11]
+                keywordList:  [4, 5]
               properties:
                 keywordList: 
                   type: array
