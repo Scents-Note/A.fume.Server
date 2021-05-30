@@ -39,9 +39,12 @@ exports.postReview = async ({
     });
     const reviewIdx = createReview.id;
     const createReviewKeyword = keywordList.map((it) => {
-        keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx });
+        keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx })
     });
-    return createReviewKeyword;
+    await Promise.all([createReviewKeyword]).then((it) => {
+    }).catch((err)=>{throw(err)})
+
+    return reviewIdx;
 };
 
 /**

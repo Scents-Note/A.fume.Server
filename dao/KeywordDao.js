@@ -27,6 +27,7 @@ module.exports.create = async ({ reviewIdx, keywordIdx, perfumeIdx }) => {
 
             const createPerfumeKeyword = await JoinPerfumeKeyword.findOrCreate({
                 where: { perfumeIdx, keywordIdx },
+                transaction: t,
             });
 
             const updatePerfumeKeyword = await JoinPerfumeKeyword.update(
@@ -36,13 +37,11 @@ module.exports.create = async ({ reviewIdx, keywordIdx, perfumeIdx }) => {
                     transaction: t,
                 }
             );
-            return Promise.all([
+            return [
                 createReviewKeyword,
                 createPerfumeKeyword,
                 updatePerfumeKeyword,
-            ]).then((it) => {
-                return it;
-            });
+            ]
         } catch (err) {
             console.log(err);
         }
