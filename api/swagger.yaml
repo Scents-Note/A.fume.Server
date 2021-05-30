@@ -442,6 +442,7 @@ paths:
                   story: 조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트\
                         , 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다.
                   abundanceRate: 코롱
+                  imageUrls: []
                   volumeAndPrice:
                   - 90,000/30ml
                   - 100,000/50ml
@@ -2885,6 +2886,10 @@ definitions:
         - 오 드 뚜왈렛
         - 오 드 퍼퓸
         - 퍼퓸
+      imageUrls:
+        type: array
+        items:
+          type: string
       volumeAndPrice:
         type: array
         items:
@@ -2897,6 +2902,7 @@ definitions:
       - 90,000/30ml
       - 100,000/50ml
       - 190,000/100ml
+      imageUrls: []
   PerfumeSummary:
     properties:
       score:
