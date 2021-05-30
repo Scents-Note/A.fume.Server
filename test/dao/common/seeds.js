@@ -53,7 +53,7 @@ module.exports = () => {
             JoinPerfumeKeyword.upsert({
                 perfumeIdx: i,
                 keywordIdx: i,
-                count: i,
+                count: 0,
             })
         );
     }
@@ -70,7 +70,6 @@ module.exports = () => {
             Perfume.upsert({
                 perfumeIdx: i,
                 brandIdx: i,
-                mainSeriesIdx: i,
                 name: `향수${i}`,
                 englishName: `perfume-${i}`,
                 imageUrl: `http://perfume-image/${i}`,

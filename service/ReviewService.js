@@ -38,41 +38,36 @@ exports.postReview = async ({
         content,
     });
     const reviewIdx = createReview.id;
-    const createReviewKeyword = keywordList.map((it) => {
+    const createReviewKeyword = await Promise.all(keywordList.map((it) => {
         keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx })
-    });
-    await Promise.all([createReviewKeyword]).then((it) => {
-    }).catch((err)=>{throw(err)})
+    }));
 
     return reviewIdx;
 };
 
 /**
  * 시향노트 삭제
- * 댓글 삭제하기
+ * 시향노트 삭제하기
  *
- * reviewIdx Long 시향노트 Idx
- * no response value expected for this operation
+ * @param {Object} Review
+ * @returns {Promise}
  **/
-exports.deleteReview = ({ reviewIdx, userIdx }) => {
-    return new Promise((resolve, reject) => {
-        reviewDao
-            .read(reviewIdx)
-            .then((res) => {
-                if (res.userIdx != userIdx) {
-                    reject(new UnAuthorizedError());
-                }
-                return reviewDao.delete(reviewIdx);
-            })
-            .then(() => {
-                resolve();
-            })
-            .catch((err) => {
-                console.log(err);
-                reject(err);
-            });
-    });
-};
+exports.deleteReview = async({ reviewIdx, userIdx }) => {
+    const readReviewResult = await reviewDao.read(reviewIdx);
+    if (readReviewResult.userIdx != userIdx) {
+        throw new UnAuthorizedError();
+    };
+    const perfumeIdx = readReviewResult.perfumeIdx;
+    const deleteReviewKeyword = await keywordDao.deleteReviewKeyword(
+        {
+            reviewIdx,
+            perfumeIdx,
+        }
+    );
+    const deleteOnlyReview = await reviewDao.delete(reviewIdx);
+    return deleteOnlyReview;
+}
+
 
 /**
  * 시향노트 조회
@@ -150,53 +145,6 @@ exports.getReviewOfPerfumeByScore = (perfumeIdx) => {
  **/
 exports.getReviewOfPerfumeByRecent = (perfumeIdx) => {
     return reviewDao.readAllOrderByRecent(perfumeIdx);
-};
-
-/**
- * 시향노트 수정
- * 시향노트 수정하기
- *
- * reviewIdx Long 시향노트 Idx
- * body ReviewInfo  (optional)
- * no response value expected for this operation
- **/
-exports.updateReview = ({
-    reviewIdx,
-    userIdx,
-    score,
-    longevity,
-    sillage,
-    seasonal,
-    gender,
-    access,
-    content,
-}) => {
-    return new Promise((resolve, reject) => {
-        reviewDao
-            .read(reviewIdx)
-            .then((res) => {
-                if (res.userIdx != userIdx) {
-                    reject(new UnAuthorizedError());
-                }
-                return reviewDao.update({
-                    reviewIdx,
-                    score,
-                    longevity,
-                    sillage,
-                    seasonal,
-                    gender,
-                    access,
-                    content,
-                });
-            })
-            .then(() => {
-                resolve();
-            })
-            .catch((err) => {
-                console.log(err);
-                reject(err);
-            });
-    });
 };
 
 /**
