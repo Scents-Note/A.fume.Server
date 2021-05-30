@@ -275,6 +275,7 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
  * @param {number[]} brandIdxList
  * @param {number[]} ingredientIdxList
  * @param {number[]} keywordIdxList
+ * @param {string} searchText
  * @param {number} pagingIndex
  * @param {number} pagingSize
  * @param {array} sort
@@ -285,6 +286,7 @@ exports.searchPerfume = (
     brandIdxList,
     ingredientIdxList,
     keywordIdxList,
+    searchText,
     pagingIndex,
     pagingSize,
     sort,
@@ -296,6 +298,7 @@ exports.searchPerfume = (
             brandIdxList,
             ingredientIdxList,
             keywordIdxList,
+            searchText,
             pagingIndex,
             pagingSize,
             order
