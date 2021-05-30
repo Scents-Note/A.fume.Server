@@ -142,6 +142,7 @@ module.exports.create = ({
  * @param {number[]} brandIdxList
  * @param {number[]} ingredientIdxList
  * @param {number[]} keywordIdxList
+ * @param {string} searchText
  * @param {number} pagingIndex
  * @param {number} pagingSize
  * @param {array} sort - 정렬 조건
@@ -151,6 +152,7 @@ module.exports.search = async (
     brandIdxList,
     ingredientIdxList,
     keywordIdxList,
+    searchText,
     pagingIndex,
     pagingSize,
     order = []
@@ -190,6 +192,13 @@ module.exports.search = async (
                     return prev;
                 }, [])
                 .join(' AND ');
+    }
+    if (searchText && searchText.length > 0) {
+        whereCondition = `${whereCondition} AND ( p.name LIKE '%${searchText}%'`;
+        if (brandIdxList.length == 0) {
+            whereCondition = `${whereCondition} OR b.name LIKE '%${searchText}%'`;
+        }
+        whereCondition = `${whereCondition} )`;
     }
     const countSQL = SQL_SEARCH_PERFUME_SELECT_COUNT.replace(
         ':whereCondition',
@@ -513,4 +522,13 @@ module.exports.findPerfumeIdx = ({ englishName }) => {
         }
         return it.perfumeIdx;
     });
+};
+
+/**
+ * 향수 전체 조회
+ *
+ * @returns {Promise<Perfume[]>}
+ */
+module.exports.readAll = () => {
+    return Perfume.findAll();
 };

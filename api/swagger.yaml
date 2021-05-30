@@ -108,6 +108,9 @@ paths:
         schema:
           type: object
           properties:
+            searchText:
+              type: string
+              example: 'Tom'
             keywordList:
               type: array
               items:
