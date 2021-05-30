@@ -167,6 +167,7 @@ describe('# reviewDao Test', () => {
 
                     //데이터 무결성을 위해, 향수 키워드 중 count가 0이하인 행 제거
                     const deleteZeroCountResult = await reviewDao.deleteZeroCount();
+
                 })
                 .then(async() => {
                     // 리뷰 삭제 여부 체크

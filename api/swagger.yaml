@@ -108,6 +108,9 @@ paths:
         schema:
           type: object
           properties:
+            searchText:
+              type: string
+              example: 'Tom'
             keywordList:
               type: array
               items:
@@ -442,42 +445,20 @@ paths:
                   story: 조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트\
                         , 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다.
                   abundanceRate: 코롱
+                  imageUrls: []
                   volumeAndPrice:
-                  - volume: 30
-                    price: 90000
-                  - volume: 30
-                    price: 90000
-                  - volume: 30
-                    price: 90000
+                  - 90,000/30ml
+                  - 100,000/50ml
+                  - 19,000/100ml
                   Keywords:
                   - 시원한
                   - 차가운
                   noteType: 0
                   ingredients:
-                    top:
-                    - ingredientIdx: 1
-                      name: 재료1
-                      description: 향긋
-                    - ingredientIdx: 5
-                      name: 재료5
-                      description: 향긋
-                    middle:
-                    - ingredientIdx: 2
-                      name: 재료2
-                      description: 향긋
-                    - ingredientIdx: 6
-                      name: 재료6
-                      description: 향긋
-                    base:
-                    - ingredientIdx: 3
-                      name: 재료3
-                      description: 향긋
-                    - ingredientIdx: 4
-                      name: 재료4
-                      description: 향긋
-                    - ingredientIdx: 7
-                      name: 재료7
-                      description: 향긋
+                    top: 재료1, 재료5
+                    middle: 재료2, 재료6
+                    base: 재료3, 재료4, 재료7
+                    single: ''
                   score: 5.4
                   seasonal:
                     spring: 0
@@ -1099,6 +1080,43 @@ paths:
       - in: body
         name: body
         description: Updated series info
+        required: false
+        schema:
+          $ref: '#/definitions/IngredientInfo'
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+                example: ingredient 수정 성공
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Ingredient
+    patch:
+      tags:
+      - WEB_ingredient
+      summary: 향료 수정(개별 수정 가능)
+      operationId: patchIngredient
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: ingredientIdx
+        in: path
+        description: 향료 ID
+        required: true
+        type: integer
+        format: int64
+      - in: body
+        name: body
         required: false
         schema:
           $ref: '#/definitions/IngredientInfo'
@@ -2277,9 +2295,19 @@ paths:
                   properties: 
                     firstInitial: 
                       type: string
-                      example: 'ㅌ'
-                    brand:
-                      $ref: '#/definitions/BrandInfo'
+                      example: ㄷ 
+                    brands:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          brandIdx:
+                            type: integer
+                            example: 10
+                          name:
+                            type: string
+                            example: 다비도프
+                      
       x-swagger-router-controller: Brand
   /user/survey:
     post:
@@ -2861,26 +2889,23 @@ definitions:
         - 오 드 뚜왈렛
         - 오 드 퍼퓸
         - 퍼퓸
+      imageUrls:
+        type: array
+        items:
+          type: string
       volumeAndPrice:
         type: array
         items:
-          type: object
-          properties:
-            volume:
-              type: integer
-            price:
-              type: integer
+          type: string
     example:
       story: 조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트\
         , 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다.
       abundanceRate: 코롱
       volumeAndPrice:
-      - volume: 30
-        price: 90000
-      - volume: 30
-        price: 90000
-      - volume: 30
-        price: 90000
+      - 90,000/30ml
+      - 100,000/50ml
+      - 190,000/100ml
+      imageUrls: []
   PerfumeSummary:
     properties:
       score:
@@ -3136,21 +3161,13 @@ definitions:
     type: object
     properties:
       top:
-        type: array
-        items:
-          $ref: '#/definitions/IngredientInfo'
+        type: string
       middle:
-        type: array
-        items:
-          $ref: '#/definitions/IngredientInfo'
+        type: string
       base:
-        type: array
-        items:
-          $ref: '#/definitions/IngredientInfo'
+        type: string
       single:
-        type: array
-        items:
-          $ref: '#/definitions/IngredientInfo'
+        type: string
   ApiResponse:
     type: object
     properties:

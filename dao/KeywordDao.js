@@ -68,7 +68,6 @@ module.exports.deleteReviewKeyword = async ({ reviewIdx, perfumeIdx }) => {
                 where: { reviewIdx },
                 transaction: t,
             });
-
             const updatePerfumeKeyword = await Promise.all(keywordList.map((it) => {
                 return JoinPerfumeKeyword.update(
                     { count: sequelize.literal('count - 1') },
@@ -78,7 +77,6 @@ module.exports.deleteReviewKeyword = async ({ reviewIdx, perfumeIdx }) => {
                     }
                 );
             }));
-
             return updatePerfumeKeyword;
         } catch (err) {
             console.log(err);

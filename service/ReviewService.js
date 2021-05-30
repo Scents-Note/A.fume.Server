@@ -70,7 +70,7 @@ exports.deleteReview = async({ reviewIdx, userIdx }) => {
     const deleteZeroCountResult = await reviewDao.deleteZeroCount();
 
     return deleteOnlyReview;
-}
+};
 
 /**
  * 시향노트 수정
