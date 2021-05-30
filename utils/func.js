@@ -1,11 +1,20 @@
 function updateRows(result, ...jobs) {
-    const perfumeList = result.rows;
-    result.rows = perfumeList.map((it) => {
+    const rows = result.rows;
+    result.rows = rows.map((it) => {
         return jobs.reduce((prev, cur) => {
             return cur(prev);
         }, it);
     });
     return result;
+}
+
+function updateList(result, ...jobs) {
+    const list = result;
+    return list.map((it) => {
+        return jobs.reduce((prev, cur) => {
+            return cur(prev);
+        }, it);
+    });
 }
 
 function removeKeyJob(...keys) {
@@ -42,6 +51,7 @@ function flatJob(...keys) {
 
 module.exports = {
     updateRows,
+    updateList,
     removeKeyJob,
     extractJob,
     flatJob,

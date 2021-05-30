@@ -6,6 +6,7 @@ const ingredientDao = require('../dao/IngredientDao.js');
 const likePerfumeDao = require('../dao/LikePerfumeDao.js');
 const keywordDao = require('../dao/KeywordDao.js');
 const userDao = require('../dao/UserDao.js');
+const { getImageList } = require('../lib/s3.js');
 
 const { parseSortToOrder } = require('../utils/parser.js');
 
@@ -240,6 +241,25 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
     perfume.volumeAndPrice = perfume.volumeAndPrice.map((it) => {
         return `${numberWithCommas(it.price)}/${it.volume}ml`;
     });
+
+    delete perfume.imageUrl;
+    perfume.imageUrls = await getImageList({
+        Bucket: 'afume',
+        Prefix: `perfume/${perfumeIdx}/`,
+    }).then((it) => {
+        if (!it.length) {
+            console.log('Failed to read imageList from s3');
+            return [];
+        }
+        return it
+            .filter((it) => {
+                return it.search(/\.jpg$|\.png$/i) > 0;
+            })
+            .map((it) => {
+                return `${process.env.AWS_S3_URL}/${it}`;
+            });
+    });
+
     Object.assign(perfume, await generateNote(perfumeIdx));
     Object.assign(perfume, await generateSummary(perfumeIdx));
     for (const key in perfume) {
@@ -255,6 +275,7 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
  * @param {number[]} brandIdxList
  * @param {number[]} ingredientIdxList
  * @param {number[]} keywordIdxList
+ * @param {string} searchText
  * @param {number} pagingIndex
  * @param {number} pagingSize
  * @param {array} sort
@@ -265,6 +286,7 @@ exports.searchPerfume = (
     brandIdxList,
     ingredientIdxList,
     keywordIdxList,
+    searchText,
     pagingIndex,
     pagingSize,
     sort,
@@ -276,6 +298,7 @@ exports.searchPerfume = (
             brandIdxList,
             ingredientIdxList,
             keywordIdxList,
+            searchText,
             pagingIndex,
             pagingSize,
             order

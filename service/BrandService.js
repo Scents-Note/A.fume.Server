@@ -3,6 +3,8 @@
 const brandDao = require('../dao/BrandDao.js');
 const { parseSortToOrder } = require('../utils/parser.js');
 
+const { updateList, removeKeyJob } = require('../utils/func.js');
+
 /**
  * 브랜드 검색
  *
@@ -98,13 +100,27 @@ exports.deleteBrand = (brandIdx) => {
  */
 exports.getFilterBrand = () => {
     return brandDao.readAll().then((result) => {
-        result.rows = result.rows.map((it) => {
+        const firstInitialMap = result.rows.reduce((prev, cur) => {
+            if (!prev[cur.firstInitial]) {
+                prev[cur.firstInitial] = [];
+            }
+            prev[cur.firstInitial].push(cur);
+            return prev;
+        }, {});
+        return Object.keys(firstInitialMap).map((key) => {
             return {
-                firstInitial: it.firstInitial,
-                brand: it,
+                firstInitial: key,
+                brands: updateList(
+                    firstInitialMap[key],
+                    removeKeyJob(
+                        'englishName',
+                        'description',
+                        'imageUrl',
+                        'firstInitial'
+                    )
+                ),
             };
         });
-        return result;
     });
 };
 
