@@ -72,6 +72,52 @@ exports.deleteReview = async({ reviewIdx, userIdx }) => {
     return deleteOnlyReview;
 }
 
+/**
+ * 시향노트 수정
+ *
+ * @param {Object} Review
+ * @returns {Promise}
+ **/
+exports.updateReview = async ({
+    score,
+    longevity,
+    sillage,
+    seasonal,
+    gender,
+    access,
+    content,
+    keywordList,
+    reviewIdx,
+    userIdx
+}) => {
+    console.log(keywordList)
+    const readReviewResult = await reviewDao.read(reviewIdx);
+    if (readReviewResult.userIdx != userIdx) {
+        throw new UnAuthorizedError();
+    };
+    const updateReviewResult = await reviewDao.update({
+        score,
+        longevity,
+        sillage,
+        seasonal,
+        gender,
+        access,
+        content,
+        reviewIdx,
+    });
+    const deleteReviewKeyword = await keywordDao.deleteReviewKeyword(
+        {
+            reviewIdx,
+            perfumeIdx: readReviewResult.perfumeIdx,
+        }
+    );
+    const createReviewKeyword = await Promise.all(keywordList.map((it) => {
+        keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx: readReviewResult.perfumeIdx })
+    }));
+
+    return reviewIdx;
+};
+
 
 /**
  * 시향노트 조회
