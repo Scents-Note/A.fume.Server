@@ -79,16 +79,6 @@ module.exports.deleteReviewKeyword = async ({ reviewIdx, perfumeIdx }) => {
                 );
             }));
 
-            // // 데이터 무결성을 위해, count가 0이하인 행 제거
-            const deleteZeroCount = await JoinPerfumeKeyword.destroy({
-                where: {
-                    count: {
-                        [Op.lte]: 0,
-                    },
-                },
-                transaction: t,
-            });
-
             return updatePerfumeKeyword;
         } catch (err) {
             console.log(err);
@@ -115,30 +105,21 @@ module.exports.readAll = (pagingIndex = 1, pagingSize = 10) => {
 };
 
 /**
- * 향수별 키워드 목록 조회
+ * 향수가 가진 키워드별 개수 조회
  *
- * @param {number} [perfumeIdx = -1]
+ * @param {number} perfumeIdx
  * @returns {Promise<Keyword[]>} keywordList
  */
-module.exports.readAllOfPerfume = async (
+module.exports.readAllPerfumeKeywordCount = async (
     perfumeIdx,
-    sort = [['count', 'desc']],
-    condition = { [Op.gte]: 3 },
-    limitSize = 9
+    sort = [['count', 'desc']]
 ) => {
     let result = await JoinPerfumeKeyword.findAll({
         attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
-        include: {
-            model: Keyword,
-            attributes: {
-                exclude: ['createdAt', 'updatedAt'],
-            },
+            exclude: ['createdAt', 'updatedAt', 'perfumeIdx'],
         },
         order: sort,
-        where: { perfumeIdx, count: condition },
-        limit: limitSize,
+        where: { perfumeIdx },
         raw: true, //Set this to true if you don't have a model definition for your query.
         nest: true,
     });
@@ -146,10 +127,32 @@ module.exports.readAllOfPerfume = async (
     if (result === undefined) {
         throw new NotMatchedError();
     }
+    return result;
+};
 
-    return result.map((it) => {
-        return it.Keyword;
+/**
+ * 향수가 가진 특정 키워드 개수 조회
+ *
+ * @param {number} perfumeIdx, keywordIdx
+ * @returns {Promise<Keyword[]>} keywordList
+ */
+module.exports.readPerfumeKeywordCount = async ({perfumeIdx, keywordIdx}
+) => {
+    let result = await JoinPerfumeKeyword.findOne({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        where: {
+            perfumeIdx, keywordIdx
+        },
+        raw: true, //Set this to true if you don't have a model definition for your query.
+        nest: true,
     });
+
+    if (!result) {
+        throw new NotMatchedError();
+    }
+    return result.count;
 };
 
 /**

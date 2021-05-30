@@ -150,6 +150,9 @@ describe('# reviewDao Test', () => {
                     const keywordCount2After = await keywordDao.readPerfumeKeywordCount({perfumeIdx: 3, keywordIdx: 3})
                     expect(keywordCount1After).eq(keywordCount1 - 1)
                     expect(keywordCount2After).eq(keywordCount2 - 1)
+
+                    //데이터 무결성을 위해, 향수 키워드 중 count가 0이하인 행 제거
+                    const deleteZeroCountResult = await reviewDao.deleteZeroCount();
                 })
                 .then(async() => {
                     // 리뷰 삭제 여부 체크
