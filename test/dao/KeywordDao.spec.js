@@ -42,4 +42,28 @@ describe('# KeywordDao Test', () => {
                 .catch((err) => done(err));
         });
     });
+
+    describe('# readAllPerfumeKeywordCount Test', () => {
+        it('# success case', (done) => {
+            keywordDao
+                .readAllPerfumeKeywordCount([1])
+                .then((result) => {
+                    expect(result.length).gt(1);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+    });
+});
+
+describe('# readPerfumeKeywordCount Test', () => {
+    it('# success case', (done) => {
+        keywordDao
+            .readPerfumeKeywordCount({perfumeIdx: 1, keywordIdx: 1})
+            .then((result) => {
+                expect(result.count).eq(1);
+                done();
+            })
+            .catch((err) => done(err));
+    });
 });

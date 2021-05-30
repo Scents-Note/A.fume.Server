@@ -46,7 +46,7 @@ describe('# reviewDao Test', () => {
             reviewDao
                 .read(reviewIdx)
                 .then((result) => {
-                    console.log(result);
+                    // console.log(result);
                     expect(result.content).eq('시향노트1');
                     expect(result.score).eq(1);
                     expect(result.keywordList[0].keywordIdx).eq(1);
@@ -63,7 +63,7 @@ describe('# reviewDao Test', () => {
             reviewDao
                 .readAllOfUser(userIdx)
                 .then((result) => {
-                    console.log(result);
+                    // console.log(result);
                     expect(result).to.not.be.null;
                     done();
                 })
@@ -77,7 +77,7 @@ describe('# reviewDao Test', () => {
             reviewDao
                 .readAllOfPerfume(perfumeIdx)
                 .then((result) => {
-                    console.log(result);
+                    // console.log(result);
                     expect(result.length).gt(0);
                     done();
                 })
@@ -87,23 +87,37 @@ describe('# reviewDao Test', () => {
 
     describe('# update Test', () => {
         let reviewIdx = 2;
+        let readReviewResult;
         it('# success case', (done) => {
             reviewDao
                 .update({
-                    reviewIdx,
-                    perfumeIdx: 1,
-                    userIdx: 1,
                     score: 1,
                     longevity: 1,
                     sillage: 1,
                     seasonal: 1,
                     gender: 1,
                     access: 1,
+                    reviewIdx,
                     content: '리뷰수정테스트',
                 })
                 .then((result) => {
-                    console.log(result);
                     expect(result[0]).eq(1);
+                })
+                .then(async() => {
+                    readReviewResult = await reviewDao.read(reviewIdx);
+                    const deleteReviewKeywordResult = await keywordDao.deleteReviewKeyword(
+                        {
+                            reviewIdx,
+                            perfumeIdx: readReviewResult.perfumeIdx,
+                        }
+                    );
+                    expect(deleteReviewKeywordResult[0][0]).eq(1);
+                })
+                .then(async() => {
+                    const keywordList = [1, 2]
+                    const createReviewKeywordResult = await Promise.all(keywordList.map((it) => {
+                        keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx: readReviewResult.perfumeIdx })
+                    }));
                     done();
                 })
                 .catch((err) => done(err));
@@ -150,6 +164,10 @@ describe('# reviewDao Test', () => {
                     const keywordCount2After = await keywordDao.readPerfumeKeywordCount({perfumeIdx: 3, keywordIdx: 3})
                     expect(keywordCount1After).eq(keywordCount1 - 1)
                     expect(keywordCount2After).eq(keywordCount2 - 1)
+
+                    //데이터 무결성을 위해, 향수 키워드 중 count가 0이하인 행 제거
+                    const deleteZeroCountResult = await reviewDao.deleteZeroCount();
+
                 })
                 .then(async() => {
                     // 리뷰 삭제 여부 체크
