@@ -108,7 +108,7 @@ module.exports.getReviewOfPerfumeByRecent = function getReviewOfPerfumeByRecent(
         .catch((err) => next(err));
 };
 
-module.exports.updateReview = (req, res, next) => {
+module.exports.putReview = (req, res, next) => {
     var reviewIdx = req.swagger.params['reviewIdx'].value;
     const userIdx = req.middlewareToken.loginUserIdx;
     var {
@@ -119,6 +119,7 @@ module.exports.updateReview = (req, res, next) => {
         gender,
         access,
         content,
+        keywordList
     } = req.swagger.params['body'].value;
     Review.updateReview({
         reviewIdx,
@@ -130,6 +131,8 @@ module.exports.updateReview = (req, res, next) => {
         gender,
         access,
         content,
+        userIdx,
+        keywordList
     })
         .then(() => {
             res.status(OK).json({

@@ -53,7 +53,7 @@ module.exports = () => {
             JoinPerfumeKeyword.upsert({
                 perfumeIdx: i,
                 keywordIdx: i,
-                count: i,
+                count: 0,
             })
         );
     }

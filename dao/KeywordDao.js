@@ -27,6 +27,7 @@ module.exports.create = async ({ reviewIdx, keywordIdx, perfumeIdx }) => {
 
             const createPerfumeKeyword = await JoinPerfumeKeyword.findOrCreate({
                 where: { perfumeIdx, keywordIdx },
+                transaction: t,
             });
 
             const updatePerfumeKeyword = await JoinPerfumeKeyword.update(
@@ -36,13 +37,47 @@ module.exports.create = async ({ reviewIdx, keywordIdx, perfumeIdx }) => {
                     transaction: t,
                 }
             );
-            return Promise.all([
+            return [
                 createReviewKeyword,
                 createPerfumeKeyword,
                 updatePerfumeKeyword,
-            ]).then((it) => {
-                return it;
+            ]
+        } catch (err) {
+            console.log(err);
+        }
+    });
+};
+
+/**
+ * 시향노트에 키워드 삭제
+ *
+ * @param {Object} Review
+ * @returns {Promise}
+ */
+module.exports.deleteReviewKeyword = async ({ reviewIdx, perfumeIdx }) => {
+    return sequelize.transaction(async (t) => {
+        try {
+            const keywordList = await JoinReviewKeyword.findAll({
+                where: { reviewIdx },
+                attributes: {
+                    exclude: ['reviewIdx', 'createdAt', 'updatedAt'],
+                },
+                transaction: t,
             });
+            const deleteReviewKeyword = await JoinReviewKeyword.destroy({
+                where: { reviewIdx },
+                transaction: t,
+            });
+            const updatePerfumeKeyword = await Promise.all(keywordList.map((it) => {
+                return JoinPerfumeKeyword.update(
+                    { count: sequelize.literal('count - 1') },
+                    {
+                        where: { perfumeIdx, keywordIdx: it.keywordIdx },
+                        transaction: t,
+                    }
+                );
+            }));
+            return updatePerfumeKeyword;
         } catch (err) {
             console.log(err);
         }
@@ -68,30 +103,21 @@ module.exports.readAll = (pagingIndex = 1, pagingSize = 10) => {
 };
 
 /**
- * 향수별 키워드 목록 조회
+ * 향수가 가진 키워드별 개수 조회
  *
- * @param {number} [perfumeIdx = -1]
+ * @param {number} perfumeIdx
  * @returns {Promise<Keyword[]>} keywordList
  */
-module.exports.readAllOfPerfume = async (
+module.exports.readAllPerfumeKeywordCount = async (
     perfumeIdx,
-    sort = [['count', 'desc']],
-    condition = { [Op.gte]: 3 },
-    limitSize = 9
+    sort = [['count', 'desc']]
 ) => {
     let result = await JoinPerfumeKeyword.findAll({
         attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
-        include: {
-            model: Keyword,
-            attributes: {
-                exclude: ['createdAt', 'updatedAt'],
-            },
+            exclude: ['createdAt', 'updatedAt', 'perfumeIdx'],
         },
         order: sort,
-        where: { perfumeIdx, count: condition },
-        limit: limitSize,
+        where: { perfumeIdx },
         raw: true, //Set this to true if you don't have a model definition for your query.
         nest: true,
     });
@@ -99,10 +125,32 @@ module.exports.readAllOfPerfume = async (
     if (result === undefined) {
         throw new NotMatchedError();
     }
+    return result;
+};
 
-    return result.map((it) => {
-        return it.Keyword;
+/**
+ * 향수가 가진 특정 키워드 개수 조회
+ *
+ * @param {number} perfumeIdx, keywordIdx
+ * @returns {Promise<Keyword[]>} keywordList
+ */
+module.exports.readPerfumeKeywordCount = async ({perfumeIdx, keywordIdx}
+) => {
+    let result = await JoinPerfumeKeyword.findOne({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        where: {
+            perfumeIdx, keywordIdx
+        },
+        raw: true, //Set this to true if you don't have a model definition for your query.
+        nest: true,
     });
+
+    if (!result) {
+        throw new NotMatchedError();
+    }
+    return result.count;
 };
 
 /**

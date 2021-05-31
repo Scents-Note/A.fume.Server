@@ -1,13 +1,16 @@
 const { NotMatchedError } = require('../utils/errors/errors.js');
 const {
     sequelize,
+    Sequelize,
     Review,
     Perfume,
     Brand,
     User,
     JoinReviewKeyword,
+    JoinPerfumeKeyword,
     Keyword,
 } = require('../models');
+const { Op } = Sequelize;
 
 /**
  * 시향노트 작성
@@ -251,3 +254,22 @@ module.exports.update = async ({
 module.exports.delete = async (reviewIdx) => {
     return await Review.destroy({ where: { id: reviewIdx } });
 };
+
+/**
+ * 데이터 무결성을 위해, 향수 키워드 중 count가 0이하인 행 제거
+ *
+ * @param {number} reviewIdx
+ * @return {Promise}
+ */
+
+module.exports.deleteZeroCount = async() => {
+    return await JoinPerfumeKeyword.destroy(
+        {
+            where: {
+                count: {
+                    [Op.lte]: 0,
+                },
+            }
+        }
+    );
+}

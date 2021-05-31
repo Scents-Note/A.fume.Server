@@ -38,38 +38,86 @@ exports.postReview = async ({
         content,
     });
     const reviewIdx = createReview.id;
-    const createReviewKeyword = keywordList.map((it) => {
-        keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx });
-    });
-    return createReviewKeyword;
+    const createReviewKeyword = await Promise.all(keywordList.map((it) => {
+        keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx })
+    }));
+
+    return reviewIdx;
 };
 
 /**
  * 시향노트 삭제
- * 댓글 삭제하기
+ * 시향노트 삭제하기
  *
- * reviewIdx Long 시향노트 Idx
- * no response value expected for this operation
+ * @param {Object} Review
+ * @returns {Promise}
  **/
-exports.deleteReview = ({ reviewIdx, userIdx }) => {
-    return new Promise((resolve, reject) => {
-        reviewDao
-            .read(reviewIdx)
-            .then((res) => {
-                if (res.userIdx != userIdx) {
-                    reject(new UnAuthorizedError());
-                }
-                return reviewDao.delete(reviewIdx);
-            })
-            .then(() => {
-                resolve();
-            })
-            .catch((err) => {
-                console.log(err);
-                reject(err);
-            });
-    });
+exports.deleteReview = async({ reviewIdx, userIdx }) => {
+    const readReviewResult = await reviewDao.read(reviewIdx);
+    if (readReviewResult.userIdx != userIdx) {
+        throw new UnAuthorizedError();
+    };
+    const perfumeIdx = readReviewResult.perfumeIdx;
+    const deleteReviewKeyword = await keywordDao.deleteReviewKeyword(
+        {
+            reviewIdx,
+            perfumeIdx,
+        }
+    );
+    const deleteOnlyReview = await reviewDao.delete(reviewIdx);
+
+    //데이터 무결성을 위해, 향수 키워드 중 count가 0이하인 행 제거
+    const deleteZeroCountResult = await reviewDao.deleteZeroCount();
+
+    return deleteOnlyReview;
 };
+
+/**
+ * 시향노트 수정
+ *
+ * @param {Object} Review
+ * @returns {Promise}
+ **/
+exports.updateReview = async ({
+    score,
+    longevity,
+    sillage,
+    seasonal,
+    gender,
+    access,
+    content,
+    keywordList,
+    reviewIdx,
+    userIdx
+}) => {
+    console.log(keywordList)
+    const readReviewResult = await reviewDao.read(reviewIdx);
+    if (readReviewResult.userIdx != userIdx) {
+        throw new UnAuthorizedError();
+    };
+    const updateReviewResult = await reviewDao.update({
+        score,
+        longevity,
+        sillage,
+        seasonal,
+        gender,
+        access,
+        content,
+        reviewIdx,
+    });
+    const deleteReviewKeyword = await keywordDao.deleteReviewKeyword(
+        {
+            reviewIdx,
+            perfumeIdx: readReviewResult.perfumeIdx,
+        }
+    );
+    const createReviewKeyword = await Promise.all(keywordList.map((it) => {
+        keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx: readReviewResult.perfumeIdx })
+    }));
+
+    return reviewIdx;
+};
+
 
 /**
  * 시향노트 조회
@@ -147,53 +195,6 @@ exports.getReviewOfPerfumeByScore = (perfumeIdx) => {
  **/
 exports.getReviewOfPerfumeByRecent = (perfumeIdx) => {
     return reviewDao.readAllOrderByRecent(perfumeIdx);
-};
-
-/**
- * 시향노트 수정
- * 시향노트 수정하기
- *
- * reviewIdx Long 시향노트 Idx
- * body ReviewInfo  (optional)
- * no response value expected for this operation
- **/
-exports.updateReview = ({
-    reviewIdx,
-    userIdx,
-    score,
-    longevity,
-    sillage,
-    seasonal,
-    gender,
-    access,
-    content,
-}) => {
-    return new Promise((resolve, reject) => {
-        reviewDao
-            .read(reviewIdx)
-            .then((res) => {
-                if (res.userIdx != userIdx) {
-                    reject(new UnAuthorizedError());
-                }
-                return reviewDao.update({
-                    reviewIdx,
-                    score,
-                    longevity,
-                    sillage,
-                    seasonal,
-                    gender,
-                    access,
-                    content,
-                });
-            })
-            .then(() => {
-                resolve();
-            })
-            .catch((err) => {
-                console.log(err);
-                reject(err);
-            });
-    });
 };
 
 /**
