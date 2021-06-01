@@ -103,6 +103,44 @@ module.exports.readAll = (pagingIndex = 1, pagingSize = 10) => {
 };
 
 /**
+ * 향수별 키워드 목록 조회
+ *
+ * @param {number} [perfumeIdx = -1]
+ * @returns {Promise<Keyword[]>} keywordList
+ */
+ module.exports.readAllOfPerfume = async (
+    perfumeIdx,
+    sort = [['count', 'desc']],
+    condition = { [Op.gte]: 3 },
+    limitSize = 9
+) => {
+    let result = await JoinPerfumeKeyword.findAll({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        include: {
+            model: Keyword,
+            attributes: {
+                exclude: ['createdAt', 'updatedAt'],
+            },
+        },
+        order: sort,
+        where: { perfumeIdx, count: condition },
+        limit: limitSize,
+        raw: true, //Set this to true if you don't have a model definition for your query.
+        nest: true,
+    });
+
+    if (result === undefined) {
+        throw new NotMatchedError();
+    }
+
+    return result.map((it) => {
+        return it.Keyword;
+    });
+};
+
+/**
  * 향수가 가진 키워드별 개수 조회
  *
  * @param {number} perfumeIdx
