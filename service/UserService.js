@@ -17,25 +17,27 @@ const { removeKeyJob } = require('../utils/func.js');
  * @param {Object} User
  * @returns {Promise}
  **/
-exports.createUser = ({
-    id,
-    nickname,
-    password,
-    gender,
-    email,
-    birth,
-    grade,
-}) => {
+exports.createUser = ({ nickname, password, gender, email, birth, grade }) => {
     password = crypto.encrypt(password);
-    return userDao.create({
-        id,
-        nickname,
-        password,
-        gender,
-        email,
-        birth,
-        grade,
-    });
+    return userDao
+        .create({
+            nickname,
+            password,
+            gender,
+            email,
+            birth,
+            grade,
+        })
+        .then(() => {
+            return userDao.read({ email: email });
+        })
+        .then((user) => {
+            delete user.password;
+            const payload = Object.assign({}, user);
+            userDao.updateAccessTime(user.userIdx);
+            const { userIdx } = user;
+            return Object.assign({ userIdx }, jwt.publish(payload));
+        });
 };
 
 /**

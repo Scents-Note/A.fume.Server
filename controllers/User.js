@@ -25,9 +25,10 @@ module.exports.registerUser = (req, res, next) => {
     }
     body.gender = genderMap[body.gender] || 0;
     User.createUser(body)
-        .then(() => {
+        .then((response) => {
             res.status(OK).json({
                 message: '회원가입 성공',
+                data: response,
             });
         })
         .catch((err) => next(err));
