@@ -21,7 +21,7 @@ const { ranking } = require('../mongoose_models');
 const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
     'SELECT ' +
     'COUNT(*) AS "SearchHistory.weight", ' +
-    'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.release_date AS releaseDate, p.like_cnt AS likeCnt, ' +
+    'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.created_at AS createdAt, p.like_cnt AS likeCnt, ' +
     'b.brand_idx AS "Brand.brandIdx", ' +
     'b.name AS "Brand.name", ' +
     'b.english_name AS "Brand.englishName", ' +
@@ -40,7 +40,7 @@ const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
 
 const SQL_SEARCH_PERFUME_SELECT =
     'SELECT ' +
-    'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.release_date AS releaseDate, p.like_cnt AS likeCnt, ' +
+    'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.created_at AS createdAt, p.like_cnt AS likeCnt, ' +
     'b.brand_idx AS "Brand.brandIdx", ' +
     'b.name AS "Brand.name", ' +
     'b.english_name AS "Brand.englishName", ' +
