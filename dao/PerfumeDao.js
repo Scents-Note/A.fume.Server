@@ -103,7 +103,6 @@ module.exports.create = ({
     imageUrl,
     story,
     abundanceRate,
-    releaseDate,
 }) => {
     volumeAndPrice = JSON.stringify(volumeAndPrice);
     return sequelize
@@ -114,7 +113,6 @@ module.exports.create = ({
                     name,
                     englishName,
                     imageUrl,
-                    releaseDate,
                 },
                 { transaction: t }
             );
@@ -468,7 +466,6 @@ module.exports.update = async ({
     imageUrl,
     story,
     abundanceRate,
-    releaseDate,
 }) => {
     const result = await sequelize.transaction(async (t) => {
         const [perfumeAffectedRows] = await Perfume.update(
@@ -477,7 +474,6 @@ module.exports.update = async ({
                 name,
                 englishName,
                 imageUrl,
-                releaseDate,
             },
             { where: { perfumeIdx }, transaction: t }
         );
