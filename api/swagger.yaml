@@ -1628,15 +1628,15 @@ paths:
         required: true
         type: integer
         format: int64
-      - name: sort
-        in: query
-        type: string
-        enum:
-        - likeCount_asc
-        - score_asc
-        - likeCount_desc
-        - score_desc
-        required: false
+      # - name: sort
+      #   in: query
+      #   type: string
+      #   enum:
+      #   - likeCount_asc
+      #   - score_asc
+      #   - likeCount_desc
+      #   - score_desc
+      #   required: false
       - name: pagingSize
         in: query
         type: integer
