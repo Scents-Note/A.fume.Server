@@ -34,7 +34,6 @@ exports.createUser = ({ nickname, password, gender, email, birth, grade }) => {
         .then((user) => {
             delete user.password;
             const payload = Object.assign({}, user);
-            userDao.updateAccessTime(user.userIdx);
             const { userIdx } = user;
             return Object.assign({ userIdx }, jwt.publish(payload));
         });
