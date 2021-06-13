@@ -57,13 +57,7 @@ function addKeyword(joinKeywordList) {
 
 const commonJob = [
     extractJob('Brand', ['name', 'brandName']),
-    removeKeyJob(
-        'perfume_idx',
-        'releaseDate',
-        'englishName',
-        'brandIdx',
-        'likeCnt'
-    ),
+    removeKeyJob('perfume_idx', 'englishName', 'brandIdx', 'likeCnt'),
 ];
 
 /**
@@ -80,7 +74,6 @@ exports.createPerfume = ({
     story,
     abundanceRate,
     imageUrl,
-    releaseDate,
 }) => {
     return perfumeDao.create({
         brandIdx,
@@ -90,7 +83,6 @@ exports.createPerfume = ({
         imageUrl,
         story,
         abundanceRate,
-        releaseDate,
     });
 };
 

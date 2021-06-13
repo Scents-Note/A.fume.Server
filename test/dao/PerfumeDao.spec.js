@@ -31,7 +31,6 @@ describe('# perfumeDao Test', () => {
                 imageUrl: 'URL',
                 story: '스토리',
                 abundanceRate: 2,
-                releaseDate: '2020-11-29',
             };
             perfumeDao
                 .create(perfumeObj)
@@ -58,7 +57,6 @@ describe('# perfumeDao Test', () => {
                     imageUrl: 'URL',
                     story: '스토리',
                     abundanceRate: 2,
-                    releaseDate: '2020-11-29',
                 })
                 .then(() => {
                     throw new Error('Must be occur DuplicatedEntryError');
@@ -97,8 +95,8 @@ describe('# perfumeDao Test', () => {
                 const ingredients = [1, 2, 3, 4, 5];
                 const brands = [1, 2, 3, 4, 5];
                 perfumeDao
-                    .search(brands, ingredients, [], 1, 100, [
-                        ['releaseDate', 'asc'],
+                    .search(brands, ingredients, [], '', 1, 100, [
+                        ['createdAt', 'asc'],
                     ])
                     .then((result) => {
                         expect(result.rows.length).to.gte(1);
@@ -128,7 +126,7 @@ describe('# perfumeDao Test', () => {
             });
             it('# success case (empty filter)', (done) => {
                 perfumeDao
-                    .search([], [], [], 1, 100)
+                    .search([], [], [], '', 1, 100)
                     .then((result) => {
                         expect(result.rows.length).gt(3);
                         done();
@@ -139,7 +137,7 @@ describe('# perfumeDao Test', () => {
             it('# success case (series)', (done) => {
                 const ingredients = [1, 2, 3, 4, 5];
                 perfumeDao
-                    .search([], ingredients, [], 1, 100)
+                    .search([], ingredients, [], '', 1, 100)
                     .then((result) => {
                         expect(result.rows.length).to.gte(3);
                         const arr = [];
@@ -169,7 +167,7 @@ describe('# perfumeDao Test', () => {
             it('# success case (brand)', (done) => {
                 const brands = [1];
                 perfumeDao
-                    .search(brands, [], [], 1, 100)
+                    .search(brands, [], [], '', 1, 100)
                     .then((result) => {
                         expect(result.rows.length).to.gte(2);
                         result.rows.forEach((it) => {
@@ -183,7 +181,9 @@ describe('# perfumeDao Test', () => {
             it('# success case (series & order by like) ', (done) => {
                 const ingredients = [1];
                 perfumeDao
-                    .search([], ingredients, [], 1, 100, [['likeCnt', 'asc']])
+                    .search([], ingredients, [], '', 1, 100, [
+                        ['likeCnt', 'asc'],
+                    ])
                     .then((result) => {
                         expect(result.rows.length).to.gte(3);
                         const arr = [];
@@ -212,14 +212,14 @@ describe('# perfumeDao Test', () => {
 
             it('# success case (order by recent)', (done) => {
                 perfumeDao
-                    .search([], [], [], 1, 100, [['releaseDate', 'desc']])
+                    .search([], [], [], '', 1, 100, [['createdAt', 'desc']])
                     .then((result) => {
                         expect(result.rows.length).gte(3);
                         const str1 = result.rows
-                            .map((it) => it.releaseDate)
+                            .map((it) => it.createdAt)
                             .join(',');
                         const str2 = result.rows
-                            .map((it) => it.releaseDate)
+                            .map((it) => it.createdAt)
                             .sort()
                             .reverse()
                             .join(',');
@@ -231,7 +231,7 @@ describe('# perfumeDao Test', () => {
 
             it('# success case (order by like) ', (done) => {
                 perfumeDao
-                    .search([], [], [], 1, 100, [['likeCnt', 'asc']])
+                    .search([], [], [], '', 1, 100, [['likeCnt', 'asc']])
                     .then((result) => {
                         expect(result.rows.length).gte(3);
                         const str1 = result.rows.map((it) => it.like).join(',');
@@ -248,13 +248,13 @@ describe('# perfumeDao Test', () => {
 
             it('# success case (order by random) ', (done) => {
                 Promise.all([
-                    perfumeDao.search([], [], [], 1, 100, [
+                    perfumeDao.search([], [], [], '', 1, 100, [
                         Sequelize.fn('RAND'),
                     ]),
-                    perfumeDao.search([], [], [], 1, 100, [
+                    perfumeDao.search([], [], [], '', 1, 100, [
                         Sequelize.fn('RAND'),
                     ]),
-                    perfumeDao.search([], [], [], 1, 100, [
+                    perfumeDao.search([], [], [], '', 1, 100, [
                         Sequelize.fn('RAND'),
                     ]),
                 ])
@@ -390,7 +390,6 @@ describe('# perfumeDao Test', () => {
                 name: '수정 테스트',
                 englishName: 'perfume_delete_test',
                 imageUrl: 'URL',
-                releaseDate: '2021-01-01',
             });
             perfumeIdx = dataValues.perfumeIdx;
             await PerfumeDetail.create({
@@ -410,7 +409,6 @@ describe('# perfumeDao Test', () => {
                 imageUrl: '수정된url',
                 story: '수정된스토리',
                 abundanceRate: 2,
-                releaseDate: '2020-11-29',
             };
             perfumeDao
                 .update(perfumeObj)
@@ -443,7 +441,6 @@ describe('# perfumeDao Test', () => {
                 name: '향수 삭제 테스트',
                 englishName: 'perfume_delete_test',
                 imageUrl: 'URL',
-                releaseDate: '2021-01-01',
             });
             perfumeIdx = perfume.perfumeIdx;
             await PerfumeDetail.create({
