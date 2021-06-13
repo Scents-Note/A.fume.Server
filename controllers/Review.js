@@ -28,9 +28,12 @@ module.exports.postReview = function postReview(req, res, next) {
         content,
         keywordList,
     })
-        .then(() => {
+        .then((response) => {
             res.status(OK).json({
                 message: '시향노트 추가 성공',
+                data: {
+                    reviewIdx : response
+                },
             });
         })
         .catch((err) => next(err));

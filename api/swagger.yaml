@@ -1601,6 +1601,13 @@ paths:
               message: 
                 type: string
                 example: 시향노트 추가 성공
+              data:
+                type: object
+                properties:
+                  reviewIdx:
+                    type: integer
+                    format: int64
+                    example: 40
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Review
@@ -1785,7 +1792,17 @@ paths:
         name: body
         required: false
         schema:
-          $ref: '#/definitions/ReviewInfo'
+          allOf:
+            - $ref: '#/definitions/ReviewInfo'
+            - type: object
+              example:
+                keywordList:  [1, 2]
+              properties:
+                keywordList: 
+                  type: array
+                  items:
+                    type: integer
+                    format: int64
       responses:
         200:
           description: 성공
