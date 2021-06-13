@@ -130,9 +130,9 @@ paths:
         type: string
         enum:
         - likeCnt_asc
-        - releaseDate_asc
+        - createdAt_asc
         - likeCnt_desc
-        - releaseDate_desc
+        - createdAt_desc
         required: false
       - name: pagingSize
         in: query
@@ -2893,14 +2893,11 @@ definitions:
         type: integer
       imageUrl:
         type: string
-      releaseDate:
-        type: string
     example:
       name: 154 코롱
       englishName: 154 kolon
       brandIdx: 1
       imageUrl: https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554
-      releaseDate: '2021-05-09'
   Perfume:
     allOf:
     - $ref: '#/definitions/PerfumeInfo'
@@ -2913,7 +2910,6 @@ definitions:
       name: 154 코롱
       imageUrl: https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554
       brandName: (테스트)조말론
-      releaseDate: '2021-05-09'
   PerfumeDetailInfo:
     properties:
       story:
