@@ -53,7 +53,7 @@ describe('# perfumeDao Test', () => {
                     name: '삽입테스트',
                     brandIdx: 1,
                     englishName: 'insert Test',
-                    volumeAndPrice: '{}',
+                    volumeAndPrice: '',
                     imageUrl: 'URL',
                     story: '스토리',
                     abundanceRate: 2,
@@ -396,7 +396,7 @@ describe('# perfumeDao Test', () => {
                 perfumeIdx: perfumeIdx,
                 story: '향수 수정 스토리',
                 abundanceRate: 2,
-                volumeAndPrice: '{}',
+                volumeAndPrice: '',
             });
         });
         it('# success case', (done) => {
@@ -405,7 +405,7 @@ describe('# perfumeDao Test', () => {
                 name: '수정된 이름',
                 brandIdx: 2,
                 englishName: '수정된 영어이름',
-                volumeAndPrice: '{}',
+                volumeAndPrice: '',
                 imageUrl: '수정된url',
                 story: '수정된스토리',
                 abundanceRate: 2,
@@ -447,7 +447,7 @@ describe('# perfumeDao Test', () => {
                 perfumeIdx,
                 story: '향수 삭제 테스트 용',
                 abundanceRate: 2,
-                volumeAndPrice: '{}',
+                volumeAndPrice: '',
             });
         });
 
