@@ -216,10 +216,10 @@ describe('# perfumeDao Test', () => {
                     .then((result) => {
                         expect(result.rows.length).gte(3);
                         const str1 = result.rows
-                            .map((it) => it.createdAt)
+                            .map((it) => it.createdAt.getTime())
                             .join(',');
                         const str2 = result.rows
-                            .map((it) => it.createdAt)
+                            .map((it) => it.createdAt.getTime())
                             .sort()
                             .reverse()
                             .join(',');
