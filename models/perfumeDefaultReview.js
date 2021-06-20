@@ -22,6 +22,11 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 primaryKey: true,
             },
+            rating: {
+                type: DataTypes.FLOAT,
+                allowNull: false,
+                comment: '0.5 ~ 5.0',
+            },
             seasonal: {
                 type: DataTypes.STRING,
                 allowNull: false,
