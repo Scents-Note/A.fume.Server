@@ -27,6 +27,11 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 comment: '{spring}/{summer}/{fall}/{winter}',
             },
+            gender: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                comment: '{male}/{neutral}/{female}',
+            },
             sillage: {
                 type: DataTypes.STRING,
                 allowNull: false,
