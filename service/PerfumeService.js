@@ -31,7 +31,7 @@ function emptyCheck(x) {
 
 function isLikeJob(likePerfumeList) {
     const likeMap = likePerfumeList.reduce((prev, cur) => {
-        prev[cur] = true;
+        prev[cur.perfumeIdx] = true;
         return prev;
     }, {});
     return (obj) => {

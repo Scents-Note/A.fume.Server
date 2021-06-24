@@ -14,6 +14,7 @@ describe('# Perfume Service Test', () => {
             Perfume.getPerfumeById(1, 1)
                 .then((it) => {
                     expect(it.brandName).to.be.ok;
+                    expect(it.isLiked).to.be.true;
                     expect(it.story).to.be.ok;
                     if (it.noteType == 1) {
                         expect(it.ingredients.top).be.empty;
@@ -45,6 +46,17 @@ describe('# Perfume Service Test', () => {
                     expect(sumOfMapFunc(it.longevity)).to.be.eq(100);
                     expect(it.gender).to.be.ok;
                     expect(sumOfMapFunc(it.gender)).to.be.eq(100);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it('# isLike Test', (done) => {
+            Perfume.searchPerfume([], [], [], '', 1, 100, null, 1)
+                .then((result) => {
+                    expect(
+                        result.rows.filter((it) => it.isLiked == true).length
+                    ).to.eq(5);
                     done();
                 })
                 .catch((err) => done(err));
