@@ -99,9 +99,9 @@ module.exports = () => {
                 likeCnt: 5,
             }),
             JoinPerfumeKeyword.upsert({
-                perfumeIdx: i,
+                perfumeIdx: (i % 2) + 1,
                 keywordIdx: i,
-                count: 0,
+                count: i,
             })
         );
     }
