@@ -4,7 +4,7 @@ dotenv.config({ path: './config/.env.test' });
 const chai = require('chai');
 const { expect } = chai;
 const brandDao = require('../../dao/BrandDao.js');
-const { Brand } = require('../../models');
+const { Brand, Sequelize } = require('../../models');
 const {
     DuplicatedEntryError,
     NotMatchedError,
@@ -51,6 +51,9 @@ describe('# brandDao Test', () => {
                 })
                 .catch((err) => done(err));
         });
+        after(async () => {
+            await Brand.destroy({ where: { name: '삽입테스트' } });
+        });
     });
 
     describe('# read Test', () => {
@@ -58,9 +61,13 @@ describe('# brandDao Test', () => {
             brandDao
                 .read(2)
                 .then((result) => {
-                    expect(result.name).eq('브랜드2');
-                    expect(result.firstInitial).eq('ㅂ');
-                    expect(result.description.length).gt(0);
+                    expect(result.brandIdx).to.be.eq(2);
+                    expect(result.name).to.be.eq('브랜드2');
+                    expect(result.firstInitial).to.be.eq('ㅂ');
+                    expect(result.imageUrl).to.be.ok;
+                    expect(result.description).to.be.ok;
+                    expect(result.createdAt).to.be.ok;
+                    expect(result.updatedAt).to.be.ok;
                     done();
                 })
                 .catch((err) => done(err));
@@ -72,8 +79,11 @@ describe('# brandDao Test', () => {
                     name: '브랜드1',
                 })
                 .then((result) => {
-                    expect(result.name).eq('브랜드1');
-                    expect(result.brandIdx).eq(1);
+                    expect(result.brandIdx).to.be.eq(1);
+                    expect(result.name).to.be.eq('브랜드1');
+                    expect(result.firstInitial).to.be.eq('ㅂ');
+                    expect(result.imageUrl).to.be.not.null;
+                    expect(result.description).to.be.ok;
                     done();
                 })
                 .catch((err) => done(err));
@@ -99,8 +109,15 @@ describe('# brandDao Test', () => {
             brandDao
                 .search(1, 10, [['createdAt', 'desc']])
                 .then((result) => {
-                    expect(result.count).gt(0);
-                    expect(result.rows.length).gt(0);
+                    expect(result.count).gte(5);
+                    expect(result.rows.length).gte(5);
+                    for (const brand of result.rows) {
+                        expect(brand.brandIdx).to.be.ok;
+                        expect(brand.name).to.be.ok;
+                        expect(brand.firstInitial).to.be.ok;
+                        expect(brand.imageUrl).to.be.not.null;
+                        expect(brand.description).to.be.ok;
+                    }
                     done();
                 })
                 .catch((err) => done(err));
@@ -112,7 +129,15 @@ describe('# brandDao Test', () => {
             brandDao
                 .readAll([['createdAt', 'desc']])
                 .then((result) => {
-                    expect(result.rows.length).gt(0);
+                    expect(result.count).gte(5);
+                    expect(result.rows.length).gte(5);
+                    for (const brand of result.rows) {
+                        expect(brand.brandIdx).to.be.ok;
+                        expect(brand.name).to.be.ok;
+                        expect(brand.firstInitial).to.be.ok;
+                        expect(brand.imageUrl).to.be.not.null;
+                        expect(brand.description).to.be.ok;
+                    }
                     done();
                 })
                 .catch((err) => done(err));

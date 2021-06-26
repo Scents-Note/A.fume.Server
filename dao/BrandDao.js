@@ -67,6 +67,11 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
         order,
+        raw: true,
+        nest: true,
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
     });
 };
 
@@ -132,7 +137,12 @@ module.exports.delete = (brandIdx) => {
  * @returns {Promise<Brand>}
  */
 module.exports.findBrand = (condition) => {
-    return Brand.findOne({ where: condition }).then((it) => {
+    return Brand.findOne({
+        where: condition,
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+    }).then((it) => {
         if (!it) {
             throw new NotMatchedError();
         }
