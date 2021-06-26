@@ -34,9 +34,7 @@ const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
     'INNER JOIN users u ON sh.user_idx = u.user_idx ' +
     'WHERE u.gender = $1 AND (u.birth BETWEEN $2 AND $3) ' +
     'GROUP BY sh.perfume_idx ' +
-    'ORDER BY "SearchHistory.weight" DESC ' +
-    'LIMIT $4 ' +
-    'OFFSET $5';
+    'ORDER BY "SearchHistory.weight" DESC ';
 
 const SQL_SEARCH_PERFUME_SELECT =
     'SELECT ' +
@@ -405,14 +403,10 @@ module.exports.recommendPerfumeByAgeAndGender = async (
     let perfumeList = await sequelize.query(
         SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT,
         {
-            bind: [
-                gender,
-                startYear,
-                endYear,
-                pagingSize,
-                (pagingIndex - 1) * pagingSize,
-            ],
+            bind: [gender, startYear, endYear],
             type: sequelize.QueryTypes.SELECT,
+            offset: (pagingIndex - 1) * pagingSize,
+            limit: pagingSize,
             raw: true,
             nest: true,
         }

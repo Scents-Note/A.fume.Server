@@ -49,11 +49,6 @@ module.exports = () => {
             Keyword.upsert({
                 id: i,
                 name: `키워드${i}`,
-            }),
-            JoinPerfumeKeyword.upsert({
-                perfumeIdx: i,
-                keywordIdx: i,
-                count: 0,
             })
         );
     }
@@ -102,6 +97,11 @@ module.exports = () => {
                 access: 1,
                 content: `시향노트${i}`,
                 likeCnt: 5,
+            }),
+            JoinPerfumeKeyword.upsert({
+                perfumeIdx: i,
+                keywordIdx: i,
+                count: 0,
             })
         );
     }
