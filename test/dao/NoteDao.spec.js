@@ -4,7 +4,11 @@ dotenv.config({ path: './config/.env.test' });
 const chai = require('chai');
 const { expect } = chai;
 const noteDao = require('../../dao/NoteDao.js');
-const { DuplicatedEntryError } = require('../../utils/errors/errors.js');
+const {
+    DuplicatedEntryError,
+    NotMatchedError,
+    InvalidInputError,
+} = require('../../utils/errors/errors.js');
 const { Note } = require('../../models');
 
 describe('# NoteDao Test', () => {
@@ -19,19 +23,55 @@ describe('# NoteDao Test', () => {
             noteDao
                 .create({ ingredientIdx: 5, perfumeIdx: 1, type: 1 })
                 .then((result) => {
-                    expect(result).to.not.be.null;
+                    expect(result.ingredientIdx).to.be.eq(5);
+                    expect(result.perfumeIdx).to.be.eq(1);
+                    expect(result.type).to.be.eq(1);
+                    expect(result.createdAt).to.be.ok;
+                    expect(result.updatedAt).to.be.ok;
                     done();
                 })
                 .catch((err) => done(err));
         });
+
         it(' # DuplicatedEntryError case', (done) => {
             noteDao
                 .create({ ingredientIdx: 5, perfumeIdx: 1, type: 1 })
-                .then(() =>
-                    done(new Error('must be expected DuplicatedEntryError'))
-                )
+                .then(() => done(new UnExpectedError(DuplicatedEntryError)))
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it(' # fail case (invalid ingredientIdx) ', (done) => {
+            noteDao
+                .create({ ingredientIdx: -5, perfumeIdx: 1, type: 1 })
+                .then(() => done(new UnExpectedError(NotMatchedError)))
+                .catch((err) => {
+                    expect(err).to.be.instanceOf(NotMatchedError);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it(' # fail case (invalid perfumeIdx) ', (done) => {
+            noteDao
+                .create({ ingredientIdx: 5, perfumeIdx: -1, type: 1 })
+                .then(() => done(new UnExpectedError(NotMatchedError)))
+                .catch((err) => {
+                    expect(err).to.be.instanceOf(NotMatchedError);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it(' # fail case (invalid type) ', (done) => {
+            noteDao
+                .create({ ingredientIdx: 5, perfumeIdx: 1, type: 6 })
+                .then(() => done(new UnExpectedError(InvalidInputError)))
+                .catch((err) => {
+                    expect(err).to.be.instanceOf(InvalidInputError);
                     done();
                 })
                 .catch((err) => done(err));
@@ -47,6 +87,13 @@ describe('# NoteDao Test', () => {
                 .read({ perfumeIdx: 1 })
                 .then((result) => {
                     expect(result.length).gte(1);
+                    for (const note of result) {
+                        expect(note.perfumeIdx).to.be.eq(1);
+                        expect(note.ingredientIdx).to.be.ok;
+                        expect(note.type).to.be.within(1, 4);
+                        expect(note.createAt).to.be.undefined;
+                        expect(note.updatedAt).to.be.undefined;
+                    }
                     done();
                 })
                 .catch((err) => done(err));
@@ -71,7 +118,11 @@ describe('# NoteDao Test', () => {
                     });
                 })
                 .then((result) => {
+                    expect(result.perfumeIdx).to.be.eq(1);
+                    expect(result.ingredientIdx).to.be.eq(5);
                     expect(result.type).to.eq(5);
+                    expect(result.createdAt).to.be.ok;
+                    expect(result.updatedAt).to.be.ok;
                     done();
                 })
                 .catch((err) => done(err));
@@ -100,6 +151,13 @@ describe('# NoteDao Test', () => {
                     done();
                 })
                 .catch((err) => done(err));
+        });
+        after(async () => {
+            await Note.upsert({
+                ingredientIdx: 5,
+                perfumeIdx: 1,
+                type: 1,
+            });
         });
     });
 });
