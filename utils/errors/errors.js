@@ -158,7 +158,7 @@ class UnExpectedError extends Error {
         if (Error.captureStackTrace) {
             Error.captureStackTrace(this, PasswordPolicyError);
         }
-        this.message = `${expectedError.className}: must be caught or declared to be thrown`;
+        this.message = `${expectedError.name}: must be caught or declared to be thrown`;
     }
 }
 
