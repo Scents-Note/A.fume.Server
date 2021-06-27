@@ -65,9 +65,9 @@ describe('# brandDao Test', () => {
                     expect(result.name).to.be.eq('브랜드2');
                     expect(result.firstInitial).to.be.eq('ㅂ');
                     expect(result.imageUrl).to.be.ok;
-                    expect(result.description).to.be.ok;
-                    expect(result.createdAt).to.be.ok;
-                    expect(result.updatedAt).to.be.ok;
+                    expect(result.description).to.be.not.undefined;
+                    expect(result.createdAt).to.be.undefined;
+                    expect(result.updatedAt).to.be.undefined;
                     done();
                 })
                 .catch((err) => done(err));
@@ -82,8 +82,10 @@ describe('# brandDao Test', () => {
                     expect(result.brandIdx).to.be.eq(1);
                     expect(result.name).to.be.eq('브랜드1');
                     expect(result.firstInitial).to.be.eq('ㅂ');
-                    expect(result.imageUrl).to.be.not.null;
-                    expect(result.description).to.be.ok;
+                    expect(result.imageUrl).to.be.not.undefined;
+                    expect(result.description).to.be.not.undefined;
+                    expect(result.createdAt).to.be.undefined;
+                    expect(result.updatedAt).to.be.undefined;
                     done();
                 })
                 .catch((err) => done(err));
@@ -115,8 +117,10 @@ describe('# brandDao Test', () => {
                         expect(brand.brandIdx).to.be.ok;
                         expect(brand.name).to.be.ok;
                         expect(brand.firstInitial).to.be.ok;
-                        expect(brand.imageUrl).to.be.not.null;
-                        expect(brand.description).to.be.ok;
+                        expect(brand.imageUrl).to.be.not.undefined;
+                        expect(brand.description).to.be.not.undefined;
+                        expect(brand.createdAt).to.be.undefined;
+                        expect(brand.updatedAt).to.be.undefined;
                     }
                     done();
                 })
@@ -135,8 +139,10 @@ describe('# brandDao Test', () => {
                         expect(brand.brandIdx).to.be.ok;
                         expect(brand.name).to.be.ok;
                         expect(brand.firstInitial).to.be.ok;
-                        expect(brand.imageUrl).to.be.not.null;
-                        expect(brand.description).to.be.ok;
+                        expect(brand.imageUrl).to.be.not.undefined;
+                        expect(brand.description).to.be.not.undefined;
+                        expect(brand.createdAt).to.be.undefined;
+                        expect(brand.updatedAt).to.be.undefined;
                     }
                     done();
                 })
@@ -168,14 +174,18 @@ describe('# brandDao Test', () => {
                     imageUrl: 'image_url',
                     description: '변경완료',
                 })
-                .then(async (result) => {
+                .then((result) => {
                     expect(result).eq(1);
-                    const updated = await brandDao.read(brandIdx);
+                    return brandDao.read(brandIdx);
+                })
+                .then((updated) => {
                     expect(updated.name).eq('변경된 이름');
                     expect(updated.englishName).eq('modified_name');
                     expect(updated.firstInitial).eq('ㅂ');
                     expect(updated.imageUrl).eq('image_url');
                     expect(updated.description).eq('변경완료');
+                    expect(updated.createdAt).to.be.undefined;
+                    expect(updated.updatedAt).to.be.undefined;
                     done();
                 })
                 .catch((err) => done(err));

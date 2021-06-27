@@ -19,15 +19,18 @@ module.exports.create = ({
     imageUrl,
     description,
 }) => {
-    return Brand.create({
-        name,
-        englishName,
-        firstInitial,
-        imageUrl,
-        description,
-    })
+    return Brand.create(
+        {
+            name,
+            englishName,
+            firstInitial,
+            imageUrl,
+            description,
+        },
+        { nest: true, raw: true }
+    )
         .then((brand) => {
-            return brand.dataValues.brandIdx;
+            return brand.brandIdx;
         })
         .catch((err) => {
             if (
@@ -47,11 +50,17 @@ module.exports.create = ({
  * @returns {Promise<Brand>}
  */
 module.exports.read = async (brandIdx) => {
-    const result = await Brand.findByPk(brandIdx);
+    const result = await Brand.findByPk(brandIdx, {
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        nest: true,
+        raw: true,
+    });
     if (!result) {
         throw new NotMatchedError();
     }
-    return result.dataValues;
+    return result;
 };
 
 /**
