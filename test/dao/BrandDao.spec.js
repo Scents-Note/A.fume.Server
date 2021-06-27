@@ -101,7 +101,8 @@ describe('# brandDao Test', () => {
                 .catch((err) => {
                     expect(err).instanceOf(NotMatchedError);
                     done();
-                });
+                })
+                .catch((err) => done(err));
         });
     });
 

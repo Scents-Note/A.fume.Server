@@ -48,7 +48,8 @@ describe('# ingredientDao Test', () => {
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
                     done();
-                });
+                })
+                .catch((err) => done(err));
         });
         after(async () => {
             await Ingredient.destroy({ where: { name: '테스트 데이터' } });
@@ -179,7 +180,8 @@ describe('# ingredientDao Test', () => {
                 .catch((err) => {
                     expect(err).instanceOf(NotMatchedError);
                     done();
-                });
+                })
+                .catch((err) => done(err));
         });
     });
 
@@ -263,7 +265,8 @@ describe('# ingredientDao Test', () => {
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
                     done();
-                });
+                })
+                .catch((err) => done(err));
         });
         after(async () => {
             await Ingredient.destroy({ where: { ingredientIdx } });

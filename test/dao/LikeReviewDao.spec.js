@@ -56,7 +56,8 @@ describe('# LikeReviewDao Test', () => {
                 .catch((err) => {
                     expect(err).instanceOf(NotMatchedError);
                     done();
-                });
+                })
+                .catch((err) => done(err));
         });
 
         it('# fail case (invalid reviewIdx)', (done) => {
@@ -68,7 +69,8 @@ describe('# LikeReviewDao Test', () => {
                 .catch((err) => {
                     expect(err).instanceOf(NotMatchedError);
                     done();
-                });
+                })
+                .catch((err) => done(err));
         });
 
         after(async () => {
@@ -121,7 +123,8 @@ describe('# LikeReviewDao Test', () => {
                 .catch((err) => {
                     expect(err).instanceOf(NotMatchedError);
                     done();
-                });
+                })
+                .catch((err) => done(err));
         });
 
         it('# fail case (invalid perfumeIdx)', (done) => {
@@ -133,7 +136,8 @@ describe('# LikeReviewDao Test', () => {
                 .catch((err) => {
                     expect(err).instanceOf(NotMatchedError);
                     done();
-                });
+                })
+                .catch((err) => done(err));
         });
     });
 
