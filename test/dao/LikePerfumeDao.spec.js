@@ -7,6 +7,7 @@ const likePerfumeDao = require('../../dao/LikePerfumeDao.js');
 const {
     DuplicatedEntryError,
     NotMatchedError,
+    UnExpectedError,
 } = require('../../utils/errors/errors.js');
 const { LikePerfume } = require('../../models');
 
@@ -35,7 +36,7 @@ describe('# likeDao Test', () => {
             likePerfumeDao
                 .create(5, 5)
                 .then(() => {
-                    done(new Error('must be expected DuplicatedEntryError'));
+                    done(new UnExpectedError(DuplicatedEntryError));
                 })
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
@@ -76,7 +77,7 @@ describe('# likeDao Test', () => {
             likePerfumeDao
                 .read(-1, 1)
                 .then(() => {
-                    done(new Error('must be expected NotMatchedError'));
+                    done(new UnExpectedError(NotMatchedError));
                 })
                 .catch((err) => {
                     expect(err).to.be.instanceOf(NotMatchedError);
@@ -88,8 +89,7 @@ describe('# likeDao Test', () => {
             likePerfumeDao
                 .read(1, -1)
                 .then((result) => {
-                    console.log(result);
-                    done(new Error('must be expected NotMatchedError'));
+                    done(new UnExpectedError(NotMatchedError));
                 })
                 .catch((err) => {
                     expect(err).to.be.instanceOf(NotMatchedError);
@@ -136,8 +136,8 @@ describe('# likeDao Test', () => {
         it('# fail case (not like state)', (done) => {
             likePerfumeDao
                 .delete(5, 15)
-                .then((result) => {
-                    done(new Error('must be expected NotMatchedError'));
+                .then(() => {
+                    done(new UnExpectedError(NotMatchedError));
                 })
                 .catch((err) => {
                     expect(err).to.be.instanceOf(NotMatchedError);
@@ -149,7 +149,7 @@ describe('# likeDao Test', () => {
             likePerfumeDao
                 .delete(-5, 15)
                 .then(() => {
-                    done(new Error('must be expected NotMatchedError'));
+                    done(new UnExpectedError(NotMatchedError));
                 })
                 .catch((err) => {
                     expect(err).to.be.instanceOf(NotMatchedError);

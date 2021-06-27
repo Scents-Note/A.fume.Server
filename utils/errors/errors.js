@@ -152,6 +152,16 @@ class InvalidRequestError extends Error {
     }
 }
 
+class UnExpectedError extends Error {
+    constructor(expectedError, ...params) {
+        super(...params);
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, PasswordPolicyError);
+        }
+        this.message = `${expectedError.className}: must be caught or declared to be thrown`;
+    }
+}
+
 module.exports.DatabaseError = DatabaseError;
 module.exports.NoReferencedRowError = NoReferencedRowError;
 module.exports.DuplicatedEntryError = DuplicatedEntryError;
@@ -164,3 +174,4 @@ module.exports.WrongPasswordError = WrongPasswordError;
 module.exports.UnAuthorizedError = UnAuthorizedError;
 module.exports.PasswordPolicyError = PasswordPolicyError;
 module.exports.InvalidRequestError = InvalidRequestError;
+module.exports.UnExpectedError = UnExpectedError;

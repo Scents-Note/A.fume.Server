@@ -7,6 +7,7 @@ const ingredientDao = require('../../dao/IngredientDao.js');
 const {
     DuplicatedEntryError,
     NotMatchedError,
+    UnExpectedError,
 } = require('../../utils/errors/errors.js');
 const { Ingredient } = require('../../models');
 
@@ -43,12 +44,11 @@ describe('# ingredientDao Test', () => {
                     seriesIdx: 1,
                     imageUrl: '',
                 })
-                .then(() => done(new Error('expected DuplicatedEntryError')))
+                .then(() => done(new UnExpectedError(DuplicatedEntryError)))
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
                     done();
-                })
-                .catch((err) => done(err));
+                });
         });
         after(async () => {
             await Ingredient.destroy({ where: { name: '테스트 데이터' } });
@@ -174,13 +174,12 @@ describe('# ingredientDao Test', () => {
                     name: '재료10',
                 })
                 .then(() => {
-                    throw new Error('Must be occur NotMatchedError');
+                    done(new UnExpectedError(NotMatchedError));
                 })
                 .catch((err) => {
                     expect(err).instanceOf(NotMatchedError);
                     done();
-                })
-                .catch((err) => done(err));
+                });
         });
     });
 
@@ -258,14 +257,13 @@ describe('# ingredientDao Test', () => {
                     name: '재료5',
                     englishName: 'Update Data',
                 })
-                .then((result) => {
-                    throw new Error('Must be occur NotMatchedError');
+                .then(() => {
+                    done(new UnExpectedError(NotMatchedError));
                 })
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
                     done();
-                })
-                .catch((err) => done(err));
+                });
         });
         after(async () => {
             await Ingredient.destroy({ where: { ingredientIdx } });

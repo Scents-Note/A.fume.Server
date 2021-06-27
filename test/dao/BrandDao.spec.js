@@ -8,6 +8,7 @@ const { Brand, Sequelize } = require('../../models');
 const {
     DuplicatedEntryError,
     NotMatchedError,
+    UnExpectedError,
 } = require('../../utils/errors/errors.js');
 
 describe('# brandDao Test', () => {
@@ -43,13 +44,12 @@ describe('# brandDao Test', () => {
                     description: '',
                 })
                 .then(() => {
-                    done(new Error('expected DuplicatedEntryError'));
+                    done(new UnExpectedError(DuplicatedEntryError));
                 })
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
                     done();
-                })
-                .catch((err) => done(err));
+                });
         });
         after(async () => {
             await Brand.destroy({ where: { name: '삽입테스트' } });
@@ -96,13 +96,12 @@ describe('# brandDao Test', () => {
                     name: '브랜드10',
                 })
                 .then(() => {
-                    throw new Error('Must be occur NotMatchedError');
+                    done(new UnExpectedError(NotMatchedError));
                 })
                 .catch((err) => {
                     expect(err).instanceOf(NotMatchedError);
                     done();
-                })
-                .catch((err) => done(err));
+                });
         });
     });
 
