@@ -57,7 +57,14 @@ function addKeyword(joinKeywordList) {
 
 const commonJob = [
     extractJob('Brand', ['name', 'brandName']),
-    removeKeyJob('perfume_idx', 'englishName', 'brandIdx', 'likeCnt'),
+    removeKeyJob(
+        'perfume_idx',
+        'englishName',
+        'brandIdx',
+        'likeCnt',
+        'updatedAt',
+        'createdAt'
+    ),
 ];
 
 /**
