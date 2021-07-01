@@ -51,9 +51,6 @@ module.exports.create = ({
  */
 module.exports.read = async (brandIdx) => {
     const result = await Brand.findByPk(brandIdx, {
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
         nest: true,
         raw: true,
     });
@@ -78,9 +75,6 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
         order,
         raw: true,
         nest: true,
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
     });
 };
 
@@ -91,9 +85,6 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
  */
 module.exports.readAll = async () => {
     return Brand.findAndCountAll({
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
         raw: true,
         nest: true,
     });
@@ -148,9 +139,8 @@ module.exports.delete = (brandIdx) => {
 module.exports.findBrand = (condition) => {
     return Brand.findOne({
         where: condition,
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
+        nest: true,
+        raw: true,
     }).then((it) => {
         if (!it) {
             throw new NotMatchedError();
