@@ -9,6 +9,8 @@ const { SearchHistory } = require('../models');
 module.exports.read = async (userIdx, perfumeIdx) => {
     return SearchHistory.findOne({
         where: { userIdx, perfumeIdx },
+        raw: true,
+        nest: true,
     });
 };
 
@@ -22,7 +24,9 @@ module.exports.create = (userIdx, perfumeIdx, count) => {
     return SearchHistory.create(
         { userIdx, perfumeIdx, count },
         { raw: true, nest: true }
-    );
+    ).then((result) => {
+        return result.dataValues;
+    });
 };
 
 /**
