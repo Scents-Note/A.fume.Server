@@ -12,8 +12,30 @@ const { GENDER_WOMAN } = require('../../utils/code.js');
 const {
     NotMatchedError,
     DuplicatedEntryError,
+    UnExpectedError,
 } = require('../../utils/errors/errors.js');
 
+const allowFirstInitialArr = [
+    'ㄱ',
+    'ㄴ',
+    'ㄷ',
+    'ㄹ',
+    'ㅁ',
+    'ㅂ',
+    'ㅅ',
+    'ㅇ',
+    'ㅈ',
+    'ㅊ',
+    'ㅋ',
+    'ㅌ',
+    'ㅍ',
+    'ㅎ',
+    'ㄲ',
+    'ㄸ',
+    'ㅃ',
+    'ㅆ',
+    'ㅉ',
+];
 describe('# perfumeDao Test', () => {
     before(async function () {
         await require('./common/presets.js')(this);
@@ -38,11 +60,25 @@ describe('# perfumeDao Test', () => {
                     return perfumeDao.readByPerfumeIdx(result);
                 })
                 .then((result) => {
-                    expect(result.name).to.equal('삽입테스트');
-                    expect(result.Brand.name).to.equal('브랜드1');
+                    expect(result.name).to.be.eq('삽입테스트');
+                    expect(result.brandIdx).to.be.eq(1);
+                    expect(result.englishName).to.be.eq('insert Test');
+                    expect(result.imageUrl).to.be.eq('URL');
                     expect(result.PerfumeDetail.volumeAndPrice).to.deep.equal(
                         []
                     );
+                    expect(result.PerfumeDetail.perfumeIdx).to.be.eq(
+                        result.perfumeIdx
+                    );
+                    expect(result.PerfumeDetail.story).to.be.eq('스토리');
+                    expect(result.PerfumeDetail.abundanceRate).to.be.eq(2);
+                    expect(result.Brand.name).to.be.eq('브랜드1');
+                    expect(result.Brand.englishName).to.be.ok;
+                    expect(result.Brand.firstInitial).to.be.oneOf(
+                        allowFirstInitialArr
+                    );
+                    expect(result.Brand.description).to.be.ok;
+                    expect(result.Brand.brandIdx).to.be.eq(1);
                     done();
                 })
                 .catch((err) => done(err));
@@ -59,7 +95,7 @@ describe('# perfumeDao Test', () => {
                     abundanceRate: 2,
                 })
                 .then(() => {
-                    throw new Error('Must be occur DuplicatedEntryError');
+                    throw new UnExpectedError(DuplicatedEntryError);
                 })
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
@@ -74,13 +110,25 @@ describe('# perfumeDao Test', () => {
                 perfumeDao
                     .readByPerfumeIdx(1)
                     .then((result) => {
-                        expect(result.name).to.equal('향수1');
-                        expect(result.Brand.name).to.equal('브랜드1');
-                        expect(result.PerfumeDetail.story).to.equal('스토리1');
-                        expect(result.PerfumeDetail.abundanceRate).to.equal(1);
-                        expect(
-                            result.PerfumeDetail.volumeAndPrice
-                        ).to.deep.equal([
+                        expect(result.perfumeIdx).to.be.eq(1);
+                        expect(result.name).to.be.eq('향수1');
+                        expect(result.englishName).to.be.ok;
+                        expect(result.imageUrl).to.be.ok;
+                        expect(result.likeCnt).to.be.gte(0);
+
+                        expect(result.Brand.brandIdx).to.be.eq(result.brandIdx);
+                        expect(result.Brand.name).to.be.eq('브랜드1');
+                        expect(result.Brand.englishName).to.be.ok;
+                        expect(result.Brand.description).to.be.ok;
+                        expect(result.Brand.imageUrl).to.be.ok;
+                        expect(result.Brand.firstInitial).to.be.oneOf(
+                            allowFirstInitialArr
+                        );
+
+                        expect(result.PerfumeDetail.perfumeIdx).to.be.eq(1);
+                        expect(result.PerfumeDetail.story).to.be.eq('스토리1');
+                        expect(result.PerfumeDetail.abundanceRate).to.be.eq(1);
+                        expect(result.PerfumeDetail.volumeAndPrice).to.deep.eq([
                             { volume: 30, price: 95000 },
                             { volume: 100, price: 190000 },
                         ]);
@@ -91,7 +139,7 @@ describe('# perfumeDao Test', () => {
         });
 
         describe('# search Test', () => {
-            it('# success case (series & grand & order by recent)', (done) => {
+            it('# success case (integral and brand filter)', (done) => {
                 const ingredients = [1, 2, 3, 4, 5];
                 const brands = [1, 2, 3, 4, 5];
                 perfumeDao
@@ -99,27 +147,65 @@ describe('# perfumeDao Test', () => {
                         ['createdAt', 'asc'],
                     ])
                     .then((result) => {
-                        expect(result.rows.length).to.gte(1);
-                        const arr = [];
-                        result.rows.forEach((it) => {
-                            arr.push(
-                                Note.findAll({
+                        expect(result.count).to.be.eq(5);
+                        expect(result.rows.length).to.be.gte(5);
+                        for (const perfume of result.rows) {
+                            expect(perfume.perfumeIdx).to.be.ok;
+                            expect(perfume.brandIdx).to.be.ok;
+                            expect(perfume.name).to.be.ok;
+                            expect(perfume.englishName).to.be.ok;
+                            expect(perfume.imageUrl).to.be.ok;
+                            expect(perfume.createdAt).to.be.not.undefined;
+                            expect(perfume.updatedAt).to.be.not.undefined;
+                            expect(perfume.likeCnt).to.be.gte(0);
+
+                            expect(perfume.Brand.brandIdx).to.be.oneOf(brands);
+                            expect(perfume.Brand.name).to.be.ok;
+                            expect(perfume.Brand.englishName).to.be.ok;
+                            expect(perfume.Brand.description).to.be.ok;
+                            expect(perfume.Brand.imageUrl).to.be.ok;
+                            expect(perfume.Brand.firstInitial).to.be.oneOf(
+                                allowFirstInitialArr
+                            );
+
+                            expect(perfume.Score.keyword).to.be.gte(0);
+                            expect(perfume.Score.ingredient).to.be.gte(0);
+                            expect(perfume.Score.total).to.be.gte(0);
+                        }
+
+                        const sortedByDao = result.rows
+                            .map((it) => it.createdAt.getTime())
+                            .join(',');
+                        const sortedByJS = result.rows
+                            .map((it) => it.createdAt.getTime())
+                            .sort()
+                            .reverse()
+                            .join(',');
+                        expect(sortedByJS).eq(sortedByDao);
+
+                        return Promise.all(
+                            result.rows.map((it) => {
+                                return Note.findAll({
                                     where: {
                                         perfumeIdx: it.perfumeIdx,
                                         ingredientIdx: {
                                             [Op.in]: ingredients,
                                         },
                                     },
-                                })
-                            );
-                            expect(brands.indexOf(it.brandIdx)).to.not.eq(-1);
-                        });
-                        return Promise.all(arr);
+                                    nest: true,
+                                    raw: true,
+                                });
+                            })
+                        );
                     })
                     .then((result) => {
-                        result.forEach((it) => {
-                            expect(it.length).gte(ingredients.length);
-                        });
+                        for (const ingredientByPerfumeIdxArr of result) {
+                            for (const ingredient of ingredientByPerfumeIdxArr) {
+                                expect(ingredient.ingredientIdx).to.be.oneOf(
+                                    ingredients
+                                );
+                            }
+                        }
                         done();
                     })
                     .catch((err) => done(err));
@@ -128,34 +214,62 @@ describe('# perfumeDao Test', () => {
                 perfumeDao
                     .search([], [], [], '', 1, 100)
                     .then((result) => {
-                        expect(result.rows.length).gt(3);
+                        expect(result.count).to.be.gt(3);
+                        expect(result.rows.length).to.be.gt(3);
+                        for (const perfume of result.rows) {
+                            expect(perfume.perfumeIdx).to.be.ok;
+                            expect(perfume.brandIdx).to.be.ok;
+                            expect(perfume.name).to.be.ok;
+                            expect(perfume.englishName).to.be.ok;
+                            expect(perfume.imageUrl).to.be.ok;
+                            expect(perfume.createdAt).to.be.not.undefined;
+                            expect(perfume.updatedAt).to.be.not.undefined;
+                            expect(perfume.likeCnt).to.be.gte(0);
+
+                            expect(perfume.Brand.brandIdx).to.be.ok;
+                            expect(perfume.Brand.name).to.be.ok;
+                            expect(perfume.Brand.englishName).to.be.ok;
+                            expect(perfume.Brand.description).to.be.ok;
+                            expect(perfume.Brand.imageUrl).to.be.ok;
+                            expect(perfume.Brand.firstInitial).to.be.oneOf(
+                                allowFirstInitialArr
+                            );
+                        }
                         done();
                     })
                     .catch((err) => done(err));
             });
 
-            it('# success case (series)', (done) => {
+            it('# success case (ingredient filter)', (done) => {
                 const ingredients = [1, 2, 3, 4, 5];
                 perfumeDao
                     .search([], ingredients, [], '', 1, 100)
                     .then((result) => {
+                        expect(result.count).to.be.gte(3);
                         expect(result.rows.length).to.gte(3);
-                        const arr = [];
-                        result.rows.forEach((it) => {
-                            arr.push(
-                                Note.findAll({
+                        return Promise.all(
+                            result.rows.map((it) => {
+                                return Note.findAll({
                                     where: {
                                         perfumeIdx: it.perfumeIdx,
                                         ingredientIdx: {
                                             [Op.in]: ingredients,
                                         },
                                     },
-                                })
-                            );
-                        });
-                        return Promise.all(arr);
+                                    raw: true,
+                                    nest: true,
+                                });
+                            })
+                        );
                     })
                     .then((result) => {
+                        for (const ingredientByPerfumeIdxArr of result) {
+                            for (const ingredient of ingredientByPerfumeIdxArr) {
+                                expect(ingredient.ingredientIdx).to.be.oneOf(
+                                    ingredients
+                                );
+                            }
+                        }
                         result.forEach((it) => {
                             expect(it.length).gte(ingredients.length);
                         });
@@ -164,47 +278,40 @@ describe('# perfumeDao Test', () => {
                     .catch((err) => done(err));
             });
 
-            it('# success case (brand)', (done) => {
-                const brands = [1];
+            it('# success case (brand filter)', (done) => {
+                const brands = [1, 2, 3, 4];
                 perfumeDao
                     .search(brands, [], [], '', 1, 100)
                     .then((result) => {
+                        expect(result.count).to.be.gte(2);
                         expect(result.rows.length).to.gte(2);
-                        result.rows.forEach((it) => {
-                            expect(brands.indexOf(it.brandIdx)).to.not.eq(-1);
+                        result.rows.forEach((perfume) => {
+                            expect(perfume.brandIdx).to.be.oneOf(brands);
+                            expect(perfume.Brand.brandIdx).to.be.eq(
+                                perfume.brandIdx
+                            );
                         });
                         done();
                     })
                     .catch((err) => done(err));
             });
 
-            it('# success case (series & order by like) ', (done) => {
-                const ingredients = [1];
+            it('# success case (order by like) ', (done) => {
                 perfumeDao
-                    .search([], ingredients, [], '', 1, 100, [
-                        ['likeCnt', 'asc'],
-                    ])
+                    .search([], [], [], '', 1, 100, [['likeCnt', 'asc']])
                     .then((result) => {
-                        expect(result.rows.length).to.gte(3);
-                        const arr = [];
-                        result.rows.forEach((it) => {
-                            arr.push(
-                                Note.findAll({
-                                    where: {
-                                        perfumeIdx: it.perfumeIdx,
-                                        ingredientIdx: {
-                                            [Op.in]: ingredients,
-                                        },
-                                    },
-                                })
-                            );
-                        });
-                        return Promise.all(arr);
-                    })
-                    .then((result) => {
-                        result.forEach((it) => {
-                            expect(it.length).gte(ingredients.length);
-                        });
+                        expect(result.count).to.be.gte(3);
+                        expect(result.rows.length).to.be.gte(3);
+                        const sortedByDao = result.rows
+                            .map((it) => it.perfumeIdx)
+                            .join(',');
+                        const sortedByJS = result.rows
+                            .sort((a, b) => {
+                                return a.likeCnt - b.likeCnt;
+                            })
+                            .map((it) => it.perfumeIdx)
+                            .join(',');
+                        expect(sortedByJS).eq(sortedByDao);
                         done();
                     })
                     .catch((err) => done(err));
@@ -215,32 +322,19 @@ describe('# perfumeDao Test', () => {
                     .search([], [], [], '', 1, 100, [['createdAt', 'desc']])
                     .then((result) => {
                         expect(result.rows.length).gte(3);
-                        const str1 = result.rows
-                            .map((it) => it.createdAt.getTime())
+                        const sortedByDao = result.rows
+                            .map((it) => it.perfumeIdx)
                             .join(',');
-                        const str2 = result.rows
-                            .map((it) => it.createdAt.getTime())
-                            .sort()
-                            .reverse()
+                        const sortedByJS = result.rows
+                            .sort((a, b) => {
+                                return (
+                                    a.createdAt.getTime() <
+                                    b.createdAt.getTime()
+                                );
+                            })
+                            .map((it) => it.perfumeIdx)
                             .join(',');
-                        expect(str1).eq(str2);
-                        done();
-                    })
-                    .catch((err) => done(err));
-            });
-
-            it('# success case (order by like) ', (done) => {
-                perfumeDao
-                    .search([], [], [], '', 1, 100, [['likeCnt', 'asc']])
-                    .then((result) => {
-                        expect(result.rows.length).gte(3);
-                        const str1 = result.rows.map((it) => it.like).join(',');
-                        const str2 = result.rows
-                            .map((it) => it.like)
-                            .sort()
-                            .reverse()
-                            .join(',');
-                        expect(str1).eq(str2);
+                        expect(sortedByDao).eq(sortedByJS);
                         done();
                     })
                     .catch((err) => done(err));
@@ -276,99 +370,150 @@ describe('# perfumeDao Test', () => {
                     })
                     .catch((err) => done(err));
             });
-        });
+            it('# read new Perfume', (done) => {
+                const fromDate = new Date();
+                fromDate.setDate(fromDate.getDate() - 7);
+                perfumeDao
+                    .readNewPerfume(fromDate, 1, 100)
+                    .then((result) => {
+                        expect(result.count).to.be.gte(1);
+                        expect(result.rows.length).gte(1);
+                        for (const perfume of result.rows) {
+                            expect(perfume.createdAt).to.be.ok;
+                            expect(perfume.createdAt.getTime()).to.be.gte(
+                                fromDate.getTime()
+                            );
+                        }
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
 
-        it('# read new Perfume', (done) => {
-            const fromDate = new Date();
-            fromDate.setDate(fromDate.getDate() - 7);
-            perfumeDao
-                .readNewPerfume(fromDate, 1, 100)
-                .then((result) => {
-                    expect(result.rows.length).gte(1);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
+            it('# read likedPerfume', (done) => {
+                perfumeDao
+                    .readLikedPerfume(1, 1, 100)
+                    .then((result) => {
+                        expect(result.count).to.be.gte(3);
+                        expect(result.rows.length).to.be.gte(3);
+                        for (const perfume of result.rows) {
+                            expect(perfume.likeCnt).to.be.gt(0);
+                        }
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
+            it('# recent search perfume List', (done) => {
+                perfumeDao
+                    .recentSearchPerfumeList(1, 1, 100)
+                    .then((result) => {
+                        expect(result.rows.length).gte(5);
+                        const originString = result.rows
+                            .map((it) => it.perfumeIdx)
+                            .toString();
+                        const sortedString = result.rows
+                            .sort(
+                                (a, b) =>
+                                    a.SearchHistory.createdAt >
+                                    b.SearchHistory.createdAt
+                            )
+                            .map((it) => it.perfumeIdx)
+                            .toString();
+                        expect(sortedString).to.be.eq(originString);
+                        for (const obj of result.rows) {
+                            expect(obj.SearchHistory.userIdx).to.be.eq(1);
+                        }
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
 
-        it('# read likedPerfume', (done) => {
-            perfumeDao
-                .readLikedPerfume(1, 1, 100)
-                .then((result) => {
-                    expect(result.rows.length).gte(3);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
+            it('# read perfume survey', (done) => {
+                perfumeDao
+                    .readPerfumeSurvey(GENDER_WOMAN)
+                    .then((result) => {
+                        expect(result.count).to.be.gte(5);
+                        expect(result.rows.length).to.be.gte(5);
+                        for (const perfume of result.rows) {
+                            expect(perfume.perfumeIdx).to.be.ok;
+                            expect(perfume.brandIdx).to.be.ok;
+                            expect(perfume.name).to.be.ok;
+                            expect(perfume.englishName).to.be.ok;
+                            expect(perfume.imageUrl).to.be.ok;
+                            expect(perfume.createdAt).to.be.not.undefined;
+                            expect(perfume.updatedAt).to.be.not.undefined;
+                            expect(perfume.likeCnt).to.be.gte(0);
 
-        it('# recent search perfume List', (done) => {
-            perfumeDao
-                .recentSearchPerfumeList(1, 1, 100)
-                .then((result) => {
-                    expect(result.rows.length).gte(5);
-                    const originString = result.rows
-                        .map((it) => it.perfumeIdx)
-                        .toString();
-                    const sortedString = result.rows
-                        .sort(
-                            (a, b) =>
-                                a.SearchHistory.createdAt >
-                                b.SearchHistory.createdAt
-                        )
-                        .map((it) => it.perfumeIdx)
-                        .toString();
-                    expect(sortedString).to.be.eq(originString);
-                    for (const obj of result.rows) {
-                        expect(obj.SearchHistory.userIdx).to.be.eq(1);
-                    }
-                    done();
-                })
-                .catch((err) => done(err));
+                            expect(perfume.Brand.brandIdx).to.be.ok;
+                            expect(perfume.Brand.name).to.be.ok;
+                            expect(perfume.Brand.englishName).to.be.ok;
+                            expect(perfume.Brand.description).to.be.ok;
+                            expect(perfume.Brand.imageUrl).to.be.ok;
+                            expect(perfume.Brand.firstInitial).to.be.oneOf(
+                                allowFirstInitialArr
+                            );
+                        }
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
         });
+        describe('# recommend Test', () => {
+            it('# recommend perfume by age and gender', (done) => {
+                perfumeDao
+                    .recommendPerfumeByAgeAndGender(GENDER_WOMAN, 20, 1, 100)
+                    .then((result) => {
+                        expect(result.count).to.be.gte(3);
+                        expect(result.rows.length).to.be.gte(3);
+                        for (const perfume of result.rows) {
+                            expect(perfume.perfumeIdx).to.be.ok;
+                            expect(perfume.brandIdx).to.be.ok;
+                            expect(perfume.name).to.be.ok;
+                            expect(perfume.englishName).to.be.ok;
+                            expect(perfume.imageUrl).to.be.ok;
+                            expect(perfume.createdAt).to.be.not.undefined;
+                            expect(perfume.updatedAt).to.be.not.undefined;
+                            expect(perfume.likeCnt).to.be.gte(0);
 
-        it('# recommend perfume by age and gender', (done) => {
-            perfumeDao
-                .recommendPerfumeByAgeAndGender(GENDER_WOMAN, 20, 1, 100)
-                .then((result) => {
-                    expect(result.rows.length).gte(3);
-                    done();
-                })
-                .catch((err) => done(err));
+                            expect(perfume.Brand.brandIdx).to.be.ok;
+                            expect(perfume.Brand.name).to.be.ok;
+                            expect(perfume.Brand.englishName).to.be.ok;
+                            expect(perfume.Brand.description).to.be.ok;
+                            expect(perfume.Brand.imageUrl).to.be.ok;
+                            expect(perfume.Brand.firstInitial).to.be.oneOf(
+                                allowFirstInitialArr
+                            );
+                        }
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
         });
-
-        it('# read perfume survey', (done) => {
-            perfumeDao
-                .readPerfumeSurvey(GENDER_WOMAN)
-                .then((result) => {
-                    expect(result.rows.length).gte(5);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-
-        it('# findPerfumeIdx success case', (done) => {
-            perfumeDao
-                .findPerfumeIdx({
-                    englishName: 'perfume-1',
-                })
-                .then((result) => {
-                    expect(result).eq(1);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-        it('# findPerfumeIdx not found case', (done) => {
-            perfumeDao
-                .findPerfumeIdx({
-                    englishName: 'perfume-10',
-                })
-                .then(() => {
-                    throw new Error('Must be occur NotMatchedError');
-                })
-                .catch((err) => {
-                    expect(err).instanceOf(NotMatchedError);
-                    done();
-                })
-                .catch((err) => done(err));
+        describe('# find Test', () => {
+            it('# findPerfumeIdx success case', (done) => {
+                perfumeDao
+                    .findPerfumeIdx({
+                        englishName: 'perfume-1',
+                    })
+                    .then((result) => {
+                        expect(result).eq(1);
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
+            it('# findPerfumeIdx not found case', (done) => {
+                perfumeDao
+                    .findPerfumeIdx({
+                        englishName: 'perfume-10',
+                    })
+                    .then(() => {
+                        throw new UnExpectedError(NotMatchedError);
+                    })
+                    .catch((err) => {
+                        expect(err).instanceOf(NotMatchedError);
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
         });
     });
 
@@ -417,10 +562,19 @@ describe('# perfumeDao Test', () => {
                     return perfumeDao.readByPerfumeIdx(perfumeIdx);
                 })
                 .then((result) => {
-                    expect(result.name).to.equal('수정된 이름');
-                    expect(result.englishName).to.equal('수정된 영어이름');
-                    expect(result.PerfumeDetail.story).to.equal('수정된스토리');
-                    expect(result.PerfumeDetail.abundanceRate).to.equal(2);
+                    expect(result.perfumeIdx).to.be.eq(perfumeIdx);
+                    expect(result.name).to.be.eq('수정된 이름');
+                    expect(result.brandIdx).to.be.eq(2);
+                    expect(result.englishName).to.be.eq('수정된 영어이름');
+                    expect(result.imageUrl).to.be.eq('수정된url');
+                    expect(result.PerfumeDetail.perfumeIdx).to.be.eq(
+                        perfumeIdx
+                    );
+                    expect(result.PerfumeDetail.story).to.be.eq('수정된스토리');
+                    expect(result.PerfumeDetail.abundanceRate).to.be.eq(2);
+                    expect(result.PerfumeDetail.volumeAndPrice).to.be.deep.eq(
+                        []
+                    );
                     done();
                 })
                 .catch((err) => done(err));

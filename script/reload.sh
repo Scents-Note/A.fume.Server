@@ -1,6 +1,6 @@
 #!/bin/sh
 npm install;
 npm audit fix;
-npm test;
+# npm test;
 pm2 restart ecosystem.json;
 echo $?

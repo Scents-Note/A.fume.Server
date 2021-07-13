@@ -19,15 +19,18 @@ module.exports.create = ({
     imageUrl,
     description,
 }) => {
-    return Brand.create({
-        name,
-        englishName,
-        firstInitial,
-        imageUrl,
-        description,
-    })
+    return Brand.create(
+        {
+            name,
+            englishName,
+            firstInitial,
+            imageUrl,
+            description,
+        },
+        { nest: true, raw: true }
+    )
         .then((brand) => {
-            return brand.dataValues.brandIdx;
+            return brand.brandIdx;
         })
         .catch((err) => {
             if (
@@ -47,11 +50,14 @@ module.exports.create = ({
  * @returns {Promise<Brand>}
  */
 module.exports.read = async (brandIdx) => {
-    const result = await Brand.findByPk(brandIdx);
+    const result = await Brand.findByPk(brandIdx, {
+        nest: true,
+        raw: true,
+    });
     if (!result) {
         throw new NotMatchedError();
     }
-    return result.dataValues;
+    return result;
 };
 
 /**
@@ -67,6 +73,8 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
         order,
+        raw: true,
+        nest: true,
     });
 };
 
@@ -77,9 +85,6 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
  */
 module.exports.readAll = async () => {
     return Brand.findAndCountAll({
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
         raw: true,
         nest: true,
     });
@@ -132,7 +137,11 @@ module.exports.delete = (brandIdx) => {
  * @returns {Promise<Brand>}
  */
 module.exports.findBrand = (condition) => {
-    return Brand.findOne({ where: condition }).then((it) => {
+    return Brand.findOne({
+        where: condition,
+        nest: true,
+        raw: true,
+    }).then((it) => {
         if (!it) {
             throw new NotMatchedError();
         }
