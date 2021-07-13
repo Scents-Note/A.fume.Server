@@ -3,8 +3,8 @@ const {
     DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
 
-const { Note } = require('../models');
-
+const { Note, sequelize, Sequelize } = require('../models');
+const { Op } = Sequelize;
 /**
  * 노트 생성
  *
@@ -70,4 +70,30 @@ module.exports.updateType = async ({ type, perfumeIdx, ingredientIdx }) => {
  */
 module.exports.delete = (perfumeIdx, ingredientIdx) => {
     return Note.destroy({ where: { perfumeIdx, ingredientIdx } });
+};
+
+/**
+ * 재료별 사용된 향수 개수 카운트
+ *
+ * @param {number[]} ingredientIdxList
+ * @returns {Promise<Ingredient>}
+ */
+module.exports.countIngredientUsed = async (ingredientIdxList) => {
+    const result = await Note.findAll({
+        attributes: {
+            include: [
+                [sequelize.fn('count', sequelize.col('perfume_idx')), 'count'],
+            ],
+        },
+        where: {
+            ingredientIdx: {
+                [Op.in]: ingredientIdxList,
+            },
+        },
+        group: ['ingredient_idx'],
+        raw: true,
+        nest: true,
+    });
+
+    return result;
 };
