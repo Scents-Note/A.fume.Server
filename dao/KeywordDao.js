@@ -251,3 +251,21 @@ module.exports.readAllOfReview = async(reviewIdx) => {
     });
     return keywordList ? keywordList : []
 }
+
+module.exports.readKeywordIdx = async(keywordName) => {
+    const keyword = await Keyword.findOne({
+        where: { name: keywordName },
+        raw: true,
+        nest: true,
+    })
+    return keyword.id  
+}
+
+module.exports.readKeywordName = async(keywordIdx) => {
+    const keyword = await Keyword.findByPk({
+        where: { keywordIdx },
+        raw: true,
+        nest: true,
+    })
+    return keyword.name 
+}
