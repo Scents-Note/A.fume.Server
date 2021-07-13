@@ -1,6 +1,7 @@
 const {
     NotMatchedError,
     DuplicatedEntryError,
+    InvalidInputError,
 } = require('../utils/errors/errors.js');
 
 const { Note } = require('../models');
@@ -12,7 +13,18 @@ const { Note } = require('../models');
  * @returns {Promise<Note>}
  */
 module.exports.create = ({ ingredientIdx, perfumeIdx, type }) => {
-    return Note.create({ ingredientIdx, perfumeIdx, type })
+    if ([1, 2, 3, 4].indexOf(type) == -1) {
+        return new Promise((resolve, reject) => {
+            reject(new InvalidInputError());
+        });
+    }
+    return Note.create(
+        { ingredientIdx, perfumeIdx, type },
+        {
+            raw: true,
+            note: true,
+        }
+    )
         .then((note) => {
             return note;
         })
@@ -22,6 +34,12 @@ module.exports.create = ({ ingredientIdx, perfumeIdx, type }) => {
                 err.parent.code === 'ER_DUP_ENTRY'
             ) {
                 throw new DuplicatedEntryError();
+            }
+            if (
+                err.parent.errno === 1452 ||
+                err.parent.code === 'ER_NO_REFERENCED_ROW_2'
+            ) {
+                throw new NotMatchedError();
             }
             throw err;
         });
@@ -39,8 +57,8 @@ module.exports.read = (where) => {
             exclude: ['updatedAt', 'createdAt'],
         },
         where,
-        nest: false,
-        raw: false,
+        nest: true,
+        raw: true,
     });
 };
 
@@ -69,5 +87,7 @@ module.exports.updateType = async ({ type, perfumeIdx, ingredientIdx }) => {
  * @returns {Promise}
  */
 module.exports.delete = (perfumeIdx, ingredientIdx) => {
-    return Note.destroy({ where: { perfumeIdx, ingredientIdx } });
+    return Note.destroy({
+        where: { perfumeIdx, ingredientIdx },
+    });
 };

@@ -52,7 +52,13 @@ module.exports.create = ({
  * @return {Promise<Ingredient>}
  */
 module.exports.readByIdx = async (ingredientIdx) => {
-    const result = await Ingredient.findByPk(ingredientIdx);
+    const result = await Ingredient.findByPk(ingredientIdx, {
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        nest: true,
+        raw: true,
+    });
     if (!result) {
         throw new NotMatchedError();
     }
@@ -67,6 +73,9 @@ module.exports.readByIdx = async (ingredientIdx) => {
  */
 module.exports.readByName = async (ingredientName) => {
     const result = await Ingredient.findOne({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
         where: { name: ingredientName },
     });
     if (!result) {
@@ -80,7 +89,12 @@ module.exports.readByName = async (ingredientName) => {
  */
 module.exports.readAll = async (where) => {
     const result = await Ingredient.findAndCountAll({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
         where,
+        nest: true,
+        raw: true,
     });
     if (!result) {
         throw new NotMatchedError();
@@ -98,6 +112,9 @@ module.exports.readAll = async (where) => {
  */
 module.exports.search = (pagingIndex, pagingSize, order) => {
     return Ingredient.findAndCountAll({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
         order,
@@ -158,17 +175,11 @@ module.exports.readBySeriesIdxList = async (seriesIdxList) => {
         attributes: {
             exclude: ['createdAt', 'updatedAt'],
         },
-        include: [
-            {
-                model: Series,
-                as: 'Series',
-                where: {
-                    seriesIdx: {
-                        [Op.in]: seriesIdxList,
-                    },
-                },
+        where: {
+            seriesIdx: {
+                [Op.in]: seriesIdxList,
             },
-        ],
+        },
         raw: true,
         nest: true,
     });
@@ -190,6 +201,9 @@ module.exports.readByPerfumeIdx = async (perfumeIdx) => {
             {
                 model: Note,
                 as: 'Notes',
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
                 where: {
                     perfumeIdx,
                 },
@@ -208,7 +222,12 @@ module.exports.readByPerfumeIdx = async (perfumeIdx) => {
  * @returns {Promise<Ingredient>}
  */
 module.exports.findIngredient = (condition) => {
-    return Ingredient.findOne({ where: condition }).then((it) => {
+    return Ingredient.findOne({
+        where: condition,
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+    }).then((it) => {
         if (!it) {
             throw new NotMatchedError();
         }

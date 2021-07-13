@@ -52,11 +52,15 @@ module.exports.readByIdx = async (seriesIdx) => {
  * @return {Promise<Series>}
  */
 module.exports.readByName = async (seriesName) => {
-    const result = await Series.findOne({ where: { name: seriesName } });
+    const result = await Series.findOne({
+        where: { name: seriesName },
+        nest: true,
+        raw: true,
+    });
     if (!result) {
         throw new NotMatchedError();
     }
-    return result.dataValues;
+    return result;
 };
 
 /**
@@ -68,9 +72,6 @@ module.exports.readByName = async (seriesName) => {
  */
 module.exports.readAll = (pagingIndex, pagingSize) => {
     return Series.findAndCountAll({
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
         raw: true,
@@ -91,6 +92,8 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
         order,
+        raw: true,
+        nest: true,
     });
 };
 
@@ -133,10 +136,12 @@ module.exports.delete = (seriesIdx) => {
  * @returns {Promise<Series>}
  */
 module.exports.findSeries = (condition) => {
-    return Series.findOne({ where: condition }).then((it) => {
-        if (!it) {
-            throw new NotMatchedError();
+    return Series.findOne({ where: condition, nest: true, raw: true }).then(
+        (it) => {
+            if (!it) {
+                throw new NotMatchedError();
+            }
+            return it;
         }
-        return it;
-    });
+    );
 };
