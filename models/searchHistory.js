@@ -60,14 +60,10 @@ module.exports = (sequelize, DataTypes) => {
                 defaultValue: 0,
                 allowNull: false,
             },
-            createdAt: {
-                type: DataTypes.DATE,
-                defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
-                allowNull: false,
-            },
         },
         {
             modelName: 'SearchHistory',
+            timestamps: true,
             underscored: true,
             sequelize,
         }

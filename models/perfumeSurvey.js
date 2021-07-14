@@ -21,6 +21,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
+            perfumeIdx: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
         },
         {
             modelName: 'PerfumeSurvey',

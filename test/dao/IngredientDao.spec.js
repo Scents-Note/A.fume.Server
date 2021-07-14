@@ -7,6 +7,7 @@ const ingredientDao = require('../../dao/IngredientDao.js');
 const {
     DuplicatedEntryError,
     NotMatchedError,
+    UnExpectedError,
 } = require('../../utils/errors/errors.js');
 const { Ingredient } = require('../../models');
 
@@ -33,7 +34,7 @@ describe('# ingredientDao Test', () => {
                 })
                 .catch((err) => done(err));
         });
-        // 중복 데이터 발생 케이스
+
         it(' # DuplicatedEntryError case', (done) => {
             ingredientDao
                 .create({
@@ -43,7 +44,7 @@ describe('# ingredientDao Test', () => {
                     seriesIdx: 1,
                     imageUrl: '',
                 })
-                .then(() => done(new Error('expected DuplicatedEntryError')))
+                .then(() => done(new UnExpectedError(DuplicatedEntryError)))
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
                     done();
@@ -60,7 +61,14 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readByIdx(1)
                 .then((result) => {
+                    expect(result.ingredientIdx).to.be.eq(1);
                     expect(result.name).eq('재료1');
+                    expect(result.englishName).to.be.ok;
+                    expect(result.description).to.be.not.undefined;
+                    expect(result.imageUrl).to.be.not.undefined;
+                    expect(result.seriesIdx).to.be.ok;
+                    expect(result.createdAt).to.be.undefined;
+                    expect(result.updatedAt).to.be.undefined;
                     done();
                 })
                 .catch((err) => done(err));
@@ -69,7 +77,14 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readByName('재료2')
                 .then((result) => {
-                    expect(result.ingredientIdx).eq(2);
+                    expect(result.ingredientIdx).to.be.eq(2);
+                    expect(result.name).eq('재료2');
+                    expect(result.englishName).to.be.ok;
+                    expect(result.description).to.be.not.undefined;
+                    expect(result.imageUrl).to.be.not.undefined;
+                    expect(result.seriesIdx).to.be.ok;
+                    expect(result.createdAt).to.be.undefined;
+                    expect(result.updatedAt).to.be.undefined;
                     done();
                 })
                 .catch((err) => done(err));
@@ -81,7 +96,18 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readAll()
                 .then((result) => {
+                    expect(result.count).greaterThan(4);
                     expect(result.rows.length).greaterThan(4);
+                    for (const ingredient of result.rows) {
+                        expect(ingredient.ingredientIdx).to.be.ok;
+                        expect(ingredient.name).to.be.ok;
+                        expect(ingredient.englishName).to.be.ok;
+                        expect(ingredient.description).to.be.not.undefined;
+                        expect(ingredient.imageUrl).to.be.not.undefined;
+                        expect(ingredient.seriesIdx).to.be.ok;
+                        expect(ingredient.createdAt).to.be.undefined;
+                        expect(ingredient.updatedAt).to.be.undefined;
+                    }
                     done();
                 })
                 .catch((err) => done(err));
@@ -93,13 +119,18 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readAll({ seriesIdx: 1 })
                 .then((result) => {
+                    expect(result.count).eq(1);
                     expect(result.rows.length).eq(1);
-                    expect(
-                        result.rows.reduce(
-                            (prev, cur) => prev && cur.seriesIdx == 1,
-                            true
-                        )
-                    ).to.be.true;
+                    for (const ingredient of result.rows) {
+                        expect(ingredient.ingredientIdx).to.be.ok;
+                        expect(ingredient.name).to.be.ok;
+                        expect(ingredient.englishName).to.be.ok;
+                        expect(ingredient.description).to.be.not.undefined;
+                        expect(ingredient.imageUrl).to.be.not.undefined;
+                        expect(ingredient.seriesIdx).to.be.eq(1);
+                        expect(ingredient.createdAt).to.be.undefined;
+                        expect(ingredient.updatedAt).to.be.undefined;
+                    }
                     done();
                 })
                 .catch((err) => done(err));
@@ -108,7 +139,19 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readBySeriesIdxList([1, 2, 3, 4, 5])
                 .then((result) => {
-                    expect(result.length).eq(5);
+                    expect(result.length).gte(5);
+                    for (const ingredient of result) {
+                        expect(ingredient.ingredientIdx).to.be.ok;
+                        expect(ingredient.name).to.be.ok;
+                        expect(ingredient.englishName).to.be.ok;
+                        expect(ingredient.description).to.be.not.undefined;
+                        expect(ingredient.imageUrl).to.be.not.undefined;
+                        expect(ingredient.seriesIdx).to.be.oneOf([
+                            1, 2, 3, 4, 5,
+                        ]);
+                        expect(ingredient.createdAt).to.be.undefined;
+                        expect(ingredient.updatedAt).to.be.undefined;
+                    }
                     done();
                 })
                 .catch((err) => done(err));
@@ -132,7 +175,7 @@ describe('# ingredientDao Test', () => {
                     name: '재료10',
                 })
                 .then(() => {
-                    throw new Error('Must be occur NotMatchedError');
+                    done(new UnExpectedError(NotMatchedError));
                 })
                 .catch((err) => {
                     expect(err).instanceOf(NotMatchedError);
@@ -148,6 +191,24 @@ describe('# ingredientDao Test', () => {
                 .readByPerfumeIdx(1)
                 .then((result) => {
                     expect(result.length).to.be.gte(3);
+                    for (const ingredient of result) {
+                        expect(ingredient.ingredientIdx).to.be.ok;
+                        expect(ingredient.name).to.be.ok;
+                        expect(ingredient.englishName).to.be.ok;
+                        expect(ingredient.description).to.be.not.undefined;
+                        expect(ingredient.imageUrl).to.be.not.undefined;
+                        expect(ingredient.seriesIdx).to.be.ok;
+                        expect(ingredient.createdAt).to.be.undefined;
+                        expect(ingredient.updatedAt).to.be.undefined;
+                        expect(ingredient.Notes).to.be.ok;
+                        expect(ingredient.Notes.perfumeIdx).to.be.eq(1);
+                        expect(ingredient.Notes.ingredientIdx).to.be.eq(
+                            ingredient.ingredientIdx
+                        );
+                        expect(ingredient.Notes.type).to.be.within(1, 4);
+                        expect(ingredient.Notes.createdAt).to.be.undefined;
+                        expect(ingredient.Notes.updatedAt).to.be.undefined;
+                    }
                     done();
                 })
                 .catch((err) => done(err));
@@ -176,11 +237,17 @@ describe('# ingredientDao Test', () => {
                 })
                 .then((result) => {
                     expect(result).eq(1);
-                    return Ingredient.findByPk(ingredientIdx);
+                    return ingredientDao.readByIdx(ingredientIdx);
                 })
                 .then((result) => {
                     expect(result.name).eq('수정 데이터');
                     expect(result.englishName).eq('Update Data');
+                    expect(result.englishName).to.be.ok;
+                    expect(result.description).to.be.not.undefined;
+                    expect(result.imageUrl).to.be.not.undefined;
+                    expect(result.seriesIdx).to.be.ok;
+                    expect(result.createdAt).to.be.undefined;
+                    expect(result.updatedAt).to.be.undefined;
                     done();
                 })
                 .catch((err) => done(err));
@@ -192,8 +259,8 @@ describe('# ingredientDao Test', () => {
                     name: '재료5',
                     englishName: 'Update Data',
                 })
-                .then((result) => {
-                    throw new Error('Must be occur NotMatchedError');
+                .then(() => {
+                    done(new UnExpectedError(NotMatchedError));
                 })
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);

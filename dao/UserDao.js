@@ -52,11 +52,11 @@ module.exports.create = ({
  * @returns {Promise<User>}
  */
 module.exports.read = async (where) => {
-    const result = await User.findOne({ where });
+    const result = await User.findOne({ where, nest: true, raw: true });
     if (!result) {
         throw new NotMatchedError();
     }
-    return result.dataValues;
+    return result;
 };
 
 /**
