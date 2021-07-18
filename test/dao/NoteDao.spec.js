@@ -100,6 +100,33 @@ describe('# NoteDao Test', () => {
         });
     });
 
+    describe('# countIngredientUsed Test', () => {
+        it('# success case', (done) => {
+            const ingredientIdxList = [1, 2, 3, 4, 5];
+            const expectedCountList = [5, 5, 5, 5, 4];
+            noteDao
+                .countIngredientUsed(ingredientIdxList)
+                .then((result) => {
+                    for (const json of result) {
+                        expect(json.perfumeIdx).to.be.ok;
+                        expect(json.ingredientIdx).to.be.oneOf(
+                            ingredientIdxList
+                        );
+                        expect(json.type).to.be.ok;
+                        expect(json.createdAt).to.be.ok;
+                        expect(json.updatedAt).to.be.ok;
+                        const expectedCount =
+                            expectedCountList[
+                                ingredientIdxList.indexOf(json.ingredientIdx)
+                            ];
+                        expect(json.count).to.be.gte(expectedCount);
+                    }
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+    });
+
     describe(' # update Test', () => {
         before(async () => {
             await Note.upsert({

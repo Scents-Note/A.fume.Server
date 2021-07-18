@@ -7,7 +7,6 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: {
                     name: 'perfumeIdx',
                     allowNull: false,
-                    primaryKey: true,
                 },
                 as: 'Perfume',
                 onUpdate: 'CASCADE',

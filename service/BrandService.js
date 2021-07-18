@@ -24,7 +24,9 @@ exports.searchBrand = (pagingIndex, pagingSize, sort) => {
  * @returns {Promise<Brand[]>}
  **/
 exports.getBrandAll = () => {
-    return brandDao.readAll();
+    return brandDao.readAll().then((result) => {
+        return updateList(result, removeKeyJob('createdAt', 'updatedAt'));
+    });
 };
 
 /**
@@ -34,7 +36,9 @@ exports.getBrandAll = () => {
  * @returns {Promise<Brand>}
  **/
 exports.getBrandByIdx = (brandIdx) => {
-    return brandDao.read(brandIdx);
+    return brandDao.read(brandIdx).then((result) => {
+        return removeKeyJob('createdAt', 'updatedAt')(result);
+    });
 };
 
 /**
@@ -116,7 +120,9 @@ exports.getFilterBrand = () => {
                         'englishName',
                         'description',
                         'imageUrl',
-                        'firstInitial'
+                        'firstInitial',
+                        'createdAt',
+                        'updatedAt'
                     )
                 ),
             };
@@ -131,5 +137,7 @@ exports.getFilterBrand = () => {
  * @returns {Promise<Brand>}
  **/
 exports.findBrandByEnglishName = (englishName) => {
-    return brandDao.findBrand({ englishName });
+    return brandDao.findBrand({ englishName }).then((result) => {
+        return removeKeyJob('createdAt', 'updatedAt')(result);
+    });
 };

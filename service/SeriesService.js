@@ -2,6 +2,7 @@
 
 const seriesDao = require('../dao/SeriesDao.js');
 const ingredientDao = require('../dao/IngredientDao');
+const noteDao = require('../dao/NoteDao.js');
 const { parseSortToOrder } = require('../utils/parser.js');
 
 /**
@@ -83,6 +84,20 @@ exports.getIngredientList = (seriesIdx) => {
     });
 };
 
+const FILTER_INGREDIENT_LIMIT_USED_COUNT = 10;
+async function filterByUsedCount(ingredientList) {
+    const ingredientIdxList = ingredientList.map((it) => it.ingredientIdx);
+    const countMap = (
+        await noteDao.countIngredientUsed(ingredientIdxList)
+    ).reduce((prev, cur) => {
+        prev[cur.ingredientIdx] = cur.count;
+        return prev;
+    }, {});
+    return ingredientList.filter((it) => {
+        return countMap[it.ingredientIdx] > FILTER_INGREDIENT_LIMIT_USED_COUNT;
+    });
+}
+
 /**
  * 필터에서 보여주는 Series 조회
  *
@@ -95,7 +110,8 @@ exports.getFilterSeries = async (pagingIndex, pagingSize) => {
     const ingredientList = await ingredientDao.readBySeriesIdxList(
         seriesIdxList
     );
-    const ingredientMap = ingredientList.reduce((prev, cur) => {
+    const ingredientFilteredList = await filterByUsedCount(ingredientList);
+    const ingredientMap = ingredientFilteredList.reduce((prev, cur) => {
         delete cur.Series;
         if (!prev[cur.seriesIdx]) {
             prev[cur.seriesIdx] = [];

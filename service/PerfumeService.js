@@ -62,8 +62,8 @@ const commonJob = [
         'englishName',
         'brandIdx',
         'likeCnt',
-        'updatedAt',
-        'createdAt'
+        'createdAt',
+        'updatedAt'
     ),
 ];
 
