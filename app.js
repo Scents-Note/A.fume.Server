@@ -14,6 +14,7 @@ const { swaggerUi, specs, swaggerRouter } = require('./modules/swagger');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use(specs.basePath, swaggerRouter);
 app.use(specs.basePath, require('./middleware/auth.js').verifyTokenMiddleware);
+app.use(specs.basePath, require('./controllers/index.js'));
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
