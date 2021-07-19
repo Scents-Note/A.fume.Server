@@ -18,7 +18,7 @@ module.exports.postPerfume = (req, res, next) => {
     const body = req.body;
     body.abundanceRate = abundanceRateArr.indexOf(body.abundanceRate);
     if (body.abundanceRate == -1) {
-        throw InvalidInputError(
+        throw new InvalidInputError(
             `abundanceRate is only allow ${abundanceRateArr}`
         );
     }
