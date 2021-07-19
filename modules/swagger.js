@@ -41,7 +41,27 @@ const options = {
 console.log(`Swagger host is ${localIpAddress}:${process.env.PORT}`);
 const specs = swaggerJsdoc(options);
 
+const express = require('express');
+
+const swaggerRouter = express.Router();
+for (const _endpoint in specs.paths) {
+    const endpoint = _endpoint.replace(/{/g, ':').replace(/}/g, '');
+    for (const method in specs.paths[_endpoint]) {
+        const parameter = specs.paths[_endpoint][method];
+        swaggerRouter[method](endpoint, (req, res, next) => {
+            req.swagger = parameter;
+            req.swagger.params = {};
+            for (const key in req.params) {
+                req.swagger.params[key] = { value: req.params[key] };
+            }
+            req.swagger.params['body'] = { value: req.body };
+            next();
+        });
+    }
+}
+
 module.exports = {
     swaggerUi,
     specs,
+    swaggerRouter,
 };

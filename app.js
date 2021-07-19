@@ -10,9 +10,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-const { swaggerUi, specs } = require('./modules/swagger');
+const { swaggerUi, specs, swaggerRouter } = require('./modules/swagger');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
-app.use(specs.basePath, require('./controllers/index.js')(specs));
+app.use(specs.basePath, swaggerRouter);
 app.use(specs.basePath, require('./middleware/auth.js').verifyTokenMiddleware);
 
 // catch 404 and forward to error handler
