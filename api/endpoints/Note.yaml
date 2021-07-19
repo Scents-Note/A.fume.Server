@@ -1,0 +1,70 @@
+paths:
+  /note:
+    post:
+      tags:
+      - WEB_note
+      summary: note 삽입
+      operationId: postNote
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Post new series info
+        required: false
+        schema:
+          $ref: '#/definitions/NoteInfo'
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+                example: note 추가 성공
+              data:
+                type: integer
+                example: 122
+                description: perfume idx
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Note
+    put:
+      tags:
+      - WEB_note
+      summary: note 수정
+      operationId: putNote
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        description: Updated note info
+        required: false
+        schema:
+          $ref: '#/definitions/NoteInfo'
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message: 
+                type: string
+                example: note 수정 성공
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Note

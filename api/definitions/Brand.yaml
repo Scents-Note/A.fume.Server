@@ -1,0 +1,20 @@
+definitions:
+  BrandInfo:
+    type: object
+    properties:
+      name:
+        type: string
+      englishName:
+        type: string
+      firstInitial:
+        type: string
+      description:
+        type: string
+      imageUrl:
+        type: string
+    example:
+      name: (테스트)조말론
+      englishName: (테스트)Jo Malone
+      firstInitial: ㅌ
+      description: (테스트)런던 브랜드
+      imageUrl: (테스트)

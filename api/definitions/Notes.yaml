@@ -1,0 +1,14 @@
+definitions:
+  NoteInfo:
+    type: object
+    properties:
+      ingredientIdx:
+        type: integer
+      perfumeIdx:
+        type: integer
+      type: 
+        type: integer
+    example:
+      ingredientIdx: 1
+      perfumeIdx: 1
+      type: 4

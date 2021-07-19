@@ -1,0 +1,599 @@
+paths:
+  /perfume:
+    post:
+      tags:
+      - WEB_perfume
+      summary: 향수 정보 추가
+      operationId: postPerfume
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          allOf:
+          - $ref: '#/definitions/PerfumeInfo'
+          - $ref: '#/definitions/PerfumeDetailInfo'
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 추가 성공
+              data:
+                type: integer
+                example: 1
+                description: 향수 perfumeIdx
+        400:
+          description: Invalid ID supplied
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Perfume
+  /perfume/search:
+    post:
+      tags:
+      - perfume
+      summary: 향수 검색
+      description: 카테코리(키워드, 브랜드, 재료)는 AND 검색이며 카테고리 내 선택은 OR 검색이다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
+      operationId: searchPerfume
+      security:
+        - userToken: []
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        schema:
+          type: object
+          properties:
+            searchText:
+              type: string
+              example: 'Tom'
+            keywordList:
+              type: array
+              items:
+                type: integer
+              example: []
+            ingredientList:
+              type: array
+              items:
+                type: integer
+              example: []
+            brandList:
+              type: array
+              items: 
+                type: integer
+              example: []
+      - name: sort
+        in: query
+        type: string
+        enum:
+        - likeCnt_asc
+        - createdAt_asc
+        - likeCnt_desc
+        - createdAt_desc
+        required: false
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 검색 성공
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                      - $ref: '#/definitions/Perfume'
+                      - type: object
+                        properties:
+                          isLike:
+                            type: boolean
+                        example: 
+                          isLike: true
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Perfume
+  /perfume/recent:
+    get:
+      tags:
+      - perfume
+      summary: 최근 조회한 향수 조회
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 최근에 향수 세부 보기를 수행한 향수들을 조회한다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
+      operationId: getRecentPerfume
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      produces:
+      - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 검색 성공
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                      - $ref: '#/definitions/Perfume'
+                      - type: object
+                        properties:
+                          isLike:
+                            type: boolean
+                        example: 
+                          isLike: true
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Perfume
+  /perfume/new:
+    get:
+      tags:
+      - perfume
+      summary: 새로 등록한 향수 조회
+      description: 최근에 서버에 등록된 향수를 조회한다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
+      operationId: getNewPerfume
+      produces:
+      - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 검색 성공
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                      - $ref: '#/definitions/Perfume'
+                      - type: object
+                        properties:
+                          isLike:
+                            type: boolean
+                        example: 
+                          isLike: true
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Perfume
+  /perfume/survey:
+    get:
+      tags:
+      - perfume
+      summary: 서베이 추천 향수 조회 
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저의 성별에 따라서 다른 향수 리스트를 반환한다. <br/> 반환 되는 정보 [향수]
+      operationId: getSurveyPerfume
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      produces:
+      - application/json
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 서베이 추천 향수 조회 성공
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      $ref: '#/definitions/Perfume'
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Perfume
+  /perfume/recommend/common:
+    get:
+      tags:
+      - perfume
+      summary: 향수 일반 추천 (성별, 나이 반영)
+      description: 유저 연령, 성별에 따른 향수를 추천해준다. (로그인 이전의 경우 20대 여성 기본 값) <br/> 반환 되는 정보 [향수, 좋아요 여부]
+      operationId: recommendCommonPerfume
+      security:
+        - userToken: []
+      produces:
+      - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 검색 성공
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                      - $ref: '#/definitions/Perfume'
+                      - type: object
+                        properties:
+                          isLike:
+                            type: boolean
+                        example: 
+                          isLike: true
+      x-swagger-router-controller: Perfume
+  /perfume/recommend/personal:
+    get:
+      tags:
+      - perfume
+      summary: 향수 개인 맞춤 추천
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 데이터를 활용해서 향수를 추천해준다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
+      operationId: recommendPersonalPerfume
+      security:
+        - userToken: []
+      produces:
+      - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 검색 성공
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                      - $ref: '#/definitions/Perfume'
+                      - type: object
+                        properties:
+                          isLike: 
+                            type: boolean
+                        example:
+                          isLike: true
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Perfume
+  /perfume/{perfumeIdx}:
+    get:
+      tags:
+      - perfume
+      summary: 향수 세부 정보 조회
+      operationId: getPerfume
+      security:
+        - userToken: []
+      produces:
+      - application/json
+      parameters:
+      - name: perfumeIdx
+        in: path
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 세부 조회 성공
+              data:
+                allOf:
+                - $ref: '#/definitions/Perfume'
+                - type: object
+                  properties:
+                    isLike:
+                      type: integer
+                    Keywords:
+                      type: array
+                      items:
+                        $ref: '#/definitions/KeywordInfo'
+                - $ref: '#/definitions/PerfumeDetailInfo'
+                - $ref: '#/definitions/PerfumeNote'
+                - $ref: '#/definitions/PerfumeSummary'
+                example:
+                  isLike: true
+                  story: 조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트\
+                        , 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다.
+                  abundanceRate: 코롱
+                  imageUrls: []
+                  volumeAndPrice:
+                  - 90,000/30ml
+                  - 100,000/50ml
+                  - 19,000/100ml
+                  Keywords:
+                  - 시원한
+                  - 차가운
+                  noteType: 0
+                  ingredients:
+                    top: 재료1, 재료5
+                    middle: 재료2, 재료6
+                    base: 재료3, 재료4, 재료7
+                    single: ''
+                  score: 5.4
+                  seasonal:
+                    spring: 0
+                    summer: 30
+                    fall: 30
+                    winter: 40
+                  sillage:
+                    light: 40
+                    medium: 20
+                    heavy: 40
+                  longevity:
+                    veryWeak: 10
+                    weak: 10
+                    normal: 20
+                    strong: 20
+                    veryStrong: 10
+        401:
+          description: Token is missing or invalid
+        404:
+          description: Perfume not found
+      x-swagger-router-controller: Perfume
+    put:
+      tags:
+      - WEB_perfume
+      summary: 향수 정보 업데이트
+      operationId: putPerfume
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: perfumeIdx
+        in: path
+        required: true
+        type: integer
+        format: int64
+      - in: body
+        name: body
+        required: false
+        schema:
+          $ref: '#/definitions/PerfumeInfo'
+      responses:
+        200:
+          description: 성공
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Perfume
+    delete:
+      tags:
+      - WEB_perfume
+      summary: 향수 삭제
+      operationId: deletePerfume
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      produces:
+      - application/json
+      parameters:
+      - name: perfumeIdx
+        in: path
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: 성공
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        401:
+          description: Token is missing or invalid
+        404:
+          description: Perfume not found
+      x-swagger-router-controller: Perfume
+  /perfume/{perfumeIdx}/like:
+    post:
+      tags:
+      - perfume
+      summary: 향수 좋아요
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 향수 좋아요 / 좋아요 취소를 수행한다. <br/> 반환 되는 정보 [최종 좋아요 상태]
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      operationId: likePerfume
+      produces:
+      - application/json
+      parameters:
+      - name: perfumeIdx
+        in: path
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 세부 조회 성공
+              data:
+                type: boolean
+                example: true
+                description: 요청 이후 좋아요 상태
+        401:
+          description: Token is missing or invalid
+        404:
+          description: Perfume not found
+      x-swagger-router-controller: Perfume
+  /user/{userIdx}/perfume/liked:
+    get:
+      tags:
+      - perfume
+      summary: read user's likedPerfume
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저가 좋아요한 향수 조회 <br/> 반환 되는 정보 [향수]
+      operationId: getLikedPerfume
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      produces:
+      - application/json
+      parameters:
+      - name: userIdx
+        in: path
+        required: true
+        type: string
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: successful operation
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 유저가 좋아요한 향수 조회 성공
+              data:
+                type: array
+                items:               
+                  allOf:
+                  - $ref: '#/definitions/Perfume'
+        default:
+          description: successful operation
+      x-swagger-router-controller: Perfume
+  /getPerfumeIdx:
+    post:
+      tags:
+      - SUB_perfume
+      summary: 향수 Index 조회
+      description: englishName으로 향수의 index를 조회한다
+      operationId: getPerfumeIdxByEnglishName
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            englishName:
+              type: string
+              example: 154 Cologne
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 향수 idx 조회 성공
+              data:
+                type: integer
+                example: 1
+      x-swagger-router-controller: Perfume

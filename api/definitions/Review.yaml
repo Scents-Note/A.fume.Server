@@ -1,0 +1,61 @@
+definitions:
+  ReviewInfo:
+    type: object
+    properties:
+      score:
+        description: 별점
+        type: number
+        minimum: 1
+        maximum: 5
+      content:
+        description: 내용
+        type: string  
+      longevity:
+        description: 지속력
+        type: string
+        enum:
+        - 매우 약함
+        - 약함
+        - 보통
+        - 강함
+        - 매우 강함
+      sillage:
+        description: 잔향감
+        type: string
+        enum:
+        - 가벼움
+        - 보통
+        - 무거움
+      seasonal:
+        description: 계절감
+        type: array
+        items:
+          type: string
+          enum:
+            - 봄
+            - 여름
+            - 가을
+            - 겨울        
+      gender:
+        description: 성별감
+        type: string
+        enum:
+        - 남성
+        - 중성
+        - 여성
+      access: 
+        description: 시향노트 공유 여부
+        type: boolean
+        enum:
+        - true
+        - false
+    example:
+      score: 2
+      longevity: 강함
+      sillage: 보통
+      seasonal:
+      - 겨울
+      - 가을
+      gender: 중성
+      access: true
+      content: 시향노트 내용

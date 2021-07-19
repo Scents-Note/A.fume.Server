@@ -1,0 +1,17 @@
+definitions:
+  SeriesInfo:
+    type: object
+    properties:
+      name:
+        type: string
+      englishName:
+        type: string
+      description:
+        type: string
+      imageUrl:
+        type: string
+    example:
+      name: 꿀
+      englishName: Honey
+      description: 화이트 허니, 허니
+      imageUrl: http://

@@ -1,0 +1,23 @@
+definitions:
+  ReplyInfo:
+    type: object
+    properties:
+      userIdx:
+        type: integer
+        format: int64
+      content:
+        type: string
+    example:
+      userIdx: 2
+      content: 저한테도 인생 향수에요~
+  Reply:
+    type: object
+    properties:
+      nickname:
+        type: string
+        example: 
+    allOf:
+    - $ref: '#/definitions/ReplyInfo'
+    - {}
+    example:
+      nickname: 향린이S2

@@ -1,0 +1,308 @@
+paths:
+  /brand:
+    get:
+      tags:
+      - brand
+      summary: 브랜드 전체 조회
+      description: 브랜드 조회 <br/> 반환 되는 정보 [브랜드]
+      operationId: getBrandAll
+      produces:
+      - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 브랜드 조회 성공
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 1
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                      - $ref: '#/definitions/BrandInfo'
+                      - type: object
+                        properties:
+                          brandIdx:
+                            type: integer
+                        example:
+                          brandIdx: 1
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Brand
+    post:
+      tags:
+      - WEB_brand
+      summary: 브랜드 삽입
+      operationId: postBrand
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: body
+        schema:
+          $ref: '#/definitions/BrandInfo'
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 브랜드 추가 성공
+              data:
+                type: integer
+                example: 1
+                description: 브랜드 brandIdx
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Brand
+  /brand/search:
+    get:
+      tags:
+      - WEB_brand
+      summary: 브랜드 검색
+      operationId: searchBrand
+      produces:
+      - application/json
+      parameters:
+      - name: sort
+        in: query
+        type: string
+        enum:
+        - name_asc
+        - name_desc
+        - englishName_asc
+        - englishName_desc
+        - createdAt_asc
+        - createdAt_desc
+        required: false
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 브랜드 검색 성공
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                    example: 10
+                  rows:
+                    type: array
+                    items:
+                      allOf:
+                      - $ref: '#/definitions/BrandInfo'
+                      - type: object
+                        properties:
+                          brandIdx:
+                            type: integer
+                        example:
+                          brandIdx: 1
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Brand
+  /brand/find:
+    post:
+      tags:
+      - SUB_brand
+      summary: 브랜드 조회
+      operationId: getBrandByEnglishName
+      parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            englishName:
+              type: string
+              example: GALIMARD
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 브랜드 조회 성공
+              data:
+                allOf:
+                - $ref: '#/definitions/BrandInfo'
+                - type: object
+                  properties:
+                    brandIdx:
+                      type: integer
+                  example:
+                    brandIdx: 1
+      x-swagger-router-controller: Brand
+  /brand/{brandIdx}:
+    get:
+      tags:
+      - WEB_brand
+      summary: 브랜드 조회
+      description: 브랜드 조회
+      operationId: getBrand
+      security:
+        - userToken: []
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: brandIdx
+        in: path
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 브랜드 세부 조회 성공
+              data:
+                allOf:
+                - $ref: '#/definitions/BrandInfo'
+                - type: object
+                  properties:
+                    brandIdx:
+                      type: integer
+                  example:
+                    brandIdx: 1
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Brand
+    put:
+      tags:
+      - WEB_brand
+      summary: 브랜드 수정
+      operationId: putBrand
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: brandIdx
+        in: path
+        required: true
+        type: integer
+        format: int64
+      - in: body
+        name: body
+        required: false
+        schema:
+          $ref: '#/definitions/BrandInfo'
+      responses:
+        200:
+          description: 성공
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Brand
+    delete:
+      tags:
+      - WEB_brand
+      summary: 브랜드 삭제
+      operationId: deleteBrand
+      security:
+        - userToken: []
+      x-security-scopes:
+        - admin
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: brandIdx
+        in: path
+        required: true
+        type: integer
+        format: int64
+      responses:
+        200:
+          description: 성공
+        401:
+          description: Token is missing or invalid
+      x-swagger-router-controller: Brand
+  /filter/brand:
+    get:
+      tags:
+      - brand
+      summary: 필터를 위한 brand 리스트
+      description: 향수 검색 화면에서 제공되는 브랜드 리스트 <br/> 반환 되는 정보 [브랜드 + 초성]
+      operationId: getFilterBrand
+      produces:
+      - application/json
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Filter Brand 리스트 조회 성공
+              data:
+                type: array
+                items:
+                  type: object
+                  properties: 
+                    firstInitial: 
+                      type: string
+                      example: ㄷ 
+                    brands:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          brandIdx:
+                            type: integer
+                            example: 10
+                          name:
+                            type: string
+                            example: 다비도프
+                      
+      x-swagger-router-controller: Brand

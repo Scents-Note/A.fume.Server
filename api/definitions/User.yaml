@@ -1,0 +1,21 @@
+definitions:
+  User:
+    type: object
+    properties:
+      email:
+        type: string
+      nickname:
+        type: string
+      gender:
+        type: string
+        enum: [MAN, WOMAN]
+      birth:
+        type: integer
+      grade:
+        type: string
+        enum: [USER, OPERATOR, SYSTEM]
+    example:
+      email: hee.youn@samsung.com
+      nickname: 쿼카맨
+      gender: MAN
+      birth: 1995

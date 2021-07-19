@@ -1,0 +1,10 @@
+definitions:
+  KeywordInfo:
+    type: object
+    properties:
+      keywordIdx:
+        type: number
+        example: 1
+      name:
+        type: string
+        example: 달달한

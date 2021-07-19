@@ -1,0 +1,31 @@
+definitions:
+  IngredientInfo:
+    type: object
+    properties:
+      name:
+        type: string
+      englishName:
+        type: string
+      description:
+        type: string
+      imageUrl:
+        type: string
+      seriesIdx:
+        type: number
+    example:
+      name: 씨쏠트
+      englishName: Sea Salt
+      description: 바다 소금
+      imageUrl: 'url'
+      seriesIdx: 4
+  IngredientMap:
+    type: object
+    properties:
+      top:
+        type: string
+      middle:
+        type: string
+      base:
+        type: string
+      single:
+        type: string
