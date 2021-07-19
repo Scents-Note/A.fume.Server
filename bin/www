@@ -4,6 +4,10 @@
  * Module dependencies.
  */
 
+const dotenv = require('dotenv');
+dotenv.config();
+console.log(`ENV: ${process.env.NODE_ENV}`);
+
 const app = require('../app');
 const debug = require('debug')('swagger-test:server');
 const http = require('http');
@@ -12,6 +16,7 @@ const http = require('http');
  * Get port from environment and store in Express.
  */
 
+const ipAddress = process.env.SERVER_IP || 'localhost';
 const port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
@@ -25,7 +30,19 @@ const server = http.createServer(app);
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
+server.listen(port, () => {
+    console.log(
+        'Your server is listening on port %d (http://%s:%d)',
+        port,
+        ipAddress,
+        port
+    );
+    console.log(
+        'Swagger-ui is available on http://%s:%d/docs',
+        ipAddress,
+        port
+    );
+});
 server.on('error', onError);
 server.on('listening', onListening);
 

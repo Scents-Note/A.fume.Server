@@ -1,5 +1,3 @@
----
-basePath: /A.fume/api/0.0.1
 tags:
 - name: perfume
   description: 향수 정보
@@ -31,12 +29,6 @@ tags:
   description: 사용자 for Web
 - name: WEB_keyword
   description: 키워드 for Web
-
-schemes:
-#- https
-- http
-security:
-- userToken: []
 securityDefinitions:
   userToken:
       type: apiKey
@@ -47,6 +39,3 @@ securityDefinitions:
     type: apiKey
     name: X-API-Key
     in: header
-externalDocs:
-  description: Afume Server Git Wiki
-  url: https://github.com/A-fume/A.fume.Server/wiki
