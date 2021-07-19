@@ -23,11 +23,11 @@ const KeywordDao = require('../dao/KeywordDao');
 module.exports.inputStrToDBIntOfReview = async ({longevity, sillage, seasonalList, gender, keywordList}) => {
     try{
         // seasonalList 변환하기 (비트연산)
-        let sum = 0;
+        let sum;
         if (seasonalList) {
-            seasonalList.reduce((acc, it) => {
+            sum = seasonalList.reduce((acc, it) => {
                 const bit = 2**seasonalTypeArr.indexOf(it)
-                acc = acc + bit
+                return acc + bit
             }, 0)
         }
 
@@ -35,7 +35,7 @@ module.exports.inputStrToDBIntOfReview = async ({longevity, sillage, seasonalLis
         let keywordIdxList;
         if (keywordList) {
             keywordIdxList = await Promise.all(keywordList.map(it => {
-                if (typeof it == 'integer') {
+                if (typeof it == 'number') {
                     return it
                 }
                 else if (typeof it == 'string'){
@@ -114,19 +114,19 @@ module.exports.DBIntToOutputStrOfReview = async ({longevity, sillage, sumOfBitSe
 module.exports.InputIntToDBIntOfReview = async ({longevity, sillage, seasonalList, gender, keywordList}) => {
     try{
         // seasonalList 변환하기 (비트연산)
-        let sum = 0;
+        let sum;
         if (seasonalList) {
-            seasonalList.reduce((acc, it) => {
+            sum = seasonalList.reduce((acc, it) => {
                 const bit = 2**seasonalTypeArr.indexOf(it)
-                acc = acc + bit
-            }, 0)    
+                return acc + bit
+            }, 0)
         }
     
         // keywordList 변환하기
         let keywordIdxList;
         if (keywordList) {
             keywordIdxList = await Promise.all(keywordList.map(it => {
-                if (typeof it == 'integer') {
+                if (typeof it == 'number') {
                     return it
                 }
                 else if (typeof it == 'string'){
@@ -141,7 +141,7 @@ module.exports.InputIntToDBIntOfReview = async ({longevity, sillage, seasonalLis
         return {
             longevity: longevity+1? longevity+1 : null,
             sillage: sillage+1? sillage+1 : null,
-            sumOfBitSeasonal: seasonalList? sum : null,
+            sumOfBitSeasonal: seasonalList && sum > 0? sum : null,
             gender: gender+1? gender+1 : null,
             keywordList: keywordList? keywordIdxList: null
         }

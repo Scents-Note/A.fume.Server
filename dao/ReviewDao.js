@@ -57,21 +57,12 @@ module.exports.create = async ({
 module.exports.read = async (reviewIdx) => {
     const reviewList = await Review.findByPk(reviewIdx, {
         where: { id: reviewIdx },
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
         include: [
             {
                 model: Perfume,
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt'],
-                },
                 include: {
                     model: Brand,
                     as: 'Brand',
-                    attributes: {
-                        exclude: ['createdAt', 'updatedAt'],
-                    },
                 },
             },
         ],
@@ -81,15 +72,9 @@ module.exports.read = async (reviewIdx) => {
 
     const keywordList = await JoinReviewKeyword.findAll({
         where: { reviewIdx },
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
         include: [
             {
                 model: Keyword,
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt'],
-                },
             },
         ],
         raw: true,
@@ -125,15 +110,9 @@ module.exports.readAllOfUser = async (
         where: { userIdx },
         include: {
             model: Perfume,
-            attributes: {
-                exclude: ['createdAt', 'updatedAt'],
-            },
             include: {
                 model: Brand,
                 as: 'Brand',
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt'],
-                },
             },
         },
         order: sort,
@@ -163,6 +142,7 @@ SQL_READ_ALL_OF_PERFUME = `
     r.gender as gender, 
     r.access as access, 
     r.content as content, 
+    r.created_at as createdAt,
     u.user_idx as "User.userIdx", 
     u.email as "User.email",
     u.nickname as "User.nickname", 
@@ -181,37 +161,12 @@ SQL_READ_ALL_OF_PERFUME = `
 module.exports.readAllOfPerfume = async (perfumeIdx) => {
     let reviewList = await sequelize.query(SQL_READ_ALL_OF_PERFUME, {
         bind: [perfumeIdx],
-        // order: [["likeCount", 'desc']],
         nest: true,
         raw: true,
         model: Review,
         mapToModel: true,
         type: sequelize.QueryTypes.SELECT,
     });
-    // sequelize 시도
-    // let result = await Review.findAll({
-    //     attributes: {
-    //         exclude: ['createdAt', 'updatedAt'],
-    //     },
-    //     include: [
-    //         {
-    //             model: User,
-    //             attributes: {
-    //                 exclude: ['createdAt', 'updatedAt'],
-    //             },
-    //         },
-    //         {
-    //             model: LikeReview,
-    //             as: 'ReviewLike',
-    //             attributes: [sequelize.literal('(SELECT COUNT(*) FROM like_reviews WHERE like_reviews.review_idx = Review.id)'), 'likeCount']
-    //             // attributes:[[sequelize.fn('count', 'reviewIdx'), 'likeCount']],
-    //         }
-    //     ],
-    //     order: [[sequelize.literal('"likeCount"'), 'DESC']],
-    //     where: {perfumeIdx: perfumeIdx},
-    //     raw: true,
-    //     nest: true
-    // });
     return reviewList;
 };
 

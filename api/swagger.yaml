@@ -1585,7 +1585,7 @@ paths:
             - $ref: '#/definitions/ReviewInfo'
             - type: object
               example:
-                keywordList:  [4, 5]
+                keywordList:  [1, 2]
               properties:
                 keywordList: 
                   type: array
@@ -1637,14 +1637,14 @@ paths:
       #   - likeCount_desc
       #   - score_desc
       #   required: false
-      - name: pagingSize
-        in: query
-        type: integer
-        required: false
-      - name: pagingIndex
-        in: query
-        type: integer
-        required: false
+      # - name: pagingSize
+      #   in: query
+      #   type: integer
+      #   required: false
+      # - name: pagingIndex
+      #   in: query
+      #   type: integer
+      #   required: false
       responses:
         200:
           description: 성공
@@ -1657,31 +1657,39 @@ paths:
               data:
                 type: array
                 items:
-                  allOf:
-                  - $ref: '#/definitions/ReviewInfo'
-                  - type: object
-                    properties: 
-                      reviewIdx:
-                        type: integer
-                        format: int64
-                      likeCount:
-                        type: integer
-                        format: int64
-                      age:
-                        type: string
-                      userGender: 
-                        type: string
-                      nickname:
-                        type: string
-                      createTime:
-                        type: string
-                    example:
-                      reviewIdx: 339
-                      likeCount: 3
-                      userGender: 여자
-                      age: 20대 중반
-                      nickname: 담담
-                      createTime: '2020-12-07 00:11:41'
+                  type: object
+                  properties: 
+                    reviewIdx:
+                      type: integer
+                      format: int64
+                    score:
+                      type: integer
+                      format: int64
+                    access:
+                      type: boolean
+                    content:
+                      type: string
+                    likeCount:
+                      type: integer
+                      format: int64
+                    age:
+                      type: string
+                    userGender: 
+                      type: string
+                    nickname:
+                      type: string
+                    createTime:
+                      type: string
+                  example:
+                    reviewIdx: 339
+                    score: 5
+                    access: true
+                    content: "시향노트 내용"
+                    likeCount: 3
+                    userGender: 여자
+                    age: 20대 중반
+                    nickname: 담담
+                    createTime: '2020-12-07 00:11:41'
       x-swagger-router-controller: Review
   /review/{reviewIdx}:
     get:
@@ -1796,7 +1804,7 @@ paths:
             - $ref: '#/definitions/ReviewInfo'
             - type: object
               example:
-                keywordList:  [1, 2]
+                keywordList:  [3, 4]
               properties:
                 keywordList: 
                   type: array
@@ -3128,20 +3136,22 @@ definitions:
         type: string  
       longevity:
         description: 지속력
-        type: string
+        type: integer
+        format: int64
         enum:
-        - 매우 약함
-        - 약함
-        - 보통
-        - 강함
-        - 매우 강함
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
       sillage:
         description: 잔향감
-        type: string
+        type: integer
+        format: int64
         enum:
-        - 가벼움
-        - 보통
-        - 무거움
+        - 0
+        - 1
+        - 2
       seasonal:
         description: 계절감
         type: array
@@ -3154,11 +3164,12 @@ definitions:
             - 겨울        
       gender:
         description: 성별감
-        type: string
+        type: integer
+        format: int64
         enum:
-        - 남성
-        - 중성
-        - 여성
+        - 0
+        - 1
+        - 2
       access: 
         description: 시향노트 공유 여부
         type: boolean
@@ -3166,13 +3177,13 @@ definitions:
         - true
         - false
     example:
-      score: 2
-      longevity: 강함
-      sillage: 보통
+      score: 1
+      longevity: 0
+      sillage: 1
       seasonal:
       - 겨울
       - 가을
-      gender: 중성
+      gender: 2
       access: true
       content: 시향노트 내용
   ReplyInfo:

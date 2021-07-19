@@ -1,13 +1,12 @@
 'use strict';
 
 const reviewDao = require('../dao/ReviewDao.js');
-const perfumeDao = require('../dao/PerfumeDao')
+const likeReviewDao = require('../dao/LikeReviewDao');
 const keywordDao = require('../dao/KeywordDao');
 const {
-    NotMatchedError,
-    FailedToCreateError,
     UnAuthorizedError,
 } = require('../utils/errors/errors.js');
+const { InputIntToDBIntOfReview, DBIntToOutputIntOfReview, getApproxAge } = require('../utils/converter');
 
 /**
  * 시향노트 작성
@@ -27,23 +26,26 @@ exports.postReview = async ({
     content,
     keywordList,
 }) => {
-    await perfumeDao.readByPerfumeIdx(perfumeIdx);
+    // 데이터 변환
+    const translationResult = await InputIntToDBIntOfReview({longevity, sillage, seasonalList: seasonal, gender, keywordList})
+
     const createReview = await reviewDao.create({
         perfumeIdx,
         userIdx,
         score,
-        longevity,
-        sillage,
-        seasonal,
-        gender,
-        access,
+        longevity: translationResult.longevity,
+        sillage: translationResult.sillage,
+        seasonal: translationResult.sumOfBitSeasonal,
+        gender: translationResult.gender,
+        access: access? 1: 0,
         content,
     });
-    const reviewIdx = createReview.id;
-    const createReviewKeyword = await Promise.all(keywordList.map((it) => {
-        keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx })
-    }));
 
+    const reviewIdx = createReview.dataValues.id;
+    const KeywordIdxList = translationResult.keywordList;
+    const createReviewKeyword = await Promise.all(KeywordIdxList.map((it) => {
+        keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx })
+    }))
     return reviewIdx;
 };
 
@@ -92,18 +94,22 @@ exports.updateReview = async ({
     reviewIdx,
     userIdx
 }) => {
-    console.log(keywordList)
+    // 데이터 변환
+    const translationResult = await InputIntToDBIntOfReview({longevity, sillage, seasonalList: seasonal, gender, keywordList})
+    
+    // 권환 확인
     const readReviewResult = await reviewDao.read(reviewIdx);
     if (readReviewResult.userIdx != userIdx) {
         throw new UnAuthorizedError();
     };
+
     const updateReviewResult = await reviewDao.update({
         score,
-        longevity,
-        sillage,
-        seasonal,
-        gender,
-        access,
+        longevity : translationResult.longevity,
+        sillage : translationResult.sillage,
+        seasonal : translationResult.sumOfBitSeasonal,
+        gender: translationResult.gender,
+        access: access? 1 : 0,
         content,
         reviewIdx,
     });
@@ -113,7 +119,9 @@ exports.updateReview = async ({
             perfumeIdx: readReviewResult.perfumeIdx,
         }
     );
-    const createReviewKeyword = await Promise.all(keywordList.map((it) => {
+    
+    const KeywordIdxList = translationResult.keywordList;
+    const createReviewKeyword = await Promise.all(KeywordIdxList.map((it) => {
         keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx: readReviewResult.perfumeIdx })
     }));
 
@@ -129,20 +137,32 @@ exports.updateReview = async ({
  **/
 exports.getReviewByIdx = async (reviewIdx) => {
     const result = await reviewDao.read(reviewIdx);
-    result.reviewIdx = result.id;
-    delete result.id;
-    delete result.perfumeIdx;
-    delete result.userIdx;
-    result.Brand = {
-        brandIdx: result.Perfume.Brand.brandIdx,
-        brandName: result.Perfume.Brand.name,
-    };
-    result.Perfume = {
-        perfumeIdx: result.Perfume.perfumeIdx,
-        perfumeName: result.Perfume.name,
-        imageUrl: result.Perfume.imageUrl,
-    };
-    return result;
+    const translationResult = await DBIntToOutputIntOfReview({
+        longevity: result.longevity,
+        sillage: result.sillage,
+        sumOfBitSeasonal: result.seasonal,
+        gender: result.gender,
+    })
+    return {
+        reviewIdx : result.id,
+        score: result.score,
+        longevity: translationResult.longevity,
+        sillage: translationResult.sillage,
+        seasonal: translationResult.seasonalList? translationResult.seasonalList : [],
+        gender: translationResult.gender,
+        access: result.access == 1? true : false,
+        content: result.content,
+        Perfume : {
+            perfumeIdx: result.Perfume.perfumeIdx,
+            perfumeName: result.Perfume.name,
+            imageUrl: result.Perfume.imageUrl
+        },
+        KeywordList: result.KeywordList? result.KeywordList : [],
+        Brand: {
+            brandIdx: result.Perfume.Brand.brandIdx,
+            brandName: result.Perfume.Brand.name
+        }
+    }
 };
 
 /**
@@ -170,103 +190,70 @@ exports.getReviewOfUser = async (userIdx) => {
  * 전체 시향노트 반환(인기순)
  * 특정 향수에 달린 전체 시향노트 인기순으로 가져오기
  *
- * perfumeIdx Long 향수 Idx
- * returns List
+ * @param {number} perfumeIdx
+ * @returns {Promise<Review[]>} reviewList
  **/
 exports.getReviewOfPerfumeByLike = async (perfumeIdx) => {
     const reviewList = await reviewDao.readAllOfPerfume(perfumeIdx);
-    // console.log(reviewList)
-    await reviewList.reduce(async(prevPromise, it) => {
-        await prevPromise
-        return {
+    const result = await reviewList.reduce(async(prevPromise, it) => {
+        let prevResult = await prevPromise.then()
+        const approxAge = await getApproxAge(it.User.birth)
+        const currentResult = {
             reviewIdx: it.reviewIdx,
             score: it.score,
-            longevity: it.longevity,
-            sillage: it.sillage,
-            seasonal: it.seasonal,
-            gender: it.gender,
-            access: it.access,
+            access: it.access == 1? true : false,
             content: it.content,
             likeCount: it.LikeReview.likeCount,
             userGender: it.User.gender,
-            age: it.User.birth,
+            age: approxAge,
             nickname: it.User.nickname,
-            createTime: it.createTime,
-            keywordList : await keywordDao.readAllOfReview(it.reviewIdx)
+            createTime: it.createdAt,
         }
-    }, Promise.resolve())   
-    // const reviewListWithKeyword = await Promise.all(reviewList.map(async(it) => {
-    //     const keywordList = await keywordDao.readAllOfReview(it.reviewIdx)
-    //     return {
-    //         reviewIdx: it.reviewIdx,
-    //         score: it.score,
-    //         longevity: it.longevity,
-    //         sillage: it.sillage,
-    //         seasonal: it.seasonal,
-    //         gender: it.gender,
-    //         access: it.access,
-    //         content: it.content,
-    //         likeCount: it.LikeReview.likeCount,
-    //         userGender: it.User.gender,
-    //         age: it.User.birth,
-    //         nickname: it.User.nickname,
-    //         createTime: it.createTime,
-    //         keywordList
-    //     }
-    // }));
-    // console.log(reviewListWithKeyword)
-    return reviewList
+        prevResult.push(currentResult)
+        return Promise.resolve(prevResult)
+    }, Promise.resolve([]))   
+    return result
 };
 
 /**
- * 전체 시향노트 반환(별점순)
- * 특정 향수에 달린 전체 시향노트 별점순으로 가져오기
+ * 시향노트 좋아요 생성/취소 
  *
- * perfumeIdx Long 향수 Idx
- * returns List
- **/
-exports.getReviewOfPerfumeByScore = (perfumeIdx) => {
-    return reviewDao.readAllOrderByScore(perfumeIdx);
-};
-
-/**
- * 전체 시향노트 반환(최신순)
- * 특정 향수에 달린 전체 시향노트 최신순으로 가져오기
- *
- * perfumeIdx Long 향수 Idx
- * returns List
- **/
-exports.getReviewOfPerfumeByRecent = (perfumeIdx) => {
-    return reviewDao.readAllOrderByRecent(perfumeIdx);
-};
-
-/**
- * 향수 좋아요
- *
+ * @param {number} reviewIdx
+ * @param {number} userIdx
+ * @returns {boolean} isLiked
  * reviewIdx Long 시향노트 Idx
  * returns Boolean
  **/
-exports.likeReview = (reviewIdx, userIdx) => {
-    return new Promise((resolve, reject) => {
-        let isLiked = false;
-        reviewDao
-            .readLike({ reviewIdx, userIdx })
-            .then((res) => {
-                isLiked = true;
-                return reviewDao.deleteLike({ reviewIdx, userIdx });
-            })
-            .catch((err) => {
-                isLiked = false;
-                if (err instanceof NotMatchedError) {
-                    return reviewDao.createLike({ reviewIdx, userIdx });
-                }
-                reject(new FailedToCreateError());
-            })
-            .then(() => {
-                resolve(!isLiked);
-            })
-            .catch((err) => {
-                reject(err);
-            });
-    });
+exports.likeReview = async (reviewIdx, userIdx) => {
+    const resultOfReadLike = await likeReviewDao.read(userIdx, reviewIdx)
+    let isLiked = resultOfReadLike? true : false;
+    if (!isLiked) {
+        await likeReviewDao.create(userIdx, reviewIdx);
+    }
+    if (isLiked) {
+        await likeReviewDao.delete(userIdx, reviewIdx);
+    }
+    return !isLiked
 };
+
+// /**
+//  * 전체 시향노트 반환(별점순)
+//  * 특정 향수에 달린 전체 시향노트 별점순으로 가져오기
+//  *
+//  * perfumeIdx Long 향수 Idx
+//  * returns List
+//  **/
+//  exports.getReviewOfPerfumeByScore = (perfumeIdx) => {
+//     return reviewDao.readAllOrderByScore(perfumeIdx);
+// };
+
+// /**
+//  * 전체 시향노트 반환(최신순)
+//  * 특정 향수에 달린 전체 시향노트 최신순으로 가져오기
+//  *
+//  * perfumeIdx Long 향수 Idx
+//  * returns List
+//  **/
+// exports.getReviewOfPerfumeByRecent = (perfumeIdx) => {
+//     return reviewDao.readAllOrderByRecent(perfumeIdx);
+// };
