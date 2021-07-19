@@ -12,18 +12,19 @@ const {
  * @param {*} token
  * @param {*} callback
  */
-module.exports.verifyTokenMiddleware = (req, authOrSecDef, token, callback) => {
-    const currentScopes = req.swagger.operation['x-security-scopes'] || [];
+module.exports.verifyTokenMiddleware = (req, res, next) => {
+    const currentScopes = req.swagger['x-security-scopes'] || [];
+    const token = req.headers['x-access-token'] || '';
     req.middlewareToken = {};
     if (!token) {
         if (currentScopes.indexOf('admin') > -1) {
-            return callback(new UnAuthorizedError());
+            return next(new UnAuthorizedError());
         }
         if (currentScopes.indexOf('user') > -1) {
-            return callback(new InvalidTokenError());
+            return next(new InvalidTokenError());
         }
         req.middlewareToken.loginUserIdx = -1;
-        return callback(null);
+        return next();
     }
 
     if (token.indexOf('Bearer ') != 0) {
@@ -32,5 +33,5 @@ module.exports.verifyTokenMiddleware = (req, authOrSecDef, token, callback) => {
     const tokenString = token.split(' ')[1];
     const { userIdx } = jwt.verify(tokenString);
     req.middlewareToken.loginUserIdx = userIdx;
-    return callback(null);
+    return next();
 };

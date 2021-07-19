@@ -13,6 +13,7 @@ app.use(cookieParser());
 const { swaggerUi, specs } = require('./modules/swagger');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use(specs.basePath, require('./controllers/index.js')(specs));
+app.use(specs.basePath, require('./middleware/auth.js').verifyTokenMiddleware);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
