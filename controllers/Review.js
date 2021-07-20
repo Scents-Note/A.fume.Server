@@ -67,44 +67,12 @@ module.exports.getPerfumeReview = function getPerfumeReview(
         .catch((err) => next(err));
 };
 
-// module.exports.getReviewOfPerfumeByScore = function getReviewOfPerfumeByScore(
-//     req,
-//     res,
-//     next
-// ) {
-//     var perfumeIdx = req.swagger.params['perfumeIdx'].value;
-//     Review.getReviewOfPerfumeByScore(perfumeIdx)
-//         .then((response) => {
-//             res.status(OK).json({
-//                 message: '특정 향수의 시향노트 목록 별점순 조회 성공',
-//                 data: response,
-//             });
-//         })
-//         .catch((err) => next(err));
-// };
-
 module.exports.getReviewOfUser = function getReviewOfUser(req, res, next) {
     const userIdx = req.middlewareToken.loginUserIdx;
     Review.getReviewOfUser(userIdx)
         .then((response) => {
             res.status(OK).json({
                 message: '마이퍼퓸 조회 성공',
-                data: response,
-            });
-        })
-        .catch((err) => next(err));
-};
-
-module.exports.getReviewOfPerfumeByRecent = function getReviewOfPerfumeByRecent(
-    req,
-    res,
-    next
-) {
-    var perfumeIdx = req.swagger.params['perfumeIdx'].value;
-    Review.getReviewOfPerfumeByRecent(perfumeIdx)
-        .then((response) => {
-            res.status(OK).json({
-                message: '특정 향수의 시향노트 목록 최신순 조회 성공',
                 data: response,
             });
         })
@@ -169,3 +137,35 @@ module.exports.likeReview = (req, res, next) => {
         })
         .catch((err) => next(err));
 };
+
+// module.exports.getReviewOfPerfumeByScore = function getReviewOfPerfumeByScore(
+//     req,
+//     res,
+//     next
+// ) {
+//     var perfumeIdx = req.swagger.params['perfumeIdx'].value;
+//     Review.getReviewOfPerfumeByScore(perfumeIdx)
+//         .then((response) => {
+//             res.status(OK).json({
+//                 message: '특정 향수의 시향노트 목록 별점순 조회 성공',
+//                 data: response,
+//             });
+//         })
+//         .catch((err) => next(err));
+// };
+
+// module.exports.getReviewOfPerfumeByRecent = function getReviewOfPerfumeByRecent(
+//     req,
+//     res,
+//     next
+// ) {
+//     var perfumeIdx = req.swagger.params['perfumeIdx'].value;
+//     Review.getReviewOfPerfumeByRecent(perfumeIdx)
+//         .then((response) => {
+//             res.status(OK).json({
+//                 message: '특정 향수의 시향노트 목록 최신순 조회 성공',
+//                 data: response,
+//             });
+//         })
+//         .catch((err) => next(err));
+// };
