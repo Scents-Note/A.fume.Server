@@ -1,3 +1,5 @@
+'use strict';
+
 class CreatedResultDTO {
     constructor({ idx, created }) {
         this.idx = idx;

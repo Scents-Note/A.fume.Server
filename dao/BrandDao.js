@@ -8,6 +8,7 @@ const {
     BrandDTO,
     ListAndCountDTO,
     CreatedResultDTO,
+    PagingDTO,
 } = require('../data/dto/index.js');
 
 /**
@@ -65,12 +66,11 @@ module.exports.read = async (brandIdx) => {
 /**
  * 브랜드 검색
  *
- * @param {number} pagingIndex
- * @param {number} pagingSize
- * @param {array} order
+ * @param {PagingDTO} pagingDTO
  * @returns {Promise<ListAndCountDTO<BrandDTO>>}
  */
-module.exports.search = (pagingIndex, pagingSize, order) => {
+module.exports.search = (pagingDTO) => {
+    const { pagingSize, pagingIndex, order } = pagingDTO;
     return Brand.findAndCountAll({
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
@@ -86,7 +86,7 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
 /**
  * 브랜드 전체 목록 조회
  *
- * @returns {Promise<Brand[]>}
+ * @returns {Promise<ListAndCountDTO<BrandDTO>>}
  */
 module.exports.readAll = async () => {
     return Brand.findAndCountAll({
