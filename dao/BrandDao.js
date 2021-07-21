@@ -4,33 +4,35 @@ const {
 } = require('../utils/errors/errors.js');
 
 const { Brand } = require('../models');
+const {
+    BrandDTO,
+    ListAndCountDTO,
+    CreatedResultDTO,
+} = require('../data/dto/index.js');
 
 /**
  * 브랜드 생성
  *
- * @param {Object} brand
+ * @param {BrandDTO} brandDTO
  * @param {Promise}
- * @returns {integer} brandIdx
+ * @returns {Promise<CreatedResultDTO<Brand>>} createdResultDTO
  */
-module.exports.create = ({
-    name,
-    englishName,
-    firstInitial,
-    imageUrl,
-    description,
-}) => {
+module.exports.create = (brandDTO) => {
     return Brand.create(
         {
-            name,
-            englishName,
-            firstInitial,
-            imageUrl,
-            description,
+            name: brandDTO.name,
+            englishName: brandDTO.englishName,
+            firstInitial: brandDTO.firstInitial,
+            imageUrl: brandDTO.imageUrl,
+            description: brandDTO.description,
         },
         { nest: true, raw: true }
     )
         .then((brand) => {
-            return brand.brandIdx;
+            return new CreatedResultDTO({
+                idx: brand.brandIdx,
+                created: brand,
+            });
         })
         .catch((err) => {
             if (
@@ -47,7 +49,7 @@ module.exports.create = ({
  * 브랜드 세부 조회
  *
  * @param {number} brandIdx
- * @returns {Promise<Brand>}
+ * @returns {Promise<BrandDTO>}
  */
 module.exports.read = async (brandIdx) => {
     const result = await Brand.findByPk(brandIdx, {
@@ -57,7 +59,7 @@ module.exports.read = async (brandIdx) => {
     if (!result) {
         throw new NotMatchedError();
     }
-    return result;
+    return new BrandDTO(result);
 };
 
 /**
@@ -66,7 +68,7 @@ module.exports.read = async (brandIdx) => {
  * @param {number} pagingIndex
  * @param {number} pagingSize
  * @param {array} order
- * @returns {Promise<Brand[]>}
+ * @returns {Promise<ListAndCountDTO<BrandDTO>>}
  */
 module.exports.search = (pagingIndex, pagingSize, order) => {
     return Brand.findAndCountAll({
@@ -75,6 +77,9 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
         order,
         raw: true,
         nest: true,
+    }).then((it) => {
+        it.rows = it.rows.map((it) => new BrandDTO(it));
+        return new ListAndCountDTO(it);
     });
 };
 
@@ -87,6 +92,11 @@ module.exports.readAll = async () => {
     return Brand.findAndCountAll({
         raw: true,
         nest: true,
+    }).then((result) => {
+        return new ListAndCountDTO({
+            count: result.count,
+            rows: result.rows.map((it) => new BrandDTO(it)),
+        });
     });
 };
 
@@ -94,7 +104,7 @@ module.exports.readAll = async () => {
  * 브랜드 수정
  *
  * @param {Object} Brand
- * @return {Promise}
+ * @return {Promise<boolean>} isSuccess
  */
 module.exports.update = async ({
     brandIdx,
@@ -117,7 +127,7 @@ module.exports.update = async ({
     if (affectedRows == 0) {
         throw new NotMatchedError();
     }
-    return affectedRows;
+    return new UpdateResultDTO({ affectedRows: affectedRows });
 };
 
 /**
@@ -145,6 +155,6 @@ module.exports.findBrand = (condition) => {
         if (!it) {
             throw new NotMatchedError();
         }
-        return it;
+        return new BrandDTO(it);
     });
 };

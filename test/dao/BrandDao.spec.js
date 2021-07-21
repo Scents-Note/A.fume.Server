@@ -10,6 +10,17 @@ const {
     NotMatchedError,
     UnExpectedError,
 } = require('../../utils/errors/errors.js');
+const BrandDTO = require('../../data/dto/BrandDTO.js');
+
+BrandDTO.prototype.validTest = function () {
+    expect(this.brandIdx).to.be.ok;
+    expect(this.name).to.be.ok;
+    expect(this.firstInitial).to.be.ok;
+    expect(this.imageUrl).to.be.ok;
+    expect(this.description).to.be.not.undefined;
+    expect(this.createdAt).to.be.ok;
+    expect(this.updatedAt).to.be.ok;
+};
 
 describe('# brandDao Test', () => {
     before(async function () {
@@ -29,7 +40,7 @@ describe('# brandDao Test', () => {
                     description: 'brand 생성 테스트를 위한 더미데이터입니다.',
                 })
                 .then((result) => {
-                    expect(result).gt(0);
+                    expect(result.idx).gt(0);
                     done();
                 })
                 .catch((err) => done(err));
@@ -64,10 +75,7 @@ describe('# brandDao Test', () => {
                     expect(result.brandIdx).to.be.eq(2);
                     expect(result.name).to.be.eq('브랜드2');
                     expect(result.firstInitial).to.be.eq('ㅂ');
-                    expect(result.imageUrl).to.be.ok;
-                    expect(result.description).to.be.not.undefined;
-                    expect(result.createdAt).to.be.ok;
-                    expect(result.updatedAt).to.be.ok;
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -82,10 +90,7 @@ describe('# brandDao Test', () => {
                     expect(result.brandIdx).to.be.eq(1);
                     expect(result.name).to.be.eq('브랜드1');
                     expect(result.firstInitial).to.be.eq('ㅂ');
-                    expect(result.imageUrl).to.be.not.undefined;
-                    expect(result.description).to.be.not.undefined;
-                    expect(result.createdAt).to.be.ok;
-                    expect(result.updatedAt).to.be.ok;
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -114,13 +119,7 @@ describe('# brandDao Test', () => {
                     expect(result.count).gte(5);
                     expect(result.rows.length).gte(5);
                     for (const brand of result.rows) {
-                        expect(brand.brandIdx).to.be.ok;
-                        expect(brand.name).to.be.ok;
-                        expect(brand.firstInitial).to.be.ok;
-                        expect(brand.imageUrl).to.be.not.undefined;
-                        expect(brand.description).to.be.not.undefined;
-                        expect(brand.createdAt).to.be.ok;
-                        expect(brand.updatedAt).to.be.ok;
+                        brand.validTest();
                     }
                     done();
                 })
@@ -136,13 +135,7 @@ describe('# brandDao Test', () => {
                     expect(result.count).gte(5);
                     expect(result.rows.length).gte(5);
                     for (const brand of result.rows) {
-                        expect(brand.brandIdx).to.be.ok;
-                        expect(brand.name).to.be.ok;
-                        expect(brand.firstInitial).to.be.ok;
-                        expect(brand.imageUrl).to.be.not.undefined;
-                        expect(brand.description).to.be.not.undefined;
-                        expect(brand.createdAt).to.be.ok;
-                        expect(brand.updatedAt).to.be.ok;
+                        brand.validTest();
                     }
                     done();
                 })
@@ -184,8 +177,7 @@ describe('# brandDao Test', () => {
                     expect(updated.firstInitial).eq('ㅂ');
                     expect(updated.imageUrl).eq('image_url');
                     expect(updated.description).eq('변경완료');
-                    expect(updated.createdAt).to.be.ok;
-                    expect(updated.updatedAt).to.be.ok;
+                    updated.validTest();
                     done();
                 })
                 .catch((err) => done(err));
