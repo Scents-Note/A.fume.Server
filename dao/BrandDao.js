@@ -106,7 +106,7 @@ module.exports.readAll = async () => {
  * @param {Object} Brand
  * @return {Promise<boolean>} isSuccess
  */
-module.exports.update = async ({
+module.exports.update = ({
     brandIdx,
     name,
     englishName,
@@ -114,7 +114,7 @@ module.exports.update = async ({
     imageUrl,
     description,
 }) => {
-    const [affectedRows] = await Brand.update(
+    return Brand.update(
         {
             name,
             englishName,
@@ -123,11 +123,22 @@ module.exports.update = async ({
             description,
         },
         { where: { brandIdx } }
-    );
-    if (affectedRows == 0) {
-        throw new NotMatchedError();
-    }
-    return affectedRows;
+    )
+        .catch((err) => {
+            if (
+                err.parent.errno === 1062 ||
+                err.parent.code === 'ER_DUP_ENTRY'
+            ) {
+                throw new DuplicatedEntryError();
+            }
+            throw err;
+        })
+        .then(([affectedRows]) => {
+            if (affectedRows == 0) {
+                throw new NotMatchedError();
+            }
+            return affectedRows;
+        });
 };
 
 /**

@@ -1,90 +1,59 @@
 'use strict';
 
 const brandDao = require('../dao/BrandDao.js');
-const { parseSortToOrder } = require('../utils/parser.js');
 
 const { updateList, removeKeyJob } = require('../utils/func.js');
+
+const { PagingVO, BrandFilterDTO } = require('../data/dto');
 
 /**
  * 브랜드 검색
  *
- * @param {number} pagingIndex
- * @param {number} pagingSize
- * @param {string} sort
- * @returns {Promise<Brand[]>}
+ * @param {PagingRequestDTO} pagingRequestDTO
+ * @returns {Promise<ListAndCountDTO<BrandDTO>>}
  **/
-exports.searchBrand = (pagingIndex, pagingSize, sort) => {
-    const order = parseSortToOrder(sort);
-    return brandDao.search(pagingIndex, pagingSize, order);
+exports.searchBrand = (pagingRequestDTO) => {
+    const pagingVO = new PagingVO(pagingRequestDTO);
+    return brandDao.search(pagingVO);
 };
 
 /**
  * 브랜드 전체 조회
  *
- * @returns {Promise<Brand[]>}
+ * @returns {Promise<ListAndCountDTO<BrandDTO>>}
  **/
 exports.getBrandAll = () => {
-    return brandDao.readAll().then((result) => {
-        return updateList(result, removeKeyJob('createdAt', 'updatedAt'));
-    });
+    return brandDao.readAll();
 };
 
 /**
  * 브랜드 조회
  *
  * @param {number} brandIdx
- * @returns {Promise<Brand>}
+ * @returns {Promise<BrandDTO>}
  **/
 exports.getBrandByIdx = (brandIdx) => {
-    return brandDao.read(brandIdx).then((result) => {
-        return removeKeyJob('createdAt', 'updatedAt')(result);
-    });
+    return brandDao.read(brandIdx);
 };
 
 /**
  * 브랜드 삽입
  *
- * @param {Object} Brand
- * @returns {Promise}
+ * @param {BrandInputDTO} brandInputDto
+ * @returns {Promise<CreatedResultDTO<Brand>>}
  **/
-exports.insertBrand = ({
-    name,
-    englishName,
-    firstInitial,
-    imageUrl,
-    description,
-}) => {
-    return brandDao.create({
-        name,
-        englishName,
-        firstInitial,
-        imageUrl,
-        description,
-    });
+exports.insertBrand = (brandInputDTO) => {
+    return brandDao.create(brandInputDTO);
 };
 
 /**
  * 브랜드 수정
  *
- * @param {Object} Brand
+ * @param {BrandInputDTO} brandInputDto
  * @returns {Promise}
  **/
-exports.putBrand = ({
-    brandIdx,
-    name,
-    englishName,
-    firstInitial,
-    imageUrl,
-    description,
-}) => {
-    return brandDao.update({
-        brandIdx,
-        name,
-        englishName,
-        firstInitial,
-        imageUrl,
-        description,
-    });
+exports.putBrand = (brandInputDTO) => {
+    return brandDao.update(brandInputDTO);
 };
 
 /**
@@ -112,20 +81,10 @@ exports.getFilterBrand = () => {
             return prev;
         }, {});
         return Object.keys(firstInitialMap).map((key) => {
-            return {
+            return new BrandFilterDTO({
                 firstInitial: key,
-                brands: updateList(
-                    firstInitialMap[key],
-                    removeKeyJob(
-                        'englishName',
-                        'description',
-                        'imageUrl',
-                        'firstInitial',
-                        'createdAt',
-                        'updatedAt'
-                    )
-                ),
-            };
+                brands: firstInitialMap[key],
+            });
         });
     });
 };
