@@ -127,7 +127,7 @@ module.exports.update = async ({
     if (affectedRows == 0) {
         throw new NotMatchedError();
     }
-    return new UpdateResultDTO({ affectedRows: affectedRows });
+    return affectedRows;
 };
 
 /**

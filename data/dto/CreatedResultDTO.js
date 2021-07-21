@@ -1,8 +1,8 @@
-class CreateResultDTO {
+class CreatedResultDTO {
     constructor({ idx, created }) {
         this.idx = idx;
         this.created = created;
     }
 }
 
-module.exports = CreateResultDTO;
+module.exports = CreatedResultDTO;
