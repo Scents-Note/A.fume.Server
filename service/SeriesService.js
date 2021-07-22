@@ -3,7 +3,6 @@
 const seriesDao = require('../dao/SeriesDao.js');
 const ingredientDao = require('../dao/IngredientDao');
 const noteDao = require('../dao/NoteDao.js');
-const { parseSortToOrder } = require('../utils/parser.js');
 
 const { PagingRequestDTO } = require('../data/request_dto');
 
@@ -23,7 +22,7 @@ exports.postSeries = (seriesInputDTO) => {
  * 특정 계열 조회
  *
  * @param {integer} seriesIdx
- * @returns {Promise<Series>}
+ * @returns {Promise<SeriesDTO>}
  **/
 exports.getSeriesByIdx = (seriesIdx) => {
     return seriesDao.readByIdx(seriesIdx);
@@ -33,7 +32,7 @@ exports.getSeriesByIdx = (seriesIdx) => {
  * 계열 전체 목록 조회
  *
  * @param {PagingRequestDTO} pagingRequestDTO
- * @returns {Promise<Series[]>}
+ * @returns {Promise<ListAndCountDTO<SeriesDTO>>} listAndCountDTO
  **/
 exports.getSeriesAll = (pagingRequestDTO) => {
     return seriesDao.readAll(new PagingVO(pagingRequestDTO));
@@ -43,7 +42,7 @@ exports.getSeriesAll = (pagingRequestDTO) => {
  * 계열 검색
  *
  * @param {PagingRequestDTO} pagingRequestDTO
- * @returns {Promise<Series[]>}
+ * @returns {Promise<ListAndCountDTO<SeriesDTO>>} listAndCountDTO
  **/
 exports.searchSeries = (pagingRequestDTO) => {
     return seriesDao.search(new PagingVO(pagingRequestDTO));
@@ -99,8 +98,7 @@ async function filterByUsedCount(ingredientList) {
 /**
  * 필터에서 보여주는 Series 조회
  *
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {pagingVO} pagingVO
  */
 exports.getFilterSeries = async (pagingIndex, pagingSize) => {
     const result = await seriesDao.readAll(pagingIndex, pagingSize);
@@ -127,7 +125,7 @@ exports.getFilterSeries = async (pagingIndex, pagingSize) => {
  * 계열 영어 이름으로 조회
  *
  * @param {string} englishName
- * @returns {Promise<Series>}
+ * @returns {Promise<SeriesDTO>}
  **/
 exports.findSeriesByEnglishName = (englishName) => {
     return seriesDao.findSeries({ englishName });

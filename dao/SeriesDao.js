@@ -10,7 +10,7 @@ const { SeriesDTO, ListAndCountDTO, CreatedResultDTO } = require('../data/dto');
  * 계열 생성
  *
  * @param {SeriesInputDTO} seriesInputDTO
- * @return {number} insertIdx
+ * @return {CreatedResultDTO<SeriesDTO>} createdResultDTO
  */
 module.exports.create = ({ name, englishName, description, imageUrl }) => {
     return Series.create({
@@ -40,7 +40,7 @@ module.exports.create = ({ name, englishName, description, imageUrl }) => {
  * 계열 조회
  *
  * @param {number} seriesIdx
- * @return {Promise<SeriesDTO>}
+ * @return {Promise<SeriesDTO>} seriesDTO
  */
 module.exports.readByIdx = async (seriesIdx) => {
     const result = await Series.findByPk(seriesIdx);
@@ -54,7 +54,7 @@ module.exports.readByIdx = async (seriesIdx) => {
  * 계열 조회
  *
  * @param {string} seriesName
- * @return {Promise<Series>}
+ * @return {Promise<SeriesDTO>} seriesDTO
  */
 module.exports.readByName = async (seriesName) => {
     const result = await Series.findOne({
@@ -72,7 +72,7 @@ module.exports.readByName = async (seriesName) => {
  * 계열 전체 조회
  *
  * @param {PagingVO} pagingVO
- * @returns {Promise<Series[]>}
+ * @returns {Promise<ListAndCount<SeriesDTO>>} listAndCount
  */
 module.exports.readAll = ({ pagingIndex, pagingSize, order }) => {
     return Series.findAndCountAll({
@@ -93,7 +93,7 @@ module.exports.readAll = ({ pagingIndex, pagingSize, order }) => {
  * 계열 검색
  *
  * @param {PagingVO} pagingVO
- * @returns {Promise<Series[]>}
+ * @returns {Promise<ListAndCountDTO<SeriesDTO>>} listAndCountDTO
  */
 module.exports.search = ({ pagingIndex, pagingSize, order }) => {
     return Series.findAndCountAll({
@@ -146,7 +146,7 @@ module.exports.delete = (seriesIdx) => {
  * 계열 검색
  *
  * @param {Object} condition
- * @returns {Promise<Series>}
+ * @returns {Promise<SeriesDTO>} seriesDTO
  */
 module.exports.findSeries = (condition) => {
     return Series.findOne({ where: condition, nest: true, raw: true }).then(
