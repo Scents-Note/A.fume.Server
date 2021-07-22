@@ -124,10 +124,12 @@ module.exports.getFilterBrand = (req, res, next) => {
             );
         })
         .then((response) => {
-            res.status(OK).json({
-                message: '브랜드 필터 조회 성공',
-                data: response,
-            });
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: '브랜드 필터 조회 성공',
+                    data: response,
+                })
+            );
         })
         .catch((err) => next(err));
 };
@@ -136,10 +138,12 @@ module.exports.getBrandByEnglishName = (req, res, next) => {
     const { englishName } = req.body;
     Brand.findBrandByEnglishName(englishName)
         .then((response) => {
-            res.status(OK).json({
-                message: '브랜드 조회 성공',
-                data: response,
-            });
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: '브랜드 조회 성공',
+                    data: response,
+                })
+            );
         })
         .catch((err) => {
             next(err);
