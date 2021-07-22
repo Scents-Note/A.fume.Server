@@ -4,13 +4,17 @@ const Series = require('../service/SeriesService');
 const { OK } = require('../utils/statusCode.js');
 
 const { PagingRequestDTO, SeriesInputDTO } = require('../data/request_dto');
+
+const { ResponseDTO } = require('../data/response_dto/common');
 module.exports.postSeries = (req, res, next) => {
     Series.postSeries(new SeriesInputDTO(req.body))
         .then((response) => {
-            res.status(OK).json({
-                message: 'series post 성공',
-                data: response,
-            });
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: 'series post 성공',
+                    data: response,
+                })
+            );
         })
         .catch((err) => next(err));
 };
@@ -83,24 +87,25 @@ module.exports.getIngredients = (req, res, next) => {
     const seriesIdx = req.swagger.params['seriesIdx'].value;
     Series.getIngredientList(seriesIdx)
         .then((result) => {
-            res.status(OK).json({
-                message: 'Series에 해당하는 Ingredient 조회 성공',
-                data: result,
-            });
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: 'Series에 해당하는 Ingredient 조회 성공',
+                    data: result,
+                })
+            );
         })
         .catch((err) => next(err));
 };
 
 module.exports.getFilterSeries = (req, res, next) => {
-    let { pagingIndex, pagingSize } = req.query;
-    pagingIndex = parseInt(pagingIndex) || 1;
-    pagingSize = parseInt(pagingSize) || 100;
-    Series.getFilterSeries(pagingIndex, pagingSize)
+    Series.getFilterSeries(new PagingRequestDTO(req.query))
         .then((response) => {
-            res.status(OK).json({
-                message: '계열 검색 성공',
-                data: response,
-            });
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: '계열 검색 성공',
+                    data: response,
+                })
+            );
         })
         .catch((err) => next(err));
 };
@@ -109,10 +114,12 @@ module.exports.getSeriesByEnglishName = (req, res, next) => {
     const { englishName } = req.body;
     Series.findSeriesByEnglishName(englishName)
         .then((response) => {
-            res.status(OK).json({
-                message: '계열 조회 성공',
-                data: response,
-            });
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: '계열 조회 성공',
+                    data: response,
+                })
+            );
         })
         .catch((err) => {
             next(err);
