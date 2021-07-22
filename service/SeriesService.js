@@ -8,13 +8,11 @@ const { parseSortToOrder } = require('../utils/parser.js');
 /**
  * 계열 삽입
  *
- * @param {string} name
- * @param {string} englishName
- * @param {string} description
+ * @param {SeriesInputDTO} seriesInputDTO
  * @returns {Promise<integer>} insertIdx
  **/
-exports.postSeries = ({ name, englishName, description, imageUrl }) => {
-    return seriesDao.create({ name, englishName, description, imageUrl });
+exports.postSeries = (seriesInputDTO) => {
+    return seriesDao.create(seriesInputDTO);
 };
 
 /**
@@ -54,11 +52,11 @@ exports.searchSeries = (pagingIndex, pagingSize, sort) => {
 /**
  * 계열 수정
  *
- * @param {Object} Series
+ * @param {SeriesInputDTO} seriesInputDTO
  * @returns {Promise<number>} affectedRows
  **/
-exports.putSeries = ({ seriesIdx, name, englishName, description }) => {
-    return seriesDao.update({ seriesIdx, name, englishName, description });
+exports.putSeries = (seriesInputDTO) => {
+    return seriesDao.update(seriesInputDTO);
 };
 
 /**

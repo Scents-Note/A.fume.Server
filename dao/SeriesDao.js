@@ -7,7 +7,7 @@ const { Series, Ingredient } = require('../models');
 /**
  * 계열 생성
  *
- * @param {Object} seriesObject
+ * @param {SeriesInputDTO} seriesInputDTO
  * @return {number} insertIdx
  */
 module.exports.create = ({ name, englishName, description, imageUrl }) => {
@@ -100,7 +100,7 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
 /**
  * 계열 수정
  *
- * @param {Object} Series
+ * @param {SeriesInputDTO} seriesInputDTO
  * @return {Promise<number>} affectedRows
  */
 module.exports.update = async ({

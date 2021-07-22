@@ -3,11 +3,9 @@
 const Series = require('../service/SeriesService');
 const { OK } = require('../utils/statusCode.js');
 
+const { PagingRequestDTO, SeriesInputDTO } = require('../data/request_dto');
 module.exports.postSeries = (req, res, next) => {
-    const { name, englishName, description, imageUrl } = req.swagger.params[
-        'body'
-    ].value;
-    Series.postSeries({ name, englishName, description, imageUrl })
+    Series.postSeries(new SeriesInputDTO(req.body))
         .then((response) => {
             res.status(OK).json({
                 message: 'series post 성공',
@@ -60,8 +58,8 @@ module.exports.searchSeries = (req, res, next) => {
 
 module.exports.putSeries = (req, res, next) => {
     const seriesIdx = req.swagger.params['seriesIdx'].value;
-    const { name, englishName, description } = req.swagger.params['body'].value;
-    Series.putSeries({ seriesIdx, name, englishName, description })
+    const json = Object.assign({}, req.body, { seriesIdx });
+    Series.putSeries(new SeriesInputDTO(json))
         .then(() => {
             res.status(OK).json({
                 message: 'series put 성공',
