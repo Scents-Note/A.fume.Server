@@ -10,6 +10,7 @@ const {
     UnExpectedError,
 } = require('../../utils/errors/errors.js');
 const { Series } = require('../../models/index.js');
+const { BrandDTO, PagingVO } = require('../../data/dto');
 
 describe('# seriesDao Test', () => {
     before(async function () {
@@ -117,7 +118,7 @@ describe('# seriesDao Test', () => {
     describe(' # readAll Test', () => {
         it(' # success case', (done) => {
             seriesDao
-                .readAll(1, 100)
+                .readAll(new PagingVO({ pagingIndex: 1, pagingSize: 100 }))
                 .then((result) => {
                     expect(result.count).gt(0);
                     expect(result.rows.length).greaterThan(0);
@@ -139,7 +140,13 @@ describe('# seriesDao Test', () => {
     describe('# search Test', () => {
         it('# success case', (done) => {
             seriesDao
-                .search(1, 10, [['createdAt', 'desc']])
+                .search(
+                    new PagingVO({
+                        pagingIndex: 1,
+                        pagingSize: 10,
+                        order: [['createdAt', 'desc']],
+                    })
+                )
                 .then((result) => {
                     expect(result.count).gt(0);
                     expect(result.rows.length).gt(0);

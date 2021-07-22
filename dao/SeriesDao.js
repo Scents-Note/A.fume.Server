@@ -66,14 +66,14 @@ module.exports.readByName = async (seriesName) => {
 /**
  * 계열 전체 조회
  *
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {PagingVO} pagingVO
  * @returns {Promise<Series[]>}
  */
-module.exports.readAll = (pagingIndex, pagingSize) => {
+module.exports.readAll = ({ pagingIndex, pagingSize, order }) => {
     return Series.findAndCountAll({
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
+        order,
         raw: true,
         nest: true,
     });
@@ -82,12 +82,10 @@ module.exports.readAll = (pagingIndex, pagingSize) => {
 /**
  * 계열 검색
  *
- * @param {number} pagingIndex
- * @param {number} pagingSize
- * @param {array} order
+ * @param {PagingVO} pagingVO
  * @returns {Promise<Series[]>}
  */
-module.exports.search = (pagingIndex, pagingSize, order) => {
+module.exports.search = ({ pagingIndex, pagingSize, order }) => {
     return Series.findAndCountAll({
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,

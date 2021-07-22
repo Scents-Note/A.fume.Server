@@ -5,6 +5,10 @@ const ingredientDao = require('../dao/IngredientDao');
 const noteDao = require('../dao/NoteDao.js');
 const { parseSortToOrder } = require('../utils/parser.js');
 
+const { PagingRequestDTO } = require('../data/request_dto');
+
+const { PagingVO } = require('../data/dto');
+
 /**
  * 계열 삽입
  *
@@ -28,25 +32,21 @@ exports.getSeriesByIdx = (seriesIdx) => {
 /**
  * 계열 전체 목록 조회
  *
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {PagingRequestDTO} pagingRequestDTO
  * @returns {Promise<Series[]>}
  **/
-exports.getSeriesAll = (pagingIndex, pagingSize) => {
-    return seriesDao.readAll(pagingIndex, pagingSize);
+exports.getSeriesAll = (pagingRequestDTO) => {
+    return seriesDao.readAll(new PagingVO(pagingRequestDTO));
 };
 
 /**
  * 계열 검색
  *
- * @param {number} pagingIndex
- * @param {number} pagingSize
- * @param {string} sort
+ * @param {PagingRequestDTO} pagingRequestDTO
  * @returns {Promise<Series[]>}
  **/
-exports.searchSeries = (pagingIndex, pagingSize, sort) => {
-    const order = parseSortToOrder(sort);
-    return seriesDao.search(pagingIndex, pagingSize, order);
+exports.searchSeries = (pagingRequestDTO) => {
+    return seriesDao.search(new PagingVO(pagingRequestDTO));
 };
 
 /**
