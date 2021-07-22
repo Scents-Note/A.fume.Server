@@ -6,6 +6,11 @@ const { OK } = require('../utils/statusCode.js');
 const { PagingRequestDTO, SeriesInputDTO } = require('../data/request_dto');
 
 const { ResponseDTO } = require('../data/response_dto/common');
+const {
+    SeriesResponseDTO,
+    SeriesFilterResponseDTO,
+    SeriesDetailResponseDTO,
+} = require('../data/response_dto/series');
 module.exports.postSeries = (req, res, next) => {
     Series.postSeries(new SeriesInputDTO(req.body))
         .then((response) => {
@@ -22,6 +27,9 @@ module.exports.postSeries = (req, res, next) => {
 module.exports.getSeries = (req, res, next) => {
     const seriesIdx = req.swagger.params['seriesIdx'].value;
     Series.getSeriesByIdx(seriesIdx)
+        .then((result) => {
+            return new SeriesDetailResponseDTO(result);
+        })
         .then((response) => {
             res.status(OK).json({
                 message: 'series 개별 조회 성공',
