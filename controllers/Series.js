@@ -5,7 +5,11 @@ const { OK } = require('../utils/statusCode.js');
 
 const { PagingRequestDTO, SeriesInputDTO } = require('../data/request_dto');
 
-const { ResponseDTO } = require('../data/response_dto/common');
+const {
+    ResponseDTO,
+    ListAndCountResponseDTO,
+} = require('../data/response_dto/common');
+
 const {
     SeriesResponseDTO,
     SeriesFilterResponseDTO,
@@ -41,6 +45,12 @@ module.exports.getSeries = (req, res, next) => {
 
 module.exports.getSeriesAll = (req, res, next) => {
     Series.getSeriesAll(new PagingRequestDTO(req.query))
+        .then(({ count, rows }) => {
+            return new ListAndCountResponseDTO({
+                count,
+                rows: rows.map((it) => new SeriesResponseDTO(it)),
+            });
+        })
         .then((response) => {
             res.status(OK).json({
                 message: 'series 전체 조회 성공',
@@ -52,6 +62,12 @@ module.exports.getSeriesAll = (req, res, next) => {
 
 module.exports.searchSeries = (req, res, next) => {
     Series.searchSeries(new PagingRequestDTO(req.query))
+        .then(({ count, rows }) => {
+            return new ListAndCountResponseDTO({
+                count,
+                rows: rows.map((it) => new SeriesResponseDTO(it)),
+            });
+        })
         .then((response) => {
             res.status(OK).json({
                 message: '계열 검색 성공',
@@ -102,9 +118,10 @@ module.exports.getFilterSeries = (req, res, next) => {
     Series.getFilterSeries(new PagingRequestDTO(req.query))
         .then((response) => {
             res.status(OK).json(
-                new ResponseDTO({
+                new ListAndCountResponseDTO({
                     message: '계열 검색 성공',
-                    data: response,
+                    count,
+                    rows,
                 })
             );
         })

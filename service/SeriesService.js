@@ -6,7 +6,7 @@ const noteDao = require('../dao/NoteDao.js');
 
 const { PagingRequestDTO } = require('../data/request_dto');
 
-const { PagingVO } = require('../data/dto');
+const { PagingVO, ListAndCountDTO, SeriesFilterDTO } = require('../data/dto');
 
 /**
  * 계열 삽입
@@ -115,10 +115,15 @@ exports.getFilterSeries = async (pagingIndex, pagingSize) => {
         prev[cur.seriesIdx].push(cur);
         return prev;
     }, {});
-    result.rows.forEach((it) => {
-        it.ingredients = ingredientMap[it.seriesIdx] || [];
+    return new ListAndCountDTO({
+        count: result.count,
+        rows: result.rows.map((it) => {
+            return new SeriesFilterDTO({
+                series: it,
+                ingredients: ingredientMap[it.seriesIdx] || [],
+            });
+        }),
     });
-    return result;
 };
 
 /**
