@@ -10,7 +10,17 @@ const {
     UnExpectedError,
 } = require('../../utils/errors/errors.js');
 const { Series } = require('../../models/index.js');
-const { BrandDTO, PagingVO } = require('../../data/dto');
+const { SeriesDTO, PagingVO } = require('../../data/dto');
+
+SeriesDTO.prototype.validTest = function () {
+    expect(this.seriesIdx).to.be.ok;
+    expect(this.name).to.be.ok;
+    expect(this.englishName).to.be.ok;
+    expect(this.description).to.not.undefined;
+    expect(this.imageUrl).to.be.not.undefined;
+    expect(this.createdAt).to.be.ok;
+    expect(this.updatedAt).to.be.ok;
+};
 
 describe('# seriesDao Test', () => {
     before(async function () {
@@ -33,16 +43,14 @@ describe('# seriesDao Test', () => {
                         where: { name: '테스트 데이터' },
                         raw: true,
                         nest: true,
-                    });
+                    }).then((it) => new SeriesDTO(it));
                 })
                 .then((result) => {
-                    expect(result.seriesIdx).to.be.gt(0);
                     expect(result.name).to.be.eq('테스트 데이터');
                     expect(result.englishName).to.be.eq('Test Data');
                     expect(result.description).to.be.eq('왈라왈라');
                     expect(result.imageUrl).to.be.eq('imageUrl');
-                    expect(result.createdAt).to.be.ok;
-                    expect(result.updatedAt).to.be.ok;
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -87,10 +95,7 @@ describe('# seriesDao Test', () => {
                     expect(result.seriesIdx).to.be.eq(seriesIdx);
                     expect(result.name).to.be.eq('읽기 데이터');
                     expect(result.englishName).to.be.eq('Test Data');
-                    expect(result.imageUrl).to.be.not.undefined;
-                    expect(result.description).to.be.not.undefined;
-                    expect(result.createdAt).to.be.ok;
-                    expect(result.updatedAt).to.be.ok;
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -102,10 +107,7 @@ describe('# seriesDao Test', () => {
                     expect(result.seriesIdx).to.be.gt(0);
                     expect(result.name).to.be.eq('읽기 데이터');
                     expect(result.englishName).to.be.eq('Test Data');
-                    expect(result.imageUrl).to.be.not.undefined;
-                    expect(result.description).to.be.not.undefined;
-                    expect(result.createdAt).to.be.ok;
-                    expect(result.updatedAt).to.be.ok;
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -123,13 +125,7 @@ describe('# seriesDao Test', () => {
                     expect(result.count).gt(0);
                     expect(result.rows.length).greaterThan(0);
                     for (const series of result.rows) {
-                        expect(series.seriesIdx).to.be.gt(0);
-                        expect(series.name).to.be.ok;
-                        expect(series.englishName).to.be.ok;
-                        expect(series.imageUrl).to.be.not.undefined;
-                        expect(series.description).to.be.not.undefined;
-                        expect(series.createdAt).to.be.ok;
-                        expect(series.updatedAt).to.be.ok;
+                        series.validTest();
                     }
                     done();
                 })
@@ -151,13 +147,7 @@ describe('# seriesDao Test', () => {
                     expect(result.count).gt(0);
                     expect(result.rows.length).gt(0);
                     for (const series of result.rows) {
-                        expect(series.seriesIdx).to.be.gt(0);
-                        expect(series.name).to.be.ok;
-                        expect(series.englishName).to.be.ok;
-                        expect(series.imageUrl).to.be.not.undefined;
-                        expect(series.description).to.be.not.undefined;
-                        expect(series.createdAt).to.be.ok;
-                        expect(series.updatedAt).to.be.ok;
+                        series.validTest();
                     }
                     const originString = result.rows
                         .map((it) => it.seriesIdx)
@@ -180,10 +170,7 @@ describe('# seriesDao Test', () => {
                 .then((result) => {
                     expect(result.seriesIdx).to.be.eq(1);
                     expect(result.name).to.be.eq('계열1');
-                    expect(result.imageUrl).to.be.not.undefined;
-                    expect(result.description).to.be.ok;
-                    expect(result.createdAt).to.be.ok;
-                    expect(result.updatedAt).to.be.ok;
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));

@@ -2,7 +2,9 @@ const {
     NotMatchedError,
     DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
-const { Series, Ingredient } = require('../models');
+const { Series } = require('../models');
+
+const { SeriesDTO, ListAndCountDTO } = require('../data/dto');
 
 /**
  * 계열 생성
@@ -35,14 +37,14 @@ module.exports.create = ({ name, englishName, description, imageUrl }) => {
  * 계열 조회
  *
  * @param {number} seriesIdx
- * @return {Promise<Series>}
+ * @return {Promise<SeriesDTO>}
  */
 module.exports.readByIdx = async (seriesIdx) => {
     const result = await Series.findByPk(seriesIdx);
     if (!result) {
         throw new NotMatchedError();
     }
-    return result.dataValues;
+    return new SeriesDTO(result.dataValues);
 };
 
 /**
@@ -60,7 +62,7 @@ module.exports.readByName = async (seriesName) => {
     if (!result) {
         throw new NotMatchedError();
     }
-    return result;
+    return new SeriesDTO(result);
 };
 
 /**
@@ -76,6 +78,11 @@ module.exports.readAll = ({ pagingIndex, pagingSize, order }) => {
         order,
         raw: true,
         nest: true,
+    }).then((it) => {
+        return new ListAndCountDTO({
+            count: it.count,
+            rows: it.rows.map((it) => new SeriesDTO(it)),
+        });
     });
 };
 
@@ -92,6 +99,11 @@ module.exports.search = ({ pagingIndex, pagingSize, order }) => {
         order,
         raw: true,
         nest: true,
+    }).then((it) => {
+        return new ListAndCountDTO({
+            count: it.count,
+            rows: it.rows.map((it) => new SeriesDTO(it)),
+        });
     });
 };
 
@@ -139,7 +151,7 @@ module.exports.findSeries = (condition) => {
             if (!it) {
                 throw new NotMatchedError();
             }
-            return it;
+            return new SeriesDTO(it);
         }
     );
 };
