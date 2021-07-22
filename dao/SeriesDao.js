@@ -4,7 +4,7 @@ const {
 } = require('../utils/errors/errors.js');
 const { Series } = require('../models');
 
-const { SeriesDTO, ListAndCountDTO } = require('../data/dto');
+const { SeriesDTO, ListAndCountDTO, CreatedResultDTO } = require('../data/dto');
 
 /**
  * 계열 생성
@@ -20,7 +20,10 @@ module.exports.create = ({ name, englishName, description, imageUrl }) => {
         imageUrl,
     })
         .then((series) => {
-            return series.seriesIdx;
+            return new CreatedResultDTO({
+                idx: series.seriesIdx,
+                created: new SeriesDTO(series),
+            });
         })
         .catch((err) => {
             if (

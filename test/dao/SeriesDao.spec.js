@@ -38,12 +38,9 @@ describe('# seriesDao Test', () => {
                     description: '왈라왈라',
                     imageUrl: 'imageUrl',
                 })
-                .then(() => {
-                    return Series.findOne({
-                        where: { name: '테스트 데이터' },
-                        raw: true,
-                        nest: true,
-                    }).then((it) => new SeriesDTO(it));
+                .then(({ idx, created }) => {
+                    expect(idx).to.be.gt(0);
+                    return created;
                 })
                 .then((result) => {
                     expect(result.name).to.be.eq('테스트 데이터');
