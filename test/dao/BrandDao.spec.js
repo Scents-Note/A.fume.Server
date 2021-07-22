@@ -136,7 +136,7 @@ describe('# brandDao Test', () => {
     describe('# readAll Test', () => {
         it('# success case', (done) => {
             brandDao
-                .readAll([['createdAt', 'desc']])
+                .readAll()
                 .then((result) => {
                     expect(result.count).gte(5);
                     expect(result.rows.length).gte(5);

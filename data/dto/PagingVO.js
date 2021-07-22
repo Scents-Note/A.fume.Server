@@ -1,30 +1,29 @@
 'use-strict';
 
 class PagingVO {
-    constructor({ pagingSize, pagingIndex, sort }) {
+    constructor({ pagingSize, pagingIndex, sort, order }) {
         this.pagingSize = pagingSize;
         this.pagingIndex = pagingIndex;
-        this.order = parseSortToOrder(sort);
+        this.order = parseSortToOrder(sort) || order;
     }
 }
 
 function parseSortToOrder(sort) {
-    let order = [];
-    if (sort) {
-        let [key, ascending] = sort.split('_');
-        ascending = ascending || 'desc';
-        switch (ascending) {
-            case 'desc':
-            case 'dsc':
-                ascending = 'DESC';
-                break;
-            case 'asc':
-            default:
-                ascending = 'ASC';
-                break;
-        }
-        order.push([key, ascending]);
+    if (!sort) return undefined;
+    const order = [];
+    let [key, ascending] = sort.split('_');
+    ascending = ascending || 'desc';
+    switch (ascending) {
+        case 'desc':
+        case 'dsc':
+            ascending = 'DESC';
+            break;
+        case 'asc':
+        default:
+            ascending = 'ASC';
+            break;
     }
+    order.push([key, ascending]);
     return order;
 }
 
