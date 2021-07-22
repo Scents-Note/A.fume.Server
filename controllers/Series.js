@@ -15,6 +15,9 @@ const {
     SeriesFilterResponseDTO,
     SeriesDetailResponseDTO,
 } = require('../data/response_dto/series');
+
+const { IngredientResponseDTO } = require('../data/response_dto/ingredient');
+
 module.exports.postSeries = (req, res, next) => {
     Series.postSeries(new SeriesInputDTO(req.body))
         .then((response) => {
@@ -116,7 +119,18 @@ module.exports.getIngredients = (req, res, next) => {
 
 module.exports.getFilterSeries = (req, res, next) => {
     Series.getFilterSeries(new PagingRequestDTO(req.query))
-        .then((response) => {
+        .then(({ count, rows }) => {
+            return {
+                count,
+                rows: rows.map((it) => {
+                    it.ingredients = it.ingredients.map(
+                        (it) => new IngredientResponseDTO(it)
+                    );
+                    return new SeriesFilterResponseDTO(it);
+                }),
+            };
+        })
+        .then(({ count, rows }) => {
             res.status(OK).json(
                 new ListAndCountResponseDTO({
                     message: '계열 검색 성공',
