@@ -13,7 +13,6 @@ const {
 const {
     BrandResponseDTO,
     BrandDetailResponseDTO,
-    BrandFilterResponseDTO,
 } = require('../data/response_dto/brand');
 
 module.exports.searchBrand = (req, res, next) => {

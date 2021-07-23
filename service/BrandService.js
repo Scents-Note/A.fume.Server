@@ -2,8 +2,6 @@
 
 const brandDao = require('../dao/BrandDao.js');
 
-const { updateList, removeKeyJob } = require('../utils/func.js');
-
 const { PagingVO, BrandFilterVO } = require('../data/vo/index.js');
 
 /**
@@ -93,10 +91,10 @@ exports.getFilterBrand = () => {
  * 브랜드 영어 이름으로 조회
  *
  * @param {string} englishName
- * @returns {Promise<Brand>}
+ * @returns {Promise<BrandResponseDTO>}
  **/
 exports.findBrandByEnglishName = (englishName) => {
     return brandDao.findBrand({ englishName }).then((result) => {
-        return removeKeyJob('createdAt', 'updatedAt')(result);
+        return new BrandResponseDTO(result);
     });
 };
