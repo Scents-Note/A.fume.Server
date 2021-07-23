@@ -4,7 +4,7 @@ const brandDao = require('../dao/BrandDao.js');
 
 const { updateList, removeKeyJob } = require('../utils/func.js');
 
-const { PagingVO, BrandFilterVO } = require('../data/dto/index.js');
+const { PagingVO, BrandFilterVO } = require('../data/vo/index.js');
 
 /**
  * 브랜드 검색

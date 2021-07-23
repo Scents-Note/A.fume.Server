@@ -6,7 +6,9 @@ const noteDao = require('../dao/NoteDao.js');
 
 const { PagingRequestDTO } = require('../data/request_dto');
 
-const { PagingVO, ListAndCountDTO, SeriesFilterVO } = require('../data/dto');
+const { ListAndCountDTO } = require('../data/dto');
+
+const { PagingVO, SeriesFilterVO } = require('../data/vo');
 
 /**
  * 계열 삽입

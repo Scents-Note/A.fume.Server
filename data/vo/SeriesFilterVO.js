@@ -1,11 +1,11 @@
 'use strict';
 
-const SeriesDTO = require('./SeriesDTO');
+const SeriesDTO = require('../dto/SeriesDTO');
 
 const { SeriesFilterResponseDTO } = require('../response_dto/series');
 const { IngredientResponseDTO } = require('../response_dto/ingredient');
 
-class SeriesFilterDTO extends SeriesDTO {
+class SeriesFilterVO extends SeriesDTO {
     constructor({ series, ingredients }) {
         super(series);
         this.ingredients = ingredients;
@@ -26,4 +26,4 @@ class SeriesFilterDTO extends SeriesDTO {
     }
 }
 
-module.exports = SeriesFilterDTO;
+module.exports = SeriesFilterVO;
