@@ -99,9 +99,10 @@ async function filterByUsedCount(ingredientList) {
  * 필터에서 보여주는 Series 조회
  *
  * @param {pagingVO} pagingVO
+ * @returns {Promise<ListAndCountDTO<SeriesFilterDTO>>} listAndCountDTO
  */
-exports.getFilterSeries = async (pagingIndex, pagingSize) => {
-    const result = await seriesDao.readAll(pagingIndex, pagingSize);
+exports.getFilterSeries = async (pagingVO) => {
+    const result = await seriesDao.readAll(pagingVO);
     const seriesIdxList = result.rows.map((it) => it.seriesIdx);
     const ingredientList = await ingredientDao.readBySeriesIdxList(
         seriesIdxList

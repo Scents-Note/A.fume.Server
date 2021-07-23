@@ -48,34 +48,40 @@ module.exports.getSeries = (req, res, next) => {
 
 module.exports.getSeriesAll = (req, res, next) => {
     Series.getSeriesAll(new PagingRequestDTO(req.query))
-        .then(({ count, rows }) => {
-            return new ListAndCountResponseDTO({
-                count,
-                rows: rows.map((it) => new SeriesResponseDTO(it)),
-            });
+        .then((result) => {
+            return {
+                count: result.count,
+                rows: result.rows.map((it) => new SeriesResponseDTO(it)),
+            };
         })
-        .then((response) => {
-            res.status(OK).json({
-                message: 'series 전체 조회 성공',
-                data: response,
-            });
+        .then(({ count, rows }) => {
+            res.status(OK).json(
+                new ListAndCountResponseDTO({
+                    count,
+                    rows,
+                    message: 'series 전체 조회 성공',
+                })
+            );
         })
         .catch((err) => next(err));
 };
 
 module.exports.searchSeries = (req, res, next) => {
     Series.searchSeries(new PagingRequestDTO(req.query))
-        .then(({ count, rows }) => {
-            return new ListAndCountResponseDTO({
-                count,
-                rows: rows.map((it) => new SeriesResponseDTO(it)),
-            });
+        .then((result) => {
+            return {
+                count: result.count,
+                rows: result.rows.map((it) => new SeriesResponseDTO(it)),
+            };
         })
-        .then((response) => {
-            res.status(OK).json({
-                message: '계열 검색 성공',
-                data: response,
-            });
+        .then(({ count, rows }) => {
+            res.status(OK).json(
+                new ListAndCountResponseDTO({
+                    count,
+                    rows,
+                    message: '계열 검색 성공',
+                })
+            );
         })
         .catch((err) => next(err));
 };

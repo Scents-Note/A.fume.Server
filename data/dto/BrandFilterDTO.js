@@ -1,10 +1,10 @@
 'use strict';
 
-class BrandFilterDTO {
+class BrandFilterResponseDTO {
     constructor({ firstInitial, brands }) {
         this.firstInitial = firstInitial;
         this.brands = brands;
     }
 }
 
-module.exports = BrandFilterDTO;
+module.exports = BrandFilterResponseDTO;
