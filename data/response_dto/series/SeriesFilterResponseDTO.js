@@ -1,11 +1,10 @@
 'use strict';
 
-const SeriesResponseDTO = require('./SeriesResponseDTO');
-
-class SeriesFilterResponseDTO extends SeriesResponseDTO {
-    constructor(json) {
-        super(json);
-        this.ingredients = json.ingredients;
+class SeriesFilterResponseDTO {
+    constructor({ seriesIdx, name, ingredients }) {
+        this.seriesIdx = seriesIdx;
+        this.name = name;
+        this.ingredients = ingredients;
     }
 }
 
