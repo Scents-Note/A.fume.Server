@@ -12,11 +12,8 @@ const {
 
 const {
     SeriesResponseDTO,
-    SeriesFilterResponseDTO,
     SeriesDetailResponseDTO,
 } = require('../data/response_dto/series');
-
-const { IngredientResponseDTO } = require('../data/response_dto/ingredient');
 
 module.exports.postSeries = (req, res, next) => {
     Series.postSeries(new SeriesInputDTO(req.body))
@@ -128,12 +125,7 @@ module.exports.getFilterSeries = (req, res, next) => {
         .then(({ count, rows }) => {
             return {
                 count,
-                rows: rows.map((it) => {
-                    it.ingredients = it.ingredients.map(
-                        (it) => new IngredientResponseDTO(it)
-                    );
-                    return new SeriesFilterResponseDTO(it);
-                }),
+                rows: rows.map((it) => it.toResponse()),
             };
         })
         .then(({ count, rows }) => {
