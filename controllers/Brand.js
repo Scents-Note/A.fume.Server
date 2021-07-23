@@ -115,13 +115,7 @@ module.exports.deleteBrand = (req, res, next) => {
 module.exports.getFilterBrand = (req, res, next) => {
     Brand.getFilterBrand()
         .then((result) => {
-            return result.map(
-                (it) =>
-                    new BrandFilterResponseDTO({
-                        firstInitial: it.firstInitial,
-                        brands: it.brands.map((it) => new BrandResponseDTO(it)),
-                    })
-            );
+            return result.map((it) => it.toResponse());
         })
         .then((response) => {
             res.status(OK).json(

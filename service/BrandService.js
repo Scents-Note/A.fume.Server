@@ -4,7 +4,7 @@ const brandDao = require('../dao/BrandDao.js');
 
 const { updateList, removeKeyJob } = require('../utils/func.js');
 
-const { PagingVO, BrandFilterDTO } = require('../data/dto');
+const { PagingVO, BrandFilterVO } = require('../data/dto/index.js');
 
 /**
  * 브랜드 검색
@@ -81,7 +81,7 @@ exports.getFilterBrand = () => {
             return prev;
         }, {});
         return Object.keys(firstInitialMap).map((key) => {
-            return new BrandFilterDTO({
+            return new BrandFilterVO({
                 firstInitial: key,
                 brands: firstInitialMap[key],
             });
