@@ -1,6 +1,6 @@
 'use strict';
 
-const Brand = require('../service/BrandService');
+const Brand = new (require('../service/BrandService'))();
 const { OK } = require('../utils/statusCode.js');
 
 const { PagingRequestDTO, BrandInputDTO } = require('../data/request_dto');
@@ -14,6 +14,7 @@ const {
     BrandResponseDTO,
     BrandDetailResponseDTO,
 } = require('../data/response_dto/brand');
+const BrandService = require('../service/BrandService');
 
 module.exports.searchBrand = (req, res, next) => {
     Brand.searchBrand(new PagingRequestDTO(req.query))
@@ -130,6 +131,7 @@ module.exports.getFilterBrand = (req, res, next) => {
 module.exports.getBrandByEnglishName = (req, res, next) => {
     const { englishName } = req.body;
     Brand.findBrandByEnglishName(englishName)
+        .then((brandDTO) => new BrandResponseDTO(brandDTO))
         .then((response) => {
             res.status(OK).json(
                 new ResponseDTO({
