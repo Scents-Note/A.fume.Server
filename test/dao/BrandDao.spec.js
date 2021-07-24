@@ -10,7 +10,8 @@ const {
     NotMatchedError,
     UnExpectedError,
 } = require('../../utils/errors/errors.js');
-const { BrandDTO, PagingVO } = require('../../data/dto');
+const { BrandDTO } = require('../../data/dto');
+const { PagingVO } = require('../../data/vo');
 
 BrandDTO.prototype.validTest = function () {
     expect(this.brandIdx).to.be.ok;

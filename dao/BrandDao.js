@@ -4,13 +4,7 @@ const {
 } = require('../utils/errors/errors.js');
 
 const { Brand } = require('../models');
-const {
-    BrandDTO,
-    ListAndCountDTO,
-    CreatedResultDTO,
-    PagingDTO,
-} = require('../data/dto/index.js');
-
+const { BrandDTO, ListAndCountDTO, CreatedResultDTO } = require('../data/dto');
 /**
  * 브랜드 생성
  *
@@ -66,11 +60,11 @@ module.exports.read = async (brandIdx) => {
 /**
  * 브랜드 검색
  *
- * @param {PagingDTO} pagingDTO
+ * @param {PagingVO} pagingVO
  * @returns {Promise<ListAndCountDTO<BrandDTO>>}
  */
-module.exports.search = (pagingDTO) => {
-    const { pagingSize, pagingIndex, order } = pagingDTO;
+module.exports.search = (pagingVO) => {
+    const { pagingSize, pagingIndex, order } = pagingVO;
     return Brand.findAndCountAll({
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
