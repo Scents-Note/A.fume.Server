@@ -1,9 +1,13 @@
 'use strict';
 
-const Brand = new (require('../service/BrandService'))();
+let Brand = new (require('../service/BrandService'))();
+
+module.exports.setBrandService = (brandService) => {
+    Brand = brandService;
+};
 const { OK } = require('../utils/statusCode.js');
 
-const { PagingRequestDTO, BrandInputDTO } = require('../data/request_dto');
+const { PagingRequestDTO } = require('../data/request_dto');
 
 const {
     ResponseDTO,
@@ -14,7 +18,8 @@ const {
     BrandResponseDTO,
     BrandDetailResponseDTO,
 } = require('../data/response_dto/brand');
-const BrandService = require('../service/BrandService');
+
+const { BrandInputDTO } = require('../data/dto');
 
 module.exports.searchBrand = (req, res, next) => {
     Brand.searchBrand(new PagingRequestDTO(req.query))
@@ -74,7 +79,7 @@ module.exports.getBrand = (req, res, next) => {
 };
 
 module.exports.postBrand = (req, res, next) => {
-    Brand.insertBrand(new BrandInputRequestDTO(req.body))
+    Brand.insertBrand(new BrandInputDTO(req.body))
         .then((result) => {
             return result.idx;
         })
