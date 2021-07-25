@@ -25,7 +25,7 @@ const { PagingVO, SeriesFilterVO } = require('../data/vo');
  * 계열 삽입
  *
  * @param {SeriesInputDTO} seriesInputDTO
- * @returns {Promise<integer>} insertIdx
+ * @returns {Promise<CreatedResultDTO<Series>>} createdResultDTO
  **/
 exports.postSeries = (seriesInputDTO) => {
     return seriesDao.create(seriesInputDTO);
@@ -35,7 +35,7 @@ exports.postSeries = (seriesInputDTO) => {
  * 특정 계열 조회
  *
  * @param {integer} seriesIdx
- * @returns {Promise<SeriesDTO>}
+ * @returns {Promise<SeriesDTO>} seriesDTO
  **/
 exports.getSeriesByIdx = (seriesIdx) => {
     return seriesDao.readByIdx(seriesIdx);

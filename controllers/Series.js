@@ -1,9 +1,13 @@
 'use strict';
 
-const Series = require('../service/SeriesService');
+let Series = require('../service/SeriesService');
+
+module.exports.setSeriesService = (seriesService) => {
+    Series = seriesService;
+};
 const { OK } = require('../utils/statusCode.js');
 
-const { PagingRequestDTO, SeriesInputDTO } = require('../data/request_dto');
+const { PagingRequestDTO } = require('../data/request_dto');
 
 const {
     ResponseDTO,
@@ -13,10 +17,16 @@ const {
 const {
     SeriesResponseDTO,
     SeriesDetailResponseDTO,
+    SeriesFilterResponseDTO,
 } = require('../data/response_dto/series');
+
+const { SeriesInputDTO } = require('../data/dto');
 
 module.exports.postSeries = (req, res, next) => {
     Series.postSeries(new SeriesInputDTO(req.body))
+        .then((createdResultDTO) => {
+            return createdResultDTO.idx;
+        })
         .then((response) => {
             res.status(OK).json(
                 new ResponseDTO({
@@ -143,6 +153,7 @@ module.exports.getFilterSeries = (req, res, next) => {
 module.exports.getSeriesByEnglishName = (req, res, next) => {
     const { englishName } = req.body;
     Series.findSeriesByEnglishName(englishName)
+        .then((seriesDTO) => new SeriesDetailResponseDTO(seriesDTO))
         .then((response) => {
             res.status(OK).json(
                 new ResponseDTO({
