@@ -10,7 +10,8 @@ const {
     UnExpectedError,
 } = require('../../utils/errors/errors.js');
 const { Series } = require('../../models/index.js');
-const { SeriesDTO, PagingVO } = require('../../data/dto');
+const { SeriesDTO } = require('../../data/dto');
+const { PagingVO } = require('../../data/vo');
 
 SeriesDTO.prototype.validTest = function () {
     expect(this.seriesIdx).to.be.ok;
