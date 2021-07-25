@@ -1,8 +1,19 @@
 'use strict';
 
-const seriesDao = require('../dao/SeriesDao.js');
-const ingredientDao = require('../dao/IngredientDao');
-const noteDao = require('../dao/NoteDao.js');
+let seriesDao = require('../dao/SeriesDao.js');
+let ingredientDao = require('../dao/IngredientDao');
+let noteDao = require('../dao/NoteDao.js');
+
+// TODO Service Class로 변경
+module.exports.setSeriesDao = (dao) => {
+    seriesDao = dao;
+};
+module.exports.setIngredientDao = (dao) => {
+    ingredientDao = dao;
+};
+module.exports.setNoteDao = (dao) => {
+    noteDao = dao;
+};
 
 const { PagingRequestDTO } = require('../data/request_dto');
 
@@ -70,6 +81,7 @@ exports.deleteSeries = (seriesIdx) => {
     return seriesDao.delete(seriesIdx);
 };
 
+// TODO getIngredientList move to Ingredient Service
 /**
  * 계열에 해당하는 재료 조회
  *
