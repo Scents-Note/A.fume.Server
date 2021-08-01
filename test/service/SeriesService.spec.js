@@ -218,7 +218,7 @@ describe('# Brand Service Test', () => {
 
     describe('# getFilterSeries Test', () => {
         it('# success Test', (done) => {
-            const isFiltered = (ingredientIdx) => ingredientIdx % 2 == 1;
+            const isNoteCountOver10 = (ingredientIdx) => ingredientIdx % 2 == 1;
             mockIngredientDAO.readBySeriesIdxList = async (seriesIdxList) => {
                 const ret = [];
                 for (let i = 1; i <= 5; i++) ret.push(mockIngredient(i, 1));
@@ -226,14 +226,11 @@ describe('# Brand Service Test', () => {
                 for (let i = 8; i <= 10; i++) ret.push(mockIngredient(i, 3));
                 return ret;
             };
-            const mockNote = (ingredientIdx, count) => ({
-                ingredientIdx,
-                count,
-            });
             mockNoteDAO.countIngredientUsed = async (ingredientIdxList) =>
-                [...new Array(10)].map((it, index) =>
-                    mockNote(index + 1, isFiltered(index + 1) ? 100 : 4)
-                );
+                [...new Array(10)].map((it, index) => ({
+                    ingredientIdx: index + 1,
+                    count: isNoteCountOver10(index + 1) ? 100 : 4,
+                }));
 
             seriesService
                 .getFilterSeries({})
@@ -243,7 +240,7 @@ describe('# Brand Service Test', () => {
                     for (const seriesFilterVO of result.rows) {
                         for (const ingredientDTO of seriesFilterVO.ingredients) {
                             expect(
-                                isFiltered(ingredientDTO.ingredientIdx)
+                                isNoteCountOver10(ingredientDTO.ingredientIdx)
                             ).to.be.eq(true);
                         }
                     }
