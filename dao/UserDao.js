@@ -6,11 +6,13 @@ const {
 const { sequelize, User } = require('../models');
 const { user: MongooseUser } = require('../mongoose_models');
 
+const { UserDTO, CreatedResultDTO } = require('../data/dto');
+
 /**
  * 유저 생성
  *
  * @param {Object} User
- * @returns {Promise}
+ * @return {CreatedResultDTO<UserDTO>} createdResultDTO
  */
 module.exports.create = ({
     nickname,
@@ -32,7 +34,10 @@ module.exports.create = ({
         accessTime,
     })
         .then((it) => {
-            return it.userIdx;
+            return new CreatedResultDTO({
+                idx: it.userIdx,
+                created: new UserDTO(it),
+            });
         })
         .catch((err) => {
             if (
@@ -49,35 +54,35 @@ module.exports.create = ({
  * 유저 조회
  *
  * @param {Object} whereObj
- * @returns {Promise<User>}
+ * @returns {Promise<UserDTO>} UserDTO
  */
 module.exports.read = async (where) => {
     const result = await User.findOne({ where, nest: true, raw: true });
     if (!result) {
         throw new NotMatchedError();
     }
-    return result;
+    return new UserDTO(result);
 };
 
 /**
  * 유저 조회
  *
  * @param {number} userIdx
- * @returns {Promise}
+ * @returns {Promise<UserDTO>} UserDTO
  */
 module.exports.readByIdx = async (userIdx) => {
     const result = await User.findByPk(userIdx);
     if (!result) {
         throw new NotMatchedError();
     }
-    return result.dataValues;
+    return new UserDTO(result.dataValues);
 };
 
 /**
  * 유저 수정
  *
  * @param {Object} User
- * @return {Promise}
+ * @return {Promise<number>} affectedRows
  */
 module.exports.update = async ({
     userIdx,
@@ -103,7 +108,7 @@ module.exports.update = async ({
  * 유저 access Time 갱신
  *
  * @param {number} userIdx
- * @return {Promise}
+ * @return {Promise<number>} affectedRows
  */
 module.exports.updateAccessTime = async (userIdx) => {
     const accessTime = sequelize.literal('CURRENT_TIMESTAMP');
@@ -131,17 +136,15 @@ module.exports.delete = (userIdx) => {
 /**
  * 서베이 등록
  *
- * @param {number[]} keywordIdxList
- * @param {number[]} perfumeIdxList
- * @param {number[]} seriesIdxList
+ * @param {SurveyDTO} survey
  * @return {Promise}
  */
-module.exports.postSurvey = (
+module.exports.postSurvey = ({
     userIdx,
     surveyKeywordList,
     surveyPerfumeList,
-    surveySeriesList
-) => {
+    surveySeriesList,
+}) => {
     return MongooseUser.create({
         userIdx,
         surveyKeywordList,

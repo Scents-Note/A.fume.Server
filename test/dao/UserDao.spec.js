@@ -11,7 +11,21 @@ const {
 } = require('../../utils/errors/errors.js');
 const { User } = require('../../models');
 
+const { UserDTO, CreatedResultDTO } = require('../../data/dto');
+
 const { GENDER_MAN, GENDER_WOMAN } = require('../../utils/code.js');
+
+UserDTO.prototype.validTest = function () {
+    expect(this.userIdx).to.be.gt(0);
+    expect(this.nickname).to.be.ok;
+    expect(this.email).to.be.ok;
+    expect(this.password).to.be.ok;
+    expect(this.gender).to.be.within(1, 2);
+    expect(this.birth).to.be.ok;
+    expect(this.grade).to.be.gte(0);
+    expect(this.createdAt).to.be.ok;
+    expect(this.updatedAt).to.be.ok;
+};
 
 describe('# userDao Test', () => {
     before(async function () {
@@ -31,8 +45,10 @@ describe('# userDao Test', () => {
                     birth: '1995',
                     grade: 1,
                 })
-                .then((result) => {
-                    expect(result).gt(0);
+                .then(({ idx, created }) => {
+                    expect(idx).to.be.gt(0);
+                    expect(created).instanceOf(UserDTO);
+                    created.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -67,15 +83,8 @@ describe('# userDao Test', () => {
                 userDao
                     .read({ email: 'email1@afume.com' })
                     .then((result) => {
-                        expect(result.userIdx).to.be.eq(1);
-                        expect(result.nickname).to.be.eq('user1');
-                        expect(result.email).to.be.eq('email1@afume.com');
-                        expect(result.password).to.be.eq('test');
-                        expect(result.gender).to.be.eq(2);
-                        expect(result.birth).to.be.eq(1995);
-                        expect(result.grade).to.be.eq(1);
-                        expect(result.createdAt).to.be.ok;
-                        expect(result.updatedAt).to.be.ok;
+                        expect(result).instanceOf(UserDTO);
+                        result.validTest();
                         done();
                     })
                     .catch((err) => done(err));
@@ -129,14 +138,16 @@ describe('# userDao Test', () => {
     describe('# update Test', () => {
         let userIdx;
         before(async () => {
-            userIdx = await userDao.create({
-                nickname: '수정 테스트',
-                password: 'hashed',
-                gender: GENDER_MAN,
-                email: 'updateTest@afume.com',
-                birth: '1995',
-                grade: 1,
-            });
+            userIdx = (
+                await userDao.create({
+                    nickname: '수정 테스트',
+                    password: 'hashed',
+                    gender: GENDER_MAN,
+                    email: 'updateTest@afume.com',
+                    birth: '1995',
+                    grade: 1,
+                })
+            ).idx;
         });
         it('# success case', (done) => {
             userDao
@@ -154,6 +165,8 @@ describe('# userDao Test', () => {
                     return userDao.readByIdx(userIdx);
                 })
                 .then((result) => {
+                    expect(result).to.be.instanceOf(UserDTO);
+                    result.validTest();
                     expect(result.userIdx).to.be.eq(userIdx);
                     expect(result.nickname).to.be.eq('수정 테스트(完)');
                     expect(result.email).to.be.eq('updateTest@afume.com');
@@ -161,8 +174,6 @@ describe('# userDao Test', () => {
                     expect(result.gender).to.be.eq(GENDER_WOMAN);
                     expect(result.birth).to.be.eq(1995);
                     expect(result.grade).to.be.eq(0);
-                    expect(result.createdAt).to.be.ok;
-                    expect(result.updatedAt).to.be.ok;
                     done();
                 })
                 .catch((err) => done(err));
@@ -186,14 +197,16 @@ describe('# userDao Test', () => {
     describe('# delete Test', () => {
         let userIdx;
         before(async () => {
-            userIdx = await userDao.create({
-                nickname: '삭제 테스트',
-                password: 'hashed',
-                gender: GENDER_MAN,
-                email: 'deleteTest@afume.com',
-                birth: '1995',
-                grade: 0,
-            });
+            userIdx = (
+                await userDao.create({
+                    nickname: '삭제 테스트',
+                    password: 'hashed',
+                    gender: GENDER_MAN,
+                    email: 'deleteTest@afume.com',
+                    birth: '1995',
+                    grade: 0,
+                })
+            ).idx;
         });
         describe('# delete Test', () => {
             it('# success case', (done) => {
