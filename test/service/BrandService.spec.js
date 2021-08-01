@@ -10,29 +10,32 @@ const {
 
 const { BrandFilterVO } = require('../../data/vo');
 
+const FIRST_INITIAL = [
+    'ㄱ',
+    'ㄲ',
+    'ㄴ',
+    'ㄷ',
+    'ㄸ',
+    'ㄹ',
+    'ㅁ',
+    'ㅂ',
+    'ㅃ',
+    'ㅅ',
+    'ㅆ',
+    'ㅇ',
+    'ㅈ',
+    'ㅉ',
+    'ㅊ',
+    'ㅋ',
+    'ㅍ',
+    'ㅌ',
+    'ㅎ',
+];
+
 BrandDTO.prototype.validTest = function () {
     expect(this.brandIdx).to.be.ok;
     expect(this.name).to.be.ok;
-    expect(this.firstInitial).to.be.oneOf([
-        'ㄱ',
-        'ㄲ',
-        'ㄴ',
-        'ㄷ',
-        'ㄸ',
-        'ㄹ',
-        'ㅁ',
-        'ㅂ',
-        'ㅃ',
-        'ㅅ',
-        'ㅆ',
-        'ㅇ',
-        'ㅈ',
-        'ㅉ',
-        'ㅊ',
-        'ㅋ',
-        'ㅍ',
-        'ㅎ',
-    ]);
+    expect(this.firstInitial).to.be.oneOf(FIRST_INITIAL);
     expect(this.imageUrl).to.be.ok;
     expect(this.description).to.be.not.undefined;
     expect(this.createdAt).to.be.ok;
@@ -55,26 +58,7 @@ CreatedResultDTO.prototype.validTest = function () {
 };
 
 BrandFilterVO.prototype.validTest = function () {
-    expect(this.firstInitial).to.be.oneOf([
-        'ㄱ',
-        'ㄲ',
-        'ㄴ',
-        'ㄷ',
-        'ㄸ',
-        'ㄹ',
-        'ㅁ',
-        'ㅂ',
-        'ㅃ',
-        'ㅅ',
-        'ㅆ',
-        'ㅇ',
-        'ㅈ',
-        'ㅉ',
-        'ㅊ',
-        'ㅋ',
-        'ㅍ',
-        'ㅎ',
-    ]);
+    expect(this.firstInitial).to.be.oneOf(FIRST_INITIAL);
     for (const brand of this.brands) {
         expect(brand).instanceOf(BrandDTO);
         brand.validTest();

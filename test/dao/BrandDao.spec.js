@@ -34,6 +34,7 @@ BrandDTO.prototype.validTest = function () {
         'ㅊ',
         'ㅋ',
         'ㅍ',
+        'ㅌ',
         'ㅎ',
     ]);
     expect(this.imageUrl).to.be.ok;

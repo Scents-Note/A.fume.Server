@@ -63,8 +63,7 @@ module.exports.read = async (brandIdx) => {
  * @param {PagingVO} pagingVO
  * @returns {Promise<ListAndCountDTO<BrandDTO>>}
  */
-module.exports.search = (pagingVO) => {
-    const { pagingSize, pagingIndex, order } = pagingVO;
+module.exports.search = ({ pagingSize, pagingIndex, order }) => {
     return Brand.findAndCountAll({
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
