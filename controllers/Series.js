@@ -1,18 +1,39 @@
 'use strict';
 
-const Series = require('../service/SeriesService');
+let Series = require('../service/SeriesService');
+
+module.exports.setSeriesService = (seriesService) => {
+    Series = seriesService;
+};
 const { OK } = require('../utils/statusCode.js');
 
+const { PagingRequestDTO } = require('../data/request_dto');
+
+const {
+    ResponseDTO,
+    ListAndCountResponseDTO,
+} = require('../data/response_dto/common');
+
+const {
+    SeriesResponseDTO,
+    SeriesDetailResponseDTO,
+    SeriesFilterResponseDTO,
+} = require('../data/response_dto/series');
+
+const { SeriesInputDTO } = require('../data/dto');
+
 module.exports.postSeries = (req, res, next) => {
-    const { name, englishName, description, imageUrl } = req.swagger.params[
-        'body'
-    ].value;
-    Series.postSeries({ name, englishName, description, imageUrl })
+    Series.postSeries(new SeriesInputDTO(req.body))
+        .then((createdResultDTO) => {
+            return createdResultDTO.idx;
+        })
         .then((response) => {
-            res.status(OK).json({
-                message: 'series post 성공',
-                data: response,
-            });
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: 'series post 성공',
+                    data: response,
+                })
+            );
         })
         .catch((err) => next(err));
 };
@@ -20,6 +41,9 @@ module.exports.postSeries = (req, res, next) => {
 module.exports.getSeries = (req, res, next) => {
     const seriesIdx = req.swagger.params['seriesIdx'].value;
     Series.getSeriesByIdx(seriesIdx)
+        .then((result) => {
+            return new SeriesDetailResponseDTO(result);
+        })
         .then((response) => {
             res.status(OK).json({
                 message: 'series 개별 조회 성공',
@@ -30,38 +54,49 @@ module.exports.getSeries = (req, res, next) => {
 };
 
 module.exports.getSeriesAll = (req, res, next) => {
-    let { pagingIndex, pagingSize } = req.query;
-    pagingIndex = parseInt(pagingIndex) || 1;
-    pagingSize = parseInt(pagingSize) || 100;
-    Series.getSeriesAll(pagingIndex, pagingSize)
-        .then((response) => {
-            res.status(OK).json({
-                message: 'series 전체 조회 성공',
-                data: response,
-            });
+    Series.getSeriesAll(new PagingRequestDTO(req.query))
+        .then((result) => {
+            return {
+                count: result.count,
+                rows: result.rows.map((it) => new SeriesResponseDTO(it)),
+            };
+        })
+        .then(({ count, rows }) => {
+            res.status(OK).json(
+                new ListAndCountResponseDTO({
+                    count,
+                    rows,
+                    message: 'series 전체 조회 성공',
+                })
+            );
         })
         .catch((err) => next(err));
 };
 
 module.exports.searchSeries = (req, res, next) => {
-    let { pagingIndex, pagingSize, sort } = req.query;
-    pagingIndex = parseInt(pagingIndex) || 1;
-    pagingSize = parseInt(pagingSize) || 10;
-    sort = sort || 'createdAt_desc';
-    Series.searchSeries(pagingIndex, pagingSize, sort)
-        .then((response) => {
-            res.status(OK).json({
-                message: '계열 검색 성공',
-                data: response,
-            });
+    Series.searchSeries(new PagingRequestDTO(req.query))
+        .then((result) => {
+            return {
+                count: result.count,
+                rows: result.rows.map((it) => new SeriesResponseDTO(it)),
+            };
+        })
+        .then(({ count, rows }) => {
+            res.status(OK).json(
+                new ListAndCountResponseDTO({
+                    count,
+                    rows,
+                    message: '계열 검색 성공',
+                })
+            );
         })
         .catch((err) => next(err));
 };
 
 module.exports.putSeries = (req, res, next) => {
     const seriesIdx = req.swagger.params['seriesIdx'].value;
-    const { name, englishName, description } = req.swagger.params['body'].value;
-    Series.putSeries({ seriesIdx, name, englishName, description })
+    const json = Object.assign({}, req.body, { seriesIdx });
+    Series.putSeries(new SeriesInputDTO(json))
         .then(() => {
             res.status(OK).json({
                 message: 'series put 성공',
@@ -85,24 +120,32 @@ module.exports.getIngredients = (req, res, next) => {
     const seriesIdx = req.swagger.params['seriesIdx'].value;
     Series.getIngredientList(seriesIdx)
         .then((result) => {
-            res.status(OK).json({
-                message: 'Series에 해당하는 Ingredient 조회 성공',
-                data: result,
-            });
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: 'Series에 해당하는 Ingredient 조회 성공',
+                    data: result,
+                })
+            );
         })
         .catch((err) => next(err));
 };
 
 module.exports.getFilterSeries = (req, res, next) => {
-    let { pagingIndex, pagingSize } = req.query;
-    pagingIndex = parseInt(pagingIndex) || 1;
-    pagingSize = parseInt(pagingSize) || 100;
-    Series.getFilterSeries(pagingIndex, pagingSize)
-        .then((response) => {
-            res.status(OK).json({
-                message: '계열 검색 성공',
-                data: response,
-            });
+    Series.getFilterSeries(new PagingRequestDTO(req.query))
+        .then(({ count, rows }) => {
+            return {
+                count,
+                rows: rows.map((it) => it.toResponse()),
+            };
+        })
+        .then(({ count, rows }) => {
+            res.status(OK).json(
+                new ListAndCountResponseDTO({
+                    message: '계열 검색 성공',
+                    count,
+                    rows,
+                })
+            );
         })
         .catch((err) => next(err));
 };
@@ -110,11 +153,14 @@ module.exports.getFilterSeries = (req, res, next) => {
 module.exports.getSeriesByEnglishName = (req, res, next) => {
     const { englishName } = req.body;
     Series.findSeriesByEnglishName(englishName)
+        .then((seriesDTO) => new SeriesDetailResponseDTO(seriesDTO))
         .then((response) => {
-            res.status(OK).json({
-                message: '계열 조회 성공',
-                data: response,
-            });
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: '계열 조회 성공',
+                    data: response,
+                })
+            );
         })
         .catch((err) => {
             next(err);

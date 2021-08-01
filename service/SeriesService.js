@@ -1,27 +1,41 @@
 'use strict';
 
-const seriesDao = require('../dao/SeriesDao.js');
-const ingredientDao = require('../dao/IngredientDao');
-const noteDao = require('../dao/NoteDao.js');
-const { parseSortToOrder } = require('../utils/parser.js');
+let seriesDao = require('../dao/SeriesDao.js');
+let ingredientDao = require('../dao/IngredientDao');
+let noteDao = require('../dao/NoteDao.js');
+
+// TODO Service Class로 변경
+module.exports.setSeriesDao = (dao) => {
+    seriesDao = dao;
+};
+module.exports.setIngredientDao = (dao) => {
+    ingredientDao = dao;
+};
+module.exports.setNoteDao = (dao) => {
+    noteDao = dao;
+};
+
+const { PagingRequestDTO } = require('../data/request_dto');
+
+const { ListAndCountDTO } = require('../data/dto');
+
+const { PagingVO, SeriesFilterVO } = require('../data/vo');
 
 /**
  * 계열 삽입
  *
- * @param {string} name
- * @param {string} englishName
- * @param {string} description
- * @returns {Promise<integer>} insertIdx
+ * @param {SeriesInputDTO} seriesInputDTO
+ * @returns {Promise<CreatedResultDTO<Series>>} createdResultDTO
  **/
-exports.postSeries = ({ name, englishName, description, imageUrl }) => {
-    return seriesDao.create({ name, englishName, description, imageUrl });
+exports.postSeries = (seriesInputDTO) => {
+    return seriesDao.create(seriesInputDTO);
 };
 
 /**
  * 특정 계열 조회
  *
  * @param {integer} seriesIdx
- * @returns {Promise<Series>}
+ * @returns {Promise<SeriesDTO>} seriesDTO
  **/
 exports.getSeriesByIdx = (seriesIdx) => {
     return seriesDao.readByIdx(seriesIdx);
@@ -30,35 +44,31 @@ exports.getSeriesByIdx = (seriesIdx) => {
 /**
  * 계열 전체 목록 조회
  *
- * @param {number} pagingIndex
- * @param {number} pagingSize
- * @returns {Promise<Series[]>}
+ * @param {PagingRequestDTO} pagingRequestDTO
+ * @returns {Promise<ListAndCountDTO<SeriesDTO>>} listAndCountDTO
  **/
-exports.getSeriesAll = (pagingIndex, pagingSize) => {
-    return seriesDao.readAll(pagingIndex, pagingSize);
+exports.getSeriesAll = (pagingRequestDTO) => {
+    return seriesDao.readAll(new PagingVO(pagingRequestDTO));
 };
 
 /**
  * 계열 검색
  *
- * @param {number} pagingIndex
- * @param {number} pagingSize
- * @param {string} sort
- * @returns {Promise<Series[]>}
+ * @param {PagingRequestDTO} pagingRequestDTO
+ * @returns {Promise<ListAndCountDTO<SeriesDTO>>} listAndCountDTO
  **/
-exports.searchSeries = (pagingIndex, pagingSize, sort) => {
-    const order = parseSortToOrder(sort);
-    return seriesDao.search(pagingIndex, pagingSize, order);
+exports.searchSeries = (pagingRequestDTO) => {
+    return seriesDao.search(new PagingVO(pagingRequestDTO));
 };
 
 /**
  * 계열 수정
  *
- * @param {Object} Series
+ * @param {SeriesInputDTO} seriesInputDTO
  * @returns {Promise<number>} affectedRows
  **/
-exports.putSeries = ({ seriesIdx, name, englishName, description }) => {
-    return seriesDao.update({ seriesIdx, name, englishName, description });
+exports.putSeries = (seriesInputDTO) => {
+    return seriesDao.update(seriesInputDTO);
 };
 
 /**
@@ -71,6 +81,7 @@ exports.deleteSeries = (seriesIdx) => {
     return seriesDao.delete(seriesIdx);
 };
 
+// TODO getIngredientList move to Ingredient Service
 /**
  * 계열에 해당하는 재료 조회
  *
@@ -101,11 +112,11 @@ async function filterByUsedCount(ingredientList) {
 /**
  * 필터에서 보여주는 Series 조회
  *
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {pagingVO} pagingVO
+ * @returns {Promise<ListAndCountDTO<SeriesFilterDTO>>} listAndCountDTO
  */
-exports.getFilterSeries = async (pagingIndex, pagingSize) => {
-    const result = await seriesDao.readAll(pagingIndex, pagingSize);
+exports.getFilterSeries = async (pagingVO) => {
+    const result = await seriesDao.readAll(pagingVO);
     const seriesIdxList = result.rows.map((it) => it.seriesIdx);
     const ingredientList = await ingredientDao.readBySeriesIdxList(
         seriesIdxList
@@ -119,17 +130,22 @@ exports.getFilterSeries = async (pagingIndex, pagingSize) => {
         prev[cur.seriesIdx].push(cur);
         return prev;
     }, {});
-    result.rows.forEach((it) => {
-        it.ingredients = ingredientMap[it.seriesIdx] || [];
+    return new ListAndCountDTO({
+        count: result.count,
+        rows: result.rows.map((it) => {
+            return new SeriesFilterVO({
+                series: it,
+                ingredients: ingredientMap[it.seriesIdx] || [],
+            });
+        }),
     });
-    return result;
 };
 
 /**
  * 계열 영어 이름으로 조회
  *
  * @param {string} englishName
- * @returns {Promise<Series>}
+ * @returns {Promise<SeriesDTO>}
  **/
 exports.findSeriesByEnglishName = (englishName) => {
     return seriesDao.findSeries({ englishName });

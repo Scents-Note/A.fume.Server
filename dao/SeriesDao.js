@@ -2,13 +2,15 @@ const {
     NotMatchedError,
     DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
-const { Series, Ingredient } = require('../models');
+const { Series } = require('../models');
+
+const { SeriesDTO, ListAndCountDTO, CreatedResultDTO } = require('../data/dto');
 
 /**
  * 계열 생성
  *
- * @param {Object} seriesObject
- * @return {number} insertIdx
+ * @param {SeriesInputDTO} seriesInputDTO
+ * @return {CreatedResultDTO<SeriesDTO>} createdResultDTO
  */
 module.exports.create = ({ name, englishName, description, imageUrl }) => {
     return Series.create({
@@ -18,7 +20,10 @@ module.exports.create = ({ name, englishName, description, imageUrl }) => {
         imageUrl,
     })
         .then((series) => {
-            return series.seriesIdx;
+            return new CreatedResultDTO({
+                idx: series.seriesIdx,
+                created: new SeriesDTO(series),
+            });
         })
         .catch((err) => {
             if (
@@ -35,21 +40,21 @@ module.exports.create = ({ name, englishName, description, imageUrl }) => {
  * 계열 조회
  *
  * @param {number} seriesIdx
- * @return {Promise<Series>}
+ * @return {Promise<SeriesDTO>} seriesDTO
  */
 module.exports.readByIdx = async (seriesIdx) => {
     const result = await Series.findByPk(seriesIdx);
     if (!result) {
         throw new NotMatchedError();
     }
-    return result.dataValues;
+    return new SeriesDTO(result.dataValues);
 };
 
 /**
  * 계열 조회
  *
  * @param {string} seriesName
- * @return {Promise<Series>}
+ * @return {Promise<SeriesDTO>} seriesDTO
  */
 module.exports.readByName = async (seriesName) => {
     const result = await Series.findOne({
@@ -60,47 +65,55 @@ module.exports.readByName = async (seriesName) => {
     if (!result) {
         throw new NotMatchedError();
     }
-    return result;
+    return new SeriesDTO(result);
 };
 
 /**
  * 계열 전체 조회
  *
- * @param {number} pagingIndex
- * @param {number} pagingSize
- * @returns {Promise<Series[]>}
+ * @param {PagingVO} pagingVO
+ * @returns {Promise<ListAndCount<SeriesDTO>>} listAndCount
  */
-module.exports.readAll = (pagingIndex, pagingSize) => {
-    return Series.findAndCountAll({
-        offset: (pagingIndex - 1) * pagingSize,
-        limit: pagingSize,
-        raw: true,
-        nest: true,
-    });
-};
-
-/**
- * 계열 검색
- *
- * @param {number} pagingIndex
- * @param {number} pagingSize
- * @param {array} order
- * @returns {Promise<Series[]>}
- */
-module.exports.search = (pagingIndex, pagingSize, order) => {
+module.exports.readAll = ({ pagingIndex, pagingSize, order }) => {
     return Series.findAndCountAll({
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
         order,
         raw: true,
         nest: true,
+    }).then((it) => {
+        return new ListAndCountDTO({
+            count: it.count,
+            rows: it.rows.map((it) => new SeriesDTO(it)),
+        });
+    });
+};
+
+/**
+ * 계열 검색
+ *
+ * @param {PagingVO} pagingVO
+ * @returns {Promise<ListAndCountDTO<SeriesDTO>>} listAndCountDTO
+ */
+module.exports.search = ({ pagingIndex, pagingSize, order }) => {
+    return Series.findAndCountAll({
+        offset: (pagingIndex - 1) * pagingSize,
+        limit: pagingSize,
+        order,
+        raw: true,
+        nest: true,
+    }).then((it) => {
+        return new ListAndCountDTO({
+            count: it.count,
+            rows: it.rows.map((it) => new SeriesDTO(it)),
+        });
     });
 };
 
 /**
  * 계열 수정
  *
- * @param {Object} Series
+ * @param {SeriesInputDTO} seriesInputDTO
  * @return {Promise<number>} affectedRows
  */
 module.exports.update = async ({
@@ -133,7 +146,7 @@ module.exports.delete = (seriesIdx) => {
  * 계열 검색
  *
  * @param {Object} condition
- * @returns {Promise<Series>}
+ * @returns {Promise<SeriesDTO>} seriesDTO
  */
 module.exports.findSeries = (condition) => {
     return Series.findOne({ where: condition, nest: true, raw: true }).then(
@@ -141,7 +154,7 @@ module.exports.findSeries = (condition) => {
             if (!it) {
                 throw new NotMatchedError();
             }
-            return it;
+            return new SeriesDTO(it);
         }
     );
 };

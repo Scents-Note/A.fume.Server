@@ -112,3 +112,5 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 });
 
 require('./lib/cron.js');
+
+module.exports = app;
