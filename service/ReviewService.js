@@ -157,7 +157,7 @@ exports.getReviewByIdx = async (reviewIdx) => {
             perfumeName: result.Perfume.name,
             imageUrl: result.Perfume.imageUrl
         },
-        KeywordList: result.KeywordList? result.KeywordList : [],
+        KeywordList: result.keywordList? result.keywordList : [],
         Brand: {
             brandIdx: result.Perfume.Brand.brandIdx,
             brandName: result.Perfume.Brand.name
