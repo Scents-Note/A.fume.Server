@@ -11,21 +11,14 @@ const {
 } = require('../../utils/errors/errors.js');
 const { User } = require('../../models');
 
-const { UserDTO, CreatedResultDTO } = require('../../data/dto');
-
+const UserDTO = require('../data/dto/UserDTO');
+const CreatedResultDTO = require('../data/dto/CreatedResultDTO').create(
+    (created) => {
+        expect(created).instanceOf(UserDTO);
+        created.validTest();
+    }
+);
 const { GENDER_MAN, GENDER_WOMAN } = require('../../utils/code.js');
-
-UserDTO.prototype.validTest = function () {
-    expect(this.userIdx).to.be.gt(0);
-    expect(this.nickname).to.be.ok;
-    expect(this.email).to.be.ok;
-    expect(this.password).to.be.ok;
-    expect(this.gender).to.be.within(1, 2);
-    expect(this.birth).to.be.ok;
-    expect(this.grade).to.be.gte(0);
-    expect(this.createdAt).to.be.ok;
-    expect(this.updatedAt).to.be.ok;
-};
 
 describe('# userDao Test', () => {
     before(async function () {
@@ -47,10 +40,6 @@ describe('# userDao Test', () => {
                 })
                 .then((result) => {
                     expect(result).instanceOf(CreatedResultDTO);
-                    const { idx, created } = result;
-                    expect(idx).to.be.gt(0);
-                    expect(created).instanceOf(UserDTO);
-                    created.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -109,15 +98,9 @@ describe('# userDao Test', () => {
                 userDao
                     .readByIdx(1)
                     .then((result) => {
+                        expect(result).to.be.instanceOf(UserDTO);
+                        result.validTest();
                         expect(result.userIdx).to.be.eq(1);
-                        expect(result.nickname).to.be.eq('user1');
-                        expect(result.email).to.be.eq('email1@afume.com');
-                        expect(result.password).to.be.eq('test');
-                        expect(result.gender).to.be.eq(2);
-                        expect(result.birth).to.be.eq(1995);
-                        expect(result.grade).to.be.eq(1);
-                        expect(result.createdAt).to.be.ok;
-                        expect(result.updatedAt).to.be.ok;
                         done();
                     })
                     .catch((err) => done(err));
@@ -223,6 +206,13 @@ describe('# userDao Test', () => {
         });
         after(async () => {
             await User.destroy({ where: { email: 'deleteTest@afume.com' } });
+        });
+    });
+
+    describe('# postSurvey Test', () => {
+        it('# success case', (done) => {
+            // TODO set mongoDB test
+            done();
         });
     });
 });
