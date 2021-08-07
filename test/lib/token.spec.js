@@ -8,6 +8,7 @@ const {
     ExpiredTokenError,
 } = require('../../utils/errors/errors.js');
 const jwt = require('../../lib/token.js');
+const TokenPayloadDTO = require('../../data/dto/TokenPayloadDTO.js');
 
 describe('# publish Test', () => {
     it(' # create case', () => {
@@ -97,9 +98,7 @@ describe('# reissue Test', () => {
     it('# success case', () => {
         const tokenStr = jwt.reissue(refreshToken);
         const result = jwt.verify(tokenStr);
-        delete result.iat;
-        delete result.exp;
-        delete result.iss;
+        expect(result).to.be.instanceOf(TokenPayloadDTO);
         expect(result).to.deep.eq(payload);
     });
 });
