@@ -1,0 +1,39 @@
+const {
+    ExpiredTokenError,
+    InvalidTokenError,
+} = require('../../utils/errors/errors');
+
+module.exports.publish = () => {
+    return {
+        token: 'token',
+        refreshToken: 'refreshToken',
+    };
+};
+
+module.exports.create = () => {
+    return 'token';
+};
+
+module.exports.verify = (token) => {
+    if (token == 'expired') {
+        throw new ExpiredTokenError();
+    }
+    if (token == 'invalid') {
+        throw new InvalidTokenError();
+    }
+    return {
+        userIdx: 200,
+        nickname: '쿼카맨2',
+        gender: 'female',
+        phone: '010-2081-38',
+        email: 'hee.youn2@samsung.com',
+        birth: 1995,
+        iat: 1628327246,
+        exp: 1630055246,
+        iss: 'afume-jackpot',
+    };
+};
+
+module.exports.reissue = () => {
+    return 'token';
+};
