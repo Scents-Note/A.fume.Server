@@ -10,7 +10,7 @@ const {
     UnExpectedError,
 } = require('../../utils/errors/errors.js');
 const { Series } = require('../../models/index.js');
-const { SeriesDTO } = require('../../data/dto');
+const { SeriesDTO, CreatedResultDTO } = require('../../data/dto');
 const { PagingVO } = require('../../data/vo');
 
 SeriesDTO.prototype.validTest = function () {
@@ -39,7 +39,9 @@ describe('# seriesDao Test', () => {
                     description: '왈라왈라',
                     imageUrl: 'imageUrl',
                 })
-                .then(({ idx, created }) => {
+                .then((result) => {
+                    expect(result).to.be.instanceOf(CreatedResultDTO);
+                    const { idx, created } = result;
                     expect(idx).to.be.gt(0);
                     return created;
                 })

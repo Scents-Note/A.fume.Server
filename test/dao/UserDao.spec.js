@@ -45,7 +45,9 @@ describe('# userDao Test', () => {
                     birth: '1995',
                     grade: 1,
                 })
-                .then(({ idx, created }) => {
+                .then((result) => {
+                    expect(result).instanceOf(CreatedResultDTO);
+                    const { idx, created } = result;
                     expect(idx).to.be.gt(0);
                     expect(created).instanceOf(UserDTO);
                     created.validTest();
