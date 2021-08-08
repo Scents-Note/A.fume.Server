@@ -208,18 +208,10 @@ module.exports.update = async ({
  */
 
 module.exports.delete = async (reviewIdx) => {
-    return await Review.destroy({ where: { id: reviewIdx } });
-};
+    const result = await Review.destroy({ where: { id: reviewIdx } });
 
-/**
- * 데이터 무결성을 위해, 향수 키워드 중 count가 0이하인 행 제거
- *
- * @param {number} reviewIdx
- * @return {Promise}
- */
-
-module.exports.deleteZeroCount = async() => {
-    return await JoinPerfumeKeyword.destroy(
+    // 데이터 무결성을 위해, 향수 키워드 중 count가 0이하인 행 제거
+    await JoinPerfumeKeyword.destroy(
         {
             where: {
                 count: {
@@ -228,4 +220,6 @@ module.exports.deleteZeroCount = async() => {
             }
         }
     );
-}
+
+    return result
+};
