@@ -134,14 +134,19 @@ class PasswordPolicyError extends Error {
 }
 
 class UnAuthorizedError extends Error {
-    constructor(code = 'GENERIC', status = statusCode.UNAUTHORIZED, ...params) {
+    constructor(
+        message = '권한이 없습니다.',
+        code = 'GENERIC',
+        status = statusCode.UNAUTHORIZED,
+        ...params
+    ) {
         super(...params);
         if (Error.captureStackTrace) {
             Error.captureStackTrace(this, UnAuthorizedError);
         }
         this.code = code;
         this.status = status;
-        this.message = '권한이 없습니다.';
+        this.message = message;
     }
 }
 

@@ -111,16 +111,13 @@ exports.loginUser = async (email, password) => {
         throw new WrongPasswordError();
     }
     userDao.updateAccessTime(user.userIdx);
-    const { userIdx, nickname, gender, birth } = user;
     const { token, refreshToken } = jwt.publish(new TokenPayloadDTO(user));
-    return new LoginInfoDTO({
-        userIdx,
-        nickname,
-        gender,
-        birth,
-        token,
-        refreshToken,
-    });
+    return new LoginInfoDTO(
+        Object.assign({}, user, {
+            token,
+            refreshToken,
+        })
+    );
 };
 
 /**
