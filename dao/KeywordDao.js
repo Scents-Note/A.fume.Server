@@ -170,7 +170,7 @@ module.exports.readAllPerfumeKeywordCount = async (
  * 향수가 가진 특정 키워드 개수 조회
  *
  * @param {number} perfumeIdx, keywordIdx
- * @returns {Promise<Keyword[]>} keywordList
+ * @returns {number} count
  */
 module.exports.readPerfumeKeywordCount = async ({perfumeIdx, keywordIdx}
 ) => {
