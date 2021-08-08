@@ -56,31 +56,36 @@ module.exports.create = async ({ reviewIdx, keywordIdx, perfumeIdx }) => {
  */
 module.exports.deleteReviewKeyword = async ({ reviewIdx, perfumeIdx }) => {
     return sequelize.transaction(async (t) => {
-        try {
-            const keywordList = await JoinReviewKeyword.findAll({
-                where: { reviewIdx },
-                attributes: {
-                    exclude: ['reviewIdx', 'createdAt', 'updatedAt'],
-                },
-                transaction: t,
-            });
-            const deleteReviewKeyword = await JoinReviewKeyword.destroy({
-                where: { reviewIdx },
-                transaction: t,
-            });
-            const updatePerfumeKeyword = await Promise.all(keywordList.map((it) => {
-                return JoinPerfumeKeyword.update(
-                    { count: sequelize.literal('count - 1') },
-                    {
-                        where: { perfumeIdx, keywordIdx: it.keywordIdx },
-                        transaction: t,
-                    }
-                );
-            }));
-            return updatePerfumeKeyword;
-        } catch (err) {
-            console.log(err);
-        }
+        const keywordList = await JoinReviewKeyword.findAll({
+            where: { reviewIdx },
+            attributes: {
+                exclude: ['reviewIdx', 'createdAt', 'updatedAt'],
+            },
+            transaction: t,
+        });
+        const deleteReviewKeyword = await JoinReviewKeyword.destroy({
+            where: { reviewIdx },
+            transaction: t,
+        });
+        const updatePerfumeKeyword = await Promise.all(keywordList.map((it) => {
+            return JoinPerfumeKeyword.update(
+                { count: sequelize.literal('count - 1') },
+                {
+                    where: { perfumeIdx, keywordIdx: it.keywordIdx },
+                    transaction: t,
+                }
+            );
+        }));
+        const removeZeroCountRows = await JoinPerfumeKeyword.destroy(
+            {
+                where: {
+                    count: {
+                        [Op.lte]: 0,
+                    },
+                }
+            }
+        );
+        return deleteReviewKeyword;
     });
 };
 
