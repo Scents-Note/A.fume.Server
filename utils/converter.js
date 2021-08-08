@@ -52,7 +52,7 @@ module.exports.inputStrToDBIntOfReview = async ({longevity, sillage, seasonalLis
             sillage: sillage? sillageTypeArr.indexOf(sillage)+1 : null,
             sumOfBitSeasonal: seasonalList? sum : null,
             gender: gender? genderTypeArr.indexOf(gender)+1 : null,
-            keywordList: keywordList? keywordIdxList: null
+            keywordList: keywordList? keywordIdxList: []
         }
 
     }catch(err) {
@@ -86,10 +86,10 @@ module.exports.DBIntToOutputStrOfReview = async ({longevity, sillage, sumOfBitSe
         }
 
         return {
-            longevity: longevity? longevityTypeArr[longevity-1] : null,
-            sillage: sillage? sillageTypeArr[sillage-1] : null,
-            seasonalList: sumOfBitSeasonal? seasonalStrList : null,
-            gender: gender? genderTypeArr[gender-1] : null,
+            longevity: longevity? longevityTypeArr[longevity-1] : -1,
+            sillage: sillage? sillageTypeArr[sillage-1] : -1,
+            seasonalList: sumOfBitSeasonal? seasonalStrList : [],
+            gender: gender? genderTypeArr[gender-1] : -1,
         }
 
     }catch(err) {
@@ -143,7 +143,7 @@ module.exports.InputIntToDBIntOfReview = async ({longevity, sillage, seasonalLis
             sillage: sillage+1? sillage+1 : null,
             sumOfBitSeasonal: seasonalList && sum > 0? sum : null,
             gender: gender+1? gender+1 : null,
-            keywordList: keywordList? keywordIdxList: null
+            keywordList: keywordList? keywordIdxList: []
         }
 
     }catch(err) {
@@ -177,10 +177,10 @@ module.exports.DBIntToOutputIntOfReview = async ({longevity, sillage, sumOfBitSe
         }
 
         return {
-            longevity: longevity? longevity-1 : null,
-            sillage: sillage? sillage-1 : null,
-            seasonalList: sumOfBitSeasonal? seasonalStrList : null,
-            gender: gender? gender-1 : null,
+            longevity: longevity? longevity-1 : -1,
+            sillage: sillage? sillage-1 : -1,
+            seasonalList: sumOfBitSeasonal? seasonalStrList : [],
+            gender: gender? gender-1 : -1,
         }
 
     }catch(err) {
