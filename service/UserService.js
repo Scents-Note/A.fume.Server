@@ -1,20 +1,27 @@
 'use strict';
 
-const jwt = require('../lib/token.js');
-const crypto = require('../lib/crypto.js');
-const userDao = require('../dao/UserDao.js');
+let jwt = require('../lib/token.js');
+let crypto = require('../lib/crypto.js');
+let userDao = require('../dao/UserDao.js');
+
 const {
     WrongPasswordError,
     PasswordPolicyError,
     NotMatchedError,
 } = require('../utils/errors/errors.js');
 
-const { removeKeyJob } = require('../utils/func.js');
+const {
+    TokenGroupDTO,
+    UserAuthDTO,
+    LoginInfoDTO,
+    TokenPayloadDTO,
+    UserDTO,
+} = require('../data/dto');
 
 /**
  * 유저 회원 가입
  *
- * @param {Object} User
+ * @param {UserInputRequestDTO} UserInputRequestDTO
  * @returns {Promise}
  **/
 exports.createUser = ({ nickname, password, gender, email, birth, grade }) => {
@@ -35,7 +42,8 @@ exports.createUser = ({ nickname, password, gender, email, birth, grade }) => {
             delete user.password;
             const payload = Object.assign({}, user);
             const { userIdx } = user;
-            return Object.assign({ userIdx }, jwt.publish(payload));
+            const { token, refreshToken } = jwt.publish(payload);
+            return new TokenGroupDTO({ userIdx, token, refreshToken });
         });
 };
 
@@ -55,10 +63,8 @@ exports.deleteUser = (userIdx) => {
  * @param {number} userIdx
  * @returns {Promise<User>}
  **/
-exports.getUserByIdx = async (userIdx) => {
-    const result = await userDao.readByIdx(userIdx);
-    delete result.password;
-    return result;
+exports.getUserByIdx = (userIdx) => {
+    return userDao.readByIdx(userIdx);
 };
 
 /**
@@ -75,18 +81,13 @@ exports.authUser = (token) => {
                 .readByIdx(payload.userIdx)
                 .then((user) => {
                     delete user.password;
-                    resolve(
-                        Object.assign(
-                            { isAuth: true, isAdmin: user.grade >= 1 },
-                            user
-                        )
-                    );
+                    resolve(UserAuthDTO.create(user));
                 })
                 .catch((err) => {
-                    resolve({ isAuth: false, isAdmin: false });
+                    resolve(new UserAuthDTO({ isAuth: false, isAdmin: false }));
                 });
         } catch (err) {
-            resolve({ isAuth: false, isAdmin: false });
+            resolve(new UserAuthDTO({ isAuth: false, isAdmin: false }));
         }
     });
 };
@@ -102,20 +103,20 @@ exports.authUser = (token) => {
  *
  * @param {string} email
  * @param {string} password
- * @returns {Promise<LoginToken>} - 토큰 정보
+ * @returns {LoginInfoDTO} - 토큰 정보
  **/
 exports.loginUser = async (email, password) => {
     const user = await userDao.read({ email });
     if (crypto.decrypt(user.password) != password) {
         throw new WrongPasswordError();
     }
-    delete user.password;
-    const payload = Object.assign({}, user);
     userDao.updateAccessTime(user.userIdx);
-    const { userIdx, nickname, gender, birth } = user;
-    return Object.assign(
-        { userIdx, nickname, gender, birth },
-        jwt.publish(payload)
+    const { token, refreshToken } = jwt.publish(new TokenPayloadDTO(user));
+    return new LoginInfoDTO(
+        Object.assign({}, user, {
+            token,
+            refreshToken,
+        })
     );
 };
 
@@ -132,13 +133,12 @@ exports.logoutUser = () => {
  * 유저 정보 수정
  *
  * @param {Object} User
- * @returns {}
+ * @returns {LoginInfoDTO} loginInfoDTO
  **/
 exports.updateUser = async ({
     userIdx,
     nickname,
     gender,
-    phone,
     email,
     birth,
     grade,
@@ -147,22 +147,12 @@ exports.updateUser = async ({
         userIdx,
         nickname,
         gender,
-        phone,
         email,
         birth,
         grade,
     });
-    return userDao
-        .readByIdx(userIdx)
-        .then(
-            removeKeyJob(
-                'password',
-                'grade',
-                'accessTime',
-                'createdAt',
-                'updatedAt'
-            )
-        );
+    const user = await userDao.readByIdx(userIdx);
+    return new UserDTO(user);
 };
 
 /**
@@ -173,7 +163,7 @@ exports.updateUser = async ({
  * @param {string} newPassword
  * @returns {}
  **/
-exports.changePassword = async (userIdx, prevPassword, newPassword) => {
+exports.changePassword = async ({ userIdx, prevPassword, newPassword }) => {
     const user = await userDao.readByIdx(userIdx);
     const dbPassword = crypto.decrypt(user.password);
     if (dbPassword !== prevPassword) {
@@ -246,4 +236,14 @@ exports.addSurvey = async (
         perfumeIdxList,
         seriesIdxList
     );
+};
+
+module.exports.setUserDao = (dao) => {
+    userDao = dao;
+};
+module.exports.setCrypto = (_crypto) => {
+    crypto = _crypto;
+};
+module.exports.setJwt = (_jwt) => {
+    jwt = _jwt;
 };

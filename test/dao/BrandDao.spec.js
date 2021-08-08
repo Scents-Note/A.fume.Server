@@ -10,7 +10,7 @@ const {
     NotMatchedError,
     UnExpectedError,
 } = require('../../utils/errors/errors.js');
-const { BrandDTO } = require('../../data/dto');
+const { BrandDTO, CreatedResultDTO } = require('../../data/dto');
 const { PagingVO } = require('../../data/vo');
 
 BrandDTO.prototype.validTest = function () {
@@ -61,6 +61,7 @@ describe('# brandDao Test', () => {
                     description: 'brand 생성 테스트를 위한 더미데이터입니다.',
                 })
                 .then((result) => {
+                    expect(result).instanceOf(CreatedResultDTO);
                     expect(result.idx).gt(0);
                     done();
                 })
