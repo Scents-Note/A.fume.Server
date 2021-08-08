@@ -25,7 +25,6 @@ module.exports.verify = (token) => {
         userIdx: 200,
         nickname: '쿼카맨2',
         gender: 'female',
-        phone: '010-2081-38',
         email: 'hee.youn2@samsung.com',
         birth: 1995,
         iat: 1628327246,

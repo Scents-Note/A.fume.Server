@@ -16,7 +16,6 @@ describe('# publish Test', () => {
             userIdx: 200,
             nickname: '쿼카맨2',
             gender: 'female',
-            phone: '010-2081-38',
             email: 'hee.youn2@samsung.com',
             birth: 1995,
         };
@@ -32,7 +31,6 @@ describe('# create Test', () => {
             userIdx: 200,
             nickname: '쿼카맨2',
             gender: 'female',
-            phone: '010-2081-38',
             email: 'hee.youn2@samsung.com',
             birth: 1995,
         });
@@ -46,7 +44,6 @@ describe('# verify Test', () => {
         userIdx: 200,
         nickname: '쿼카맨2',
         gender: 'female',
-        phone: '010-2081-38',
         email: 'hee.youn2@samsung.com',
         birth: 1995,
     };
@@ -86,7 +83,6 @@ describe('# reissue Test', () => {
         userIdx: 200,
         nickname: '쿼카맨2',
         gender: 'female',
-        phone: '010-2081-38',
         email: 'hee.youn2@samsung.com',
         birth: 1995,
     };
