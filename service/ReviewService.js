@@ -70,6 +70,9 @@ exports.deleteReview = async({ reviewIdx, userIdx }) => {
     );
     const deleteOnlyReview = await reviewDao.delete(reviewIdx);
 
+    //데이터 무결성을 위해, 향수 키워드 중 count가 0이하인 행 제거
+    const deleteZeroCountResult = await reviewDao.deleteZeroCount();
+
     return deleteOnlyReview;
 };
 
