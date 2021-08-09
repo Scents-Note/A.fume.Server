@@ -27,13 +27,15 @@ describe('# publish Test', () => {
 
 describe('# create Test', () => {
     it(' # success case', () => {
-        const token = jwt.create({
+        const user = {
             userIdx: 200,
             nickname: '쿼카맨2',
             gender: 'female',
             email: 'hee.youn2@samsung.com',
             birth: 1995,
-        });
+        };
+        const payload = new TokenPayloadDTO(user);
+        const token = jwt.create(payload);
         expect(token.length).to.not.eq(0);
     });
 });
