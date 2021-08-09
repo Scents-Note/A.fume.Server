@@ -3139,6 +3139,7 @@ definitions:
         type: integer
         format: int64
         enum:
+        - -1
         - 0
         - 1
         - 2
@@ -3149,6 +3150,7 @@ definitions:
         type: integer
         format: int64
         enum:
+        - -1
         - 0
         - 1
         - 2
@@ -3167,6 +3169,7 @@ definitions:
         type: integer
         format: int64
         enum:
+        - -1
         - 0
         - 1
         - 2

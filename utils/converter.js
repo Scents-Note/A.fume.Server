@@ -7,6 +7,8 @@ const genderTypeArr = ['남성', '중성', '여성'];
 const { InvalidValueError } = require('./errors/errors.js');
 const KeywordDao = require('../dao/KeywordDao');
 
+const INSTEAD_NULL_VALUE = -1;
+
 /** 
  * 인풋 데이터 타입이 str인데 DB에는 int로 변환해서 저장해야하는 경우 사용
  * @param {Object} Review 
@@ -52,7 +54,7 @@ module.exports.inputStrToDBIntOfReview = async ({longevity, sillage, seasonalLis
             sillage: sillage? sillageTypeArr.indexOf(sillage)+1 : null,
             sumOfBitSeasonal: seasonalList? sum : null,
             gender: gender? genderTypeArr.indexOf(gender)+1 : null,
-            keywordList: keywordList? keywordIdxList: null
+            keywordList: keywordList? keywordIdxList: []
         }
 
     }catch(err) {
@@ -86,10 +88,10 @@ module.exports.DBIntToOutputStrOfReview = async ({longevity, sillage, sumOfBitSe
         }
 
         return {
-            longevity: longevity? longevityTypeArr[longevity-1] : null,
-            sillage: sillage? sillageTypeArr[sillage-1] : null,
-            seasonalList: sumOfBitSeasonal? seasonalStrList : null,
-            gender: gender? genderTypeArr[gender-1] : null,
+            longevity: longevity? longevityTypeArr[longevity-1] : INSTEAD_NULL_VALUE,
+            sillage: sillage? sillageTypeArr[sillage-1] : INSTEAD_NULL_VALUE,
+            seasonalList: sumOfBitSeasonal? seasonalStrList : [],
+            gender: gender? genderTypeArr[gender-1] : INSTEAD_NULL_VALUE,
         }
 
     }catch(err) {
@@ -143,7 +145,7 @@ module.exports.InputIntToDBIntOfReview = async ({longevity, sillage, seasonalLis
             sillage: sillage+1? sillage+1 : null,
             sumOfBitSeasonal: seasonalList && sum > 0? sum : null,
             gender: gender+1? gender+1 : null,
-            keywordList: keywordList? keywordIdxList: null
+            keywordList: keywordList? keywordIdxList: []
         }
 
     }catch(err) {
@@ -177,10 +179,10 @@ module.exports.DBIntToOutputIntOfReview = async ({longevity, sillage, sumOfBitSe
         }
 
         return {
-            longevity: longevity? longevity-1 : null,
-            sillage: sillage? sillage-1 : null,
-            seasonalList: sumOfBitSeasonal? seasonalStrList : null,
-            gender: gender? gender-1 : null,
+            longevity: longevity? longevity-1 : INSTEAD_NULL_VALUE,
+            sillage: sillage? sillage-1 : INSTEAD_NULL_VALUE,
+            seasonalList: sumOfBitSeasonal? seasonalStrList : [],
+            gender: gender? gender-1 : INSTEAD_NULL_VALUE,
         }
 
     }catch(err) {
