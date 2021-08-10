@@ -84,6 +84,7 @@ module.exports.deleteReviewKeyword = async ({ reviewIdx, perfumeIdx }) => {
                     [Op.lte]: 0,
                 },
             },
+            transaction: t,
         });
         return deleteReviewKeyword;
     });
