@@ -41,7 +41,7 @@ module.exports.create = async ({ reviewIdx, keywordIdx, perfumeIdx }) => {
                 createReviewKeyword,
                 createPerfumeKeyword,
                 updatePerfumeKeyword,
-            ]
+            ];
         } catch (err) {
             console.log(err);
         }
@@ -67,24 +67,24 @@ module.exports.deleteReviewKeyword = async ({ reviewIdx, perfumeIdx }) => {
             where: { reviewIdx },
             transaction: t,
         });
-        const updatePerfumeKeyword = await Promise.all(keywordList.map((it) => {
-            return JoinPerfumeKeyword.update(
-                { count: sequelize.literal('count - 1') },
-                {
-                    where: { perfumeIdx, keywordIdx: it.keywordIdx },
-                    transaction: t,
-                }
-            );
-        }));
-        const removeZeroCountRows = await JoinPerfumeKeyword.destroy(
-            {
-                where: {
-                    count: {
-                        [Op.lte]: 0,
-                    },
-                }
-            }
+        const updatePerfumeKeyword = await Promise.all(
+            keywordList.map((it) => {
+                return JoinPerfumeKeyword.update(
+                    { count: sequelize.literal('count - 1') },
+                    {
+                        where: { perfumeIdx, keywordIdx: it.keywordIdx },
+                        transaction: t,
+                    }
+                );
+            })
         );
+        const removeZeroCountRows = await JoinPerfumeKeyword.destroy({
+            where: {
+                count: {
+                    [Op.lte]: 0,
+                },
+            },
+        });
         return deleteReviewKeyword;
     });
 };
@@ -177,14 +177,14 @@ module.exports.readAllPerfumeKeywordCount = async (
  * @param {number} perfumeIdx, keywordIdx
  * @returns {number} count
  */
-module.exports.readPerfumeKeywordCount = async ({perfumeIdx, keywordIdx}
-) => {
+module.exports.readPerfumeKeywordCount = async ({ perfumeIdx, keywordIdx }) => {
     let result = await JoinPerfumeKeyword.findOne({
         attributes: {
             exclude: ['createdAt', 'updatedAt'],
         },
         where: {
-            perfumeIdx, keywordIdx
+            perfumeIdx,
+            keywordIdx,
         },
         raw: true, //Set this to true if you don't have a model definition for your query.
         nest: true,
@@ -237,7 +237,7 @@ module.exports.readAllOfPerfumeIdxList = async (
     return result;
 };
 
-module.exports.readAllOfReview = async(reviewIdx) => {
+module.exports.readAllOfReview = async (reviewIdx) => {
     const keywordList = await JoinReviewKeyword.findAll({
         where: { reviewIdx },
         attributes: {
@@ -254,23 +254,23 @@ module.exports.readAllOfReview = async(reviewIdx) => {
         raw: true,
         nest: true,
     });
-    return keywordList ? keywordList : []
-}
+    return keywordList ? keywordList : [];
+};
 
-module.exports.readKeywordIdx = async(keywordName) => {
+module.exports.readKeywordIdx = async (keywordName) => {
     const keyword = await Keyword.findOne({
         where: { name: keywordName },
         raw: true,
         nest: true,
-    })
-    return keyword.id  
-}
+    });
+    return keyword.id;
+};
 
-module.exports.readKeywordName = async(keywordIdx) => {
+module.exports.readKeywordName = async (keywordIdx) => {
     const keyword = await Keyword.findByPk({
         where: { keywordIdx },
         raw: true,
         nest: true,
-    })
-    return keyword.name 
-}
+    });
+    return keyword.name;
+};
