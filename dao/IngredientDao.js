@@ -222,11 +222,14 @@ module.exports.readByPerfumeIdx = async (perfumeIdx) => {
  * @returns {Promise<Ingredient>}
  */
 module.exports.findIngredient = (condition) => {
+    const { ...json } = condition;
     return Ingredient.findOne({
-        where: condition,
+        where: json,
         attributes: {
             exclude: ['createdAt', 'updatedAt'],
         },
+        raw: true,
+        nest: true,
     }).then((it) => {
         if (!it) {
             throw new NotMatchedError();
