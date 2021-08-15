@@ -14,28 +14,6 @@ const abundanceRateArr = [
     '퍼퓸',
 ];
 
-module.exports.postPerfume = (req, res, next) => {
-    const body = req.body;
-    body.abundanceRate = abundanceRateArr.indexOf(body.abundanceRate);
-    if (body.abundanceRate == -1) {
-        throw InvalidInputError(
-            `abundanceRate is only allow ${abundanceRateArr}`
-        );
-    }
-    body.volumeAndPrice = body.volumeAndPrice.reduce((prev, cur) => {
-        prev['' + cur.volume] = '' + cur.price;
-        return prev;
-    }, {});
-    Perfume.createPerfume(body)
-        .then((response) => {
-            res.status(OK).json({
-                message: '향수 생성 성공',
-                data: response,
-            });
-        })
-        .catch((err) => next(err));
-};
-
 module.exports.getPerfume = (req, res, next) => {
     const perfumeIdx = req.swagger.params['perfumeIdx'].value;
     const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
@@ -72,17 +50,6 @@ module.exports.searchPerfume = (req, res, next) => {
             res.status(OK).json({
                 message: '향수 검색 성공',
                 data: response,
-            });
-        })
-        .catch((err) => next(err));
-};
-
-module.exports.putPerfume = (req, res, next) => {
-    const body = req.swagger.params['body'].value;
-    Perfume.updatePerfume(body)
-        .then(() => {
-            res.status(OK).json({
-                message: '향수 수정 성공',
             });
         })
         .catch((err) => next(err));
