@@ -80,7 +80,7 @@ describe('# verify Test', () => {
 });
 
 describe('# reissue Test', () => {
-    let token, refreshToken;
+    let refreshToken;
     const payload = {
         userIdx: 200,
         nickname: '쿼카맨2',
