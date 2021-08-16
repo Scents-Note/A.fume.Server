@@ -15,8 +15,7 @@ module.exports.getIngredientAll = (req, res, next) => {
 };
 
 module.exports.getIngredientByEnglishName = (req, res, next) => {
-    const { englishName } = req.body;
-    Ingredient.findIngredientByEnglishName(englishName)
+    Ingredient.findIngredient(new IngredientConditionDTO(req.body))
         .then((response) => {
             res.status(OK).json({
                 message: '재료 조회 성공',
