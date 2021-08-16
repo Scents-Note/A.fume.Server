@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-dotenv.config({ path: './config/.env.test' });
+dotenv.config();
 
 const keywordDao = require('../../dao/KeywordDao');
 const { expect } = require('chai');
