@@ -4,18 +4,8 @@ const { expect } = chai;
 const { PagingRequestDTO } = require('../../data/request_dto');
 
 const BrandDTO = require('../data/dto/BrandDTO');
-const CreatedResultDTO = require('../data/dto/CreatedResultDTO').create(
-    (created) => {
-        expect(created).instanceOf(BrandDTO);
-        created.validTest();
-    }
-);
-const ListAndCountDTO = require('../data/dto/ListAndCountDTO').create(
-    (item) => {
-        expect(item).instanceOf(BrandDTO);
-        item.validTest();
-    }
-);
+const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 const BrandFilterVO = require('../data/vo/BrandFilterVO');
 
 const mockBrandDTO = new BrandDTO({
@@ -51,8 +41,12 @@ describe('# Brand Service Test', () => {
     describe('# searchBrand Test', () => {
         it('# success Test', (done) => {
             Brand.searchBrand(new PagingRequestDTO({}))
-                .then((listAndCountDTO) => {
-                    listAndCountDTO.validTest();
+                .then((res) => {
+                    expect(res).instanceOf(ListAndCountDTO);
+                    res.validTest((item) => {
+                        expect(item).instanceOf(BrandDTO);
+                        item.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
@@ -62,8 +56,12 @@ describe('# Brand Service Test', () => {
     describe('# getBrandAll Test', () => {
         it('# success Test', (done) => {
             Brand.getBrandAll(1)
-                .then((listAndCountDTO) => {
-                    listAndCountDTO.validTest();
+                .then((res) => {
+                    expect(res).instanceOf(ListAndCountDTO);
+                    res.validTest((item) => {
+                        expect(item).instanceOf(BrandDTO);
+                        item.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
@@ -84,8 +82,12 @@ describe('# Brand Service Test', () => {
     describe('# insertBrand Test', () => {
         it('# success Test', (done) => {
             Brand.insertBrand(mockBrandDTO)
-                .then((createdResultDTO) => {
-                    createdResultDTO.validTest();
+                .then((res) => {
+                    expect(res).instanceOf(CreatedResultDTO);
+                    res.validTest((created) => {
+                        expect(created).instanceOf(BrandDTO);
+                        created.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));

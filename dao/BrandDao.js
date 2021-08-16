@@ -10,23 +10,20 @@ const { BrandDTO, ListAndCountDTO, CreatedResultDTO } = require('../data/dto');
  *
  * @param {BrandDTO} brandDTO
  * @param {Promise}
- * @returns {Promise<CreatedResultDTO<Brand>>} createdResultDTO
+ * @returns {Promise<CreatedResultDTO<BrandDTO>>} createdResultDTO
  */
 module.exports.create = (brandDTO) => {
-    return Brand.create(
-        {
-            name: brandDTO.name,
-            englishName: brandDTO.englishName,
-            firstInitial: brandDTO.firstInitial,
-            imageUrl: brandDTO.imageUrl,
-            description: brandDTO.description,
-        },
-        { nest: true, raw: true }
-    )
+    return Brand.create({
+        name: brandDTO.name,
+        englishName: brandDTO.englishName,
+        firstInitial: brandDTO.firstInitial,
+        imageUrl: brandDTO.imageUrl,
+        description: brandDTO.description,
+    })
         .then((brand) => {
             return new CreatedResultDTO({
                 idx: brand.brandIdx,
-                created: brand,
+                created: new BrandDTO(brand),
             });
         })
         .catch((err) => {

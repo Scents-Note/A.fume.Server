@@ -2,11 +2,6 @@ const request = require('supertest');
 const chai = require('chai');
 const { expect } = chai;
 const app = require('../../index.js');
-require('../../lib/token').verify = (token) => {
-    return {
-        userIdx: 1,
-    };
-};
 
 const basePath = '/A.fume/api/0.0.1';
 const {
@@ -26,14 +21,6 @@ const mockBrandDTO = new BrandDTO({
     createdAt: '2021-07-24T03:38:52.000Z',
     updatedAt: '2021-07-24T03:38:52.000Z',
 });
-
-const mockBrandInputDTO = {
-    name: '(테스트)조말론',
-    englishName: '(테스트)Jo Malone',
-    firstInitial: 'ㅌ',
-    description: '(테스트)런던 브랜드',
-    imageUrl: '(테스트)',
-};
 
 const mockListAndCountDTO = new ListAndCountDTO({
     count: 1,
