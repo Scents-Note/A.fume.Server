@@ -1,63 +1,11 @@
 const chai = require('chai');
 const { expect } = chai;
 
-const {
-    SeriesDTO,
-    IngredientDTO,
-    ListAndCountDTO,
-    CreatedResultDTO,
-} = require('../../data/dto');
-
-const { SeriesFilterVO } = require('../../data/vo');
-
-SeriesDTO.prototype.validTest = function () {
-    expect(this.seriesIdx).to.be.ok;
-    expect(this.englishName).to.be.ok;
-    expect(this.name).to.be.ok;
-    expect(this.imageUrl).to.be.ok;
-    expect(this.description).to.be.not.undefined;
-    expect(this.createdAt).to.be.ok;
-    expect(this.updatedAt).to.be.ok;
-};
-
-ListAndCountDTO.prototype.validTest = function () {
-    expect(this.count).to.be.ok;
-    expect(this.rows.length).to.be.ok;
-    for (const series of this.rows) {
-        expect(series).instanceOf(SeriesDTO);
-        series.validTest();
-    }
-};
-
-CreatedResultDTO.prototype.validTest = function () {
-    expect(this.idx).to.be.ok;
-    expect(this.created).instanceOf(SeriesDTO);
-    this.created.validTest();
-};
-
-SeriesFilterVO.prototype.validTest = function () {
-    expect(this.seriesIdx).to.be.ok;
-    expect(this.englishName).to.be.ok;
-    expect(this.name).to.be.ok;
-    expect(this.imageUrl).to.be.ok;
-    expect(this.description).to.be.not.undefined;
-    expect(this.createdAt).to.be.ok;
-    expect(this.updatedAt).to.be.ok;
-    for (const ingredient of this.ingredients) {
-        expect(ingredient).instanceOf(IngredientDTO);
-        ingredient.validTest();
-    }
-};
-
-IngredientDTO.prototype.validTest = function () {
-    expect(this.ingredientIdx).to.be.ok;
-    expect(this.name).to.be.ok;
-    expect(this.imageUrl).to.be.ok;
-    expect(this.description).to.be.not.undefined;
-    expect(this.seriesIdx).to.be.ok;
-    expect(this.createdAt).to.be.ok;
-    expect(this.updatedAt).to.be.ok;
-};
+const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
+const SeriesDTO = require('../data/dto/SeriesDTO');
+const IngredientDTO = require('../data/dto/IngredientDTO');
+const SeriesFilterVO = require('../data/vo/SeriesFilterVO');
 
 const mockSeriesDTO = new SeriesDTO({
     seriesIdx: 1,
@@ -127,8 +75,12 @@ describe('# Brand Service Test', () => {
         it('# success Test', (done) => {
             seriesService
                 .postSeries(mockSeriesDTO)
-                .then((createdResultDTO) => {
-                    createdResultDTO.validTest();
+                .then((res) => {
+                    expect(res).instanceOf(CreatedResultDTO);
+                    res.validTest((created) => {
+                        expect(created).instanceOf(SeriesDTO);
+                        created.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
@@ -151,8 +103,12 @@ describe('# Brand Service Test', () => {
         it('# success Test', (done) => {
             seriesService
                 .getSeriesAll({})
-                .then((listAndCountDTO) => {
-                    listAndCountDTO.validTest();
+                .then((res) => {
+                    expect(res).instanceOf(ListAndCountDTO);
+                    res.validTest((item) => {
+                        expect(item).to.be.instanceOf(SeriesDTO);
+                        item.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
@@ -164,7 +120,10 @@ describe('# Brand Service Test', () => {
             seriesService
                 .searchSeries({})
                 .then((listAndCountDTO) => {
-                    listAndCountDTO.validTest();
+                    listAndCountDTO.validTest((item) => {
+                        expect(item).instanceOf(SeriesDTO);
+                        item.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
@@ -235,15 +194,17 @@ describe('# Brand Service Test', () => {
             seriesService
                 .getFilterSeries({})
                 .then((result) => {
-                    result.validTest();
-                    expect(result.rows.length).to.be.eq(3);
-                    for (const seriesFilterVO of result.rows) {
-                        for (const ingredientDTO of seriesFilterVO.ingredients) {
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest((item) => {
+                        expect(item).instanceOf(SeriesFilterVO);
+                        item.validTest();
+                        for (const ingredientDTO of item.ingredients) {
                             expect(
                                 isNoteCountOver10(ingredientDTO.ingredientIdx)
                             ).to.be.eq(true);
                         }
-                    }
+                    });
+                    expect(result.rows.length).to.be.eq(3);
                     done();
                 })
                 .catch((err) => done(err));
