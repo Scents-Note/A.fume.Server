@@ -11,7 +11,7 @@ const {
 } = require('../../utils/errors/errors.js');
 const { LikePerfume } = require('../../models');
 
-describe('# likeDao Test', () => {
+describe('# likePerfumeDao Test', () => {
     before(async function () {
         await require('./common/presets.js')(this);
     });
@@ -66,8 +66,11 @@ describe('# likeDao Test', () => {
         it('# success case (state: unlike)', (done) => {
             likePerfumeDao
                 .read(2, 2)
-                .then((it) => {
-                    expect(it).to.be.eq(null);
+                .then(() => {
+                    done(new UnExpectedError(NotMatchedError));
+                })
+                .catch((err) => {
+                    expect(err).instanceOf(NotMatchedError);
                     done();
                 })
                 .catch((err) => done(err));
@@ -76,7 +79,8 @@ describe('# likeDao Test', () => {
         it('# fail case (invalid userIdx)', (done) => {
             likePerfumeDao
                 .read(-1, 1)
-                .then(() => {
+                .then((result) => {
+                    console.log(result);
                     done(new UnExpectedError(NotMatchedError));
                 })
                 .catch((err) => {
