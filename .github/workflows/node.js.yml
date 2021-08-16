@@ -18,14 +18,6 @@ jobs:
       matrix:
         node-version: [10.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-        
-    env:
-      MYSQL_TST_USERNAME: ${{ secrets.MYSQL_TST_USERNAME }}
-      MYSQL_TST_PASSWORD: ${{ secrets.MYSQL_TST_PASSWORD }}
-      MYSQL_TST_DATABASE: ${{ secrets.MYSQL_TST_DATABASE }}
-      MYSQL_TST_HOST: ${{ secrets.MYSQL_TST_HOST }}
-      MYSQL_TST_PORT: ${{ secrets.MYSQL_TST_PORT }}
-      MYSQL_TST_DIALECT: ${{ secrets.MYSQL_TST_DIALECT }}
       
     steps:
     - uses: actions/checkout@v2
@@ -36,4 +28,12 @@ jobs:
     - run: npm audit fix
 #    - run: npm ci
 #    - run: npm run build --if-present
-    - run: npm test
+    - name: npm test
+      run: npm test
+      env:
+        MYSQL_TST_USERNAME: ${{ secrets.MYSQL_TST_USERNAME }}
+        MYSQL_TST_PASSWORD: ${{ secrets.MYSQL_TST_PASSWORD }}
+        MYSQL_TST_DATABASE: ${{ secrets.MYSQL_TST_DATABASE }}
+        MYSQL_TST_HOST: ${{ secrets.MYSQL_TST_HOST }}
+        MYSQL_TST_PORT: ${{ secrets.MYSQL_TST_PORT }}
+        MYSQL_TST_DIALECT: ${{ secrets.MYSQL_TST_DIALECT }}
