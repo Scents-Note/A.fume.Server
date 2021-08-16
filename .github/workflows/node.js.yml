@@ -31,6 +31,7 @@ jobs:
     - name: npm test
       run: npm test
       env:
+        NODE_ENV: test
         MYSQL_TST_USERNAME: ${{ secrets.MYSQL_TST_USERNAME }}
         MYSQL_TST_PASSWORD: ${{ secrets.MYSQL_TST_PASSWORD }}
         MYSQL_TST_DATABASE: ${{ secrets.MYSQL_TST_DATABASE }}
