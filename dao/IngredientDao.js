@@ -222,12 +222,8 @@ module.exports.readByPerfumeIdx = async (perfumeIdx) => {
  * @returns {Promise<Ingredient>}
  */
 module.exports.findIngredient = (condition) => {
-    const { ...json } = condition;
     return Ingredient.findOne({
-        where: json,
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
+        where: { ...condition },
         raw: true,
         nest: true,
     }).then((it) => {
