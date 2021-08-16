@@ -6,7 +6,7 @@
   "scripts": {
     "_prestart": "npm install",
     "start": "node index.js",
-    "test": "mocha --recursive --exit -t 5000"
+    "test": "NODE_ENV=test mocha --recursive --exit -t 5000"
   },
   "keywords": [
     "swagger"
