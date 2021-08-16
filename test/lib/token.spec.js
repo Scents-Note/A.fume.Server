@@ -57,7 +57,7 @@ describe('# verify Test', () => {
         delete result.iat;
         delete result.exp;
         delete result.iss;
-        expect(result).to.deep.eq(payload);
+        expect({ ...result }).to.deep.eq({ ...payload });
     });
     it(' # fail case (Expired Token)', () => {
         const expiredToken =
@@ -81,13 +81,13 @@ describe('# verify Test', () => {
 
 describe('# reissue Test', () => {
     let refreshToken;
-    const payload = {
+    const payload = new TokenPayloadDTO({
         userIdx: 200,
         nickname: '쿼카맨2',
         gender: 'female',
         email: 'hee.youn2@samsung.com',
         birth: 1995,
-    };
+    });
     before(() => {
         const result = jwt.publish(payload);
         token = result.token;
@@ -97,6 +97,6 @@ describe('# reissue Test', () => {
         const tokenStr = jwt.reissue(refreshToken);
         const result = jwt.verify(tokenStr);
         expect(result).to.be.instanceOf(TokenPayloadDTO);
-        expect(result).to.deep.eq(payload);
+        expect({ ...result }).to.deep.eq({ ...payload });
     });
 });
