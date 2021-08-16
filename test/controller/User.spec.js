@@ -113,32 +113,32 @@ describe('# User Controller Test', () => {
         });
     });
 
-    describe('# logoutUser Test', () => {
-        it('success case', (done) => {
-            request(app)
-                .get(`${basePath}/user/logout`)
-                .set('x-access-token', 'Bearer {token}')
-                .expect((res) => {
-                    expect(res.status).to.be.eq(200);
-                    const { message, data } = res.body;
-                    expect(message).to.be.eq('로그아웃');
-                    done();
-                })
-                .catch((err) => done(err));
-        });
+    // describe('# logoutUser Test', () => {
+    //     it('success case', (done) => {
+    //         request(app)
+    //             .get(`${basePath}/user/logout`)
+    //             .set('x-access-token', 'Bearer {token}')
+    //             .expect((res) => {
+    //                 expect(res.status).to.be.eq(200);
+    //                 const { message, data } = res.body;
+    //                 expect(message).to.be.eq('로그아웃');
+    //                 done();
+    //             })
+    //             .catch((err) => done(err));
+    //     });
 
-        it('No permission case', (done) => {
-            request(app)
-                .get(`${basePath}/user/logout`)
-                .expect((res) => {
-                    expect(res.status).to.be.eq(401);
-                    const { message } = res.body;
-                    expect(message).to.be.eq('권한이 없습니다.');
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
+    //     it('No permission case', (done) => {
+    //         request(app)
+    //             .get(`${basePath}/user/logout`)
+    //             .expect((res) => {
+    //                 expect(res.status).to.be.eq(401);
+    //                 const { message } = res.body;
+    //                 expect(message).to.be.eq('권한이 없습니다.');
+    //                 done();
+    //             })
+    //             .catch((err) => done(err));
+    //     });
+    // });
 
     describe('# updateUser Test', () => {
         it('success case', (done) => {
