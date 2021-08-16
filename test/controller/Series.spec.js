@@ -150,54 +150,54 @@ Series.setSeriesService({
 });
 
 describe('# Series Controller Test', () => {
-    describe('# postSeries Test', () => {
-        it('success case', (done) => {
-            request(app)
-                .post(`${basePath}/series`)
-                .set('x-access-token', 'Bearer {token}')
-                .send(mockSeriesInputDTO)
-                .expect((res) => {
-                    expect(res.status).to.be.eq(200);
-                    const { message, data } = res.body;
-                    expect(message).to.be.eq('series post 성공');
-                    expect(data).to.be.eq(1);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
+    // describe('# postSeries Test', () => {
+    //     it('success case', (done) => {
+    //         request(app)
+    //             .post(`${basePath}/series`)
+    //             .set('x-access-token', 'Bearer {token}')
+    //             .send(mockSeriesInputDTO)
+    //             .expect((res) => {
+    //                 expect(res.status).to.be.eq(200);
+    //                 const { message, data } = res.body;
+    //                 expect(message).to.be.eq('series post 성공');
+    //                 expect(data).to.be.eq(1);
+    //                 done();
+    //             })
+    //             .catch((err) => done(err));
+    //     });
 
-        it('No permission case', (done) => {
-            request(app)
-                .post(`${basePath}/series`)
-                .send(mockSeriesInputDTO)
-                .expect((res) => {
-                    expect(res.status).to.be.eq(401);
-                    const { message } = res.body;
-                    expect(message).to.be.eq('권한이 없습니다.');
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
+    //     it('No permission case', (done) => {
+    //         request(app)
+    //             .post(`${basePath}/series`)
+    //             .send(mockSeriesInputDTO)
+    //             .expect((res) => {
+    //                 expect(res.status).to.be.eq(401);
+    //                 const { message } = res.body;
+    //                 expect(message).to.be.eq('권한이 없습니다.');
+    //                 done();
+    //             })
+    //             .catch((err) => done(err));
+    //     });
+    // });
 
-    describe('# getSeries Test', () => {
-        it('success case', (done) => {
-            request(app)
-                .get(`${basePath}/series/1`)
-                .expect((res) => {
-                    expect(res.status).to.be.eq(200);
-                    const { message, data: series } = res.body;
-                    expect(message).to.be.eq('series 개별 조회 성공');
-                    expect(series).to.be.have.property('seriesIdx');
-                    expect(series).to.be.have.property('name');
-                    expect(series).to.be.have.property('imageUrl');
-                    expect(series).to.be.have.property('description');
-                    expect(Object.entries(series).length).to.be.eq(4);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
+    // describe('# getSeries Test', () => {
+    //     it('success case', (done) => {
+    //         request(app)
+    //             .get(`${basePath}/series/1`)
+    //             .expect((res) => {
+    //                 expect(res.status).to.be.eq(200);
+    //                 const { message, data: series } = res.body;
+    //                 expect(message).to.be.eq('series 개별 조회 성공');
+    //                 expect(series).to.be.have.property('seriesIdx');
+    //                 expect(series).to.be.have.property('name');
+    //                 expect(series).to.be.have.property('imageUrl');
+    //                 expect(series).to.be.have.property('description');
+    //                 expect(Object.entries(series).length).to.be.eq(4);
+    //                 done();
+    //             })
+    //             .catch((err) => done(err));
+    //     });
+    // });
 
     describe('# getSeriesAll Test', () => {
         it('success case', (done) => {
@@ -219,54 +219,54 @@ describe('# Series Controller Test', () => {
         });
     });
 
-    describe('# searchSeries Test', () => {
-        it('success case', (done) => {
-            request(app)
-                .get(`${basePath}/series/search`)
-                .expect((res) => {
-                    expect(res.status).to.be.eq(200);
-                    const { message, data } = res.body;
-                    expect(message).to.be.eq('계열 검색 성공');
-                    expect(data.count).to.be.eq(1);
-                    for (const series of data.rows) {
-                        expect(series).to.be.have.property('seriesIdx');
-                        expect(series).to.be.have.property('name');
-                        expect(Object.entries(series).length).to.be.eq(2);
-                    }
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
+    // describe('# searchSeries Test', () => {
+    //     it('success case', (done) => {
+    //         request(app)
+    //             .get(`${basePath}/series/search`)
+    //             .expect((res) => {
+    //                 expect(res.status).to.be.eq(200);
+    //                 const { message, data } = res.body;
+    //                 expect(message).to.be.eq('계열 검색 성공');
+    //                 expect(data.count).to.be.eq(1);
+    //                 for (const series of data.rows) {
+    //                     expect(series).to.be.have.property('seriesIdx');
+    //                     expect(series).to.be.have.property('name');
+    //                     expect(Object.entries(series).length).to.be.eq(2);
+    //                 }
+    //                 done();
+    //             })
+    //             .catch((err) => done(err));
+    //     });
+    // });
 
-    describe('# putSeries Test', () => {
-        it('success case', (done) => {
-            request(app)
-                .put(`${basePath}/series/1`)
-                .set('x-access-token', 'Bearer {token}')
-                .send(mockSeriesInputDTO)
-                .expect((res) => {
-                    expect(res.status).to.be.eq(200);
-                    const { message } = res.body;
-                    expect(message).to.be.eq('series put 성공');
-                    done();
-                })
-                .catch((err) => done(err));
-        });
+    // describe('# putSeries Test', () => {
+    //     it('success case', (done) => {
+    //         request(app)
+    //             .put(`${basePath}/series/1`)
+    //             .set('x-access-token', 'Bearer {token}')
+    //             .send(mockSeriesInputDTO)
+    //             .expect((res) => {
+    //                 expect(res.status).to.be.eq(200);
+    //                 const { message } = res.body;
+    //                 expect(message).to.be.eq('series put 성공');
+    //                 done();
+    //             })
+    //             .catch((err) => done(err));
+    //     });
 
-        it('No permission case', (done) => {
-            request(app)
-                .put(`${basePath}/series/1`)
-                .send(mockSeriesInputDTO)
-                .expect((res) => {
-                    expect(res.status).to.be.eq(401);
-                    const { message } = res.body;
-                    expect(message).to.be.eq('권한이 없습니다.');
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
+    //     it('No permission case', (done) => {
+    //         request(app)
+    //             .put(`${basePath}/series/1`)
+    //             .send(mockSeriesInputDTO)
+    //             .expect((res) => {
+    //                 expect(res.status).to.be.eq(401);
+    //                 const { message } = res.body;
+    //                 expect(message).to.be.eq('권한이 없습니다.');
+    //                 done();
+    //             })
+    //             .catch((err) => done(err));
+    //     });
+    // });
 
     // TODO getIngredients Test
     describe('# getIngredients', () => {
@@ -275,34 +275,34 @@ describe('# Series Controller Test', () => {
         });
     });
 
-    describe('# deleteSeries Test', () => {
-        it('success case', (done) => {
-            request(app)
-                .delete(`${basePath}/series/1`)
-                .set('x-access-token', 'Bearer {token}')
-                .send(mockSeriesInputDTO)
-                .expect((res) => {
-                    expect(res.status).to.be.eq(200);
-                    const { message } = res.body;
-                    expect(message).to.be.eq('series delete 성공');
-                    done();
-                })
-                .catch((err) => done(err));
-        });
+    // describe('# deleteSeries Test', () => {
+    //     it('success case', (done) => {
+    //         request(app)
+    //             .delete(`${basePath}/series/1`)
+    //             .set('x-access-token', 'Bearer {token}')
+    //             .send(mockSeriesInputDTO)
+    //             .expect((res) => {
+    //                 expect(res.status).to.be.eq(200);
+    //                 const { message } = res.body;
+    //                 expect(message).to.be.eq('series delete 성공');
+    //                 done();
+    //             })
+    //             .catch((err) => done(err));
+    //     });
 
-        it('No permission case', (done) => {
-            request(app)
-                .delete(`${basePath}/series/1`)
-                .send(mockSeriesInputDTO)
-                .expect((res) => {
-                    expect(res.status).to.be.eq(401);
-                    const { message } = res.body;
-                    expect(message).to.be.eq('권한이 없습니다.');
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
+    //     it('No permission case', (done) => {
+    //         request(app)
+    //             .delete(`${basePath}/series/1`)
+    //             .send(mockSeriesInputDTO)
+    //             .expect((res) => {
+    //                 expect(res.status).to.be.eq(401);
+    //                 const { message } = res.body;
+    //                 expect(message).to.be.eq('권한이 없습니다.');
+    //                 done();
+    //             })
+    //             .catch((err) => done(err));
+    //     });
+    // });
 
     describe('# getFilterSeries Test', () => {
         it('success case', (done) => {

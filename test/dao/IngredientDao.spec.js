@@ -11,6 +11,8 @@ const {
 } = require('../../utils/errors/errors.js');
 const { Ingredient } = require('../../models');
 
+const { IngredientConditionDTO } = require('../../data/dto');
+
 describe('# ingredientDao Test', () => {
     before(async function () {
         await require('./common/presets.js')(this);
@@ -159,8 +161,23 @@ describe('# ingredientDao Test', () => {
 
         it('# findIngredient success case', (done) => {
             ingredientDao
+                .findIngredient(
+                    new IngredientConditionDTO({
+                        name: '재료2',
+                    })
+                )
+                .then((result) => {
+                    expect(result.name).eq('재료2');
+                    expect(result.ingredientIdx).eq(2);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it('# findIngredient success case', (done) => {
+            ingredientDao
                 .findIngredient({
-                    name: '재료1',
+                    englishName: 'ingredient english-name',
                 })
                 .then((result) => {
                     expect(result.name).eq('재료1');
@@ -169,6 +186,7 @@ describe('# ingredientDao Test', () => {
                 })
                 .catch((err) => done(err));
         });
+
         it('# findIngredient not found case', (done) => {
             ingredientDao
                 .findIngredient({
