@@ -40,3 +40,4 @@ jobs:
         MYSQL_TST_DIALECT: '${{ secrets.MYSQL_TST_DIALECT }}'
         MONGO_URI: '${{ secrets.MONGO_URI }}'
         CORS_ALLOW_LIST: '${{ secrets.CORS_ALLOW_LIST }}'
+        JWT_SECRET: '${{ secrets.JWT_SECRET }}'
