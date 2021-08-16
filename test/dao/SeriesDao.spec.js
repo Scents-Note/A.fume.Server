@@ -80,6 +80,7 @@ describe('# seriesDao Test', () => {
                     name: '읽기 데이터',
                     englishName: 'Test Data',
                     description: 'description',
+                    imageUrl: 'image-url',
                 })
             )[0].seriesIdx;
         });
@@ -87,10 +88,11 @@ describe('# seriesDao Test', () => {
             seriesDao
                 .readByIdx(seriesIdx)
                 .then((result) => {
+                    expect(result).instanceOf(SeriesDTO);
+                    result.validTest();
                     expect(result.seriesIdx).to.be.eq(seriesIdx);
                     expect(result.name).to.be.eq('읽기 데이터');
                     expect(result.englishName).to.be.eq('Test Data');
-                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -99,10 +101,10 @@ describe('# seriesDao Test', () => {
             seriesDao
                 .readByName('읽기 데이터')
                 .then((result) => {
-                    expect(result.seriesIdx).to.be.gt(0);
+                    expect(result).instanceOf(SeriesDTO);
+                    result.validTest();
                     expect(result.name).to.be.eq('읽기 데이터');
                     expect(result.englishName).to.be.eq('Test Data');
-                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
