@@ -3,14 +3,11 @@
 const Ingredient = require('../service/IngredientService');
 const { OK } = require('../utils/statusCode.js');
 
+const { IngredientConditionDTO } = require('../data/dto');
+
 module.exports.postIngredient = (req, res, next) => {
-    const {
-        name,
-        englishName,
-        description,
-        imageUrl,
-        seriesIdx,
-    } = req.swagger.params['body'].value;
+    const { name, englishName, description, imageUrl, seriesIdx } =
+        req.swagger.params['body'].value;
     Ingredient.postIngredient({
         name,
         englishName,
@@ -67,9 +64,8 @@ module.exports.searchIngredient = (req, res, next) => {
 
 module.exports.putIngredient = (req, res, next) => {
     const ingredientIdx = req.swagger.params['ingredientIdx'].value;
-    const { name, englishName, description, imageUrl } = req.swagger.params[
-        'body'
-    ].value;
+    const { name, englishName, description, imageUrl } =
+        req.swagger.params['body'].value;
     Ingredient.putIngredient({
         ingredientIdx,
         name,
@@ -110,8 +106,7 @@ module.exports.deleteIngredient = (req, res, next) => {
 };
 
 module.exports.getIngredientByEnglishName = (req, res, next) => {
-    const { englishName } = req.body;
-    Ingredient.findIngredientByEnglishName(englishName)
+    Ingredient.findIngredient(new IngredientConditionDTO(req.body))
         .then((response) => {
             res.status(OK).json({
                 message: '재료 조회 성공',

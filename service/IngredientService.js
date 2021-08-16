@@ -114,11 +114,11 @@ exports.getSeriesList = (ingredientIdx) => {
 };
 
 /**
- * 재료 영어 이름으로 조회
+ * 재료 검색
  *
- * @param {string} englishName
+ * @param {IngredientConditionDTO} ingredientConditionDTO
  * @returns {Promise<Ingredient>}
  **/
-exports.findIngredientByEnglishName = (englishName) => {
-    return ingredientDao.findIngredient({ englishName });
+exports.findIngredient = (ingredientConditionDTO) => {
+    return ingredientDao.findIngredient(ingredientConditionDTO);
 };
