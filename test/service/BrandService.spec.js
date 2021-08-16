@@ -2,68 +2,21 @@ const chai = require('chai');
 const { expect } = chai;
 
 const { PagingRequestDTO } = require('../../data/request_dto');
-const {
-    BrandDTO,
-    ListAndCountDTO,
-    CreatedResultDTO,
-} = require('../../data/dto');
 
-const { BrandFilterVO } = require('../../data/vo');
-
-const FIRST_INITIAL = [
-    'ㄱ',
-    'ㄲ',
-    'ㄴ',
-    'ㄷ',
-    'ㄸ',
-    'ㄹ',
-    'ㅁ',
-    'ㅂ',
-    'ㅃ',
-    'ㅅ',
-    'ㅆ',
-    'ㅇ',
-    'ㅈ',
-    'ㅉ',
-    'ㅊ',
-    'ㅋ',
-    'ㅍ',
-    'ㅌ',
-    'ㅎ',
-];
-
-BrandDTO.prototype.validTest = function () {
-    expect(this.brandIdx).to.be.ok;
-    expect(this.name).to.be.ok;
-    expect(this.firstInitial).to.be.oneOf(FIRST_INITIAL);
-    expect(this.imageUrl).to.be.ok;
-    expect(this.description).to.be.not.undefined;
-    expect(this.createdAt).to.be.ok;
-    expect(this.updatedAt).to.be.ok;
-};
-
-ListAndCountDTO.prototype.validTest = function () {
-    expect(this.count).to.be.ok;
-    expect(this.rows.length).to.be.ok;
-    for (const brand of this.rows) {
-        expect(brand).instanceOf(BrandDTO);
-        brand.validTest();
+const BrandDTO = require('../data/dto/BrandDTO');
+const CreatedResultDTO = require('../data/dto/CreatedResultDTO').create(
+    (created) => {
+        expect(created).instanceOf(BrandDTO);
+        created.validTest();
     }
-};
-
-CreatedResultDTO.prototype.validTest = function () {
-    expect(this.idx).to.be.ok;
-    expect(this.created).instanceOf(BrandDTO);
-    this.created.validTest();
-};
-
-BrandFilterVO.prototype.validTest = function () {
-    expect(this.firstInitial).to.be.oneOf(FIRST_INITIAL);
-    for (const brand of this.brands) {
-        expect(brand).instanceOf(BrandDTO);
-        brand.validTest();
+);
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO').create(
+    (item) => {
+        expect(item).instanceOf(BrandDTO);
+        item.validTest();
     }
-};
+);
+const BrandFilterVO = require('../data/vo/BrandFilterVO');
 
 const mockBrandDTO = new BrandDTO({
     brandIdx: 1,

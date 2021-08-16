@@ -152,7 +152,7 @@ module.exports.delete = (brandIdx) => {
  */
 module.exports.findBrand = (condition) => {
     return Brand.findOne({
-        where: condition,
+        where: { ...condition },
         nest: true,
         raw: true,
     }).then((it) => {

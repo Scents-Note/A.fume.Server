@@ -4,44 +4,20 @@ dotenv.config({ path: './config/.env.test' });
 const chai = require('chai');
 const { expect } = chai;
 const brandDao = require('../../dao/BrandDao.js');
-const { Brand, Sequelize } = require('../../models');
+const { Brand } = require('../../models');
 const {
     DuplicatedEntryError,
     NotMatchedError,
     UnExpectedError,
 } = require('../../utils/errors/errors.js');
-const { BrandDTO, CreatedResultDTO } = require('../../data/dto');
 const { PagingVO } = require('../../data/vo');
-
-BrandDTO.prototype.validTest = function () {
-    expect(this.brandIdx).to.be.ok;
-    expect(this.name).to.be.ok;
-    expect(this.firstInitial).to.be.oneOf([
-        'ㄱ',
-        'ㄲ',
-        'ㄴ',
-        'ㄷ',
-        'ㄸ',
-        'ㄹ',
-        'ㅁ',
-        'ㅂ',
-        'ㅃ',
-        'ㅅ',
-        'ㅆ',
-        'ㅇ',
-        'ㅈ',
-        'ㅉ',
-        'ㅊ',
-        'ㅋ',
-        'ㅍ',
-        'ㅌ',
-        'ㅎ',
-    ]);
-    expect(this.imageUrl).to.be.ok;
-    expect(this.description).to.be.not.undefined;
-    expect(this.createdAt).to.be.ok;
-    expect(this.updatedAt).to.be.ok;
-};
+const BrandDTO = require('../data/dto/BrandDTO.js');
+const CreatedResultDTO = require('../data/dto/CreatedResultDTO.js').create(
+    (created) => {
+        expect(created).instanceof(BrandDTO);
+        created.validTest();
+    }
+);
 
 describe('# brandDao Test', () => {
     before(async function () {
