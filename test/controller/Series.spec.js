@@ -2,11 +2,6 @@ const request = require('supertest');
 const chai = require('chai');
 const { expect } = chai;
 const app = require('../../index.js');
-require('../../lib/token').verify = (token) => {
-    return {
-        userIdx: 1,
-    };
-};
 
 const basePath = '/A.fume/api/0.0.1';
 const {
