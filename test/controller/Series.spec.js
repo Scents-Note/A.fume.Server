@@ -1,4 +1,7 @@
+const dotenv = require('dotenv');
+dotenv.config();
 const request = require('supertest');
+
 const chai = require('chai');
 const { expect } = chai;
 const app = require('../../index.js');
