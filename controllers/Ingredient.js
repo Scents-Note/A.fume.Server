@@ -2,7 +2,7 @@
 
 const Ingredient = require('../service/IngredientService');
 const { OK } = require('../utils/statusCode.js');
-
+const { IngredientConditionDTO } = require('../data/dto');
 module.exports.getIngredientAll = (req, res, next) => {
     Ingredient.getIngredientAll()
         .then((response) => {
