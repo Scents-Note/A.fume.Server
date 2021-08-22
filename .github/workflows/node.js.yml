@@ -18,7 +18,7 @@ jobs:
       matrix:
         node-version: [10.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-      
+        
     steps:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
@@ -40,3 +40,4 @@ jobs:
         MYSQL_TST_DIALECT: '${{ secrets.MYSQL_TST_DIALECT }}'
         MONGO_URI: '${{ secrets.MONGO_URI }}'
         CORS_ALLOW_LIST: '${{ secrets.CORS_ALLOW_LIST }}'
+        JWT_SECRET: '${{ secrets.JWT_SECRET }}'
