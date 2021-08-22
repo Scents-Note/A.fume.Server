@@ -6,7 +6,7 @@
   "scripts": {
     "_prestart": "npm install",
     "start": "node index.js",
-    "test": "mocha --recursive --exit -t 5000"
+    "test": "cross-env NODE_ENV=test mocha --recursive --exit -t 5000"
   },
   "keywords": [
     "swagger"
@@ -19,6 +19,7 @@
     "connect": "^3.2.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "js-yaml": "^3.3.0",
