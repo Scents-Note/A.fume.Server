@@ -175,7 +175,6 @@ async function generateNote(perfumeIdx) {
         noteMap[key] = noteMap[key].join(', ');
     }
     const noteType = noteMap.single.length > 0 ? 1 : 0;
-    console.log(noteMap);
     return { noteType, ingredients: noteMap };
 }
 
