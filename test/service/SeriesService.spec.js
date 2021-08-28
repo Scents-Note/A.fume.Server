@@ -167,28 +167,6 @@ describe('# Brand Service Test', () => {
         });
     });
 
-    describe('# getIngredientList Test', () => {
-        it('# success Test', (done) => {
-            mockIngredientDAO.readAll = async () =>
-                new ListAndCountDTO({
-                    count: 1,
-                    rows: [...new Array(5)].map((it, index) =>
-                        mockIngredient(index + 1, 1)
-                    ),
-                });
-            seriesService
-                .getIngredientList(1)
-                .then((result) => {
-                    expect(result.count).to.be.eq(1);
-                    for (const ingredientDTO of result.rows) {
-                        ingredientDTO.validTest();
-                    }
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
     describe('# getFilterSeries Test', () => {
         it('# success Test', (done) => {
             const isNoteCountOver10 = (ingredientIdx) => ingredientIdx % 2 == 1;
