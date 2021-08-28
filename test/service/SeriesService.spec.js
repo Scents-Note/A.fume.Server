@@ -10,6 +10,8 @@ const SeriesDTO = require('../data/dto/SeriesDTO');
 const IngredientDTO = require('../data/dto/IngredientDTO');
 const SeriesFilterVO = require('../data/vo/SeriesFilterVO');
 
+const { SeriesFilterVO } = require('../../data/vo');
+
 const mockSeriesDTO = new SeriesDTO({
     seriesIdx: 1,
     name: '계열1',
@@ -20,25 +22,54 @@ const mockSeriesDTO = new SeriesDTO({
     updatedAt: '2021-07-24T03:38:52.000Z',
 });
 
-const mockSeriesGenerator = (seriesIdx) =>
-    new SeriesDTO({
-        seriesIdx: seriesIdx,
-        name: '계열' + seriesIdx,
-        englishName: 'SERIES' + seriesIdx,
-        imageUrl: 'http://',
-        description: '이것은 계열',
-        createdAt: '2021-07-24T03:38:52.000Z',
-        updatedAt: '2021-07-24T03:38:52.000Z',
-    });
+SeriesDTO.prototype.validTest = function () {
+    expect(this.seriesIdx).to.be.ok;
+    expect(this.englishName).to.be.ok;
+    expect(this.name).to.be.ok;
+    expect(this.imageUrl).to.be.ok;
+    expect(this.description).to.be.not.undefined;
+    expect(this.createdAt).to.be.ok;
+    expect(this.updatedAt).to.be.ok;
+};
 
-const mockListAndCountDTO = new ListAndCountDTO({
-    count: 1,
-    rows: [
-        mockSeriesGenerator(1),
-        mockSeriesGenerator(2),
-        mockSeriesGenerator(3),
-    ],
-});
+ListAndCountDTO.prototype.validTest = function () {
+    expect(this.count).to.be.ok;
+    expect(this.rows.length).to.be.ok;
+    for (const series of this.rows) {
+        expect(series).instanceOf(SeriesDTO);
+        series.validTest();
+    }
+};
+
+CreatedResultDTO.prototype.validTest = function () {
+    expect(this.idx).to.be.ok;
+    expect(this.created).instanceOf(SeriesDTO);
+    this.created.validTest();
+};
+
+SeriesFilterVO.prototype.validTest = function () {
+    expect(this.seriesIdx).to.be.ok;
+    expect(this.englishName).to.be.ok;
+    expect(this.name).to.be.ok;
+    expect(this.imageUrl).to.be.ok;
+    expect(this.description).to.be.not.undefined;
+    expect(this.createdAt).to.be.ok;
+    expect(this.updatedAt).to.be.ok;
+    for (const ingredient of this.ingredients) {
+        expect(ingredient).instanceOf(IngredientDTO);
+        ingredient.validTest();
+    }
+};
+
+IngredientDTO.prototype.validTest = function () {
+    expect(this.ingredientIdx).to.be.ok;
+    expect(this.name).to.be.ok;
+    expect(this.imageUrl).to.be.ok;
+    expect(this.description).to.be.not.undefined;
+    expect(this.seriesIdx).to.be.ok;
+    expect(this.createdAt).to.be.ok;
+    expect(this.updatedAt).to.be.ok;
+};
 
 const mockIngredient = (ingredientIdx, seriesIdx) =>
     new IngredientDTO({
@@ -53,19 +84,7 @@ const mockIngredient = (ingredientIdx, seriesIdx) =>
     });
 
 const seriesService = require('../../service/SeriesService');
-seriesService.setSeriesDao({
-    create: async (seriesInputDTO) =>
-        new CreatedResultDTO({
-            idx: 1,
-            created: mockSeriesDTO,
-        }),
-    readByIdx: async (seriesIdx) => mockSeriesDTO,
-    readAll: async () => mockListAndCountDTO,
-    search: async () => mockListAndCountDTO,
-    update: async () => 1,
-    delete: async () => 1,
-    findSeries: async () => mockSeriesDTO,
-});
+seriesService.setSeriesDao(require('../dao/SeriesDao.mock.js'));
 
 const mockIngredientDAO = {};
 seriesService.setIngredientDao(mockIngredientDAO);
