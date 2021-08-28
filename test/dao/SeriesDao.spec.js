@@ -119,11 +119,8 @@ describe('# seriesDao Test', () => {
             seriesDao
                 .readAll(new PagingVO({ pagingIndex: 1, pagingSize: 100 }))
                 .then((result) => {
-                    expect(result.count).gt(0);
-                    expect(result.rows.length).greaterThan(0);
-                    for (const series of result.rows) {
-                        series.validTest();
-                    }
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -141,11 +138,8 @@ describe('# seriesDao Test', () => {
                     })
                 )
                 .then((result) => {
-                    expect(result.count).gt(0);
-                    expect(result.rows.length).gt(0);
-                    for (const series of result.rows) {
-                        series.validTest();
-                    }
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest();
                     const originString = result.rows
                         .map((it) => it.seriesIdx)
                         .toString();
