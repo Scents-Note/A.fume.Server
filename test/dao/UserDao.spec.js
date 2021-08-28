@@ -18,7 +18,7 @@ const CreatedResultDTO = require('../data/dto/CreatedResultDTO').create(
         created.validTest();
     }
 );
-const { GENDER_MAN, GENDER_WOMAN } = require('../../utils/code.js');
+const { GENDER_MAN, GENDER_WOMAN } = require('../../utils/constantUtil');
 
 describe('# userDao Test', () => {
     before(async function () {

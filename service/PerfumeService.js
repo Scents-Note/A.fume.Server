@@ -18,7 +18,7 @@ const {
     LONGEVITY_LIST,
     GENDER_LIST,
     NOTE_TYPE_LIST,
-} = require('../utils/code.js');
+} = require('../utils/constantUtil.js');
 
 const {
     NotMatchedError,
