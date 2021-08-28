@@ -4,7 +4,12 @@ const {
     DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
 
-const { Ingredient, Series, Note, Sequelize } = require('../models');
+const { Ingredient, Sequelize } = require('../models');
+const {
+    IngredientDTO,
+    CreatedResultDTO,
+    ListAndCountDTO,
+} = require('../data/dto');
 const { Op } = Sequelize;
 
 /**
@@ -31,7 +36,10 @@ module.exports.create = ({
             if (!ingredient) {
                 throw new FailedToCreateError();
             }
-            return ingredient.ingredientIdx;
+            return new CreatedResultDTO({
+                idx: ingredient.ingredientIdx,
+                created: new IngredientDTO(ingredient),
+            });
         })
         .catch((err) => {
             if (
@@ -53,16 +61,13 @@ module.exports.create = ({
  */
 module.exports.readByIdx = async (ingredientIdx) => {
     const result = await Ingredient.findByPk(ingredientIdx, {
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
         nest: true,
         raw: true,
     });
     if (!result) {
         throw new NotMatchedError();
     }
-    return result;
+    return new IngredientDTO(result);
 };
 
 /**
@@ -73,15 +78,12 @@ module.exports.readByIdx = async (ingredientIdx) => {
  */
 module.exports.readByName = async (ingredientName) => {
     const result = await Ingredient.findOne({
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
         where: { name: ingredientName },
     });
     if (!result) {
         throw new NotMatchedError();
     }
-    return result;
+    return new IngredientDTO(result);
 };
 
 /**
@@ -89,9 +91,6 @@ module.exports.readByName = async (ingredientName) => {
  */
 module.exports.readAll = async (where) => {
     const result = await Ingredient.findAndCountAll({
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
         where,
         nest: true,
         raw: true,
@@ -99,7 +98,10 @@ module.exports.readAll = async (where) => {
     if (!result) {
         throw new NotMatchedError();
     }
-    return result;
+    return new ListAndCountDTO({
+        count: result.count,
+        rows: result.rows.map((it) => new IngredientDTO(it)),
+    });
 };
 
 /**
@@ -112,12 +114,16 @@ module.exports.readAll = async (where) => {
  */
 module.exports.search = (pagingIndex, pagingSize, order) => {
     return Ingredient.findAndCountAll({
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
         order,
+        raw: true,
+        nest: true,
+    }).then(({ count, rows }) => {
+        return new ListAndCountDTO({
+            count,
+            rows: rows.map((it) => new IngredientDTO(it)),
+        });
     });
 };
 
@@ -170,11 +176,8 @@ module.exports.delete = (ingredientIdx) => {
  * @param {number[]} seriesIdxList
  * @return {Promise<Ingredients[]>}
  */
-module.exports.readBySeriesIdxList = async (seriesIdxList) => {
-    const result = await Ingredient.findAll({
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
+module.exports.readBySeriesIdxList = (seriesIdxList) => {
+    return Ingredient.findAll({
         where: {
             seriesIdx: {
                 [Op.in]: seriesIdxList,
@@ -182,8 +185,9 @@ module.exports.readBySeriesIdxList = async (seriesIdxList) => {
         },
         raw: true,
         nest: true,
+    }).then((result) => {
+        return result.map((it) => new IngredientDTO(it));
     });
-    return result;
 };
 
 /**
@@ -201,6 +205,6 @@ module.exports.findIngredient = (condition) => {
         if (!it) {
             throw new NotMatchedError();
         }
-        return it;
+        return new IngredientDTO(it);
     });
 };

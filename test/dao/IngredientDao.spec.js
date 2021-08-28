@@ -12,6 +12,13 @@ const {
 const { Ingredient } = require('../../models');
 
 const { IngredientConditionDTO } = require('../../data/dto');
+const CreatedResultDTO = require('../data/dto/CreatedResultDTO').create(
+    (created) => {
+        expect(created).instanceOf(IngredientDTO);
+        created.validTest();
+    }
+);
+const IngredientDTO = require('../data/dto/IngredientDTO');
 
 describe('# ingredientDao Test', () => {
     before(async function () {
@@ -31,7 +38,7 @@ describe('# ingredientDao Test', () => {
                     imageUrl: 'test',
                 })
                 .then((result) => {
-                    expect(result).gt(0);
+                    expect(result).instanceOf(CreatedResultDTO);
                     done();
                 })
                 .catch((err) => done(err));
@@ -63,14 +70,8 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readByIdx(1)
                 .then((result) => {
-                    expect(result.ingredientIdx).to.be.eq(1);
-                    expect(result.name).eq('재료1');
-                    expect(result.englishName).to.be.ok;
-                    expect(result.description).to.be.not.undefined;
-                    expect(result.imageUrl).to.be.not.undefined;
-                    expect(result.seriesIdx).to.be.ok;
-                    expect(result.createdAt).to.be.undefined;
-                    expect(result.updatedAt).to.be.undefined;
+                    expect(result).instanceOf(IngredientDTO);
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -79,14 +80,8 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readByName('재료2')
                 .then((result) => {
-                    expect(result.ingredientIdx).to.be.eq(2);
-                    expect(result.name).eq('재료2');
-                    expect(result.englishName).to.be.ok;
-                    expect(result.description).to.be.not.undefined;
-                    expect(result.imageUrl).to.be.not.undefined;
-                    expect(result.seriesIdx).to.be.ok;
-                    expect(result.createdAt).to.be.undefined;
-                    expect(result.updatedAt).to.be.undefined;
+                    expect(result).instanceOf(IngredientDTO);
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -101,14 +96,8 @@ describe('# ingredientDao Test', () => {
                     expect(result.count).greaterThan(4);
                     expect(result.rows.length).greaterThan(4);
                     for (const ingredient of result.rows) {
-                        expect(ingredient.ingredientIdx).to.be.ok;
-                        expect(ingredient.name).to.be.ok;
-                        expect(ingredient.englishName).to.be.ok;
-                        expect(ingredient.description).to.be.not.undefined;
-                        expect(ingredient.imageUrl).to.be.not.undefined;
-                        expect(ingredient.seriesIdx).to.be.ok;
-                        expect(ingredient.createdAt).to.be.undefined;
-                        expect(ingredient.updatedAt).to.be.undefined;
+                        expect(ingredient).instanceOf(IngredientDTO);
+                        ingredient.validTest();
                     }
                     done();
                 })
@@ -124,14 +113,8 @@ describe('# ingredientDao Test', () => {
                     expect(result.count).eq(1);
                     expect(result.rows.length).eq(1);
                     for (const ingredient of result.rows) {
-                        expect(ingredient.ingredientIdx).to.be.ok;
-                        expect(ingredient.name).to.be.ok;
-                        expect(ingredient.englishName).to.be.ok;
-                        expect(ingredient.description).to.be.not.undefined;
-                        expect(ingredient.imageUrl).to.be.not.undefined;
-                        expect(ingredient.seriesIdx).to.be.eq(1);
-                        expect(ingredient.createdAt).to.be.undefined;
-                        expect(ingredient.updatedAt).to.be.undefined;
+                        expect(ingredient).instanceOf(IngredientDTO);
+                        ingredient.validTest();
                     }
                     done();
                 })
@@ -143,16 +126,11 @@ describe('# ingredientDao Test', () => {
                 .then((result) => {
                     expect(result.length).gte(5);
                     for (const ingredient of result) {
-                        expect(ingredient.ingredientIdx).to.be.ok;
-                        expect(ingredient.name).to.be.ok;
-                        expect(ingredient.englishName).to.be.ok;
-                        expect(ingredient.description).to.be.not.undefined;
-                        expect(ingredient.imageUrl).to.be.not.undefined;
+                        expect(ingredient).instanceOf(IngredientDTO);
+                        ingredient.validTest();
                         expect(ingredient.seriesIdx).to.be.oneOf([
                             1, 2, 3, 4, 5,
                         ]);
-                        expect(ingredient.createdAt).to.be.undefined;
-                        expect(ingredient.updatedAt).to.be.undefined;
                     }
                     done();
                 })
@@ -167,6 +145,8 @@ describe('# ingredientDao Test', () => {
                     })
                 )
                 .then((result) => {
+                    expect(result).instanceOf(IngredientDTO);
+                    result.validTest();
                     expect(result.name).eq('재료2');
                     expect(result.ingredientIdx).eq(2);
                     done();
@@ -180,6 +160,8 @@ describe('# ingredientDao Test', () => {
                     englishName: 'ingredient english-name',
                 })
                 .then((result) => {
+                    expect(result).instanceOf(IngredientDTO);
+                    result.validTest();
                     expect(result.name).eq('재료1');
                     expect(result.ingredientIdx).eq(1);
                     done();
@@ -228,14 +210,11 @@ describe('# ingredientDao Test', () => {
                     return ingredientDao.readByIdx(ingredientIdx);
                 })
                 .then((result) => {
-                    expect(result.name).eq('수정 데이터');
-                    expect(result.englishName).eq('Update Data');
-                    expect(result.englishName).to.be.ok;
-                    expect(result.description).to.be.not.undefined;
-                    expect(result.imageUrl).to.be.not.undefined;
-                    expect(result.seriesIdx).to.be.ok;
-                    expect(result.createdAt).to.be.undefined;
-                    expect(result.updatedAt).to.be.undefined;
+                    expect(result).instanceOf(IngredientDTO);
+                    result.validTest();
+                    expect(result.ingredientIdx).to.be.eq(ingredientIdx);
+                    expect(result.name).to.be.eq('수정 데이터');
+                    expect(result.englishName).to.be.eq('Update Data');
                     done();
                 })
                 .catch((err) => done(err));
