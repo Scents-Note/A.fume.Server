@@ -1,3 +1,6 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const chai = require('chai');
 const { expect } = chai;
 
@@ -9,6 +12,16 @@ const {
 } = require('../../data/dto');
 
 const { SeriesFilterVO } = require('../../data/vo');
+
+const mockSeriesDTO = new SeriesDTO({
+    seriesIdx: 1,
+    name: '계열1',
+    englishName: 'SERIES1',
+    imageUrl: 'http://',
+    description: '이것은 계열',
+    createdAt: '2021-07-24T03:38:52.000Z',
+    updatedAt: '2021-07-24T03:38:52.000Z',
+});
 
 SeriesDTO.prototype.validTest = function () {
     expect(this.seriesIdx).to.be.ok;
@@ -59,36 +72,6 @@ IngredientDTO.prototype.validTest = function () {
     expect(this.updatedAt).to.be.ok;
 };
 
-const mockSeriesDTO = new SeriesDTO({
-    seriesIdx: 1,
-    name: '계열1',
-    englishName: 'SERIES1',
-    imageUrl: 'http://',
-    description: '이것은 계열',
-    createdAt: '2021-07-24T03:38:52.000Z',
-    updatedAt: '2021-07-24T03:38:52.000Z',
-});
-
-const mockSeriesGenerator = (seriesIdx) =>
-    new SeriesDTO({
-        seriesIdx: seriesIdx,
-        name: '계열' + seriesIdx,
-        englishName: 'SERIES' + seriesIdx,
-        imageUrl: 'http://',
-        description: '이것은 계열',
-        createdAt: '2021-07-24T03:38:52.000Z',
-        updatedAt: '2021-07-24T03:38:52.000Z',
-    });
-
-const mockListAndCountDTO = new ListAndCountDTO({
-    count: 1,
-    rows: [
-        mockSeriesGenerator(1),
-        mockSeriesGenerator(2),
-        mockSeriesGenerator(3),
-    ],
-});
-
 const mockIngredient = (ingredientIdx, seriesIdx) =>
     new IngredientDTO({
         ingredientIdx: ingredientIdx,
@@ -102,19 +85,7 @@ const mockIngredient = (ingredientIdx, seriesIdx) =>
     });
 
 const seriesService = require('../../service/SeriesService');
-seriesService.setSeriesDao({
-    create: async (seriesInputDTO) =>
-        new CreatedResultDTO({
-            idx: 1,
-            created: mockSeriesDTO,
-        }),
-    readByIdx: async (seriesIdx) => mockSeriesDTO,
-    readAll: async () => mockListAndCountDTO,
-    search: async () => mockListAndCountDTO,
-    update: async () => 1,
-    delete: async () => 1,
-    findSeries: async () => mockSeriesDTO,
-});
+seriesService.setSeriesDao(require('../dao/SeriesDao.mock.js'));
 
 const mockIngredientDAO = {};
 seriesService.setIngredientDao(mockIngredientDAO);
