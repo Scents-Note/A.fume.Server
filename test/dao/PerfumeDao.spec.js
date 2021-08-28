@@ -8,7 +8,7 @@ const perfumeDao = require('../../dao/PerfumeDao.js');
 const { Perfume, PerfumeDetail, Note, Sequelize } = require('../../models');
 const { Op } = Sequelize;
 
-const { GENDER_WOMAN } = require('../../utils/code.js');
+const { GENDER_WOMAN } = require('../../utils/constantUtil');
 const {
     NotMatchedError,
     DuplicatedEntryError,
