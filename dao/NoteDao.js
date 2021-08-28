@@ -4,8 +4,10 @@ const {
     InvalidInputError,
 } = require('../utils/errors/errors.js');
 
-const { Note, sequelize, Sequelize } = require('../models');
+const { Note, Ingredient, sequelize, Sequelize } = require('../models');
 const { Op } = Sequelize;
+const { NoteDTO } = require('../data/dto');
+
 /**
  * 노트 생성
  *
@@ -116,4 +118,33 @@ module.exports.countIngredientUsed = async (ingredientIdxList) => {
     });
 
     return result;
+};
+
+/**
+ * 향수에 해당하는 재료 조회
+ *
+ * @param {number} perfumeIdx
+ * @return {Promise<NoteDTO[]>} NoteDTO[]
+ */
+module.exports.readByPerfumeIdx = async (perfumeIdx) => {
+    const result = await Note.findAll({
+        include: [
+            {
+                model: Ingredient,
+                as: 'Ingredients',
+                attributes: ['name'],
+            },
+        ],
+        where: {
+            perfumeIdx,
+        },
+        raw: true,
+        nest: true,
+    });
+    return result.map(
+        (it) =>
+            new NoteDTO(
+                Object.assign({}, it, { ingredientName: it.Ingredients.name })
+            )
+    );
 };
