@@ -203,36 +203,6 @@ describe('# ingredientDao Test', () => {
         });
     });
 
-    describe('# read By perfumeIdx Test', () => {
-        it('# success case', (done) => {
-            ingredientDao
-                .readByPerfumeIdx(1)
-                .then((result) => {
-                    expect(result.length).to.be.gte(3);
-                    for (const ingredient of result) {
-                        expect(ingredient.ingredientIdx).to.be.ok;
-                        expect(ingredient.name).to.be.ok;
-                        expect(ingredient.englishName).to.be.ok;
-                        expect(ingredient.description).to.be.not.undefined;
-                        expect(ingredient.imageUrl).to.be.not.undefined;
-                        expect(ingredient.seriesIdx).to.be.ok;
-                        expect(ingredient.createdAt).to.be.undefined;
-                        expect(ingredient.updatedAt).to.be.undefined;
-                        expect(ingredient.Notes).to.be.ok;
-                        expect(ingredient.Notes.perfumeIdx).to.be.eq(1);
-                        expect(ingredient.Notes.ingredientIdx).to.be.eq(
-                            ingredient.ingredientIdx
-                        );
-                        expect(ingredient.Notes.type).to.be.within(1, 4);
-                        expect(ingredient.Notes.createdAt).to.be.undefined;
-                        expect(ingredient.Notes.updatedAt).to.be.undefined;
-                    }
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
     describe('# update Test', () => {
         let ingredientIdx;
         before(async () => {
