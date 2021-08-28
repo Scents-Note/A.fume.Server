@@ -32,6 +32,8 @@ module.exports.readByIdx = async (ingredientIdx) => {
         englishName: 'ingredient english name',
         description: 'ingredient description',
         imageUrl: 'https://www.naver.com',
+        createdAt: '2021-07-13T11:33:49.000Z',
+        updatedAt: '2021-08-07T09:20:29.000Z',
     });
 };
 
@@ -43,6 +45,8 @@ module.exports.readByName = async (ingredientName) => {
         englishName: 'ingredient english name',
         description: 'ingredient description',
         imageUrl: 'https://www.naver.com',
+        createdAt: '2021-07-13T11:33:49.000Z',
+        updatedAt: '2021-08-07T09:20:29.000Z',
     });
 };
 
@@ -58,6 +62,8 @@ module.exports.readAll = async (where) => {
                     englishName: `ingredient english name ${idx}`,
                     description: `ingredient description ${idx}`,
                     imageUrl: `https://www.naver.com/${idx}`,
+                    createdAt: '2021-07-13T11:33:49.000Z',
+                    updatedAt: '2021-08-07T09:20:29.000Z',
                 })
         ),
     });
@@ -75,6 +81,8 @@ module.exports.search = async (pagingIndex, pagingSize, order) => {
                     englishName: `ingredient english name ${idx}`,
                     description: `ingredient description ${idx}`,
                     imageUrl: `https://www.naver.com/${idx}`,
+                    createdAt: '2021-07-13T11:33:49.000Z',
+                    updatedAt: '2021-08-07T09:20:29.000Z',
                 })
         ),
     });
@@ -104,6 +112,8 @@ module.exports.readBySeriesIdxList = (seriesIdxList) => {
                 englishName: `ingredient english name ${idx}`,
                 description: `ingredient description ${idx}`,
                 imageUrl: `https://www.naver.com/${idx}`,
+                createdAt: '2021-07-13T11:33:49.000Z',
+                updatedAt: '2021-08-07T09:20:29.000Z',
             })
     );
 };
@@ -116,5 +126,7 @@ module.exports.findIngredient = (condition) => {
         englishName: 'ingredient english name',
         description: 'ingredient description',
         imageUrl: 'https://www.naver.com',
+        createdAt: '2021-07-13T11:33:49.000Z',
+        updatedAt: '2021-08-07T09:20:29.000Z',
     });
 };

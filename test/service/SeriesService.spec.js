@@ -80,8 +80,7 @@ const mockIngredient = (ingredientIdx, seriesIdx) =>
 
 const seriesService = require('../../service/SeriesService');
 seriesService.setSeriesDao(require('../dao/SeriesDao.mock.js'));
-
-const mockIngredientDAO = {};
+const mockIngredientDAO = require('../dao/IngredientDao.mock');
 seriesService.setIngredientDao(mockIngredientDAO);
 
 const mockNoteDAO = {};
@@ -92,8 +91,9 @@ describe('# Brand Service Test', () => {
         it('# success Test', (done) => {
             seriesService
                 .postSeries(mockSeriesDTO)
-                .then((createdResultDTO) => {
-                    createdResultDTO.validTest();
+                .then((result) => {
+                    expect(result).instanceOf(CreatedResultDTO);
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -199,8 +199,9 @@ describe('# Brand Service Test', () => {
         it('# success Test', (done) => {
             seriesService
                 .findSeriesByEnglishName('')
-                .then((seriesDTO) => {
-                    seriesDTO.validTest();
+                .then((result) => {
+                    expect(result).instanceOf(SeriesDTO);
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
