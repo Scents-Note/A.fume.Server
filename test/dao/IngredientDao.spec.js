@@ -18,6 +18,12 @@ const CreatedResultDTO = require('../data/dto/CreatedResultDTO').create(
         created.validTest();
     }
 );
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO').create(
+    (item) => {
+        expect(item).instanceOf(IngredientDTO);
+        item.validTest();
+    }
+);
 const IngredientDTO = require('../data/dto/IngredientDTO');
 
 describe('# ingredientDao Test', () => {
@@ -94,11 +100,8 @@ describe('# ingredientDao Test', () => {
                 .readAll()
                 .then((result) => {
                     expect(result.count).greaterThan(4);
-                    expect(result.rows.length).greaterThan(4);
-                    for (const ingredient of result.rows) {
-                        expect(ingredient).instanceOf(IngredientDTO);
-                        ingredient.validTest();
-                    }
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -110,12 +113,8 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readAll({ seriesIdx: 1 })
                 .then((result) => {
-                    expect(result.count).eq(1);
-                    expect(result.rows.length).eq(1);
-                    for (const ingredient of result.rows) {
-                        expect(ingredient).instanceOf(IngredientDTO);
-                        ingredient.validTest();
-                    }
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));

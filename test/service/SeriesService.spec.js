@@ -4,12 +4,7 @@ dotenv.config();
 const chai = require('chai');
 const { expect } = chai;
 
-const {
-    SeriesDTO,
-    IngredientDTO,
-    ListAndCountDTO,
-    CreatedResultDTO,
-} = require('../../data/dto');
+const { SeriesDTO, IngredientDTO } = require('../../data/dto');
 
 const { SeriesFilterVO } = require('../../data/vo');
 
@@ -33,20 +28,19 @@ SeriesDTO.prototype.validTest = function () {
     expect(this.updatedAt).to.be.ok;
 };
 
-ListAndCountDTO.prototype.validTest = function () {
-    expect(this.count).to.be.ok;
-    expect(this.rows.length).to.be.ok;
-    for (const series of this.rows) {
-        expect(series).instanceOf(SeriesDTO);
-        series.validTest();
+const CreatedResultDTO = require('../data/dto/CreatedResultDTO').create(
+    (created) => {
+        expect(created).instanceOf(SeriesDTO);
+        created.validTest();
     }
-};
+);
 
-CreatedResultDTO.prototype.validTest = function () {
-    expect(this.idx).to.be.ok;
-    expect(this.created).instanceOf(SeriesDTO);
-    this.created.validTest();
-};
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO').create(
+    (item) => {
+        expect(item).instanceOf(SeriesDTO);
+        item.validTest();
+    }
+);
 
 SeriesFilterVO.prototype.validTest = function () {
     expect(this.seriesIdx).to.be.ok;
@@ -122,8 +116,9 @@ describe('# Brand Service Test', () => {
         it('# success Test', (done) => {
             seriesService
                 .getSeriesAll({})
-                .then((listAndCountDTO) => {
-                    listAndCountDTO.validTest();
+                .then((result) => {
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -134,8 +129,9 @@ describe('# Brand Service Test', () => {
         it('# success Test', (done) => {
             seriesService
                 .searchSeries({})
-                .then((listAndCountDTO) => {
-                    listAndCountDTO.validTest();
+                .then((result) => {
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));

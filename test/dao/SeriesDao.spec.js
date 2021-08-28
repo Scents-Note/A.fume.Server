@@ -12,6 +12,12 @@ const {
 const { Series } = require('../../models/index.js');
 const { SeriesDTO, CreatedResultDTO } = require('../../data/dto');
 const { PagingVO } = require('../../data/vo');
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO').create(
+    (item) => {
+        expect(item).instanceOf(SeriesDTO);
+        item.validTest();
+    }
+);
 
 SeriesDTO.prototype.validTest = function () {
     expect(this.seriesIdx).to.be.ok;
@@ -122,11 +128,8 @@ describe('# seriesDao Test', () => {
             seriesDao
                 .readAll(new PagingVO({ pagingIndex: 1, pagingSize: 100 }))
                 .then((result) => {
-                    expect(result.count).gt(0);
-                    expect(result.rows.length).greaterThan(0);
-                    for (const series of result.rows) {
-                        series.validTest();
-                    }
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -144,11 +147,8 @@ describe('# seriesDao Test', () => {
                     })
                 )
                 .then((result) => {
-                    expect(result.count).gt(0);
-                    expect(result.rows.length).gt(0);
-                    for (const series of result.rows) {
-                        series.validTest();
-                    }
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest();
                     const originString = result.rows
                         .map((it) => it.seriesIdx)
                         .toString();

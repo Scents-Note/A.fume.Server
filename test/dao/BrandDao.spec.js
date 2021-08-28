@@ -12,6 +12,12 @@ const {
 } = require('../../utils/errors/errors.js');
 const { BrandDTO, CreatedResultDTO } = require('../../data/dto');
 const { PagingVO } = require('../../data/vo');
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO').create(
+    (item) => {
+        expect(item).instanceOf(BrandDTO);
+        item.validTest();
+    }
+);
 
 BrandDTO.prototype.validTest = function () {
     expect(this.brandIdx).to.be.ok;
@@ -144,11 +150,8 @@ describe('# brandDao Test', () => {
                     })
                 )
                 .then((result) => {
-                    expect(result.count).gte(5);
-                    expect(result.rows.length).gte(5);
-                    for (const brand of result.rows) {
-                        brand.validTest();
-                    }
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -160,11 +163,8 @@ describe('# brandDao Test', () => {
             brandDao
                 .readAll()
                 .then((result) => {
-                    expect(result.count).gte(5);
-                    expect(result.rows.length).gte(5);
-                    for (const brand of result.rows) {
-                        brand.validTest();
-                    }
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
