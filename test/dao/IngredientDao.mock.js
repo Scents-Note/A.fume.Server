@@ -1,8 +1,6 @@
-const {
-    IngredientDTO,
-    CreatedResultDTO,
-    ListAndCountDTO,
-} = require('../../data/dto');
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
+const IngredientDTO = require('../data/dto/IngredientDTO');
+const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
 
 module.exports.create = async ({
     seriesIdx,
