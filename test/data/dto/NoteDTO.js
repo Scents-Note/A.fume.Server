@@ -5,7 +5,7 @@ const {
     NOTE_TYPE_MIDDLE,
     NOTE_TYPE_BASE,
     NOTE_TYPE_SINGLE,
-} = require('../../../utils/code');
+} = require('../../../utils/constantUtil');
 const NoteDTO = require('../../../data/dto/NoteDTO');
 
 NoteDTO.prototype.validTest = function () {
