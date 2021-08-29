@@ -158,7 +158,6 @@ describe('# reviewDao Test', () => {
                     expect(result).to.be.ok;
                     expect(result.length).to.be.gte(1);
                     for (const review of result) {
-                        console.log(review)
                         expect(review.score).to.be.ok;
                         expect(review.longevity).to.be.not.undefined;
                         expect(review.sillage).to.be.not.undefined;
