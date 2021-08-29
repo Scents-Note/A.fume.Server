@@ -15,8 +15,10 @@ const { Op } = Sequelize;
 /**
  * 재료 생성
  *
- * @param {Object} Series
- * @return {Promise<number>}
+ * @param {ingredientDTO} ingredientDTO
+ * @return {Promise<CreatedResultDTO>} createdResultDTO
+ * @throws {FailedToCreateError}
+ * @throws {DuplicatedEntryError}
  */
 module.exports.create = ({
     seriesIdx,
@@ -57,7 +59,8 @@ module.exports.create = ({
  * 재료 PK로 조회
  *
  * @param {number} ingredientIdx
- * @return {Promise<Ingredient>}
+ * @return {Promise<IngredientDTO>} ingredientDTO
+ * @throws {NotMatchedError}
  */
 module.exports.readByIdx = async (ingredientIdx) => {
     const result = await Ingredient.findByPk(ingredientIdx, {
@@ -74,7 +77,8 @@ module.exports.readByIdx = async (ingredientIdx) => {
  * 재료 이름으로 조회
  *
  * @param {string} ingredientName
- * @return {Promise<Ingredient>}
+ * @return {Promise<IngredientDTO>} ingredientDTO
+ * @throws {NotMatchedError}
  */
 module.exports.readByName = async (ingredientName) => {
     const result = await Ingredient.findOne({
@@ -88,6 +92,10 @@ module.exports.readByName = async (ingredientName) => {
 
 /**
  * 재료 조회
+ *
+ * @param {IngredientDTO} where
+ * @return {Promise<ListAndCountDTO>} listAndCountDTO
+ * @throws {NotMatchedError}
  */
 module.exports.readAll = async (where) => {
     const result = await Ingredient.findAndCountAll({
@@ -110,7 +118,7 @@ module.exports.readAll = async (where) => {
  * @param {number} pagingIndex
  * @param {number} pagingSize
  * @param {array} order
- * @returns {Promise<Ingredient[]>}
+ * @returns {Promise<ListAndCountDTO<IngredientDTO>} listAndCountDTO<IngredientDTO>
  */
 module.exports.search = (pagingIndex, pagingSize, order) => {
     return Ingredient.findAndCountAll({
@@ -130,6 +138,10 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
 /**
  * 재료 수정
  *
+ * @param {IngredientDTO} ingredientDTO
+ * @return {Promise<number>} affectedRows
+ * @throws {NotMatchedError}
+ * @throws {DuplicatedEntryError}
  */
 module.exports.update = ({
     ingredientIdx,
@@ -174,7 +186,7 @@ module.exports.delete = (ingredientIdx) => {
  * 계열 목록에 해당하는 재료 조회
  *
  * @param {number[]} seriesIdxList
- * @return {Promise<Ingredients[]>}
+ * @return {Promise<IngredientDTO[]>} IngredientDTO[]
  */
 module.exports.readBySeriesIdxList = (seriesIdxList) => {
     return Ingredient.findAll({
@@ -194,7 +206,8 @@ module.exports.readBySeriesIdxList = (seriesIdxList) => {
  * 재료 검색
  *
  * @param {Object} condition
- * @returns {Promise<Ingredient>}
+ * @returns {Promise<IngredientDTO>} ingredientDTO
+ * @throws {NotMatchedError}
  */
 module.exports.findIngredient = (condition) => {
     return Ingredient.findOne({
