@@ -13,4 +13,22 @@ IngredientDTO.prototype.validTest = function () {
     expect(this.updatedAt).to.be.ok;
 };
 
+IngredientDTO.create = (condition) => {
+    return new IngredientDTO(
+        Object.assign(
+            {
+                ingredientIdx: 1,
+                seriesIdx: 1,
+                name: `재료`,
+                englishName: `ingredient english name`,
+                description: `ingredient description`,
+                imageUrl: `https://www.naver.com/`,
+                createdAt: '2021-07-13T11:33:49.000Z',
+                updatedAt: '2021-08-07T09:20:29.000Z',
+            },
+            condition
+        )
+    );
+};
+
 module.exports = IngredientDTO;
