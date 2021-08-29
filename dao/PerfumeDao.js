@@ -409,7 +409,7 @@ module.exports.recommendPerfumeByAgeAndGender = async (
         count: Math.min(pagingSize, perfumeList.length),
         rows: perfumeList,
     };
-    ranking.upsert(
+    ranking.upsert( // mongo DB 응답이 없는 경우 무한 대기하는 현상 방지를 위해 await 제거
         { gender, ageGroup },
         { title: '나이 및 성별에 따른 추천', result }
     );
