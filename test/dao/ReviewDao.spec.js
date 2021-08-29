@@ -83,8 +83,8 @@ describe('# reviewDao Test', () => {
                     expect(result.Perfume.imageUrl).to.be.ok;
                     expect(result.Perfume.likeCnt).to.be.ok;
                     expect(result.Perfume.brandIdx).to.be.ok;
-                    expect(result.Perfume.createdAt).to.be.undefined;
-                    expect(result.Perfume.updatedAt).to.be.undefined;
+                    expect(result.Perfume.createdAt).to.be.ok;
+                    expect(result.Perfume.updatedAt).to.be.ok;
                     expect(result.Perfume.Brand).to.be.ok;
                     expect(result.Perfume.Brand.brandIdx).to.be.eq(
                         result.Perfume.brandIdx
@@ -129,8 +129,8 @@ describe('# reviewDao Test', () => {
                         expect(review.Perfume.imageUrl).to.be.ok;
                         expect(review.Perfume.likeCnt).to.be.ok;
                         expect(review.Perfume.brandIdx).to.be.ok;
-                        expect(review.Perfume.createdAt).to.be.undefined;
-                        expect(review.Perfume.updatedAt).to.be.undefined;
+                        expect(review.Perfume.createdAt).to.be.ok;
+                        expect(review.Perfume.updatedAt).to.be.ok;
                         expect(review.Perfume.Brand).to.be.ok;
                         expect(review.Perfume.Brand.brandIdx).to.be.eq(
                             review.Perfume.brandIdx
@@ -159,10 +159,10 @@ describe('# reviewDao Test', () => {
                     expect(result.length).to.be.gte(1);
                     for (const review of result) {
                         expect(review.score).to.be.ok;
-                        expect(review.longevity).to.be.ok;
-                        expect(review.sillage).to.be.ok;
-                        expect(review.seasonal).to.be.ok;
-                        expect(review.gender).to.be.ok;
+                        expect(review.longevity).to.be.not.undefined;
+                        expect(review.sillage).to.be.not.undefined;
+                        expect(review.seasonal).to.be.not.undefined;
+                        expect(review.gender).to.be.not.undefined;
                         expect(review.access).to.be.ok;
                         expect(review.content).to.be.ok;
 
@@ -170,7 +170,7 @@ describe('# reviewDao Test', () => {
                         expect(review.User.userIdx).to.be.ok;
                         expect(review.User.email).to.be.ok;
                         expect(review.User.nickname).to.be.ok;
-                        expect(review.User.password).to.be.undefined;
+                        expect(review.User.password).to.be.ok;
                         expect(review.User.gender).to.be.ok;
                         expect(review.User.accessTime).to.be.ok;
 

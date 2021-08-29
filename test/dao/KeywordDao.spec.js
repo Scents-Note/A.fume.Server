@@ -31,7 +31,7 @@ describe('# KeywordDao Test', () => {
     describe('# readAllOfPerfume Test', () => {
         it('# success case', (done) => {
             keywordDao
-                .readAllOfPerfume(1)
+                .readAllOfPerfume(1, [['count', 'desc']], { [Op.gte]: 1 })
                 .then((result) => {
                     expect(result.length).to.be.gte(3);
                     for (const keyword of result) {

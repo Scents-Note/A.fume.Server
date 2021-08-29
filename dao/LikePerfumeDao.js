@@ -56,6 +56,11 @@ module.exports.create = (userIdx, perfumeIdx) => {
 module.exports.read = (userIdx, perfumeIdx) => {
     return LikePerfume.findOne({
         where: { userIdx, perfumeIdx },
+    }).then((it) => {
+        if (!it) {
+            throw new NotMatchedError();
+        }
+        return it;
     });
 };
 
@@ -70,6 +75,8 @@ module.exports.delete = (userIdx, perfumeIdx) => {
     return sequelize.transaction((t) => {
         const deleteLikePerfume = LikePerfume.destroy({
             where: { userIdx, perfumeIdx },
+            raw: true,
+            nest: true,
             transaction: t,
         }).then((it) => {
             if (it == 0) throw new NotMatchedError();
@@ -77,7 +84,13 @@ module.exports.delete = (userIdx, perfumeIdx) => {
         });
         const updateLikeCntOfPerfume = Perfume.findOne({
             where: { perfumeIdx },
+            raw: true,
+            nest: true,
+            transaction: t,
         }).then((perfume) => {
+            if (perfume == null) {
+                throw new NotMatchedError();
+            }
             return Perfume.update(
                 { likeCnt: perfume.likeCnt - 1 },
                 {

@@ -17,28 +17,30 @@ describe('# converter Test', () => {
                 const keywordList = [...new Array(idx)].map((it, index) => {
                     return `키워드${index + 1}`;
                 });
+                const keywordIdxList = [...new Array(idx)].map((it, index) => {
+                    return index + 1;
+                });
                 return converter
                     .DBIntToOutputStrOfReview({
                         longevity,
                         sillage,
-                        seasonal,
+                        sumOfBitSeasonal: seasonal,
                         gender,
                         keywordList,
                     })
                     .then((result) => {
                         expect(result.longevity).to.be.not.null;
                         expect(result.sillage).to.be.not.null;
-                        expect(result.seasonal).to.be.instanceof(Array);
+                        expect(result.seasonalList).to.be.instanceof(Array);
                         expect(result.gender).to.be.not.null;
-                        expect(result.keywordList).to.be.not.null;
-                        return converter.inputStrToDBIntOfReview(result);
+                        return converter.inputStrToDBIntOfReview({...result, keywordList});
                     })
                     .then((recover) => {
                         expect(recover.longevity).to.be.eq(longevity);
                         expect(recover.sillage).to.be.eq(sillage);
-                        expect(recover.seasonal).to.be.eq(seasonal);
+                        expect(recover.sumOfBitSeasonal).to.be.eq(seasonal);
                         expect(recover.gender).to.be.eq(gender);
-                        expect(recover.keywordList).to.be.deep.eq(keywordList);
+                        expect(recover.keywordList).to.be.deep.eq(keywordIdxList);
                     });
             })
         )
@@ -54,32 +56,31 @@ describe('# converter Test', () => {
         const seasonal = 0;
         const gender = 0;
         const keywordList = [];
-        return converter
+        converter
             .DBIntToOutputStrOfReview({
                 longevity,
                 sillage,
-                seasonal,
-                gender,
-                keywordList,
+                sumOfBitSeasonal: seasonal,
+                gender
             })
             .then((result) => {
                 expect(result.longevity).to.be.not.null;
                 expect(result.sillage).to.be.not.null;
-                expect(result.seasonal).to.be.instanceof(Array);
+                expect(result.seasonalList).to.be.instanceof(Array);
                 expect(result.gender).to.be.not.null;
-                expect(result.keywordList).to.be.not.null;
-                return converter.inputStrToDBIntOfReview(result);
+                return converter.inputStrToDBIntOfReview({...result, keywordList});
             })
             .then((recover) => {
                 expect(recover.longevity).to.be.eq(longevity);
                 expect(recover.sillage).to.be.eq(sillage);
-                expect(recover.seasonal).to.be.eq(seasonal);
+                expect(recover.sumOfBitSeasonal).to.be.eq(seasonal);
                 expect(recover.gender).to.be.eq(gender);
                 expect(recover.keywordList).to.be.deep.eq(keywordList);
                 done();
             })
             .catch((err) => done(err));
     });
+    
     it(' # Input Int < - > DB Int Test', (done) => {
         Promise.all(
             [0, 1, 2, 3, 4, 5].map((idx) => {
@@ -92,22 +93,21 @@ describe('# converter Test', () => {
                     .DBIntToOutputIntOfReview({
                         longevity,
                         sillage,
-                        seasonal,
-                        gender,
-                        keywordList,
+                        sumOfBitSeasonal: seasonal,
+                        gender
                     })
                     .then((result) => {
                         expect(result.longevity).to.be.not.null;
                         expect(result.sillage).to.be.not.null;
-                        expect(result.seasonal).to.be.instanceof(Array);
+                        expect(result.seasonalList).to.be.instanceof(Array);
                         expect(result.gender).to.be.not.null;
                         expect(result.keywordList).to.be.not.null;
-                        return converter.InputIntToDBIntOfReview(result);
+                        return converter.InputIntToDBIntOfReview({...result, keywordList});
                     })
                     .then((recover) => {
                         expect(recover.longevity).to.be.eq(longevity);
                         expect(recover.sillage).to.be.eq(sillage);
-                        expect(recover.seasonal).to.be.eq(seasonal);
+                        expect(recover.sumOfBitSeasonal).to.be.eq(seasonal);
                         expect(recover.gender).to.be.eq(gender);
                         expect(recover.keywordList).to.be.deep.eq(keywordList);
                     });
@@ -120,31 +120,29 @@ describe('# converter Test', () => {
     });
 
     it(' # Input Int < - > DB Int Zero Test', (done) => {
-        const longevity = 0;
-        const sillage = 0;
-        const seasonal = 0;
-        const gender = 0;
+        const longevity = null;
+        const sillage = null;
+        const seasonal = null;
+        const gender = null;
         const keywordList = [];
         converter
             .DBIntToOutputIntOfReview({
                 longevity,
                 sillage,
-                seasonal,
-                gender,
-                keywordList,
+                sumOfBitSeasonal: seasonal,
+                gender
             })
             .then((result) => {
                 expect(result.longevity).to.be.not.null;
                 expect(result.sillage).to.be.not.null;
-                expect(result.seasonal).to.be.instanceof(Array);
+                expect(result.seasonalList).to.be.instanceof(Array);
                 expect(result.gender).to.be.not.null;
-                expect(result.keywordList).to.be.not.null;
-                return converter.InputIntToDBIntOfReview(result);
+                return converter.InputIntToDBIntOfReview({...result, keywordList});
             })
             .then((recover) => {
                 expect(recover.longevity).to.be.eq(longevity);
                 expect(recover.sillage).to.be.eq(sillage);
-                expect(recover.seasonal).to.be.eq(seasonal);
+                expect(recover.sumOfBitSeasonal).to.be.eq(seasonal);
                 expect(recover.gender).to.be.eq(gender);
                 expect(recover.keywordList).to.be.deep.eq(keywordList);
                 done();

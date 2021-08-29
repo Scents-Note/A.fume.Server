@@ -10,18 +10,9 @@ const {
     UnExpectedError,
 } = require('../../utils/errors/errors.js');
 const { Series } = require('../../models/index.js');
-const { SeriesDTO, CreatedResultDTO } = require('../../data/dto');
+const { CreatedResultDTO } = require('../../data/dto');
 const { PagingVO } = require('../../data/vo');
-
-SeriesDTO.prototype.validTest = function () {
-    expect(this.seriesIdx).to.be.ok;
-    expect(this.name).to.be.ok;
-    expect(this.englishName).to.be.ok;
-    expect(this.description).to.not.undefined;
-    expect(this.imageUrl).to.be.not.undefined;
-    expect(this.createdAt).to.be.ok;
-    expect(this.updatedAt).to.be.ok;
-};
+const SeriesDTO = require('../data/dto/SeriesDTO.js');
 
 describe('# seriesDao Test', () => {
     before(async function () {
@@ -33,12 +24,14 @@ describe('# seriesDao Test', () => {
         });
         it(' # success case', (done) => {
             seriesDao
-                .create({
-                    name: '테스트 데이터',
-                    englishName: 'Test Data',
-                    description: '왈라왈라',
-                    imageUrl: 'imageUrl',
-                })
+                .create(
+                    new SeriesDTO({
+                        name: '테스트 데이터',
+                        englishName: 'Test Data',
+                        description: '왈라왈라',
+                        imageUrl: 'imageUrl',
+                    })
+                )
                 .then((result) => {
                     expect(result).to.be.instanceOf(CreatedResultDTO);
                     const { idx, created } = result;
@@ -58,12 +51,14 @@ describe('# seriesDao Test', () => {
 
         it(' # DuplicatedEntryError case', (done) => {
             seriesDao
-                .create({
-                    name: '테스트 데이터',
-                    englishName: 'Test Data',
-                    description: '왈라왈라',
-                    imageUrl: 'imageUrl',
-                })
+                .create(
+                    new SeriesDTO({
+                        name: '테스트 데이터',
+                        englishName: 'Test Data',
+                        description: '왈라왈라',
+                        imageUrl: 'imageUrl',
+                    })
+                )
                 .then(() => done(new UnExpectedError(DuplicatedEntryError)))
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
@@ -84,7 +79,8 @@ describe('# seriesDao Test', () => {
                 await Series.upsert({
                     name: '읽기 데이터',
                     englishName: 'Test Data',
-                    description: '',
+                    description: 'description',
+                    imageUrl: 'image-url',
                 })
             )[0].seriesIdx;
         });
@@ -92,10 +88,11 @@ describe('# seriesDao Test', () => {
             seriesDao
                 .readByIdx(seriesIdx)
                 .then((result) => {
+                    expect(result).instanceOf(SeriesDTO);
+                    result.validTest();
                     expect(result.seriesIdx).to.be.eq(seriesIdx);
                     expect(result.name).to.be.eq('읽기 데이터');
                     expect(result.englishName).to.be.eq('Test Data');
-                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -104,10 +101,10 @@ describe('# seriesDao Test', () => {
             seriesDao
                 .readByName('읽기 데이터')
                 .then((result) => {
-                    expect(result.seriesIdx).to.be.gt(0);
+                    expect(result).instanceOf(SeriesDTO);
+                    result.validTest();
                     expect(result.name).to.be.eq('읽기 데이터');
                     expect(result.englishName).to.be.eq('Test Data');
-                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -198,7 +195,7 @@ describe('# seriesDao Test', () => {
                 await Series.upsert({
                     name: '테스트 데이터',
                     englishName: 'Test Data',
-                    description: '',
+                    description: 'description',
                 })
             )[0].seriesIdx;
         });
@@ -227,7 +224,7 @@ describe('# seriesDao Test', () => {
                 await Series.upsert({
                     name: '테스트 데이터',
                     englishName: 'Test Data',
-                    description: '',
+                    description: 'description',
                 })
             )[0].seriesIdx;
         });

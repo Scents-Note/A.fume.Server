@@ -28,7 +28,7 @@ describe('# ingredientDao Test', () => {
                     englishName: 'Test Data',
                     description: '왈라왈라',
                     seriesIdx: 1,
-                    imageUrl: '',
+                    imageUrl: 'test',
                 })
                 .then((result) => {
                     expect(result).gt(0);
@@ -44,7 +44,7 @@ describe('# ingredientDao Test', () => {
                     englishName: 'Test Data',
                     description: '왈라왈라',
                     seriesIdx: 1,
-                    imageUrl: '',
+                    imageUrl: 'test',
                 })
                 .then(() => done(new UnExpectedError(DuplicatedEntryError)))
                 .catch((err) => {
@@ -210,9 +210,9 @@ describe('# ingredientDao Test', () => {
                 await Ingredient.upsert({
                     name: '테스트 데이터',
                     englishName: 'Test Data',
-                    description: '',
+                    description: 'description',
                     seriesIdx: 1,
-                    imageUrl: '',
+                    imageUrl: 'image-url',
                 })
             )[0].ingredientIdx;
         });
@@ -268,9 +268,9 @@ describe('# ingredientDao Test', () => {
                 await Ingredient.upsert({
                     name: '삭제 데이터',
                     englishName: 'Delete Data',
-                    description: '',
+                    description: 'description',
                     seriesIdx: 1,
-                    imageUrl: '',
+                    imageUrl: 'image-url',
                 })
             )[0].ingredientIdx;
         });

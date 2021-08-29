@@ -1,3 +1,6 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
 const request = require('supertest');
 const chai = require('chai');
 const { expect } = chai;
@@ -6,29 +9,16 @@ const {
     InvalidTokenError,
     ExpiredTokenError,
 } = require('../../utils/errors/errors');
-require('../../lib/token').verify = (token) => {
-    if (token == 'expired') {
-        throw new ExpiredTokenError();
-    }
-    if (token == 'invalid') {
-        throw new InvalidTokenError();
-    }
-    return {
-        userIdx: 1,
-        nickname: '쿼카맨2',
-        gender: 'female',
-        email: 'hee.youn2@samsung.com',
-        birth: 1995,
-        iat: 1628327246,
-        exp: 1630055246,
-        iss: 'afume-jackpot',
-    };
-};
 
 const basePath = '/A.fume/api/0.0.1';
 
 const User = require('../../controllers/User.js');
 User.setUserService(require('../service/UserService.mock.js'));
+
+const token = require('../../lib/token');
+const user1token = token.create({ userIdx: 1 });
+const invalidToken =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWR4IjoyMDAsIm5pY2tuYW1lIjoi7L-87Lm066eoMiIsImdlbmRlciI6ImZlbWFsZSIsImVtYWlsIjoiaGVlLnlvdW4yQHNhbXN1bmcuY29tIiwiYmlydGgiOjE5OTUsImlhdCI6MTYyOTEwNzc3NSwiZXhwIjoxNjMwODM1Nzc1LCJpc3MiOiJhZnVtZS1qYWNrcG90In0.hWxF0OHzIWZoQhPhkkOyJs3HYB2tPdrpIaVqe0IZRKI';
 
 describe('# User Controller Test', () => {
     describe('# registerUser Test', () => {
@@ -144,7 +134,7 @@ describe('# User Controller Test', () => {
         it('success case', (done) => {
             request(app)
                 .put(`${basePath}/user/1`)
-                .set('x-access-token', 'Bearer {token}')
+                .set('x-access-token', 'Bearer ' + user1token)
                 .send({
                     email: 'hee.youn@samsung.com',
                     nickname: '쿼카맨',
@@ -168,7 +158,7 @@ describe('# User Controller Test', () => {
         it('No permission case', (done) => {
             request(app)
                 .put(`${basePath}/user/1`)
-                .set('x-access-token', 'Bearer invalid')
+                .set('x-access-token', 'Bearer ' + invalidToken)
                 .send({})
                 .expect((res) => {
                     expect(res.status).to.be.eq(401);
@@ -182,7 +172,7 @@ describe('# User Controller Test', () => {
         it('Wrong userIdx between path and jwt case', (done) => {
             request(app)
                 .put(`${basePath}/user/2`)
-                .set('x-access-token', 'Bearer {token}')
+                .set('x-access-token', 'Bearer ' + user1token)
                 .send({})
                 .expect((res) => {
                     expect(res.status).to.be.eq(401);
@@ -198,7 +188,7 @@ describe('# User Controller Test', () => {
         it('success case', (done) => {
             request(app)
                 .put(`${basePath}/user/changePassword`)
-                .set('x-access-token', 'Bearer {token}')
+                .set('x-access-token', 'Bearer ' + user1token)
                 .send({
                     prevPassword: 'test',
                     newPassword: 'change',
@@ -230,7 +220,7 @@ describe('# User Controller Test', () => {
         it('success case', (done) => {
             request(app)
                 .post(`${basePath}/user/auth`)
-                .set('x-access-token', 'Bearer {token}')
+                .set('x-access-token', 'Bearer ' + user1token)
                 .expect((res) => {
                     expect(res.status).to.be.eq(200);
                     const { message, data } = res.body;

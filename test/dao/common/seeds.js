@@ -17,7 +17,7 @@ const {
     Sequelize,
     sequelize,
 } = require('../../../models');
-const { GENDER_MAN, GENDER_WOMAN } = require('../../../utils/code');
+const { GENDER_MAN, GENDER_WOMAN } = require('../../../utils/constantUtil');
 
 module.exports = () => {
     const firstJob = [];
@@ -36,6 +36,7 @@ module.exports = () => {
                 name: `계열${i}`,
                 englishName: 'series english-name',
                 description: '계열 설명 텍스트',
+                imageUrl: 'image-url',
             }),
             User.upsert({
                 userIdx: i,
@@ -61,6 +62,7 @@ module.exports = () => {
                 seriesIdx: i,
                 englishName: 'ingredient english-name',
                 description: '재료 설명 텍스트',
+                imageUrl: 'image-url',
             }),
             Perfume.upsert({
                 perfumeIdx: i,

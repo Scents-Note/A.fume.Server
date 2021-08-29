@@ -233,8 +233,16 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
     );
     perfume.abundanceRate = ABUNDANCE_RATE_LIST[perfume.abundanceRate];
 
-    const likePerfumeList = await likePerfumeDao.read(userIdx, perfumeIdx);
-    perfume.isLiked = likePerfumeList ? true : false;
+    const likePerfume = await likePerfumeDao
+        .read(userIdx, perfumeIdx)
+        .then((it) => true)
+        .catch((err) => {
+            if (err instanceof NotMatchedError) {
+                return false;
+            }
+            throw err;
+        });
+    perfume.isLiked = likePerfume ? true : false;
     perfume.Keywords = (await keywordDao.readAllOfPerfume(perfumeIdx)).map(
         (it) => it.name
     );
@@ -383,22 +391,22 @@ exports.updatePerfume = ({
  **/
 exports.likePerfume = (userIdx, perfumeIdx) => {
     return new Promise((resolve, reject) => {
-        let isExist = false;
+        let exist = false;
         likePerfumeDao
             .read(userIdx, perfumeIdx)
             .then((res) => {
-                isExist = true;
+                exist = true;
                 return likePerfumeDao.delete(userIdx, perfumeIdx);
             })
             .catch((err) => {
-                isExist = false;
+                exist = false;
                 if (err instanceof NotMatchedError) {
                     return likePerfumeDao.create(userIdx, perfumeIdx);
                 }
                 reject(new FailedToCreateError());
             })
             .then(() => {
-                resolve(!isExist);
+                resolve(!exist);
             })
             .catch((err) => {
                 reject(err);

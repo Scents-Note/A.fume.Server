@@ -57,17 +57,24 @@ describe('# verify Test', () => {
         delete result.iat;
         delete result.exp;
         delete result.iss;
-        expect(result).to.deep.eq(payload);
+        expect({ ...result }).to.deep.eq({ ...payload });
     });
-    it(' # fail case (Expired Token)', () => {
-        const expiredToken =
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWR4IjoxLCJlbWFpbCI6ImhlZS55b3VuQHNhbXN1bmcuY29tIiwibmlja25hbWUiOiLsv7zsubTrp6giLCJnZW5kZXIiOjEsInBob25lIjoiMDEwLTIwODEtMzgxOCIsImJpcnRoIjoxOTk1LCJncmFkZSI6MCwiYWNjZXNzVGltZSI6IjIwMjEtMDEtMDVUMTI6NTg6MTAuMDAwWiIsImNyZWF0ZWRBdCI6IjIwMjEtMDEtMDVUMTI6NTg6MTAuMDAwWiIsInVwZGF0ZWRBdCI6IjIwMjEtMDEtMDVUMTI6NTg6MTAuMDAwWiIsImlhdCI6MTYwOTg1MTQ5MywiZXhwIjoxNjExNTc5NDkzLCJpc3MiOiJhZnVtZS1qYWNrcG90In0.sVzdA4L4w-kHDImSpW0j2L30UhBKhVZTrlT1wMrzygw';
-        try {
-            jwt.verify(expiredToken);
-            expect(false).eq(true);
-        } catch (err) {
-            expect(err).instanceOf(ExpiredTokenError);
-        }
+    it(' # fail case (Expired Token)', (done) => {
+        const jwtSecret = process.env.JWT_SECRET;
+        const expiredToken = require('jsonwebtoken').sign(payload, jwtSecret, {
+            expiresIn: '1s',
+            issuer: 'afume-jackpot',
+        });
+        setTimeout(() => {
+            try {
+                jwt.verify(expiredToken);
+                expect(false).eq(true);
+                done();
+            } catch (err) {
+                expect(err).instanceOf(ExpiredTokenError);
+                done();
+            }
+        }, 2000);
     });
     it(' # fail case (Invalid Token)', () => {
         try {
@@ -80,14 +87,14 @@ describe('# verify Test', () => {
 });
 
 describe('# reissue Test', () => {
-    let token, refreshToken;
-    const payload = {
+    let refreshToken;
+    const payload = new TokenPayloadDTO({
         userIdx: 200,
         nickname: '쿼카맨2',
         gender: 'female',
         email: 'hee.youn2@samsung.com',
         birth: 1995,
-    };
+    });
     before(() => {
         const result = jwt.publish(payload);
         token = result.token;
@@ -97,6 +104,6 @@ describe('# reissue Test', () => {
         const tokenStr = jwt.reissue(refreshToken);
         const result = jwt.verify(tokenStr);
         expect(result).to.be.instanceOf(TokenPayloadDTO);
-        expect(result).to.deep.eq(payload);
+        expect({ ...result }).to.deep.eq({ ...payload });
     });
 });

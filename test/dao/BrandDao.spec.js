@@ -4,44 +4,16 @@ dotenv.config();
 const chai = require('chai');
 const { expect } = chai;
 const brandDao = require('../../dao/BrandDao.js');
-const { Brand, Sequelize } = require('../../models');
+const { Brand } = require('../../models');
 const {
     DuplicatedEntryError,
     NotMatchedError,
     UnExpectedError,
 } = require('../../utils/errors/errors.js');
-const { BrandDTO, CreatedResultDTO } = require('../../data/dto');
 const { PagingVO } = require('../../data/vo');
-
-BrandDTO.prototype.validTest = function () {
-    expect(this.brandIdx).to.be.ok;
-    expect(this.name).to.be.ok;
-    expect(this.firstInitial).to.be.oneOf([
-        'ㄱ',
-        'ㄲ',
-        'ㄴ',
-        'ㄷ',
-        'ㄸ',
-        'ㄹ',
-        'ㅁ',
-        'ㅂ',
-        'ㅃ',
-        'ㅅ',
-        'ㅆ',
-        'ㅇ',
-        'ㅈ',
-        'ㅉ',
-        'ㅊ',
-        'ㅋ',
-        'ㅍ',
-        'ㅌ',
-        'ㅎ',
-    ]);
-    expect(this.imageUrl).to.be.ok;
-    expect(this.description).to.be.not.undefined;
-    expect(this.createdAt).to.be.ok;
-    expect(this.updatedAt).to.be.ok;
-};
+const BrandDTO = require('../data/dto/BrandDTO.js');
+const CreatedResultDTO = require('../data/dto/CreatedResultDTO.js');
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO.js');
 
 describe('# brandDao Test', () => {
     before(async function () {
@@ -57,12 +29,15 @@ describe('# brandDao Test', () => {
                     name: '삽입테스트',
                     englishName: 'insert Test',
                     firstInitial: 'ㅅ',
-                    imageUrl: '',
+                    imageUrl: 'image-url',
                     description: 'brand 생성 테스트를 위한 더미데이터입니다.',
                 })
                 .then((result) => {
                     expect(result).instanceOf(CreatedResultDTO);
-                    expect(result.idx).gt(0);
+                    result.validTest((created) => {
+                        expect(created).instanceOf(BrandDTO);
+                        created.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
@@ -73,8 +48,8 @@ describe('# brandDao Test', () => {
                     name: '삽입테스트',
                     englishName: 'insert Test',
                     firstInitial: 'ㅅ',
-                    imageUrl: '',
-                    description: '',
+                    imageUrl: 'image-url',
+                    description: 'description',
                 })
                 .then(() => {
                     done(new UnExpectedError(DuplicatedEntryError));
@@ -144,11 +119,13 @@ describe('# brandDao Test', () => {
                     })
                 )
                 .then((result) => {
+                    expect(result).instanceOf(ListAndCountDTO);
                     expect(result.count).gte(5);
                     expect(result.rows.length).gte(5);
-                    for (const brand of result.rows) {
-                        brand.validTest();
-                    }
+                    result.validTest((item) => {
+                        expect(item).instanceOf(BrandDTO);
+                        item.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
@@ -177,8 +154,8 @@ describe('# brandDao Test', () => {
             name: '수정테스트',
             englishName: 'modify test',
             firstInitial: 'ㅅ',
-            imageUrl: '',
-            description: '',
+            imageUrl: 'test',
+            description: 'test',
         };
 
         before(async () => {
@@ -222,8 +199,8 @@ describe('# brandDao Test', () => {
                 name: '삭제테스트',
                 englishName: 'delete test',
                 firstInitial: 'ㅅ',
-                imageUrl: '',
-                description: '',
+                imageUrl: 'image-url',
+                description: 'description',
             });
             brandIdx = dataValues.brandIdx;
         });

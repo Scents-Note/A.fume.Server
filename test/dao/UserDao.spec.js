@@ -12,12 +12,8 @@ const {
 const { User } = require('../../models');
 
 const UserDTO = require('../data/dto/UserDTO');
-const CreatedResultDTO = require('../data/dto/CreatedResultDTO').create(
-    (created) => {
-        expect(created).instanceOf(UserDTO);
-        created.validTest();
-    }
-);
+
+const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
 const { GENDER_MAN, GENDER_WOMAN } = require('../../utils/constantUtil');
 
 describe('# userDao Test', () => {
@@ -40,6 +36,10 @@ describe('# userDao Test', () => {
                 })
                 .then((result) => {
                     expect(result).instanceOf(CreatedResultDTO);
+                    result.validTest((created) => {
+                        expect(created).instanceOf(UserDTO);
+                        created.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
