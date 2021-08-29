@@ -158,11 +158,12 @@ describe('# reviewDao Test', () => {
                     expect(result).to.be.ok;
                     expect(result.length).to.be.gte(1);
                     for (const review of result) {
+                        console.log(review)
                         expect(review.score).to.be.ok;
-                        expect(review.longevity).to.be.ok;
-                        expect(review.sillage).to.be.ok;
-                        expect(review.seasonal).to.be.ok;
-                        expect(review.gender).to.be.ok;
+                        expect(review.longevity).to.be.not.undefined;
+                        expect(review.sillage).to.be.not.undefined;
+                        expect(review.seasonal).to.be.not.undefined;
+                        expect(review.gender).to.be.not.undefined;
                         expect(review.access).to.be.ok;
                         expect(review.content).to.be.ok;
 
@@ -170,7 +171,7 @@ describe('# reviewDao Test', () => {
                         expect(review.User.userIdx).to.be.ok;
                         expect(review.User.email).to.be.ok;
                         expect(review.User.nickname).to.be.ok;
-                        expect(review.User.password).to.be.undefined;
+                        expect(review.User.password).to.be.ok;
                         expect(review.User.gender).to.be.ok;
                         expect(review.User.accessTime).to.be.ok;
 
