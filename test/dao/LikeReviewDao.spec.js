@@ -18,11 +18,23 @@ describe('# LikeReviewDao Test', () => {
 
     describe('# create Test', () => {
         before(async () => {
+            // const before = await LikeReview.findOne({
+            //     where: { userIdx: 1, reviewIdx: 2 },
+            //     raw: true,
+            //     nest: true,
+            // });
+            // console.log('likeReview create before result: ', before)
             await LikeReview.destroy({ where: { userIdx: 1, reviewIdx: 2 } });
+            // const after = await LikeReview.findOne({
+            //     where: { userIdx: 1, reviewIdx: 2 },
+            //     raw: true,
+            //     nest: true,
+            // });
+            // console.log('likeReview create after result: ', after)
         });
         it('# success case', (done) => {
             likeReviewDao
-                .create({ userIdx: 1, reviewIdx: 2 })
+                .create(1, 2)
                 .then((result) => {
                     const likeReview = result[0];
                     const updateLikeCnt = result[1];
@@ -36,7 +48,7 @@ describe('# LikeReviewDao Test', () => {
 
         it('# fail case (duplicated)', (done) => {
             likeReviewDao
-                .create({ userIdx: 1, reviewIdx: 2 })
+                .create(1, 2)
                 .then(() => {
                     done(new UnExpectedError(DuplicatedEntryError));
                 })
@@ -49,7 +61,7 @@ describe('# LikeReviewDao Test', () => {
 
         it('# fail case (invalid userIdx)', (done) => {
             likeReviewDao
-                .create({ userIdx: -1, reviewIdx: 2 })
+                .create(-1, 2)
                 .then(() => {
                     done(new UnExpectedError(NotMatchedError));
                 })
@@ -62,7 +74,7 @@ describe('# LikeReviewDao Test', () => {
 
         it('# fail case (invalid reviewIdx)', (done) => {
             likeReviewDao
-                .create({ userIdx: 1, reviewIdx: -2 })
+                .create(1, -2)
                 .then(() => {
                     done(new UnExpectedError(NotMatchedError));
                 })
@@ -91,16 +103,6 @@ describe('# LikeReviewDao Test', () => {
                 })
                 .catch((err) => done(err));
         });
-
-        it('# success case (not found)', (done) => {
-            likeReviewDao
-                .read(1, 2)
-                .then((result) => {
-                    expect(result).to.be.null;
-                    done();
-                })
-                .catch((err) => done(err));
-        });
     });
 
     describe('# readAllOfUser case', () => {
@@ -113,47 +115,16 @@ describe('# LikeReviewDao Test', () => {
                 })
                 .catch((err) => done(err));
         });
-
-        it('# fail case (invalid userIdx)', (done) => {
-            likeReviewDao
-                .readAllOfUser({ userIdx: -1, perfumeIdx: 1 })
-                .then(() => {
-                    done(new UnExpectedError(NotMatchedError));
-                })
-                .catch((err) => {
-                    expect(err).instanceOf(NotMatchedError);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-
-        it('# fail case (invalid perfumeIdx)', (done) => {
-            likeReviewDao
-                .readAllOfUser({ userIdx: 1, perfumeIdx: -1 })
-                .then(() => {
-                    done(new UnExpectedError(NotMatchedError));
-                })
-                .catch((err) => {
-                    expect(err).instanceOf(NotMatchedError);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
     });
 
     describe('# delete Test', () => {
         before(async () => {
-            await likeReviewDao
-                .create({
-                    userIdx: 3,
-                    reviewIdx: 1,
-                })
-                .catch((err) => done(err));
+            await likeReviewDao.create(3, 1)
         });
 
         it('# success case', (done) => {
             likeReviewDao
-                .delete({ userIdx: 3, reviewIdx: 1 })
+                .delete(3, 1)
                 .then((result) => {
                     expect(result[0]).eq(1);
                     expect(result[1][0]).eq(1);
