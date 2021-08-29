@@ -10,12 +10,7 @@ const ingredientService = require('../../service/IngredientService');
 ingredientService.setIngredientDao(require('../dao/IngredientDao.mock.js'));
 ingredientService.setSeriesDao(require('../dao/SeriesDao.mock.js'));
 
-const ListAndCountDTO = require('../data/dto/ListAndCountDTO').create(
-    (item) => {
-        expect(item).instanceOf(IngredientDTO);
-        item.validTest();
-    }
-);
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 
 describe('# Ingredient Service Test', () => {
     describe('# getIngredientList Test', () => {
@@ -24,7 +19,10 @@ describe('# Ingredient Service Test', () => {
                 .getIngredientList(1)
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest();
+                    result.validTest((item) => {
+                        expect(item).instanceOf(IngredientDTO);
+                        item.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));

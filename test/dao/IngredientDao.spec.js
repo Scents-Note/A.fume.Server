@@ -12,18 +12,8 @@ const {
 const { Ingredient } = require('../../models');
 
 const { IngredientConditionDTO } = require('../../data/dto');
-const CreatedResultDTO = require('../data/dto/CreatedResultDTO').create(
-    (created) => {
-        expect(created).instanceOf(IngredientDTO);
-        created.validTest();
-    }
-);
-const ListAndCountDTO = require('../data/dto/ListAndCountDTO').create(
-    (item) => {
-        expect(item).instanceOf(IngredientDTO);
-        item.validTest();
-    }
-);
+const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 const IngredientDTO = require('../data/dto/IngredientDTO');
 
 describe('# ingredientDao Test', () => {
@@ -45,6 +35,10 @@ describe('# ingredientDao Test', () => {
                 })
                 .then((result) => {
                     expect(result).instanceOf(CreatedResultDTO);
+                    result.validTest((created) => {
+                        expect(created).instanceOf(IngredientDTO);
+                        created.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
@@ -101,7 +95,10 @@ describe('# ingredientDao Test', () => {
                 .then((result) => {
                     expect(result.count).greaterThan(4);
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest();
+                    result.validTest((item) => {
+                        expect(item).instanceOf(IngredientDTO);
+                        item.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
@@ -114,7 +111,10 @@ describe('# ingredientDao Test', () => {
                 .readAll({ seriesIdx: 1 })
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest();
+                    result.validTest((item) => {
+                        expect(item).instanceOf(IngredientDTO);
+                        item.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));

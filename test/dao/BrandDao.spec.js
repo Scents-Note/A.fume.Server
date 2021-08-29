@@ -136,7 +136,10 @@ describe('# brandDao Test', () => {
                 .readAll()
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest();
+                    result.validTest((item) => {
+                        expect(item).instanceOf(BrandDTO);
+                        item.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));

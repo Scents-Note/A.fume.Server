@@ -20,26 +20,6 @@ const mockSeriesDTO = new SeriesDTO({
     updatedAt: '2021-07-24T03:38:52.000Z',
 });
 
-const mockSeriesGenerator = (seriesIdx) =>
-    new SeriesDTO({
-        seriesIdx: seriesIdx,
-        name: '계열' + seriesIdx,
-        englishName: 'SERIES' + seriesIdx,
-        imageUrl: 'http://',
-        description: '이것은 계열',
-        createdAt: '2021-07-24T03:38:52.000Z',
-        updatedAt: '2021-07-24T03:38:52.000Z',
-    });
-
-const mockListAndCountDTO = new ListAndCountDTO({
-    count: 1,
-    rows: [
-        mockSeriesGenerator(1),
-        mockSeriesGenerator(2),
-        mockSeriesGenerator(3),
-    ],
-});
-
 const mockIngredient = (ingredientIdx, seriesIdx) =>
     new IngredientDTO({
         ingredientIdx: ingredientIdx,
@@ -93,8 +73,12 @@ describe('# Brand Service Test', () => {
         it('# success Test', (done) => {
             seriesService
                 .getSeriesAll({})
-                .then((listAndCountDTO) => {
-                    listAndCountDTO.validTest();
+                .then((result) => {
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest((item) => {
+                        expect(item).instanceOf(SeriesDTO);
+                        item.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
@@ -105,8 +89,12 @@ describe('# Brand Service Test', () => {
         it('# success Test', (done) => {
             seriesService
                 .searchSeries({})
-                .then((listAndCountDTO) => {
-                    listAndCountDTO.validTest();
+                .then((result) => {
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest((item) => {
+                        expect(item).instanceOf(SeriesDTO);
+                        item.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));

@@ -10,7 +10,8 @@ const {
     UnExpectedError,
 } = require('../../utils/errors/errors.js');
 const { Series } = require('../../models/index.js');
-const { CreatedResultDTO } = require('../../data/dto');
+const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 const { PagingVO } = require('../../data/vo');
 const SeriesDTO = require('../data/dto/SeriesDTO.js');
 
@@ -34,16 +35,14 @@ describe('# seriesDao Test', () => {
                 )
                 .then((result) => {
                     expect(result).to.be.instanceOf(CreatedResultDTO);
-                    const { idx, created } = result;
-                    expect(idx).to.be.gt(0);
-                    return created;
-                })
-                .then((result) => {
-                    expect(result.name).to.be.eq('테스트 데이터');
-                    expect(result.englishName).to.be.eq('Test Data');
-                    expect(result.description).to.be.eq('왈라왈라');
-                    expect(result.imageUrl).to.be.eq('imageUrl');
-                    result.validTest();
+                    result.validTest((created) => {
+                        expect(created).instanceOf(SeriesDTO);
+                        created.validTest();
+                        expect(created.name).to.be.eq('테스트 데이터');
+                        expect(created.englishName).to.be.eq('Test Data');
+                        expect(created.description).to.be.eq('왈라왈라');
+                        expect(created.imageUrl).to.be.eq('imageUrl');
+                    });
                     done();
                 })
                 .catch((err) => done(err));
@@ -120,7 +119,10 @@ describe('# seriesDao Test', () => {
                 .readAll(new PagingVO({ pagingIndex: 1, pagingSize: 100 }))
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest();
+                    result.validTest((item) => {
+                        expect(item).instanceOf(SeriesDTO);
+                        item.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
@@ -139,7 +141,10 @@ describe('# seriesDao Test', () => {
                 )
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest();
+                    result.validTest((item) => {
+                        expect(item).instanceOf(SeriesDTO);
+                        item.validTest();
+                    });
                     const originString = result.rows
                         .map((it) => it.seriesIdx)
                         .toString();
