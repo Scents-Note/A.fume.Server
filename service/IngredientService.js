@@ -1,9 +1,9 @@
 'use strict';
 
-const ingredientDao = require('../dao/IngredientDao.js');
-const seriesDao = require('../dao/SeriesDao.js');
+let ingredientDao = require('../dao/IngredientDao.js');
+let seriesDao = require('../dao/SeriesDao.js');
 const { parseSortToOrder } = require('../utils/parser.js');
-
+const { IngredientDTO, ListAndCountDTO } = require('../data/dto');
 /**
  * 향료 삽입
  *
@@ -121,4 +121,22 @@ exports.getSeriesList = (ingredientIdx) => {
  **/
 exports.findIngredient = (ingredientConditionDTO) => {
     return ingredientDao.findIngredient(ingredientConditionDTO);
+};
+
+/**
+ * 계열에 해당하는 재료 조회
+ *
+ * @param {number} seriesIdx
+ * @returns {Promise<Ingredient[]>}
+ */
+exports.getIngredientList = (seriesIdx) => {
+    return ingredientDao.readAll({ seriesIdx }, { nest: true, raw: true });
+};
+
+module.exports.setIngredientDao = (dao) => {
+    ingredientDao = dao;
+};
+
+module.exports.setSeriesDao = (dao) => {
+    seriesDao = dao;
 };
