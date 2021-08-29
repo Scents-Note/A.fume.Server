@@ -29,6 +29,12 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
+            this.hasOne(models.Ingredient, {
+                foreignKey: 'ingredientIdx',
+                as: 'Ingredients',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            });
         }
     }
     Note.init(

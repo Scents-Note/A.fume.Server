@@ -10,6 +10,7 @@ const {
     InvalidInputError,
 } = require('../../utils/errors/errors.js');
 const { Note } = require('../../models');
+const NoteDTO = require('../data/dto/NoteDTO');
 
 describe('# NoteDao Test', () => {
     before(async function () {
@@ -94,6 +95,19 @@ describe('# NoteDao Test', () => {
                         expect(note.createAt).to.be.undefined;
                         expect(note.updatedAt).to.be.undefined;
                     }
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it(' # readByPerfumeIdx test', (done) => {
+            noteDao
+                .readByPerfumeIdx(1)
+                .then((result) => {
+                    result.forEach((note) => {
+                        expect(note).instanceOf(NoteDTO);
+                        note.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
