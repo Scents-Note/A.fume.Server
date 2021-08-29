@@ -409,7 +409,7 @@ module.exports.recommendPerfumeByAgeAndGender = async (
         count: Math.min(pagingSize, perfumeList.length),
         rows: perfumeList,
     };
-    await ranking.upsert(
+    ranking.upsert(
         { gender, ageGroup },
         { title: '나이 및 성별에 따른 추천', result }
     );
