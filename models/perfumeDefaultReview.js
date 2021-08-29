@@ -47,6 +47,11 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
                 comment: '{veryWeak}/{weak}/{normal}/{strong}/{veryStrong}',
             },
+            keyword: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                comment: '[{keywordIdx},{},{},...]',
+            },
         },
         {
             modelName: 'PerfumeDefaultReview',

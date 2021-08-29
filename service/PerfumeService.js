@@ -2,7 +2,7 @@
 
 const perfumeDao = require('../dao/PerfumeDao.js');
 const reviewDao = require('../dao/ReviewDao.js');
-const ingredientDao = require('../dao/IngredientDao.js');
+const noteDao = require('../dao/NoteDao');
 const likePerfumeDao = require('../dao/LikePerfumeDao.js');
 const keywordDao = require('../dao/KeywordDao.js');
 const userDao = require('../dao/UserDao.js');
@@ -10,7 +10,15 @@ const { getImageList } = require('../lib/s3.js');
 
 const { parseSortToOrder } = require('../utils/parser.js');
 
-const { GENDER_WOMAN, abundanceRateArr } = require('../utils/code.js');
+const {
+    GENDER_WOMAN,
+    ABUNDANCE_RATE_LIST,
+    SEASONAL_LIST,
+    SILLAGE_LIST,
+    LONGEVITY_LIST,
+    GENDER_LIST,
+    NOTE_TYPE_LIST,
+} = require('../utils/constantUtil.js');
 
 const {
     NotMatchedError,
@@ -103,12 +111,6 @@ exports.deletePerfume = (perfumeIdx) => {
     return perfumeDao.delete(perfumeIdx);
 };
 
-const seasonalArr = ['spring', 'summer', 'fall', 'winter'];
-const sillageArr = ['light', 'normal', 'heavy'];
-const longevityArr = ['veryWeak', 'weak', 'medium', 'strong', 'veryStrong'];
-const genderArr = ['male', 'neutral', 'female'];
-const noteTypeArr = ['top', 'middle', 'base', 'single'];
-
 function makeZeroMap(arr) {
     return arr.reduce((prev, cur) => {
         prev[cur] = 0;
@@ -155,19 +157,18 @@ function normalize(obj) {
 }
 
 async function generateNote(perfumeIdx) {
-    const noteMap = (await ingredientDao.readByPerfumeIdx(perfumeIdx))
+    const noteMap = (await noteDao.readByPerfumeIdx(perfumeIdx))
         .map((it) => {
-            it.type = noteTypeArr[it.Notes.type - 1];
-            delete it.Notes;
+            it.type = NOTE_TYPE_LIST[it.type];
             return it;
         })
         .reduce(
             (prev, cur) => {
                 let type = cur.type;
-                prev[type].push(cur.name);
+                prev[type].push(cur.ingredientName);
                 return prev;
             },
-            makeInitMap(noteTypeArr, () => [])
+            makeInitMap(NOTE_TYPE_LIST, () => [])
         );
     for (const key in noteMap) {
         if (!noteMap[key] instanceof Array) throw 'Invalid Type Exception';
@@ -180,17 +181,17 @@ async function generateNote(perfumeIdx) {
 async function generateSummary(perfumeIdx) {
     let sum = 0,
         cnt = 0;
-    let seasonalMap = makeZeroMap(seasonalArr);
-    let sillageMap = makeZeroMap(sillageArr);
-    let longevityMap = makeZeroMap(longevityArr);
-    let genderMap = makeZeroMap(genderArr);
+    let seasonalMap = makeZeroMap(SEASONAL_LIST);
+    let sillageMap = makeZeroMap(SILLAGE_LIST);
+    let longevityMap = makeZeroMap(LONGEVITY_LIST);
+    let genderMap = makeZeroMap(GENDER_LIST);
 
     (await reviewDao.readAllOfPerfume(perfumeIdx))
         .map((it) => {
-            it.seasonal = seasonalArr[it.seasonal - 1];
-            it.sillage = sillageArr[it.sillage - 1];
-            it.longevity = longevityArr[it.longevity - 1];
-            it.gender = genderArr[it.gender - 1];
+            it.seasonal = SEASONAL_LIST[it.seasonal];
+            it.sillage = SILLAGE_LIST[it.sillage];
+            it.longevity = LONGEVITY_LIST[it.longevity];
+            it.gender = GENDER_LIST[it.gender];
             return it;
         })
         .forEach((review) => {
@@ -230,7 +231,7 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
         (prev, cur) => cur(prev),
         _perfume
     );
-    perfume.abundanceRate = abundanceRateArr[perfume.abundanceRate];
+    perfume.abundanceRate = ABUNDANCE_RATE_LIST[perfume.abundanceRate];
 
     const likePerfume = await likePerfumeDao
         .read(userIdx, perfumeIdx)

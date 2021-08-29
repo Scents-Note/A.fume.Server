@@ -17,7 +17,7 @@ const {
     Sequelize,
     sequelize,
 } = require('../../../models');
-const { GENDER_MAN, GENDER_WOMAN } = require('../../../utils/code');
+const { GENDER_MAN, GENDER_WOMAN } = require('../../../utils/constantUtil');
 
 module.exports = () => {
     const firstJob = [];

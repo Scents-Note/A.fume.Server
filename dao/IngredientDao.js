@@ -187,35 +187,6 @@ module.exports.readBySeriesIdxList = async (seriesIdxList) => {
 };
 
 /**
- * 향수에 해당하는 재료 조회
- *
- * @param {number} perfumeIdx
- * @return {Promise<Ingredients[]>}
- */
-module.exports.readByPerfumeIdx = async (perfumeIdx) => {
-    const result = await Ingredient.findAll({
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
-        include: [
-            {
-                model: Note,
-                as: 'Notes',
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt'],
-                },
-                where: {
-                    perfumeIdx,
-                },
-            },
-        ],
-        raw: true,
-        nest: true,
-    });
-    return result;
-};
-
-/**
  * 재료 검색
  *
  * @param {Object} condition
