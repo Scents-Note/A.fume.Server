@@ -15,7 +15,8 @@ const {
     WrongPasswordError,
     PasswordPolicyError,
 } = require('../../utils/errors/errors');
-userService.setJwt(require('../lib/token.mock.js'));
+const mockJWT = Object.assign({}, require('../lib/token.mock.js'));
+userService.setJwt(mockJWT);
 userService.setCrypto(require('../lib/crypto.mock.js'));
 userService.setUserDao(require('../dao/UserDao.mock.js'));
 
@@ -46,11 +47,9 @@ describe('# User Service Test', () => {
                 .catch((err) => done(err));
         });
         it('# With No Auth', (done) => {
-            userService.setJwt({
-                verify: () => {
-                    throw 'error';
-                },
-            });
+            mockJWT.verify = () => {
+                throw 'error';
+            };
             userService
                 .authUser('token')
                 .then((result) => {
@@ -60,9 +59,6 @@ describe('# User Service Test', () => {
                     done();
                 })
                 .catch((err) => done(err));
-        });
-        after(() => {
-            userService.setJwt(require('../lib/token.mock.js'));
         });
     });
 
