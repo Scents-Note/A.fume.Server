@@ -114,7 +114,6 @@ describe('# perfumeDao Test', () => {
                         expect(result.name).to.be.eq('향수1');
                         expect(result.englishName).to.be.ok;
                         expect(result.imageUrl).to.be.ok;
-                        expect(result.likeCnt).to.be.gte(0);
 
                         expect(result.Brand.brandIdx).to.be.eq(result.brandIdx);
                         expect(result.Brand.name).to.be.eq('브랜드1');
@@ -157,7 +156,6 @@ describe('# perfumeDao Test', () => {
                             expect(perfume.imageUrl).to.be.ok;
                             expect(perfume.createdAt).to.be.not.undefined;
                             expect(perfume.updatedAt).to.be.not.undefined;
-                            expect(perfume.likeCnt).to.be.gte(0);
 
                             expect(perfume.Brand.brandIdx).to.be.oneOf(brands);
                             expect(perfume.Brand.name).to.be.ok;
@@ -224,7 +222,6 @@ describe('# perfumeDao Test', () => {
                             expect(perfume.imageUrl).to.be.ok;
                             expect(perfume.createdAt).to.be.not.undefined;
                             expect(perfume.updatedAt).to.be.not.undefined;
-                            expect(perfume.likeCnt).to.be.gte(0);
 
                             expect(perfume.Brand.brandIdx).to.be.ok;
                             expect(perfume.Brand.name).to.be.ok;
@@ -395,9 +392,6 @@ describe('# perfumeDao Test', () => {
                     .then((result) => {
                         expect(result.count).to.be.gte(3);
                         expect(result.rows.length).to.be.gte(3);
-                        for (const perfume of result.rows) {
-                            expect(perfume.likeCnt).to.be.gt(0);
-                        }
                         done();
                     })
                     .catch((err) => done(err));
@@ -441,7 +435,6 @@ describe('# perfumeDao Test', () => {
                             expect(perfume.imageUrl).to.be.ok;
                             expect(perfume.createdAt).to.be.not.undefined;
                             expect(perfume.updatedAt).to.be.not.undefined;
-                            expect(perfume.likeCnt).to.be.gte(0);
 
                             expect(perfume.Brand.brandIdx).to.be.ok;
                             expect(perfume.Brand.name).to.be.ok;
@@ -472,7 +465,6 @@ describe('# perfumeDao Test', () => {
                             expect(perfume.imageUrl).to.be.ok;
                             expect(perfume.createdAt).to.be.not.undefined;
                             expect(perfume.updatedAt).to.be.not.undefined;
-                            expect(perfume.likeCnt).to.be.gte(0);
 
                             expect(perfume.Brand.brandIdx).to.be.ok;
                             expect(perfume.Brand.name).to.be.ok;

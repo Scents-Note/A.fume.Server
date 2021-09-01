@@ -81,7 +81,6 @@ describe('# reviewDao Test', () => {
                     expect(result.Perfume.name).to.be.ok;
                     expect(result.Perfume.englishName).to.be.ok;
                     expect(result.Perfume.imageUrl).to.be.ok;
-                    expect(result.Perfume.likeCnt).to.be.ok;
                     expect(result.Perfume.brandIdx).to.be.ok;
                     expect(result.Perfume.createdAt).to.be.ok;
                     expect(result.Perfume.updatedAt).to.be.ok;
@@ -127,7 +126,6 @@ describe('# reviewDao Test', () => {
                         expect(review.Perfume.name).to.be.ok;
                         expect(review.Perfume.englishName).to.be.ok;
                         expect(review.Perfume.imageUrl).to.be.ok;
-                        expect(review.Perfume.likeCnt).to.be.ok;
                         expect(review.Perfume.brandIdx).to.be.ok;
                         expect(review.Perfume.createdAt).to.be.ok;
                         expect(review.Perfume.updatedAt).to.be.ok;

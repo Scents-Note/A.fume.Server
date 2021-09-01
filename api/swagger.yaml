@@ -73,9 +73,7 @@ paths:
         in: query
         type: string
         enum:
-        - likeCnt_asc
         - createdAt_asc
-        - likeCnt_desc
         - createdAt_desc
         required: false
       - name: pagingSize
