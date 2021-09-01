@@ -69,7 +69,6 @@ const commonJob = [
         'perfume_idx',
         'englishName',
         'brandIdx',
-        'likeCnt',
         'createdAt',
         'updatedAt'
     ),

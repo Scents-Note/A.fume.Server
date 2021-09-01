@@ -293,27 +293,6 @@ describe('# perfumeDao Test', () => {
                     .catch((err) => done(err));
             });
 
-            it('# success case (order by like) ', (done) => {
-                perfumeDao
-                    .search([], [], [], '', 1, 100, [['likeCnt', 'asc']])
-                    .then((result) => {
-                        expect(result.count).to.be.gte(3);
-                        expect(result.rows.length).to.be.gte(3);
-                        const sortedByDao = result.rows
-                            .map((it) => it.perfumeIdx)
-                            .join(',');
-                        const sortedByJS = result.rows
-                            .sort((a, b) => {
-                                return a.likeCnt - b.likeCnt;
-                            })
-                            .map((it) => it.perfumeIdx)
-                            .join(',');
-                        expect(sortedByJS).eq(sortedByDao);
-                        done();
-                    })
-                    .catch((err) => done(err));
-            });
-
             it('# success case (order by recent)', (done) => {
                 perfumeDao
                     .search([], [], [], '', 1, 100, [['createdAt', 'desc']])
