@@ -33,6 +33,7 @@ const {
 } = require('../utils/func.js');
 
 function emptyCheck(x) {
+    if (x instanceof Array) return [];
     if (x == null || x.length == 0) x = '정보 없음';
     return x;
 }
