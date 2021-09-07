@@ -70,7 +70,6 @@ module.exports = () => {
                 name: `향수${i}`,
                 englishName: `perfume-${i}`,
                 imageUrl: `http://perfume-image/${i}`,
-                likeCnt: 1,
             })
         );
     }

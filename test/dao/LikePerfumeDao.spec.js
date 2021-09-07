@@ -80,7 +80,6 @@ describe('# likePerfumeDao Test', () => {
             likePerfumeDao
                 .read(-1, 1)
                 .then((result) => {
-                    console.log(result);
                     done(new UnExpectedError(NotMatchedError));
                 })
                 .catch((err) => {
