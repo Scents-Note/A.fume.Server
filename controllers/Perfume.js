@@ -1,18 +1,16 @@
 'use strict';
 
-const Perfume = require('../service/PerfumeService');
-const SearchHistory = require('../service/SearchHistoryService');
-const { InvalidInputError } = require('../utils/errors/errors');
+let Perfume = require('../service/PerfumeService');
+let SearchHistory = require('../service/SearchHistoryService');
+
 const { OK, FORBIDDEN } = require('../utils/statusCode.js');
 
-const abundanceRateArr = [
-    'None',
-    '오 드 코롱',
-    '코롱',
-    '오 드 뚜왈렛',
-    '오 드 퍼퓸',
-    '퍼퓸',
-];
+const { PagingRequestDTO } = require('../data/request_dto');
+const {
+    PerfumeDetailResponseDTO,
+    PerfumeResponseDTO,
+} = require('../data/response_dto/perfume');
+const { ResponseDTO } = require('../data/response_dto/common');
 
 module.exports.getPerfume = (req, res, next) => {
     const perfumeIdx = req.swagger.params['perfumeIdx'].value;
@@ -21,21 +19,24 @@ module.exports.getPerfume = (req, res, next) => {
         Perfume.getPerfumeById(perfumeIdx, loginUserIdx),
         SearchHistory.incrementCount(loginUserIdx, perfumeIdx),
     ])
-        .then(([response]) => {
-            res.status(OK).json({
-                message: '향수 조회 성공',
-                data: response,
-            });
+        .then(([result]) => {
+            return new PerfumeDetailResponseDTO(result);
+        })
+        .then((data) => {
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: '향수 조회 성공',
+                    data,
+                })
+            );
         })
         .catch((err) => next(err));
 };
 
 module.exports.searchPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
-    let { pagingIndex, pagingSize, sort } = req.query;
     const { keywordList, brandList, ingredientList, searchText } = req.body;
-    pagingIndex = parseInt(pagingIndex) || 1;
-    pagingSize = parseInt(pagingSize) || 100;
+    const { pagingIndex, pagingSize, sort } = new PagingRequestDTO(req.query);
     Perfume.searchPerfume(
         brandList,
         ingredientList,
@@ -187,4 +188,12 @@ module.exports.getPerfumeIdxByEnglishName = (req, res, next) => {
         .catch((err) => {
             next(err);
         });
+};
+
+module.exports.setPerfumeService = (service) => {
+    Perfume = service;
+};
+
+module.exports.setSearchHistoryService = (service) => {
+    SearchHistory = service;
 };
