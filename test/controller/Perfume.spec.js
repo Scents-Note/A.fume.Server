@@ -14,6 +14,88 @@ const PerfumeResponseDTO = require('../data/response_dto/perfume/PerfumeResponse
 
 const mockPerfumeService = {};
 const mockSearchHistoryService = {};
+const mockPerfumeList = [
+    {
+        perfumeIdx: 2475,
+        name: 'White Patchouli Tom Ford for women',
+        imageUrl:
+            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2475/1.jpg',
+        brandName: '톰 포드',
+        isLiked: false,
+    },
+    {
+        perfumeIdx: 2474,
+        name: 'Violet Blonde Tom Ford for women',
+        imageUrl:
+            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2474/1.jpg',
+        brandName: '톰 포드',
+        isLiked: false,
+    },
+    {
+        perfumeIdx: 2473,
+        name: 'Tom Ford for Men Extreme Tom Ford for men',
+        imageUrl:
+            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2473/1.jpg',
+        brandName: '톰 포드',
+        isLiked: false,
+    },
+    {
+        perfumeIdx: 2472,
+        name: 'Tom Ford for Men Tom Ford for men',
+        imageUrl:
+            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2472/1.jpg',
+        brandName: '톰 포드',
+        isLiked: false,
+    },
+    {
+        perfumeIdx: 2471,
+        name: 'Sahara Noir Tom Ford for women',
+        imageUrl:
+            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2471/1.jpg',
+        brandName: '톰 포드',
+        isLiked: false,
+    },
+    {
+        perfumeIdx: 2470,
+        name: 'Ombré Leather (2018) Tom Ford for women and men',
+        imageUrl:
+            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2470/1.jpg',
+        brandName: '톰 포드',
+        isLiked: false,
+    },
+    {
+        perfumeIdx: 2469,
+        name: 'Metallique Tom Ford for women',
+        imageUrl:
+            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2469/1.jpg',
+        brandName: '톰 포드',
+        isLiked: false,
+    },
+    {
+        perfumeIdx: 2468,
+        name: 'Beau De Jour Eau de Parfum Tom Ford for men',
+        imageUrl:
+            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2468/1.jpg',
+        brandName: '톰 포드',
+        isLiked: false,
+    },
+    {
+        perfumeIdx: 2467,
+        name: 'Eau de Vert Boheme Tom Ford for women',
+        imageUrl:
+            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2467/1.jpg',
+        brandName: '톰 포드',
+        isLiked: false,
+    },
+    {
+        perfumeIdx: 2466,
+        name: 'Eau de Jasmin Rouge Tom Ford for women',
+        imageUrl:
+            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2466/1.jpg',
+        brandName: '톰 포드',
+        isLiked: false,
+    },
+];
 Perfume.setPerfumeService(mockPerfumeService);
 Perfume.setSearchHistoryService(mockSearchHistoryService);
 
@@ -76,6 +158,37 @@ describe('# Perfume Controller Test', () => {
                     done();
                 })
                 .catch((err) => done(err));
+        });
+        describe('# searchPerfume Test', () => {
+            it('success case', (done) => {
+                mockPerfumeService.searchPerfume = async () => {
+                    return {
+                        rows: mockPerfumeList,
+                        count: 204,
+                    };
+                };
+
+                request(app)
+                    .post(`${basePath}/perfume/search`)
+                    .send({
+                        searchText: 'Tom',
+                        keywordList: [],
+                        ingredientList: [],
+                        brandList: [],
+                    })
+                    .expect((res) => {
+                        expect(res.status).to.be.eq(200);
+                        const { message, data } = res.body;
+                        expect(message).to.be.eq('향수 검색 성공');
+                        const { count, rows } = data;
+                        expect(count).to.be.gte(0);
+                        rows.forEach((it) => {
+                            PerfumeResponseDTO.validTest.call(it);
+                        });
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
         });
     });
 });

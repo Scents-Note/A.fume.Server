@@ -47,11 +47,19 @@ module.exports.searchPerfume = (req, res, next) => {
         sort,
         loginUserIdx
     )
-        .then((response) => {
-            res.status(OK).json({
-                message: '향수 검색 성공',
-                data: response,
-            });
+        .then(({ rows, count }) => {
+            return {
+                count,
+                rows: rows.map((it) => new PerfumeResponseDTO(it)),
+            };
+        })
+        .then((data) => {
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: '향수 검색 성공',
+                    data,
+                })
+            );
         })
         .catch((err) => next(err));
 };
