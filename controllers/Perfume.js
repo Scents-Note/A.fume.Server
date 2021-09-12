@@ -69,10 +69,12 @@ module.exports.likePerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
     Perfume.likePerfume(loginUserIdx, perfumeIdx)
         .then((result) => {
-            res.status(OK).json({
-                message: `향수 좋아요${result ? '' : ' 취소'}`,
-                data: result,
-            });
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: `향수 좋아요${result ? '' : ' 취소'}`,
+                    data: result,
+                })
+            );
         })
         .catch((err) => next(err));
 };

@@ -12,6 +12,9 @@ const Perfume = require('../../controllers/Perfume.js');
 const PerfumeDetailResponseDTO = require('../data/response_dto/perfume/PerfumeDetailResponseDTO');
 const PerfumeResponseDTO = require('../data/response_dto/perfume/PerfumeResponseDTO');
 
+const token = require('../../lib/token');
+const user1token = token.create({ userIdx: 1 });
+
 const mockPerfumeService = {};
 const mockSearchHistoryService = {};
 const mockPerfumeList = [
@@ -185,6 +188,25 @@ describe('# Perfume Controller Test', () => {
                         rows.forEach((it) => {
                             PerfumeResponseDTO.validTest.call(it);
                         });
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
+        });
+
+        describe('# likePerfume Test', () => {
+            it('success case', (done) => {
+                mockPerfumeService.likePerfume = async () => true;
+                request(app)
+                    .post(`${basePath}/perfume/1/like`)
+                    .set('x-access-token', 'Bearer ' + user1token)
+                    .expect((res) => {
+                        expect(res.status).to.be.eq(200);
+                        const { message, data } = res.body;
+                        expect(message).to.be.eq(
+                            '향수 좋아요' + (data ? '' : ' 취소')
+                        );
+                        expect(data).to.be.not.undefined;
                         done();
                     })
                     .catch((err) => done(err));
