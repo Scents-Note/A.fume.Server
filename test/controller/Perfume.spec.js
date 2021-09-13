@@ -291,5 +291,72 @@ describe('# Perfume Controller Test', () => {
                     .catch((err) => done(err));
             });
         });
+
+        describe('# recommendPersonalPerfume Test', () => {
+            it('success case', (done) => {
+                mockPerfumeService.recommendByUser = async () => {
+                    return {
+                        rows: mockPerfumeList,
+                        count: 20,
+                    };
+                };
+
+                request(app)
+                    .get(`${basePath}/perfume/recommend/personal`)
+                    .set('x-access-token', 'Bearer ' + user1token)
+                    .expect((res) => {
+                        expect(res.status).to.be.eq(200);
+                        const { message, data } = res.body;
+                        expect(message).to.be.eq('향수 개인 맞춤 추천');
+                        const { count, rows } = data;
+                        expect(count).to.be.gte(0);
+                        rows.forEach((it) => {
+                            PerfumeResponseDTO.validTest.call(it);
+                        });
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
+
+            it('# Fail: no token', (done) => {
+                request(app)
+                    .get(`${basePath}/perfume/recommend/personal`)
+                    .expect((res) => {
+                        expect(res.status).to.be.eq(401);
+                        const { message } = res.body;
+                        expect(message).to.be.eq('유효하지 않는 토큰입니다.');
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
+        });
+
+        describe('# recommendCommonPerfume Test', () => {
+            it('success case', (done) => {
+                mockPerfumeService.recommendByUser = async () => {
+                    return {
+                        rows: mockPerfumeList,
+                        count: 20,
+                    };
+                };
+
+                request(app)
+                    .get(`${basePath}/perfume/recommend/common`)
+                    .expect((res) => {
+                        expect(res.status).to.be.eq(200);
+                        const { message, data } = res.body;
+                        expect(message).to.be.eq(
+                            '향수 일반 추천 (성별, 나이 반영)'
+                        );
+                        const { count, rows } = data;
+                        expect(count).to.be.gte(0);
+                        rows.forEach((it) => {
+                            PerfumeResponseDTO.validTest.call(it);
+                        });
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
+        });
     });
 });

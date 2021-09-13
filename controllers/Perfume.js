@@ -102,30 +102,42 @@ module.exports.getRecentPerfume = (req, res, next) => {
 
 module.exports.recommendPersonalPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    let { pagingIndex, pagingSize } = req.query;
-    pagingIndex = parseInt(pagingIndex) || 1;
-    pagingSize = parseInt(pagingSize) || 10;
+    const { pagingIndex, pagingSize } = new PagingRequestDTO(req.query);
     Perfume.recommendByUser(loginUserIdx, pagingIndex, pagingSize)
-        .then((result) => {
-            res.status(OK).json({
-                message: '향수 개인 맞춤 추천',
-                data: result,
-            });
+        .then(({ count, rows }) => {
+            return {
+                count,
+                rows: rows.map((it) => new PerfumeResponseDTO(it)),
+            };
+        })
+        .then((data) => {
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: '향수 개인 맞춤 추천',
+                    data,
+                })
+            );
         })
         .catch((err) => next(err));
 };
 
 module.exports.recommendCommonPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    let { pagingIndex, pagingSize } = req.query;
-    pagingIndex = parseInt(pagingIndex) || 1;
-    pagingSize = parseInt(pagingSize) || 10;
+    const { pagingIndex, pagingSize } = new PagingRequestDTO(req.query);
     Perfume.recommendByUser(loginUserIdx, pagingIndex, pagingSize)
-        .then((result) => {
-            res.status(OK).json({
-                message: '향수 일반 추천 (성별, 나이 반영)',
-                data: result,
-            });
+        .then(({ count, rows }) => {
+            return {
+                count,
+                rows: rows.map((it) => new PerfumeResponseDTO(it)),
+            };
+        })
+        .then((data) => {
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: '향수 일반 추천 (성별, 나이 반영)',
+                    data,
+                })
+            );
         })
         .catch((err) => next(err));
 };
