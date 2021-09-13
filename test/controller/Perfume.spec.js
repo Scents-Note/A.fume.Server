@@ -358,5 +358,32 @@ describe('# Perfume Controller Test', () => {
                     .catch((err) => done(err));
             });
         });
+
+        describe('# getSurveyPerfume Test', () => {
+            it('success case', (done) => {
+                mockPerfumeService.getSurveyPerfume = async () => {
+                    return {
+                        rows: mockPerfumeList,
+                        count: 20,
+                    };
+                };
+
+                request(app)
+                    .get(`${basePath}/perfume/survey`)
+                    .set('x-access-token', 'Bearer ' + user1token)
+                    .expect((res) => {
+                        expect(res.status).to.be.eq(200);
+                        const { message, data } = res.body;
+                        expect(message).to.be.eq('서베이 향수 조회 성공');
+                        const { count, rows } = data;
+                        expect(count).to.be.gte(0);
+                        rows.forEach((it) => {
+                            PerfumeResponseDTO.validTest.call(it);
+                        });
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
+        });
     });
 });
