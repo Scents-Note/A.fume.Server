@@ -165,21 +165,29 @@ module.exports.getNewPerfume = (req, res, next) => {
 module.exports.getLikedPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
     const userIdx = req.swagger.params['userIdx'].value;
-    let { pagingIndex, pagingSize } = req.query;
-    pagingIndex = parseInt(pagingIndex) || 1;
-    pagingSize = parseInt(pagingSize) || 10;
+    const { pagingIndex, pagingSize } = new PagingRequestDTO(req.query);
     if (loginUserIdx != userIdx) {
-        res.status(FORBIDDEN).json({
-            message: '비정상적인 접근입니다.',
-        });
+        res.status(FORBIDDEN).json(
+            new ResponseDTO({
+                message: '비정상적인 접근입니다.',
+            })
+        );
         return;
     }
     Perfume.getLikedPerfume(loginUserIdx, pagingIndex, pagingSize)
-        .then((response) => {
-            res.status(OK).json({
-                message: '유저가 좋아요한 향수 조회',
-                data: response,
-            });
+        .then(({ count, rows }) => {
+            return {
+                count,
+                rows: rows.map((it) => new PerfumeResponseDTO(it)),
+            };
+        })
+        .then((data) => {
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: '유저가 좋아요한 향수 조회',
+                    data,
+                })
+            );
         })
         .catch((err) => {
             next(err);

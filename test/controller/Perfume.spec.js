@@ -212,5 +212,47 @@ describe('# Perfume Controller Test', () => {
                     .catch((err) => done(err));
             });
         });
+
+        describe('# getLikedPerfume Test', () => {
+            it('# success case', (done) => {
+                mockPerfumeService.getLikedPerfume = async () => {
+                    return {
+                        rows: mockPerfumeList,
+                        count: 204,
+                    };
+                };
+
+                request(app)
+                    .get(`${basePath}/user/1/perfume/liked`)
+                    .set('x-access-token', 'Bearer ' + user1token)
+                    .expect((res) => {
+                        expect(res.status).to.be.eq(200);
+                        const { message, data } = res.body;
+                        expect(message).to.be.eq('유저가 좋아요한 향수 조회');
+                        const { count, rows } = data;
+                        expect(count).to.be.gte(0);
+                        rows.forEach((it) => {
+                            PerfumeResponseDTO.validTest.call(it);
+                        });
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
+
+            it('# Fail: 유저 id 불일치', (done) => {
+                request(app)
+                    .get(`${basePath}/user/2/perfume/liked`)
+                    .set('x-access-token', 'Bearer ' + user1token)
+                    .expect((res) => {
+                        expect(res.status).to.be.eq(403);
+                        const { message } = res.body;
+                        expect(message).to.be.eq('비정상적인 접근입니다.');
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
+        });
+        });
+        });
     });
 });
