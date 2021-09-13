@@ -81,15 +81,21 @@ module.exports.likePerfume = (req, res, next) => {
 
 module.exports.getRecentPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    let { pagingIndex, pagingSize } = req.query;
-    pagingIndex = parseInt(pagingIndex) || 1;
-    pagingSize = parseInt(pagingSize) || 100;
+    const { pagingIndex, pagingSize } = new PagingRequestDTO(req.query);
     Perfume.recentSearch(loginUserIdx, pagingIndex, pagingSize)
-        .then((result) => {
-            res.status(OK).json({
-                message: '최근 검색한 향수 조회',
-                data: result,
-            });
+        .then(({ count, rows }) => {
+            return {
+                count,
+                rows: rows.map((it) => new PerfumeResponseDTO(it)),
+            };
+        })
+        .then((data) => {
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: '최근 검색한 향수 조회',
+                    data,
+                })
+            );
         })
         .catch((err) => next(err));
 };

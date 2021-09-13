@@ -252,7 +252,44 @@ describe('# Perfume Controller Test', () => {
                     .catch((err) => done(err));
             });
         });
-        });
+
+        describe('# getRecentPerfume Test', () => {
+            it('success case', (done) => {
+                mockPerfumeService.recentSearch = async () => {
+                    return {
+                        rows: mockPerfumeList,
+                        count: 20,
+                    };
+                };
+
+                request(app)
+                    .get(`${basePath}/perfume/recent`)
+                    .set('x-access-token', 'Bearer ' + user1token)
+                    .expect((res) => {
+                        expect(res.status).to.be.eq(200);
+                        const { message, data } = res.body;
+                        expect(message).to.be.eq('최근 검색한 향수 조회');
+                        const { count, rows } = data;
+                        expect(count).to.be.gte(0);
+                        rows.forEach((it) => {
+                            PerfumeResponseDTO.validTest.call(it);
+                        });
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
+
+            it('# Fail: no token', (done) => {
+                request(app)
+                    .get(`${basePath}/user/2/perfume/liked`)
+                    .expect((res) => {
+                        expect(res.status).to.be.eq(401);
+                        const { message } = res.body;
+                        expect(message).to.be.eq('유효하지 않는 토큰입니다.');
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
         });
     });
 });
