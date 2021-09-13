@@ -1648,36 +1648,6 @@ paths:
         default:
           description: successful operation
       x-swagger-router-controller: Review
-  /getPerfumeIdx:
-    post:
-      tags:
-      - SUB_perfume
-      summary: 향수 Index 조회
-      description: englishName으로 향수의 index를 조회한다
-      operationId: getPerfumeIdxByEnglishName
-      parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          type: object
-          properties:
-            englishName:
-              type: string
-              example: 154 Cologne
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: 향수 idx 조회 성공
-              data:
-                type: integer
-                example: 1
-      x-swagger-router-controller: Perfume
 securityDefinitions:
   userToken:
       type: apiKey

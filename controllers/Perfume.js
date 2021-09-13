@@ -215,20 +215,6 @@ module.exports.getLikedPerfume = (req, res, next) => {
         });
 };
 
-module.exports.getPerfumeIdxByEnglishName = (req, res, next) => {
-    const { englishName } = req.body;
-    Perfume.findPerfumeIdxByEnglishName(englishName)
-        .then((response) => {
-            res.status(OK).json({
-                message: '향수 idx 조회 성공',
-                data: response,
-            });
-        })
-        .catch((err) => {
-            next(err);
-        });
-};
-
 module.exports.setPerfumeService = (service) => {
     Perfume = service;
 };
