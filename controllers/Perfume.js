@@ -164,15 +164,21 @@ module.exports.getSurveyPerfume = (req, res, next) => {
 
 module.exports.getNewPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    let { pagingIndex, pagingSize } = req.query;
-    pagingIndex = parseInt(pagingIndex) || 1;
-    pagingSize = parseInt(pagingSize) || 10;
+    const { pagingIndex, pagingSize } = new PagingRequestDTO(req.query);
     Perfume.getNewPerfume(loginUserIdx, pagingIndex, pagingSize)
-        .then((result) => {
-            res.status(OK).json({
-                message: '새로 등록된 향수 조회 성공',
-                data: result,
-            });
+        .then(({ count, rows }) => {
+            return {
+                count,
+                rows: rows.map((it) => new PerfumeResponseDTO(it)),
+            };
+        })
+        .then((data) => {
+            res.status(OK).json(
+                new ResponseDTO({
+                    message: '새로 등록된 향수 조회 성공',
+                    data,
+                })
+            );
         })
         .catch((err) => next(err));
 };

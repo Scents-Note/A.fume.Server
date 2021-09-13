@@ -385,5 +385,31 @@ describe('# Perfume Controller Test', () => {
                     .catch((err) => done(err));
             });
         });
+
+        describe('# getNewPerfume Test', () => {
+            it('success case', (done) => {
+                mockPerfumeService.getNewPerfume = async () => {
+                    return {
+                        rows: mockPerfumeList,
+                        count: 20,
+                    };
+                };
+
+                request(app)
+                    .get(`${basePath}/perfume/new`)
+                    .expect((res) => {
+                        expect(res.status).to.be.eq(200);
+                        const { message, data } = res.body;
+                        expect(message).to.be.eq('새로 등록된 향수 조회 성공');
+                        const { count, rows } = data;
+                        expect(count).to.be.gte(0);
+                        rows.forEach((it) => {
+                            PerfumeResponseDTO.validTest.call(it);
+                        });
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
+        });
     });
 });
