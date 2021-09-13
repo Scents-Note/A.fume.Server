@@ -281,7 +281,7 @@ describe('# Perfume Controller Test', () => {
 
             it('# Fail: no token', (done) => {
                 request(app)
-                    .get(`${basePath}/user/2/perfume/liked`)
+                    .get(`${basePath}/perfume/recent`)
                     .expect((res) => {
                         expect(res.status).to.be.eq(401);
                         const { message } = res.body;

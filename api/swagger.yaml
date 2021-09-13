@@ -302,6 +302,8 @@ paths:
       operationId: recommendPersonalPerfume
       security:
         - userToken: []
+      x-security-scopes:
+        - user
       produces:
       - application/json
       parameters:
