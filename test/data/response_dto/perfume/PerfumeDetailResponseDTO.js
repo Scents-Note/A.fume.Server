@@ -4,19 +4,19 @@ const PerfumeDetailResponseDTO = require('../../../data/response_dto/perfume/Per
 
 const volumeAndPriceRegex = '^[0-9,]+/[0-9,]+ml$';
 
-function expectProperties(...properties) {
-    properties.forEach((property) => {
-        expect(this).to.be.have.property(property);
-    });
-    expect(Object.entries(this).length).to.be.eq(properties.length);
-}
-
 const {
     NOTE_TYPE_SINGLE,
     NOTE_TYPE_NORMAL,
     MIN_SCORE,
     MAX_SCORE,
 } = require('../../../../utils/constantUtil');
+
+function expectHasProperties(...properties) {
+    properties.forEach((property) => {
+        expect(this).to.be.have.property(property);
+    });
+    expect(Object.entries(this).length).to.be.eq(properties.length);
+}
 
 function expectIsPercentage() {
     let sum = 0;
@@ -28,7 +28,7 @@ function expectIsPercentage() {
 }
 
 PerfumeDetailResponseDTO.validTest = function () {
-    expectProperties.call(
+    expectHasProperties.call(
         this,
         'perfumeIdx',
         'name',
@@ -49,9 +49,9 @@ PerfumeDetailResponseDTO.validTest = function () {
     );
 
     expect(this.volumeAndPrice).instanceOf(Array);
-    for (const item of this.volumeAndPrice) {
+    this.volumeAndPrice.forEach((item) => {
         expect(item).to.be.match(volumeAndPriceRegex);
-    }
+    });
     expect(this.imageUrls).instanceOf(Array);
 
     const {
@@ -66,13 +66,13 @@ PerfumeDetailResponseDTO.validTest = function () {
     } = this;
     expect(score).to.be.within(MIN_SCORE, MAX_SCORE);
 
-    expectProperties.call(seasonal, 'spring', 'summer', 'fall', 'winter');
+    expectHasProperties.call(seasonal, 'spring', 'summer', 'fall', 'winter');
     expectIsPercentage.call(seasonal);
 
-    expectProperties.call(sillage, 'light', 'medium', 'heavy');
+    expectHasProperties.call(sillage, 'light', 'medium', 'heavy');
     expectIsPercentage.call(sillage);
 
-    expectProperties.call(
+    expectHasProperties.call(
         longevity,
         'veryWeak',
         'weak',
@@ -82,7 +82,7 @@ PerfumeDetailResponseDTO.validTest = function () {
     );
     expectIsPercentage.call(longevity);
 
-    expectProperties.call(gender, 'male', 'neutral', 'female');
+    expectHasProperties.call(gender, 'male', 'neutral', 'female');
     expectIsPercentage.call(gender);
 
     expect(Keywords).instanceOf(Array);
@@ -90,7 +90,7 @@ PerfumeDetailResponseDTO.validTest = function () {
 
     expect(noteType).to.be.oneOf([NOTE_TYPE_SINGLE, NOTE_TYPE_NORMAL]);
 
-    expectProperties.call(ingredients, 'top', 'middle', 'base', 'single');
+    expectHasProperties.call(ingredients, 'top', 'middle', 'base', 'single');
     const { top, middle, base, single } = ingredients;
     expect(top).to.be.a('string');
     expect(middle).to.be.a('string');
