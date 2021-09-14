@@ -17,6 +17,16 @@ const {
     MIN_SCORE,
     MAX_SCORE,
 } = require('../../../../utils/constantUtil');
+
+function expectIsPercentage() {
+    let sum = 0;
+    Object.entries(this).forEach(([key, value]) => {
+        expect(value).to.be.within(0, 100);
+        sum += value;
+    });
+    expect(sum).to.be.eq(100);
+}
+
 PerfumeDetailResponseDTO.validTest = function () {
     expectProperties.call(
         this,
@@ -57,19 +67,10 @@ PerfumeDetailResponseDTO.validTest = function () {
     expect(score).to.be.within(MIN_SCORE, MAX_SCORE);
 
     expectProperties.call(seasonal, 'spring', 'summer', 'fall', 'winter');
-    const { spring, summer, fall, winter } = seasonal;
-    expect(spring).to.be.within(0, 100);
-    expect(summer).to.be.within(0, 100);
-    expect(fall).to.be.within(0, 100);
-    expect(winter).to.be.within(0, 100);
-    expect(spring + summer + fall + winter).to.be.eq(100);
+    expectIsPercentage.call(seasonal);
 
     expectProperties.call(sillage, 'light', 'medium', 'heavy');
-    const { light, medium, heavy } = sillage;
-    expect(light).to.be.within(0, 100);
-    expect(medium).to.be.within(0, 100);
-    expect(heavy).to.be.within(0, 100);
-    expect(light + medium + heavy).to.be.eq(100);
+    expectIsPercentage.call(sillage);
 
     expectProperties.call(
         longevity,
@@ -79,20 +80,10 @@ PerfumeDetailResponseDTO.validTest = function () {
         'strong',
         'veryStrong'
     );
-    const { veryWeak, weak, normal, strong, veryStrong } = longevity;
-    expect(veryWeak).to.be.within(0, 100);
-    expect(weak).to.be.within(0, 100);
-    expect(normal).to.be.within(0, 100);
-    expect(strong).to.be.within(0, 100);
-    expect(veryStrong).to.be.within(0, 100);
-    expect(veryWeak + weak + normal + strong + veryStrong).to.be.eq(100);
+    expectIsPercentage.call(longevity);
 
     expectProperties.call(gender, 'male', 'neutral', 'female');
-    const { male, neutral, female } = gender;
-    expect(male).to.be.within(0, 100);
-    expect(neutral).to.be.within(0, 100);
-    expect(female).to.be.within(0, 100);
-    expect(male + neutral + female).to.be.eq(100);
+    expectIsPercentage.call(gender);
 
     expect(Keywords).instanceOf(Array);
     Keywords.forEach((it) => expect(it).instanceOf(String));
