@@ -11,6 +11,12 @@ function expectProperties(...properties) {
     expect(Object.entries(this).length).to.be.eq(properties.length);
 }
 
+const {
+    NOTE_TYPE_SINGLE,
+    NOTE_TYPE_NORMAL,
+    MIN_SCORE,
+    MAX_SCORE,
+} = require('../../../../utils/constantUtil');
 PerfumeDetailResponseDTO.validTest = function () {
     expectProperties.call(
         this,
@@ -48,7 +54,7 @@ PerfumeDetailResponseDTO.validTest = function () {
         ingredients,
         noteType,
     } = this;
-    expect(score).to.be.within(0, 10);
+    expect(score).to.be.within(MIN_SCORE, MAX_SCORE);
 
     expectProperties.call(seasonal, 'spring', 'summer', 'fall', 'winter');
     const { spring, summer, fall, winter } = seasonal;
@@ -91,7 +97,7 @@ PerfumeDetailResponseDTO.validTest = function () {
     expect(Keywords).instanceOf(Array);
     Keywords.forEach((it) => expect(it).instanceOf(String));
 
-    expect(noteType).to.be.within(0, 1);
+    expect(noteType).to.be.oneOf([NOTE_TYPE_SINGLE, NOTE_TYPE_NORMAL]);
 
     expectProperties.call(ingredients, 'top', 'middle', 'base', 'single');
     const { top, middle, base, single } = ingredients;
