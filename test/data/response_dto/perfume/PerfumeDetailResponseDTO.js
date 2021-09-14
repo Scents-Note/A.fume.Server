@@ -1,4 +1,4 @@
-const { expect } = require('chai');
+const expect = require('../../../utils/expect');
 
 const PerfumeDetailResponseDTO = require('../../../data/response_dto/perfume/PerfumeDetailResponseDTO');
 
@@ -11,24 +11,8 @@ const {
     MAX_SCORE,
 } = require('../../../../utils/constantUtil');
 
-function expectHasProperties(...properties) {
-    properties.forEach((property) => {
-        expect(this).to.be.have.property(property);
-    });
-    expect(Object.entries(this).length).to.be.eq(properties.length);
-}
-
-function expectIsPercentage() {
-    let sum = 0;
-    Object.entries(this).forEach(([key, value]) => {
-        expect(value).to.be.within(0, 100);
-        sum += value;
-    });
-    expect(sum).to.be.eq(100);
-}
-
 PerfumeDetailResponseDTO.validTest = function () {
-    expectHasProperties.call(
+    expect.hasProperties.call(
         this,
         'perfumeIdx',
         'name',
@@ -66,13 +50,13 @@ PerfumeDetailResponseDTO.validTest = function () {
     } = this;
     expect(score).to.be.within(MIN_SCORE, MAX_SCORE);
 
-    expectHasProperties.call(seasonal, 'spring', 'summer', 'fall', 'winter');
-    expectIsPercentage.call(seasonal);
+    expect.hasProperties.call(seasonal, 'spring', 'summer', 'fall', 'winter');
+    expect.isPercentage.call(seasonal);
 
-    expectHasProperties.call(sillage, 'light', 'medium', 'heavy');
-    expectIsPercentage.call(sillage);
+    expect.hasProperties.call(sillage, 'light', 'medium', 'heavy');
+    expect.isPercentage.call(sillage);
 
-    expectHasProperties.call(
+    expect.hasProperties.call(
         longevity,
         'veryWeak',
         'weak',
@@ -80,17 +64,17 @@ PerfumeDetailResponseDTO.validTest = function () {
         'strong',
         'veryStrong'
     );
-    expectIsPercentage.call(longevity);
+    expect.isPercentage.call(longevity);
 
-    expectHasProperties.call(gender, 'male', 'neutral', 'female');
-    expectIsPercentage.call(gender);
+    expect.hasProperties.call(gender, 'male', 'neutral', 'female');
+    expect.isPercentage.call(gender);
 
     expect(Keywords).instanceOf(Array);
     Keywords.forEach((it) => expect(it).instanceOf(String));
 
     expect(noteType).to.be.oneOf([NOTE_TYPE_SINGLE, NOTE_TYPE_NORMAL]);
 
-    expectHasProperties.call(ingredients, 'top', 'middle', 'base', 'single');
+    expect.hasProperties.call(ingredients, 'top', 'middle', 'base', 'single');
     const { top, middle, base, single } = ingredients;
     expect(top).to.be.a('string');
     expect(middle).to.be.a('string');
