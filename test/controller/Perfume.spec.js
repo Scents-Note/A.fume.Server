@@ -8,6 +8,8 @@ const app = require('../../index.js');
 
 const basePath = '/A.fume/api/0.0.1';
 
+const statusCode = require('../../utils/statusCode');
+
 const Perfume = require('../../controllers/Perfume.js');
 const PerfumeDetailResponseDTO = require('../data/response_dto/perfume/PerfumeDetailResponseDTO');
 const PerfumeResponseDTO = require('../data/response_dto/perfume/PerfumeResponseDTO');
@@ -154,7 +156,7 @@ describe('# Perfume Controller Test', () => {
             request(app)
                 .get(`${basePath}/perfume/1`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('향수 조회 성공');
                     PerfumeDetailResponseDTO.validTest.call(data);
@@ -180,7 +182,7 @@ describe('# Perfume Controller Test', () => {
                         brandList: [],
                     })
                     .expect((res) => {
-                        expect(res.status).to.be.eq(200);
+                        expect(res.status).to.be.eq(statusCode.OK);
                         const { message, data } = res.body;
                         expect(message).to.be.eq('향수 검색 성공');
                         const { count, rows } = data;
@@ -201,7 +203,7 @@ describe('# Perfume Controller Test', () => {
                     .post(`${basePath}/perfume/1/like`)
                     .set('x-access-token', 'Bearer ' + user1token)
                     .expect((res) => {
-                        expect(res.status).to.be.eq(200);
+                        expect(res.status).to.be.eq(statusCode.OK);
                         const { message, data } = res.body;
                         expect(message).to.be.eq(
                             '향수 좋아요' + (data ? '' : ' 취소')
@@ -226,7 +228,7 @@ describe('# Perfume Controller Test', () => {
                     .get(`${basePath}/user/1/perfume/liked`)
                     .set('x-access-token', 'Bearer ' + user1token)
                     .expect((res) => {
-                        expect(res.status).to.be.eq(200);
+                        expect(res.status).to.be.eq(statusCode.OK);
                         const { message, data } = res.body;
                         expect(message).to.be.eq('유저가 좋아요한 향수 조회');
                         const { count, rows } = data;
@@ -244,7 +246,7 @@ describe('# Perfume Controller Test', () => {
                     .get(`${basePath}/user/2/perfume/liked`)
                     .set('x-access-token', 'Bearer ' + user1token)
                     .expect((res) => {
-                        expect(res.status).to.be.eq(403);
+                        expect(res.status).to.be.eq(statusCode.FORBIDDEN);
                         const { message } = res.body;
                         expect(message).to.be.eq('비정상적인 접근입니다.');
                         done();
@@ -266,7 +268,7 @@ describe('# Perfume Controller Test', () => {
                     .get(`${basePath}/perfume/recent`)
                     .set('x-access-token', 'Bearer ' + user1token)
                     .expect((res) => {
-                        expect(res.status).to.be.eq(200);
+                        expect(res.status).to.be.eq(statusCode.OK);
                         const { message, data } = res.body;
                         expect(message).to.be.eq('최근 검색한 향수 조회');
                         const { count, rows } = data;
@@ -283,7 +285,7 @@ describe('# Perfume Controller Test', () => {
                 request(app)
                     .get(`${basePath}/perfume/recent`)
                     .expect((res) => {
-                        expect(res.status).to.be.eq(401);
+                        expect(res.status).to.be.eq(statusCode.UNAUTHORIZED);
                         const { message } = res.body;
                         expect(message).to.be.eq('유효하지 않는 토큰입니다.');
                         done();
@@ -305,7 +307,7 @@ describe('# Perfume Controller Test', () => {
                     .get(`${basePath}/perfume/recommend/personal`)
                     .set('x-access-token', 'Bearer ' + user1token)
                     .expect((res) => {
-                        expect(res.status).to.be.eq(200);
+                        expect(res.status).to.be.eq(statusCode.OK);
                         const { message, data } = res.body;
                         expect(message).to.be.eq('향수 개인 맞춤 추천');
                         const { count, rows } = data;
@@ -322,7 +324,7 @@ describe('# Perfume Controller Test', () => {
                 request(app)
                     .get(`${basePath}/perfume/recommend/personal`)
                     .expect((res) => {
-                        expect(res.status).to.be.eq(401);
+                        expect(res.status).to.be.eq(statusCode.UNAUTHORIZED);
                         const { message } = res.body;
                         expect(message).to.be.eq('유효하지 않는 토큰입니다.');
                         done();
@@ -343,7 +345,7 @@ describe('# Perfume Controller Test', () => {
                 request(app)
                     .get(`${basePath}/perfume/recommend/common`)
                     .expect((res) => {
-                        expect(res.status).to.be.eq(200);
+                        expect(res.status).to.be.eq(statusCode.OK);
                         const { message, data } = res.body;
                         expect(message).to.be.eq(
                             '향수 일반 추천 (성별, 나이 반영)'
@@ -372,7 +374,7 @@ describe('# Perfume Controller Test', () => {
                     .get(`${basePath}/perfume/survey`)
                     .set('x-access-token', 'Bearer ' + user1token)
                     .expect((res) => {
-                        expect(res.status).to.be.eq(200);
+                        expect(res.status).to.be.eq(statusCode.OK);
                         const { message, data } = res.body;
                         expect(message).to.be.eq('서베이 향수 조회 성공');
                         const { count, rows } = data;
