@@ -2,8 +2,18 @@ const { expect } = require('chai');
 
 const PerfumeDetailResponseDTO = require('../../../data/response_dto/perfume/PerfumeDetailResponseDTO');
 
+const volumeAndPriceRegex = '^[0-9,]+/[0-9,]+ml$';
+
+function expectProperties(...properties) {
+    properties.forEach((property) => {
+        expect(this).to.be.have.property(property);
+    });
+    expect(Object.entries(this).length).to.be.eq(properties.length);
+}
+
 PerfumeDetailResponseDTO.validTest = function () {
-    const properties = [
+    expectProperties.call(
+        this,
         'perfumeIdx',
         'name',
         'brandName',
@@ -19,14 +29,12 @@ PerfumeDetailResponseDTO.validTest = function () {
         'isLiked',
         'Keywords',
         'noteType',
-        'ingredients',
-    ];
-    properties.forEach((it) => expect(this).to.be.have.property(it));
-    expect(Object.entries(this).length).to.be.eq(properties.length);
+        'ingredients'
+    );
 
     expect(this.volumeAndPrice).instanceOf(Array);
     for (const item of this.volumeAndPrice) {
-        expect(item).to.be.match('^[0-9,]+/[0-9,]+ml$');
+        expect(item).to.be.match(volumeAndPriceRegex);
     }
     expect(this.imageUrls).instanceOf(Array);
 
@@ -42,11 +50,7 @@ PerfumeDetailResponseDTO.validTest = function () {
     } = this;
     expect(score).to.be.within(0, 10);
 
-    expect(seasonal).to.be.have.property('spring');
-    expect(seasonal).to.be.have.property('summer');
-    expect(seasonal).to.be.have.property('fall');
-    expect(seasonal).to.be.have.property('winter');
-    expect(Object.entries(seasonal).length).to.be.eq(4);
+    expectProperties.call(seasonal, 'spring', 'summer', 'fall', 'winter');
     const { spring, summer, fall, winter } = seasonal;
     expect(spring).to.be.within(0, 100);
     expect(summer).to.be.within(0, 100);
@@ -54,22 +58,21 @@ PerfumeDetailResponseDTO.validTest = function () {
     expect(winter).to.be.within(0, 100);
     expect(spring + summer + fall + winter).to.be.eq(100);
 
-    expect(sillage).to.be.have.property('light');
-    expect(sillage).to.be.have.property('medium');
-    expect(sillage).to.be.have.property('heavy');
-    expect(Object.entries(sillage).length).to.be.eq(3);
+    expectProperties.call(sillage, 'light', 'medium', 'heavy');
     const { light, medium, heavy } = sillage;
     expect(light).to.be.within(0, 100);
     expect(medium).to.be.within(0, 100);
     expect(heavy).to.be.within(0, 100);
     expect(light + medium + heavy).to.be.eq(100);
 
-    expect(longevity).to.be.have.property('veryWeak');
-    expect(longevity).to.be.have.property('weak');
-    expect(longevity).to.be.have.property('normal');
-    expect(longevity).to.be.have.property('strong');
-    expect(longevity).to.be.have.property('veryStrong');
-    expect(Object.entries(longevity).length).to.be.eq(5);
+    expectProperties.call(
+        longevity,
+        'veryWeak',
+        'weak',
+        'normal',
+        'strong',
+        'veryStrong'
+    );
     const { veryWeak, weak, normal, strong, veryStrong } = longevity;
     expect(veryWeak).to.be.within(0, 100);
     expect(weak).to.be.within(0, 100);
@@ -78,10 +81,7 @@ PerfumeDetailResponseDTO.validTest = function () {
     expect(veryStrong).to.be.within(0, 100);
     expect(veryWeak + weak + normal + strong + veryStrong).to.be.eq(100);
 
-    expect(gender).to.be.have.property('male');
-    expect(gender).to.be.have.property('neutral');
-    expect(gender).to.be.have.property('female');
-    expect(Object.entries(gender).length).to.be.eq(3);
+    expectProperties.call(gender, 'male', 'neutral', 'female');
     const { male, neutral, female } = gender;
     expect(male).to.be.within(0, 100);
     expect(neutral).to.be.within(0, 100);
@@ -93,11 +93,7 @@ PerfumeDetailResponseDTO.validTest = function () {
 
     expect(noteType).to.be.within(0, 1);
 
-    expect(ingredients).to.be.have.property('top');
-    expect(ingredients).to.be.have.property('middle');
-    expect(ingredients).to.be.have.property('base');
-    expect(ingredients).to.be.have.property('single');
-    expect(Object.entries(ingredients).length).to.be.eq(4);
+    expectProperties.call(ingredients, 'top', 'middle', 'base', 'single');
     const { top, middle, base, single } = ingredients;
     expect(top).to.be.a('string');
     expect(middle).to.be.a('string');
