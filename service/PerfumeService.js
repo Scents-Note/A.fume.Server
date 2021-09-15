@@ -127,7 +127,7 @@ function makeInitMap(arr, initFunc) {
 
 function updateCount(obj, prop) {
     if (!obj[prop]) {
-        obj[prop] = 0;
+        return;
     }
     obj[prop] = obj[prop] + 1;
 }
@@ -139,6 +139,14 @@ function normalize(obj) {
         return prev + cur[1];
     }, 0);
     if (total == 0) {
+        const n = entries.length;
+        let remain = 100;
+        for (let i = 0; i < entries.length - 2; i++) {
+            const key = entries[i][0];
+            obj[key] = parseInt(100 / n);
+            remain -= obj[key];
+        }
+        obj[entries[entries.length - 1][0]] += remain;
         return obj;
     }
     let remain = 100;
@@ -181,11 +189,12 @@ async function generateNote(perfumeIdx) {
 async function generateSummary(perfumeIdx) {
     let sum = 0,
         cnt = 0;
-    let seasonalMap = makeZeroMap(SEASONAL_LIST);
-    let sillageMap = makeZeroMap(SILLAGE_LIST);
-    let longevityMap = makeZeroMap(LONGEVITY_LIST);
-    let genderMap = makeZeroMap(GENDER_LIST);
+    let seasonalMap = makeZeroMap(SEASONAL_LIST.slice(1));
+    let sillageMap = makeZeroMap(SILLAGE_LIST.slice(1));
+    let longevityMap = makeZeroMap(LONGEVITY_LIST.slice(1));
+    let genderMap = makeZeroMap(GENDER_LIST.slice(1));
 
+    console.log(seasonalMap);
     (await reviewDao.readAllOfPerfume(perfumeIdx))
         .map((it) => {
             it.seasonal = SEASONAL_LIST[it.seasonal];
@@ -198,13 +207,12 @@ async function generateSummary(perfumeIdx) {
             if (review.score) {
                 sum += review.score;
                 cnt++;
-                updateCount(longevityMap, review.longevity);
-                updateCount(sillageMap, review.sillage);
-                updateCount(seasonalMap, review.seasonal);
-                updateCount(genderMap, review.gender);
             }
+            updateCount(longevityMap, review.longevity);
+            updateCount(sillageMap, review.sillage);
+            updateCount(seasonalMap, review.seasonal);
+            updateCount(genderMap, review.gender);
         });
-
     return {
         score: parseFloat((parseFloat(sum) / cnt).toFixed(2)) || 0,
         seasonal: normalize(seasonalMap),
