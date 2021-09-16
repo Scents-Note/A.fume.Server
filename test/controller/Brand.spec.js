@@ -7,28 +7,9 @@ const { expect } = chai;
 const app = require('../../index.js');
 
 const basePath = '/A.fume/api/0.0.1';
-const {
-    BrandDTO,
-    ListAndCountDTO,
-    CreatedResultDTO,
-} = require('../../data/dto');
+const { ListAndCountDTO, CreatedResultDTO } = require('../../data/dto');
+const BrandDTO = require('../data/dto/BrandDTO');
 const { BrandFilterVO } = require('../../data/vo');
-
-const mockBrandDTO = new BrandDTO({
-    brandIdx: 1,
-    name: '브랜드1',
-    englishName: 'BRAND1',
-    firstInitial: 'ㅂ',
-    imageUrl: 'http://',
-    description: '이것은 브랜드',
-    createdAt: '2021-07-24T03:38:52.000Z',
-    updatedAt: '2021-07-24T03:38:52.000Z',
-});
-
-const mockListAndCountDTO = new ListAndCountDTO({
-    count: 1,
-    rows: [mockBrandDTO, mockBrandDTO, mockBrandDTO],
-});
 
 const mockBrandService = {};
 const Brand = require('../../controllers/Brand.js');
@@ -36,7 +17,11 @@ Brand.setBrandService(mockBrandService);
 
 describe('# Brand Controller Test', () => {
     describe('# getBrandAll Test', () => {
-        mockBrandService.getBrandAll = async () => mockListAndCountDTO;
+        mockBrandService.getBrandAll = async () =>
+            new ListAndCountDTO({
+                count: 1,
+                rows: [BrandDTO.create(), BrandDTO.create(), BrandDTO.create()],
+            });
         it('success case', (done) => {
             request(app)
                 .get(`${basePath}/brand`)
@@ -65,7 +50,11 @@ describe('# Brand Controller Test', () => {
             }),
             new BrandFilterVO({
                 firstInitial: 'ㅂ',
-                brands: [mockBrandDTO, mockBrandDTO, mockBrandDTO],
+                brands: [
+                    BrandDTO.create(),
+                    BrandDTO.create(),
+                    BrandDTO.create(),
+                ],
             }),
         ];
         it('success case', (done) => {
