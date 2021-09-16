@@ -8,7 +8,7 @@ const app = require('../../index.js');
 const basePath = '/A.fume/api/0.0.1';
 const { ListAndCountDTO, CreatedResultDTO } = require('../../data/dto');
 const BrandDTO = require('../data/dto/BrandDTO');
-const { BrandFilterVO } = require('../../data/vo');
+const BrandFilterDTO = require('../../data/dto/BrandFilterDTO');
 const BrandFilterResponseDTO = require('../data/response_dto/brand/BrandFilterResponseDTO');
 const BrandResponseDTO = require('../data/response_dto/brand/BrandResponseDTO');
 const statusCode = require('../../utils/statusCode');
@@ -44,11 +44,11 @@ describe('# Brand Controller Test', () => {
 
     describe('# getFilterBrand Test', () => {
         mockBrandService.getFilterBrand = async (condition) => [
-            new BrandFilterVO({
+            new BrandFilterDTO({
                 firstInitial: 'ㄱ',
                 brands: [],
             }),
-            new BrandFilterVO({
+            new BrandFilterDTO({
                 firstInitial: 'ㅂ',
                 brands: [
                     BrandDTO.create(),
