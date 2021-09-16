@@ -2,8 +2,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const request = require('supertest');
-const chai = require('chai');
-const { expect } = chai;
+const expect = require('../utils/expect');
 const app = require('../../index.js');
 
 const basePath = '/A.fume/api/0.0.1';
@@ -33,9 +32,7 @@ describe('# Brand Controller Test', () => {
                     expect(message).to.be.eq('브랜드 조회 성공');
                     expect(data.count).to.be.gt(0);
                     for (const brand of data.rows) {
-                        expect(brand).to.be.have.property('brandIdx');
-                        expect(brand).to.be.have.property('name');
-                        expect(Object.entries(brand).length).to.be.eq(2);
+                        expect.hasProperties.call(brand, 'brandIdx', 'name');
                     }
                     done();
                 })
@@ -71,11 +68,12 @@ describe('# Brand Controller Test', () => {
                         );
                         expect(brandFilterResponseDTO).have.property('brands');
                         for (const brand of brandFilterResponseDTO.brands) {
-                            expect(brand).to.be.have.property('brandIdx');
-                            expect(brand).to.be.have.property('name');
-                            expect(Object.entries(brand).length).to.be.eq(2);
+                            expect.hasProperties.call(
+                                brand,
+                                'brandIdx',
+                                'name'
+                            );
                         }
-                        expect();
                     }
                     done();
                 })
