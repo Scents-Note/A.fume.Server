@@ -14,7 +14,10 @@ const {
     ListAndCountResponseDTO,
 } = require('../data/response_dto/common');
 
-const { BrandResponseDTO } = require('../data/response_dto/brand');
+const {
+    BrandResponseDTO,
+    BrandFilterResponseDTO,
+} = require('../data/response_dto/brand');
 
 module.exports.getBrandAll = (req, res, next) => {
     Brand.getBrandAll()
@@ -39,7 +42,7 @@ module.exports.getBrandAll = (req, res, next) => {
 module.exports.getFilterBrand = (req, res, next) => {
     Brand.getFilterBrand()
         .then((result) => {
-            return result.map((it) => it.toResponse());
+            return result.map((it) => BrandFilterResponseDTO.create(it));
         })
         .then((response) => {
             res.status(OK).json(
