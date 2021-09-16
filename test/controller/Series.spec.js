@@ -7,11 +7,8 @@ const { expect } = chai;
 const app = require('../../index.js');
 
 const basePath = '/A.fume/api/0.0.1';
-const {
-    IngredientDTO,
-    ListAndCountDTO,
-    CreatedResultDTO,
-} = require('../../data/dto');
+const { ListAndCountDTO, CreatedResultDTO } = require('../../data/dto');
+const IngredientDTO = require('../data/dto/IngredientDTO');
 const SeriesDTO = require('../data/dto/SeriesDTO');
 const { SeriesFilterVO } = require('../../data/vo');
 
@@ -47,35 +44,17 @@ Series.setSeriesService({
                         updatedAt: '2021-07-24T03:38:52.000Z',
                     },
                     ingredients: [
-                        new IngredientDTO({
+                        IngredientDTO.createWithIdx({
                             ingredientIdx: 1,
-                            name: '재료1',
-                            englishName: 'Ingredient 1',
-                            description: '이것은 재료',
-                            imageUrl: 'http://',
                             seriesIdx: 1,
-                            createdAt: '2021-07-24T03:38:52.000Z',
-                            updatedAt: '2021-07-24T03:38:52.000Z',
                         }),
-                        new IngredientDTO({
+                        IngredientDTO.createWithIdx({
                             ingredientIdx: 3,
-                            name: '재료3',
-                            englishName: 'Ingredient 3',
-                            description: '이것은 재료',
-                            imageUrl: 'http://',
                             seriesIdx: 1,
-                            createdAt: '2021-07-24T03:38:52.000Z',
-                            updatedAt: '2021-07-24T03:38:52.000Z',
                         }),
-                        new IngredientDTO({
+                        IngredientDTO.createWithIdx({
                             ingredientIdx: 5,
-                            name: '재료5',
-                            englishName: 'Ingredient 5',
-                            description: '이것은 재료',
-                            imageUrl: 'http://',
                             seriesIdx: 1,
-                            createdAt: '2021-07-24T03:38:52.000Z',
-                            updatedAt: '2021-07-24T03:38:52.000Z',
                         }),
                     ],
                 }),
@@ -90,15 +69,9 @@ Series.setSeriesService({
                         updatedAt: '2021-07-24T03:38:52.000Z',
                     },
                     ingredients: [
-                        new IngredientDTO({
+                        IngredientDTO.createWithIdx({
                             ingredientIdx: 7,
-                            name: '재료7',
-                            englishName: 'Ingredient 7',
-                            description: '이것은 재료',
-                            imageUrl: 'http://',
-                            seriesIdx: 2,
-                            createdAt: '2021-07-24T03:38:52.000Z',
-                            updatedAt: '2021-07-24T03:38:52.000Z',
+                            seriesIdx: 1,
                         }),
                     ],
                 }),
@@ -113,15 +86,9 @@ Series.setSeriesService({
                         updatedAt: '2021-07-24T03:38:52.000Z',
                     },
                     ingredients: [
-                        new IngredientDTO({
+                        IngredientDTO.createWithIdx({
                             ingredientIdx: 9,
-                            name: '재료9',
-                            englishName: 'Ingredient 9',
-                            description: '이것은 재료',
-                            imageUrl: 'http://',
-                            seriesIdx: 3,
-                            createdAt: '2021-07-24T03:38:52.000Z',
-                            updatedAt: '2021-07-24T03:38:52.000Z',
+                            seriesIdx: 1,
                         }),
                     ],
                 }),
