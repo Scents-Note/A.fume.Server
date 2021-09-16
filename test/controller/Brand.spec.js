@@ -10,6 +10,7 @@ const { ListAndCountDTO, CreatedResultDTO } = require('../../data/dto');
 const BrandDTO = require('../data/dto/BrandDTO');
 const { BrandFilterVO } = require('../../data/vo');
 const BrandFilterResponseDTO = require('../data/response_dto/brand/BrandFilterResponseDTO');
+const BrandResponseDTO = require('../data/response_dto/brand/BrandResponseDTO');
 const statusCode = require('../../utils/statusCode');
 
 const mockBrandService = {};
@@ -32,9 +33,9 @@ describe('# Brand Controller Test', () => {
 
                     expect(message).to.be.eq('브랜드 조회 성공');
                     expect(data.count).to.be.gt(0);
-                    for (const brand of data.rows) {
-                        expect.hasProperties.call(brand, 'brandIdx', 'name');
-                    }
+                    data.rows.forEach((brand) => {
+                        BrandResponseDTO.validTest.call(brand);
+                    });
                     done();
                 })
                 .catch((err) => done(err));
