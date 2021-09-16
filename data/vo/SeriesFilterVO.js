@@ -10,20 +10,6 @@ class SeriesFilterVO extends SeriesDTO {
         super(series);
         this.ingredients = ingredients;
     }
-
-    /**
-     *
-     * @returns SeriesFilterResponseDTO
-     */
-    toResponse() {
-        return new SeriesFilterResponseDTO({
-            seriesIdx: this.seriesIdx,
-            name: this.name,
-            ingredients: this.ingredients.map(
-                (it) => new IngredientResponseDTO(it)
-            ),
-        });
-    }
 }
 
 module.exports = SeriesFilterVO;
