@@ -58,7 +58,7 @@ module.exports.getFilterSeries = (req, res, next) => {
         .then(({ count, rows }) => {
             return {
                 count,
-                rows: rows.map((it) => it.toResponse()),
+                rows: rows.map((it) => SeriesFilterResponseDTO.create(it)),
             };
         })
         .then(({ count, rows }) => {
