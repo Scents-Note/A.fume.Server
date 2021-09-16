@@ -30,33 +30,13 @@ const mockListAndCountDTO = new ListAndCountDTO({
     rows: [mockBrandDTO, mockBrandDTO, mockBrandDTO],
 });
 
+const mockBrandService = {};
 const Brand = require('../../controllers/Brand.js');
-Brand.setBrandService({
-    insertBrand: async (brandDTO) =>
-        new CreatedResultDTO({
-            idx: 1,
-            created: mockBrandDTO,
-        }),
-    getBrandByIdx: async (brandIdx) => mockBrandDTO,
-    searchBrand: async (pagingDTO) => mockListAndCountDTO,
-    getBrandAll: async () => mockListAndCountDTO,
-    putBrand: async (brandDTO) => 1,
-    deleteBrand: async (brandIdx) => 1,
-    getFilterBrand: async (condition) => [
-        new BrandFilterVO({
-            firstInitial: 'ㄱ',
-            brands: [],
-        }),
-        new BrandFilterVO({
-            firstInitial: 'ㅂ',
-            brands: [mockBrandDTO, mockBrandDTO, mockBrandDTO],
-        }),
-    ],
-    findBrandByEnglishName: async (englishName) => mockBrandDTO,
-});
+Brand.setBrandService(mockBrandService);
 
 describe('# Brand Controller Test', () => {
     describe('# getBrandAll Test', () => {
+        mockBrandService.getBrandAll = async () => mockListAndCountDTO;
         it('success case', (done) => {
             request(app)
                 .get(`${basePath}/brand`)
@@ -78,6 +58,16 @@ describe('# Brand Controller Test', () => {
     });
 
     describe('# getFilterBrand Test', () => {
+        mockBrandService.getFilterBrand = async (condition) => [
+            new BrandFilterVO({
+                firstInitial: 'ㄱ',
+                brands: [],
+            }),
+            new BrandFilterVO({
+                firstInitial: 'ㅂ',
+                brands: [mockBrandDTO, mockBrandDTO, mockBrandDTO],
+            }),
+        ];
         it('success case', (done) => {
             request(app)
                 .get(`${basePath}/filter/brand`)
