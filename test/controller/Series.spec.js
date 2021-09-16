@@ -8,33 +8,16 @@ const app = require('../../index.js');
 
 const basePath = '/A.fume/api/0.0.1';
 const {
-    SeriesDTO,
     IngredientDTO,
     ListAndCountDTO,
     CreatedResultDTO,
 } = require('../../data/dto');
+const SeriesDTO = require('../data/dto/SeriesDTO');
 const { SeriesFilterVO } = require('../../data/vo');
-
-const mockSeriesDTO = new SeriesDTO({
-    seriesIdx: 1,
-    name: '계열1',
-    englishName: 'SERIES1',
-    imageUrl: 'http://',
-    description: '이것은 계열',
-    createdAt: '2021-07-24T03:38:52.000Z',
-    updatedAt: '2021-07-24T03:38:52.000Z',
-});
-
-const mockSeriesInputDTO = {
-    name: '꿀',
-    englishName: 'Honey',
-    description: '화이트 허니, 허니',
-    imageUrl: 'http://',
-};
 
 const mockListAndCountDTO = new ListAndCountDTO({
     count: 1,
-    rows: [mockSeriesDTO, mockSeriesDTO, mockSeriesDTO],
+    rows: [SeriesDTO.create(), SeriesDTO.create(), SeriesDTO.create()],
 });
 
 const Series = require('../../controllers/Series.js');
@@ -42,9 +25,9 @@ Series.setSeriesService({
     postSeries: async (seriesDTO) =>
         new CreatedResultDTO({
             idx: 1,
-            created: mockSeriesDTO,
+            created: SeriesDTO.create(),
         }),
-    getSeriesByIdx: async () => mockSeriesDTO,
+    getSeriesByIdx: async () => SeriesDTO.create(),
     getSeriesAll: async () => mockListAndCountDTO,
     searchSeries: async () => mockListAndCountDTO,
     putSeries: async () => 1,
