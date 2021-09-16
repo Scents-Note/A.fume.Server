@@ -10,6 +10,7 @@ const basePath = '/A.fume/api/0.0.1';
 const { ListAndCountDTO, CreatedResultDTO } = require('../../data/dto');
 const BrandDTO = require('../data/dto/BrandDTO');
 const { BrandFilterVO } = require('../../data/vo');
+const statusCode = require('../../utils/statusCode');
 
 const mockBrandService = {};
 const Brand = require('../../controllers/Brand.js');
@@ -26,7 +27,7 @@ describe('# Brand Controller Test', () => {
             request(app)
                 .get(`${basePath}/brand`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
 
                     expect(message).to.be.eq('브랜드 조회 성공');
@@ -61,7 +62,7 @@ describe('# Brand Controller Test', () => {
             request(app)
                 .get(`${basePath}/filter/brand`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('브랜드 필터 조회 성공');
                     for (const brandFilterResponseDTO of data) {
