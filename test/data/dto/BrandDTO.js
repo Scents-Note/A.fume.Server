@@ -2,32 +2,12 @@ const { expect } = require('chai');
 
 const BrandDTO = require('../../../data/dto/BrandDTO');
 
-const FIRST_INITIAL = [
-    'ㄱ',
-    'ㄲ',
-    'ㄴ',
-    'ㄷ',
-    'ㄸ',
-    'ㄹ',
-    'ㅁ',
-    'ㅂ',
-    'ㅃ',
-    'ㅅ',
-    'ㅆ',
-    'ㅇ',
-    'ㅈ',
-    'ㅉ',
-    'ㅊ',
-    'ㅋ',
-    'ㅍ',
-    'ㅌ',
-    'ㅎ',
-];
+const FIRST_INITIAL_REGEX = /^[ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅍㅌㅎ]$/;
 
 BrandDTO.prototype.validTest = function () {
     expect(this.brandIdx).to.be.ok;
     expect(this.name).to.be.ok;
-    expect(this.firstInitial).to.be.oneOf(FIRST_INITIAL);
+    expect(this.firstInitial).to.be.match(FIRST_INITIAL_REGEX);
     expect(this.imageUrl).to.be.ok;
     expect(this.description).to.be.not.undefined;
     expect(this.createdAt).to.be.ok;
