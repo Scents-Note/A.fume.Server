@@ -12,18 +12,21 @@ const IngredientDTO = require('../data/dto/IngredientDTO');
 const SeriesDTO = require('../data/dto/SeriesDTO');
 const { SeriesFilterVO } = require('../../data/vo');
 
-const mockListAndCountDTO = new ListAndCountDTO({
-    count: 1,
-    rows: [SeriesDTO.create(), SeriesDTO.create(), SeriesDTO.create()],
-});
-
 const Series = require('../../controllers/Series.js');
 const mockSeriesService = {};
 Series.setSeriesService(mockSeriesService);
 
 describe('# Series Controller Test', () => {
     describe('# getSeriesAll Test', () => {
-        mockSeriesService.getSeriesAll = async () => mockListAndCountDTO;
+        mockSeriesService.getSeriesAll = async () =>
+            new ListAndCountDTO({
+                count: 1,
+                rows: [
+                    SeriesDTO.create(),
+                    SeriesDTO.create(),
+                    SeriesDTO.create(),
+                ],
+            });
         it('success case', (done) => {
             request(app)
                 .get(`${basePath}/series`)
@@ -56,15 +59,7 @@ describe('# Series Controller Test', () => {
                 count: 1,
                 rows: [
                     new SeriesFilterVO({
-                        series: {
-                            seriesIdx: 1,
-                            name: '계열1',
-                            englishName: 'SERIES1',
-                            description: '이것은 계열',
-                            imageUrl: 'http://',
-                            createdAt: '2021-07-24T03:38:52.000Z',
-                            updatedAt: '2021-07-24T03:38:52.000Z',
-                        },
+                        series: SeriesDTO.create(),
                         ingredients: [
                             IngredientDTO.createWithIdx({
                                 ingredientIdx: 1,
@@ -81,15 +76,11 @@ describe('# Series Controller Test', () => {
                         ],
                     }),
                     new SeriesFilterVO({
-                        series: {
+                        series: SeriesDTO.create({
                             seriesIdx: 2,
                             name: '계열2',
                             englishName: 'SERIES2',
-                            description: '이것은 계열',
-                            imageUrl: 'http://',
-                            createdAt: '2021-07-24T03:38:52.000Z',
-                            updatedAt: '2021-07-24T03:38:52.000Z',
-                        },
+                        }),
                         ingredients: [
                             IngredientDTO.createWithIdx({
                                 ingredientIdx: 7,
@@ -98,15 +89,11 @@ describe('# Series Controller Test', () => {
                         ],
                     }),
                     new SeriesFilterVO({
-                        series: {
+                        series: SeriesDTO.create({
                             seriesIdx: 3,
                             name: '계열3',
                             englishName: 'SERIES3',
-                            description: '이것은 계열',
-                            imageUrl: 'http://',
-                            createdAt: '2021-07-24T03:38:52.000Z',
-                            updatedAt: '2021-07-24T03:38:52.000Z',
-                        },
+                        }),
                         ingredients: [
                             IngredientDTO.createWithIdx({
                                 ingredientIdx: 9,
