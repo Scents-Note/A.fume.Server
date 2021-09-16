@@ -7,7 +7,8 @@ const { expect } = chai;
 const app = require('../../index.js');
 
 const basePath = '/A.fume/api/0.0.1';
-const { ListAndCountDTO, CreatedResultDTO } = require('../../data/dto');
+const { ListAndCountDTO } = require('../../data/dto');
+const statusCode = require('../../utils/statusCode');
 const IngredientDTO = require('../data/dto/IngredientDTO');
 const SeriesDTO = require('../data/dto/SeriesDTO');
 const { SeriesFilterVO } = require('../../data/vo');
@@ -31,7 +32,7 @@ describe('# Series Controller Test', () => {
             request(app)
                 .get(`${basePath}/series`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('series 전체 조회 성공');
                     expect(data.count).to.be.eq(1);
@@ -108,7 +109,7 @@ describe('# Series Controller Test', () => {
                 .get(`${basePath}/filter/series`)
                 .send({})
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('계열 검색 성공');
                     expect(data.count).to.be.eq(1);
