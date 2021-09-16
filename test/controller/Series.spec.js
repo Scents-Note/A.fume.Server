@@ -11,7 +11,7 @@ const { ListAndCountDTO } = require('../../data/dto');
 const statusCode = require('../../utils/statusCode');
 const IngredientDTO = require('../data/dto/IngredientDTO');
 const SeriesDTO = require('../data/dto/SeriesDTO');
-const { SeriesFilterVO } = require('../../data/vo');
+const SeriesFilterDTO = require('../../data/dto/SeriesFilterDTO');
 
 const Series = require('../../controllers/Series.js');
 const mockSeriesService = {};
@@ -59,7 +59,7 @@ describe('# Series Controller Test', () => {
             new ListAndCountDTO({
                 count: 1,
                 rows: [
-                    new SeriesFilterVO({
+                    new SeriesFilterDTO({
                         series: SeriesDTO.create(),
                         ingredients: [
                             IngredientDTO.createWithIdx({
@@ -76,7 +76,7 @@ describe('# Series Controller Test', () => {
                             }),
                         ],
                     }),
-                    new SeriesFilterVO({
+                    new SeriesFilterDTO({
                         series: SeriesDTO.create({
                             seriesIdx: 2,
                             name: '계열2',
@@ -89,7 +89,7 @@ describe('# Series Controller Test', () => {
                             }),
                         ],
                     }),
-                    new SeriesFilterVO({
+                    new SeriesFilterDTO({
                         series: SeriesDTO.create({
                             seriesIdx: 3,
                             name: '계열3',
