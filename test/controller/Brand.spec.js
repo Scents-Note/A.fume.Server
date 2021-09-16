@@ -9,6 +9,7 @@ const basePath = '/A.fume/api/0.0.1';
 const { ListAndCountDTO, CreatedResultDTO } = require('../../data/dto');
 const BrandDTO = require('../data/dto/BrandDTO');
 const { BrandFilterVO } = require('../../data/vo');
+const BrandFilterResponseDTO = require('../data/response_dto/brand/BrandFilterResponseDTO');
 const statusCode = require('../../utils/statusCode');
 
 const mockBrandService = {};
@@ -62,18 +63,8 @@ describe('# Brand Controller Test', () => {
                     expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('브랜드 필터 조회 성공');
-                    for (const brandFilterResponseDTO of data) {
-                        expect(brandFilterResponseDTO).have.property(
-                            'firstInitial'
-                        );
-                        expect(brandFilterResponseDTO).have.property('brands');
-                        for (const brand of brandFilterResponseDTO.brands) {
-                            expect.hasProperties.call(
-                                brand,
-                                'brandIdx',
-                                'name'
-                            );
-                        }
+                    for (const item of data) {
+                        BrandFilterResponseDTO.validTest.call(item);
                     }
                     done();
                 })
