@@ -17,6 +17,8 @@ const statusCode = require('../../utils/statusCode');
 const User = require('../../controllers/User.js');
 User.setUserService(require('../service/UserService.mock.js'));
 
+const UserRegisterResponseDTO = require('../data/response_dto/user/UserRegisterResponseDTO');
+
 const token = require('../../lib/token');
 const user1token = token.create({ userIdx: 1 });
 const invalidToken =
@@ -38,9 +40,7 @@ describe('# User Controller Test', () => {
                     expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('회원가입 성공');
-                    expect(data).to.be.have.property('userIdx');
-                    expect(data).to.be.have.property('token');
-                    expect(data).to.be.have.property('refreshToken');
+                    UserRegisterResponseDTO.validTest.call(data);
                     done();
                 })
                 .catch((err) => done(err));
