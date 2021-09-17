@@ -106,10 +106,10 @@ paths:
                       - $ref: '#/definitions/Perfume'
                       - type: object
                         properties:
-                          isLike:
+                          isLiked:
                             type: boolean
                         example: 
-                          isLike: true
+                          isLiked: true
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Perfume
@@ -157,10 +157,10 @@ paths:
                       - $ref: '#/definitions/Perfume'
                       - type: object
                         properties:
-                          isLike:
+                          isLiked:
                             type: boolean
                         example: 
-                          isLike: true
+                          isLiked: true
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Perfume
@@ -204,10 +204,10 @@ paths:
                       - $ref: '#/definitions/Perfume'
                       - type: object
                         properties:
-                          isLike:
+                          isLiked:
                             type: boolean
                         example: 
-                          isLike: true
+                          isLiked: true
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Perfume
@@ -288,10 +288,10 @@ paths:
                       - $ref: '#/definitions/Perfume'
                       - type: object
                         properties:
-                          isLike:
+                          isLiked:
                             type: boolean
                         example: 
-                          isLike: true
+                          isLiked: true
       x-swagger-router-controller: Perfume
   /perfume/recommend/personal:
     get:
@@ -302,6 +302,8 @@ paths:
       operationId: recommendPersonalPerfume
       security:
         - userToken: []
+      x-security-scopes:
+        - user
       produces:
       - application/json
       parameters:
@@ -335,10 +337,10 @@ paths:
                       - $ref: '#/definitions/Perfume'
                       - type: object
                         properties:
-                          isLike: 
+                          isLiked: 
                             type: boolean
                         example:
-                          isLike: true
+                          isLiked: true
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Perfume
@@ -372,7 +374,7 @@ paths:
                 - $ref: '#/definitions/Perfume'
                 - type: object
                   properties:
-                    isLike:
+                    isLiked:
                       type: integer
                     Keywords:
                       type: array
@@ -382,7 +384,7 @@ paths:
                 - $ref: '#/definitions/PerfumeNote'
                 - $ref: '#/definitions/PerfumeSummary'
                 example:
-                  isLike: true
+                  isLiked: true
                   story: 조 말론 런던 1호점이 위치한 런던의 거리 번호입니다. 광범위한 후각적 탐구를 요하는 이 향수는 만다린, 그레이프 프루트\
                         , 바질, 너트맥, 베티버와 같은 브랜드를 대표하는 성분들을 모두 함유하고 있습니다. 다양한 느낌을 연출하는 향입니다.
                   abundanceRate: 코롱
@@ -1646,36 +1648,6 @@ paths:
         default:
           description: successful operation
       x-swagger-router-controller: Review
-  /getPerfumeIdx:
-    post:
-      tags:
-      - SUB_perfume
-      summary: 향수 Index 조회
-      description: englishName으로 향수의 index를 조회한다
-      operationId: getPerfumeIdxByEnglishName
-      parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          type: object
-          properties:
-            englishName:
-              type: string
-              example: 154 Cologne
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: 향수 idx 조회 성공
-              data:
-                type: integer
-                example: 1
-      x-swagger-router-controller: Perfume
 securityDefinitions:
   userToken:
       type: apiKey
