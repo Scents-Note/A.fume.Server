@@ -10,7 +10,10 @@ const { UnAuthorizedError } = require('../utils/errors/errors');
 const { OK, CONFLICT } = require('../utils/statusCode.js');
 
 const { ResponseDTO } = require('../data/response_dto/common');
-const { UserResponseDTO } = require('../data/response_dto/user');
+const {
+    UserResponseDTO,
+    UserRegisterResponseDTO,
+} = require('../data/response_dto/user');
 
 const genderMap = {
     MAN: 1,
@@ -33,6 +36,9 @@ module.exports.registerUser = (req, res, next) => {
     }
     body.gender = genderMap[body.gender] || 0;
     User.createUser(body)
+        .then((result) => {
+            return new UserRegisterResponseDTO(result);
+        })
         .then((response) => {
             res.status(OK).json(
                 new ResponseDTO({
