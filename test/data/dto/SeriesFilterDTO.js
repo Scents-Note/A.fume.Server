@@ -17,4 +17,13 @@ SeriesFilterDTO.prototype.validTest = function () {
     }
 };
 
+SeriesFilterDTO.createWithIdx = function ({ seriesIdx, ingredientIdxList }) {
+    return new SeriesFilterDTO({
+        series: SeriesDTO.createWithIdx(seriesIdx),
+        ingredients: ingredientIdxList.map((ingredientIdx) =>
+            IngredientDTO.createWithIdx({ seriesIdx, ingredientIdx })
+        ),
+    });
+};
+
 module.exports = SeriesFilterDTO;

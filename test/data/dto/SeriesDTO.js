@@ -29,4 +29,16 @@ SeriesDTO.create = function (condition) {
     );
 };
 
+SeriesDTO.createWithIdx = function (seriesIdx) {
+    return new SeriesDTO({
+        seriesIdx,
+        name: `계열 ${seriesIdx}`,
+        englishName: `SERIES ${seriesIdx}`,
+        imageUrl: 'http://',
+        description: '이것은 계열',
+        createdAt: '2021-07-24T03:38:52.000Z',
+        updatedAt: '2021-07-24T03:38:52.000Z',
+    });
+};
+
 module.exports = SeriesDTO;
