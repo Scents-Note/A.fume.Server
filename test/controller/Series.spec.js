@@ -13,6 +13,7 @@ const IngredientDTO = require('../data/dto/IngredientDTO');
 const SeriesDTO = require('../data/dto/SeriesDTO');
 const SeriesFilterDTO = require('../../data/dto/SeriesFilterDTO');
 const SeriesResponseDTO = require('../../data/response_dto/series/SeriesResponseDTO');
+const SeriesFilterResponseDTO = require('../data/response_dto/series/SeriesFilterResponseDTO');
 
 const Series = require('../../controllers/Series.js');
 const mockSeriesService = {};
@@ -112,12 +113,9 @@ describe('# Series Controller Test', () => {
                     const { message, data } = res.body;
                     expect(message).to.be.eq('계열 검색 성공');
                     expect(data.count).to.be.eq(1);
-                    for (const seriesFilter of data.rows) {
-                        expect(seriesFilter).to.be.have.property('seriesIdx');
-                        expect(seriesFilter).to.be.have.property('name');
-                        expect(seriesFilter).to.be.have.property('ingredients');
-                        expect(Object.entries(seriesFilter).length).to.be.eq(3);
-                    }
+                    data.rows.forEach((item) => {
+                        SeriesFilterResponseDTO.validTest.call(item);
+                    });
                     done();
                 })
                 .catch((err) => done(err));
