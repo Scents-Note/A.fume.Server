@@ -12,6 +12,7 @@ const statusCode = require('../../utils/statusCode');
 const IngredientDTO = require('../data/dto/IngredientDTO');
 const SeriesDTO = require('../data/dto/SeriesDTO');
 const SeriesFilterDTO = require('../../data/dto/SeriesFilterDTO');
+const SeriesResponseDTO = require('../../data/response_dto/series/SeriesResponseDTO');
 
 const Series = require('../../controllers/Series.js');
 const mockSeriesService = {};
@@ -36,11 +37,9 @@ describe('# Series Controller Test', () => {
                     const { message, data } = res.body;
                     expect(message).to.be.eq('series 전체 조회 성공');
                     expect(data.count).to.be.eq(1);
-                    for (const series of data.rows) {
-                        expect(series).to.be.have.property('seriesIdx');
-                        expect(series).to.be.have.property('name');
-                        expect(Object.entries(series).length).to.be.eq(2);
-                    }
+                    data.rows.forEach((item) => {
+                        SeriesResponseDTO.validTest.call(item);
+                    });
                     done();
                 })
                 .catch((err) => done(err));
