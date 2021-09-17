@@ -139,11 +139,10 @@ function normalize(obj) {
         return prev + cur[1];
     }, 0);
     if (total == 0) {
-        const n = entries.length;
         let remain = 100;
         for (let i = 0; i < entries.length - 2; i++) {
             const key = entries[i][0];
-            obj[key] = parseInt(100 / n);
+            obj[key] = parseInt(100 / entries.length);
             remain -= obj[key];
         }
         obj[entries[entries.length - 1][0]] += remain;
