@@ -6,6 +6,9 @@ if (process.env.NODE_ENV != 'test') {
 
 module.exports = async (context) => {
     context.timeout(100000);
+    if (process.env.NODE_ENV != 'test') {
+        throw new Error('Only allow TEST ENV');
+    }
     await Promise.all([
         sequelize
             .query('SET FOREIGN_KEY_CHECKS = 0')
