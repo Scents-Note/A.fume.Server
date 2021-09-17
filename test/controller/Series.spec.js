@@ -59,48 +59,17 @@ describe('# Series Controller Test', () => {
             new ListAndCountDTO({
                 count: 1,
                 rows: [
-                    new SeriesFilterDTO({
-                        series: SeriesDTO.create(),
-                        ingredients: [
-                            IngredientDTO.createWithIdx({
-                                ingredientIdx: 1,
-                                seriesIdx: 1,
-                            }),
-                            IngredientDTO.createWithIdx({
-                                ingredientIdx: 3,
-                                seriesIdx: 1,
-                            }),
-                            IngredientDTO.createWithIdx({
-                                ingredientIdx: 5,
-                                seriesIdx: 1,
-                            }),
-                        ],
+                    SeriesFilterDTO.createWithIdx({
+                        seriesIdx: 1,
+                        ingredientIdxList: [1, 3, 5],
                     }),
-                    new SeriesFilterDTO({
-                        series: SeriesDTO.create({
-                            seriesIdx: 2,
-                            name: '계열2',
-                            englishName: 'SERIES2',
-                        }),
-                        ingredients: [
-                            IngredientDTO.createWithIdx({
-                                ingredientIdx: 7,
-                                seriesIdx: 1,
-                            }),
-                        ],
+                    SeriesFilterDTO.createWithIdx({
+                        seriesIdx: 2,
+                        ingredientIdxList: [7],
                     }),
-                    new SeriesFilterDTO({
-                        series: SeriesDTO.create({
-                            seriesIdx: 3,
-                            name: '계열3',
-                            englishName: 'SERIES3',
-                        }),
-                        ingredients: [
-                            IngredientDTO.createWithIdx({
-                                ingredientIdx: 9,
-                                seriesIdx: 1,
-                            }),
-                        ],
+                    SeriesFilterDTO.createWithIdx({
+                        seriesIdx: 3,
+                        ingredientIdxList: [9],
                     }),
                 ],
             });
