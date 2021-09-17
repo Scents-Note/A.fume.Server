@@ -12,6 +12,8 @@ const {
 
 const basePath = '/A.fume/api/0.0.1';
 
+const statusCode = require('../../utils/statusCode');
+
 const User = require('../../controllers/User.js');
 User.setUserService(require('../service/UserService.mock.js'));
 
@@ -33,7 +35,7 @@ describe('# User Controller Test', () => {
                     password: 'test',
                 })
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('회원가입 성공');
                     expect(data).to.be.have.property('userIdx');
@@ -50,7 +52,7 @@ describe('# User Controller Test', () => {
             request(app)
                 .delete(`${basePath}/user/1`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message } = res.body;
                     expect(message).to.be.eq('유저 삭제 성공');
                     done();
@@ -64,7 +66,7 @@ describe('# User Controller Test', () => {
             request(app)
                 .get(`${basePath}/user/1`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('유저 조회 성공');
                     expect(data).to.be.have.property('userIdx');
@@ -87,7 +89,7 @@ describe('# User Controller Test', () => {
                     password: 'test',
                 })
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('로그인 성공');
                     expect(data).to.be.have.property('userIdx');
@@ -142,7 +144,7 @@ describe('# User Controller Test', () => {
                     birth: 1995,
                 })
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('유저 수정 성공');
                     expect(data).to.be.have.property('userIdx');
@@ -161,7 +163,7 @@ describe('# User Controller Test', () => {
                 .set('x-access-token', 'Bearer ' + invalidToken)
                 .send({})
                 .expect((res) => {
-                    expect(res.status).to.be.eq(401);
+                    expect(res.status).to.be.eq(statusCode.UNAUTHORIZED);
                     const { message } = res.body;
                     expect(message).to.be.eq('유효하지 않는 토큰입니다.');
                     done();
@@ -175,7 +177,7 @@ describe('# User Controller Test', () => {
                 .set('x-access-token', 'Bearer ' + user1token)
                 .send({})
                 .expect((res) => {
-                    expect(res.status).to.be.eq(401);
+                    expect(res.status).to.be.eq(statusCode.UNAUTHORIZED);
                     const { message } = res.body;
                     expect(message).to.be.eq('유효하지 않는 접근입니다.');
                     done();
@@ -194,7 +196,7 @@ describe('# User Controller Test', () => {
                     newPassword: 'change',
                 })
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message } = res.body;
                     expect(message).to.be.eq('비밀번호 변경 성공');
                     done();
@@ -207,7 +209,7 @@ describe('# User Controller Test', () => {
                 .put(`${basePath}/user/changePassword`)
                 .send({})
                 .expect((res) => {
-                    expect(res.status).to.be.eq(401);
+                    expect(res.status).to.be.eq(statusCode.UNAUTHORIZED);
                     const { message } = res.body;
                     expect(message).to.be.eq('유효하지 않는 토큰입니다.');
                     done();
@@ -222,7 +224,7 @@ describe('# User Controller Test', () => {
                 .post(`${basePath}/user/auth`)
                 .set('x-access-token', 'Bearer ' + user1token)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('권한 조회');
                     expect(data).to.be.have.property('isAuth');
@@ -237,7 +239,7 @@ describe('# User Controller Test', () => {
                 .post(`${basePath}/user/auth`)
                 .send({})
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('권한 조회');
                     expect(data).to.be.have.property('isAuth');
@@ -255,7 +257,7 @@ describe('# User Controller Test', () => {
             request(app)
                 .get(`${basePath}/user/validate/email?email=test`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('Email 중복 체크: 사용 가능');
                     expect(data).to.be.true;
@@ -268,7 +270,7 @@ describe('# User Controller Test', () => {
             request(app)
                 .get(`${basePath}/user/validate/email?email=duplicate`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(409);
+                    expect(res.status).to.be.eq(statusCode.CONFLICT);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('Email 중복 체크: 사용 불가능');
                     expect(data).to.be.false;
@@ -283,7 +285,7 @@ describe('# User Controller Test', () => {
             request(app)
                 .get(`${basePath}/user/validate/name?nickname=test`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('Name 중복 체크: 사용 가능');
                     expect(data).to.be.true;
@@ -296,7 +298,7 @@ describe('# User Controller Test', () => {
             request(app)
                 .get(`${basePath}/user/validate/name?nickname=duplicate`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(409);
+                    expect(res.status).to.be.eq(statusCode.CONFLICT);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('Name 중복 체크: 사용 불가능');
                     expect(data).to.be.false;
