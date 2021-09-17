@@ -13,7 +13,7 @@ module.exports = async (context) => {
         sequelize
             .query('SET FOREIGN_KEY_CHECKS = 0')
             .then(function () {
-                return sequelize.sync({ force: true });
+                return sequelize.sync();
             })
             .then(function () {
                 return sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
