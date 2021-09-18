@@ -13,6 +13,7 @@ const { ResponseDTO } = require('../data/response_dto/common');
 const {
     UserResponseDTO,
     UserRegisterResponseDTO,
+    LoginResponseDTO,
 } = require('../data/response_dto/user');
 
 const genderMap = {
@@ -67,6 +68,9 @@ module.exports.deleteUser = (req, res, next) => {
 module.exports.loginUser = (req, res, next) => {
     const { email, password } = req.body;
     User.loginUser(email, password)
+        .then((result) => {
+            return new LoginResponseDTO(result);
+        })
         .then((response) => {
             res.status(OK).json(
                 new ResponseDTO({

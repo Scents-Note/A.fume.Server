@@ -20,6 +20,7 @@ User.setUserService(require('../service/UserService.mock.js'));
 const UserRegisterResponseDTO = require('../data/response_dto/user/UserRegisterResponseDTO');
 
 const token = require('../../lib/token');
+const LoginResponseDTO = require('../data/response_dto/user/LoginResponseDTO.js');
 const user1token = token.create({ userIdx: 1 });
 const invalidToken =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWR4IjoyMDAsIm5pY2tuYW1lIjoi7L-87Lm066eoMiIsImdlbmRlciI6ImZlbWFsZSIsImVtYWlsIjoiaGVlLnlvdW4yQHNhbXN1bmcuY29tIiwiYmlydGgiOjE5OTUsImlhdCI6MTYyOTEwNzc3NSwiZXhwIjoxNjMwODM1Nzc1LCJpc3MiOiJhZnVtZS1qYWNrcG90In0.hWxF0OHzIWZoQhPhkkOyJs3HYB2tPdrpIaVqe0IZRKI';
@@ -73,13 +74,7 @@ describe('# User Controller Test', () => {
                     expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('로그인 성공');
-                    expect(data).to.be.have.property('userIdx');
-                    expect(data).to.be.have.property('nickname');
-                    expect(data).to.be.have.property('gender');
-                    expect(data).to.be.have.property('email');
-                    expect(data).to.be.have.property('birth');
-                    expect(data).to.be.have.property('token');
-                    expect(data).to.be.have.property('refreshToken');
+                    LoginResponseDTO.validTest.call(data);
                     done();
                 })
                 .catch((err) => done(err));
