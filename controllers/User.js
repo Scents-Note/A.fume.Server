@@ -17,34 +17,18 @@ const {
     LoginResponseDTO,
 } = require('../data/response_dto/user');
 
-const {
-    GENDER_MAN,
-    GENDER_WOMAN,
-    GRADE_USER,
-    GRADE_MANAGER,
-    GRADE_SYSTEM_ADMIN,
-} = require('../utils/constantUtil');
-
-const genderMap = {
-    MAN: GENDER_MAN,
-    WOMAN: GENDER_WOMAN,
-};
-
-const gradeMap = {
-    USER: GRADE_USER,
-    MANAGER: GRADE_MANAGER,
-    SYSTEM_ADMIN: GRADE_SYSTEM_ADMIN,
-};
+const { GRADE_USER } = require('../utils/constantUtil');
+const UserRegisterRequestDTO = require('../data/request_dto/UserRegisterRequestDTO');
+const UserEditRequestDTO = require('../data/request_dto/UserEditRequestDTO');
 
 module.exports.registerUser = (req, res, next) => {
     const body = req.swagger.params['body'].value;
-    body.grade = gradeMap[body.grade] || GRADE_USER;
-    if (body.grade > 0) {
+    const userRegisterRequestDTO = new UserRegisterRequestDTO(body);
+    if (userRegisterRequestDTO.grade > GRADE_USER) {
         next(new UnAuthorizedError());
         return;
     }
-    body.gender = genderMap[body.gender] || 0;
-    User.createUser(body)
+    User.createUser(userRegisterRequestDTO)
         .then((result) => {
             return new UserRegisterResponseDTO(result);
         })
@@ -98,11 +82,10 @@ module.exports.updateUser = (req, res, next) => {
         return;
     }
     const body = req.swagger.params['body'].value;
-    body.gender = genderMap[body.gender] || 0;
-    const payload = Object.assign(body, {
-        userIdx,
-    });
-    User.updateUser(payload)
+    const userEditRequestDTO = new UserEditRequestDTO(
+        Object.assign({ userIdx }, body)
+    );
+    User.updateUser(userEditRequestDTO)
         .then((result) => {
             return new UserResponseDTO(result);
         })
