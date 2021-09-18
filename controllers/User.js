@@ -64,23 +64,6 @@ module.exports.deleteUser = (req, res, next) => {
         .catch((err) => next(err));
 };
 
-module.exports.getUserByIdx = (req, res, next) => {
-    const userIdx = req.swagger.params['userIdx'].value;
-    User.getUserByIdx(userIdx)
-        .then((result) => {
-            return new UserResponseDTO(result);
-        })
-        .then((response) => {
-            res.status(OK).json(
-                new ResponseDTO({
-                    message: '유저 조회 성공',
-                    data: response,
-                })
-            );
-        })
-        .catch((err) => next(err));
-};
-
 module.exports.loginUser = (req, res, next) => {
     const { email, password } = req.body;
     User.loginUser(email, password)
@@ -88,19 +71,6 @@ module.exports.loginUser = (req, res, next) => {
             res.status(OK).json(
                 new ResponseDTO({
                     message: '로그인 성공',
-                    data: response,
-                })
-            );
-        })
-        .catch((err) => next(err));
-};
-
-module.exports.logoutUser = (req, res, next) => {
-    User.logoutUser()
-        .then((response) => {
-            res.status(OK).json(
-                new ResponseDTO({
-                    message: '로그아웃',
                     data: response,
                 })
             );
