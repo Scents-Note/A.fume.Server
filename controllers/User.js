@@ -17,21 +17,28 @@ const {
     LoginResponseDTO,
 } = require('../data/response_dto/user');
 
+const {
+    GENDER_MAN,
+    GENDER_WOMAN,
+    GRADE_USER,
+    GRADE_MANAGER,
+    GRADE_SYSTEM_ADMIN,
+} = require('../utils/constantUtil');
+
 const genderMap = {
-    MAN: 1,
-    WOMAN: 2,
+    MAN: GENDER_MAN,
+    WOMAN: GENDER_WOMAN,
 };
 
 const gradeMap = {
-    USER: 0,
-    OPERATOR: 1,
-    SYSTEM: 9,
+    USER: GRADE_USER,
+    MANAGER: GRADE_MANAGER,
+    SYSTEM_ADMIN: GRADE_SYSTEM_ADMIN,
 };
 
 module.exports.registerUser = (req, res, next) => {
     const body = req.swagger.params['body'].value;
-    body.grade = body.grade || 'USER';
-    body.grade = gradeMap[body.grade];
+    body.grade = gradeMap[body.grade] || GRADE_USER;
     if (body.grade > 0) {
         next(new UnAuthorizedError());
         return;

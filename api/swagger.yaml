@@ -1609,7 +1609,7 @@ definitions:
         type: integer
       grade:
         type: string
-        enum: [USER, OPERATOR, SYSTEM]
+        enum: [USER, MANAGER, SYSTEM_ADMIN]
     example:
       email: hee.youn@samsung.com
       nickname: 쿼카맨
