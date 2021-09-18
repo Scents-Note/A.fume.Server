@@ -24,4 +24,22 @@ UserDTO.prototype.validTest = function () {
     expect(this.updatedAt).to.be.ok;
 };
 
+UserDTO.createMock = function (condition) {
+    return new UserDTO(
+        {
+            userIdx: 1,
+            nickname: 'user1',
+            password: 'test',
+            gender: GENDER_WOMAN,
+            email: 'email1@afume.com',
+            birth: 1995,
+            grade: GRADE_MANAGER,
+            accessTime: '2021-07-13T11:33:49.000Z',
+            createdAt: '2021-07-13T11:33:49.000Z',
+            updatedAt: '2021-08-07T09:20:29.000Z',
+        },
+        condition
+    );
+};
+
 module.exports = UserDTO;
