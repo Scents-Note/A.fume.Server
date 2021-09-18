@@ -23,24 +23,15 @@ const UserRegisterResponseDTO = require('../data/response_dto/user/UserRegisterR
 
 const token = require('../../lib/token');
 const LoginResponseDTO = require('../data/response_dto/user/LoginResponseDTO.js');
-const {
-    TokenGroupDTO,
-    UserAuthDTO,
-    UserDTO,
-    LoginInfoDTO,
-} = require('../../data/dto');
+const TokenGroupDTO = require('../data/dto/TokenGroupDTO');
+const { UserAuthDTO, UserDTO, LoginInfoDTO } = require('../../data/dto');
 const user1token = token.create({ userIdx: 1 });
 const invalidToken =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWR4IjoyMDAsIm5pY2tuYW1lIjoi7L-87Lm066eoMiIsImdlbmRlciI6ImZlbWFsZSIsImVtYWlsIjoiaGVlLnlvdW4yQHNhbXN1bmcuY29tIiwiYmlydGgiOjE5OTUsImlhdCI6MTYyOTEwNzc3NSwiZXhwIjoxNjMwODM1Nzc1LCJpc3MiOiJhZnVtZS1qYWNrcG90In0.hWxF0OHzIWZoQhPhkkOyJs3HYB2tPdrpIaVqe0IZRKI';
 
 describe('# User Controller Test', () => {
     describe('# registerUser Test', () => {
-        mockUserService.createUser = async () =>
-            new TokenGroupDTO({
-                userIdx: 1,
-                token: 'token',
-                refreshToken: 'refreshToken',
-            });
+        mockUserService.createUser = async () => TokenGroupDTO.createMock();
         it('success case', (done) => {
             request(app)
                 .post(`${basePath}/user/register`)
