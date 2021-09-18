@@ -7,6 +7,7 @@ const reviewDao = require('../../dao/ReviewDao.js');
 const keywordDao = require('../../dao/KeywordDao');
 const { Review, JoinReviewKeyword } = require('../../models');
 const { read } = require('../../dao/NoteDao.js');
+const { NotMatchedError } = require('../../utils/errors/errors.js');
 
 describe('# reviewDao Test', () => {
     before(async function () {
@@ -282,15 +283,27 @@ describe('# reviewDao Test', () => {
                 .deleteReviewKeyword({ reviewIdx, perfumeIdx: 3 })
                 .then(async () => {
                     // 리뷰 키워드 개수 수정 여부 체크
-                    const keywordCount1After =
-                        await keywordDao.readPerfumeKeywordCount({
+                    const keywordCount1After = await keywordDao
+                        .readPerfumeKeywordCount({
                             perfumeIdx: 3,
                             keywordIdx: 1,
+                        })
+                        .catch((err) => {
+                            if (err instanceof NotMatchedError) {
+                                return 0;
+                            }
+                            throw err;
                         });
-                    const keywordCount2After =
-                        await keywordDao.readPerfumeKeywordCount({
+                    const keywordCount2After = await keywordDao
+                        .readPerfumeKeywordCount({
                             perfumeIdx: 3,
                             keywordIdx: 3,
+                        })
+                        .catch((err) => {
+                            if (err instanceof NotMatchedError) {
+                                return 0;
+                            }
+                            throw err;
                         });
                     expect(keywordCount1After).eq(keywordCount1 - 1);
                     expect(keywordCount2After).eq(keywordCount2 - 1);

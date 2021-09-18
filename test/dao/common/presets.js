@@ -6,8 +6,18 @@ if (process.env.NODE_ENV != 'test') {
 
 module.exports = async (context) => {
     context.timeout(100000);
+    if (process.env.NODE_ENV != 'test') {
+        throw new Error('Only allow TEST ENV');
+    }
     await Promise.all([
-        sequelize.sync(),
+        sequelize
+            .query('SET FOREIGN_KEY_CHECKS = 0')
+            .then(function () {
+                return sequelize.sync();
+            })
+            .then(function () {
+                return sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
+            }),
         require('../../../utils/db/mongoose.js'),
     ]);
     await require('./seeds.js')();
