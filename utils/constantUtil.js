@@ -1,6 +1,9 @@
 module.exports = {
     GENDER_MAN: 1,
     GENDER_WOMAN: 2,
+    GRADE_USER: 0,
+    GRADE_MANAGER: 1,
+    GRADE_SYSTEM_ADMIN: 9,
     ABUNDANCE_RATE_LIST: [
         'None',
         '오 드 코롱',
