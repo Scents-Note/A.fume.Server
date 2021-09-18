@@ -1450,35 +1450,6 @@ paths:
             - $ref: '#/definitions/User'
       x-swagger-router-controller: User
   /user/{userIdx}:
-    get:
-      tags:
-      - user
-      operationId: getUserByIdx
-      produces:
-      - application/json
-      parameters:
-      - name: userIdx
-        in: path
-        required: true
-        type: integer
-        format: int64
-      responses:
-        200:
-          description: successful operation
-          schema:
-            allOf:
-            - $ref: '#/definitions/User'
-            - type: object
-              properties:
-                userIdx:
-                  type: integer
-              example:
-                userIdx: 1
-        400:
-          description: Invalid userIdx supplied
-        404:
-          description: User not found
-      x-swagger-router-controller: User
     put:
       tags:
       - user
