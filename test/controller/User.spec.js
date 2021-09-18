@@ -17,6 +17,7 @@ const statusCode = require('../../utils/statusCode');
 const User = require('../../controllers/User.js');
 User.setUserService(require('../service/UserService.mock.js'));
 
+const UserResponseDTO = require('../data/response_dto/user/UserResponseDTO');
 const UserRegisterResponseDTO = require('../data/response_dto/user/UserRegisterResponseDTO');
 
 const token = require('../../lib/token');
@@ -96,11 +97,7 @@ describe('# User Controller Test', () => {
                     expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('유저 수정 성공');
-                    expect(data).to.be.have.property('userIdx');
-                    expect(data).to.be.have.property('nickname');
-                    expect(data).to.be.have.property('gender');
-                    expect(data).to.be.have.property('email');
-                    expect(data).to.be.have.property('birth');
+                    UserResponseDTO.validTest.call(data);
                     done();
                 })
                 .catch((err) => done(err));
