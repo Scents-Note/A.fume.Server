@@ -11,8 +11,8 @@ const { ListAndCountDTO } = require('../../data/dto');
 const statusCode = require('../../utils/statusCode');
 const IngredientDTO = require('../data/dto/IngredientDTO');
 const SeriesDTO = require('../data/dto/SeriesDTO');
-const SeriesFilterDTO = require('../../data/dto/SeriesFilterDTO');
-const SeriesResponseDTO = require('../../data/response_dto/series/SeriesResponseDTO');
+const SeriesFilterDTO = require('../data/dto/SeriesFilterDTO');
+const SeriesResponseDTO = require('../data/response_dto/series/SeriesResponseDTO');
 const SeriesFilterResponseDTO = require('../data/response_dto/series/SeriesFilterResponseDTO');
 
 const Series = require('../../controllers/Series.js');

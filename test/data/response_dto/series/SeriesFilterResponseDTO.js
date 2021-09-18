@@ -1,6 +1,6 @@
 const expect = require('../../../utils/expect');
 
-const SeriesFilterResponseDTO = require('../../../data/response_dto/series/SeriesResponseDTO');
+const SeriesFilterResponseDTO = require('../../../data/response_dto/series/SeriesFilterResponseDTO');
 
 const IngredientResponseDTO = require('../ingredient/IngredientResponseDTO');
 

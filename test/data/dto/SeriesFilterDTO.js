@@ -2,6 +2,7 @@ const { expect } = require('chai');
 
 const SeriesFilterDTO = require('../../../data/dto/SeriesFilterDTO');
 const IngredientDTO = require('./IngredientDTO');
+const SeriesDTO = require('./SeriesDTO');
 
 SeriesFilterDTO.prototype.validTest = function () {
     expect(this.seriesIdx).to.be.ok;
@@ -20,9 +21,9 @@ SeriesFilterDTO.prototype.validTest = function () {
 SeriesFilterDTO.createWithIdx = function ({ seriesIdx, ingredientIdxList }) {
     return new SeriesFilterDTO({
         series: SeriesDTO.createWithIdx(seriesIdx),
-        ingredients: ingredientIdxList.map((ingredientIdx) =>
-            IngredientDTO.createWithIdx({ seriesIdx, ingredientIdx })
-        ),
+        ingredients: ingredientIdxList.map((ingredientIdx) => {
+            return IngredientDTO.createWithIdx({ seriesIdx, ingredientIdx });
+        }),
     });
 };
 
