@@ -13,6 +13,7 @@ const { ResponseDTO } = require('../data/response_dto/common');
 const {
     UserResponseDTO,
     UserRegisterResponseDTO,
+    UserAuthResponseDTO,
     LoginResponseDTO,
 } = require('../data/response_dto/user');
 
@@ -126,6 +127,9 @@ module.exports.changePassword = (req, res, next) => {
 module.exports.authUser = (req, res, next) => {
     const { token } = req.body;
     User.authUser(token)
+        .then((result) => {
+            return new UserAuthResponseDTO(result);
+        })
         .then((response) => {
             res.status(OK).json(
                 new ResponseDTO({

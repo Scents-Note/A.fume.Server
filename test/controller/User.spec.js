@@ -20,6 +20,7 @@ User.setUserService(mockUserService);
 
 const UserResponseDTO = require('../data/response_dto/user/UserResponseDTO');
 const UserRegisterResponseDTO = require('../data/response_dto/user/UserRegisterResponseDTO');
+const UserAuthResponseDTO = require('../data/response_dto/user/UserAuthResponseDTO');
 
 const token = require('../../lib/token');
 const LoginResponseDTO = require('../data/response_dto/user/LoginResponseDTO.js');
@@ -196,8 +197,7 @@ describe('# User Controller Test', () => {
                     expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('권한 조회');
-                    expect(data).to.be.have.property('isAuth');
-                    expect(data).to.be.have.property('isAdmin');
+                    UserAuthResponseDTO.validTest.call(data);
                     done();
                 })
                 .catch((err) => done(err));
@@ -211,8 +211,7 @@ describe('# User Controller Test', () => {
                     expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('권한 조회');
-                    expect(data).to.be.have.property('isAuth');
-                    expect(data).to.be.have.property('isAdmin');
+                    UserAuthResponseDTO.validTest.call(data);
                     expect(data.isAuth).to.be.false;
                     expect(data.isAdmin).to.be.false;
                     done();
