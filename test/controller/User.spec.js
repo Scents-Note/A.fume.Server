@@ -15,19 +15,32 @@ const basePath = '/A.fume/api/0.0.1';
 const statusCode = require('../../utils/statusCode');
 
 const User = require('../../controllers/User.js');
-User.setUserService(require('../service/UserService.mock.js'));
+const mockUserService = {};
+User.setUserService(mockUserService);
 
 const UserResponseDTO = require('../data/response_dto/user/UserResponseDTO');
 const UserRegisterResponseDTO = require('../data/response_dto/user/UserRegisterResponseDTO');
 
 const token = require('../../lib/token');
 const LoginResponseDTO = require('../data/response_dto/user/LoginResponseDTO.js');
+const {
+    TokenGroupDTO,
+    UserAuthDTO,
+    UserDTO,
+    LoginInfoDTO,
+} = require('../../data/dto');
 const user1token = token.create({ userIdx: 1 });
 const invalidToken =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWR4IjoyMDAsIm5pY2tuYW1lIjoi7L-87Lm066eoMiIsImdlbmRlciI6ImZlbWFsZSIsImVtYWlsIjoiaGVlLnlvdW4yQHNhbXN1bmcuY29tIiwiYmlydGgiOjE5OTUsImlhdCI6MTYyOTEwNzc3NSwiZXhwIjoxNjMwODM1Nzc1LCJpc3MiOiJhZnVtZS1qYWNrcG90In0.hWxF0OHzIWZoQhPhkkOyJs3HYB2tPdrpIaVqe0IZRKI';
 
 describe('# User Controller Test', () => {
     describe('# registerUser Test', () => {
+        mockUserService.createUser = async () =>
+            new TokenGroupDTO({
+                userIdx: 1,
+                token: 'token',
+                refreshToken: 'refreshToken',
+            });
         it('success case', (done) => {
             request(app)
                 .post(`${basePath}/user/register`)
@@ -50,6 +63,10 @@ describe('# User Controller Test', () => {
     });
 
     describe('# deleteUser Test', () => {
+        mockUserService.deleteUser = async () => {
+            const affectedRows = 1;
+            return affectedRows;
+        };
         it('success case', (done) => {
             request(app)
                 .delete(`${basePath}/user/1`)
@@ -64,6 +81,17 @@ describe('# User Controller Test', () => {
     });
 
     describe('# loginUser Test', () => {
+        mockUserService.loginUser = async (email, password) => {
+            return new LoginInfoDTO({
+                userIdx: 1,
+                nickname: 'user1',
+                gender: 2,
+                email,
+                birth: 1995,
+                token: 'token',
+                refreshToken: 'refreshToken',
+            });
+        };
         it('success case', (done) => {
             request(app)
                 .post(`${basePath}/user/login`)
@@ -83,6 +111,20 @@ describe('# User Controller Test', () => {
     });
 
     describe('# updateUser Test', () => {
+        mockUserService.updateUser = async () => {
+            return new UserDTO({
+                userIdx: 1,
+                nickname: 'user1',
+                password: 'test',
+                gender: 2,
+                email: 'email1@afume.com',
+                birth: 1995,
+                grade: 1,
+                accessTime: '2021-07-13T11:33:49.000Z',
+                createdAt: '2021-07-13T11:33:49.000Z',
+                updatedAt: '2021-08-07T09:20:29.000Z',
+            });
+        };
         it('success case', (done) => {
             request(app)
                 .put(`${basePath}/user/1`)
@@ -133,6 +175,10 @@ describe('# User Controller Test', () => {
     });
 
     describe('# changePassword Test', () => {
+        mockUserService.changePassword = async ({}) => {
+            const affectedRows = 1;
+            return affectedRows;
+        };
         it('success case', (done) => {
             request(app)
                 .put(`${basePath}/user/changePassword`)
@@ -165,6 +211,9 @@ describe('# User Controller Test', () => {
     });
 
     describe('# authUser Test', () => {
+        mockUserService.authUser = async () => {
+            return new UserAuthDTO({ isAuth: false, isAdmin: false });
+        };
         it('success case', (done) => {
             request(app)
                 .post(`${basePath}/user/auth`)
@@ -199,6 +248,10 @@ describe('# User Controller Test', () => {
     });
 
     describe('# validateEmail Test', () => {
+        mockUserService.validateEmail = async (email) => {
+            if (email && email != 'duplicate') return true;
+            else return false;
+        };
         it('success case', (done) => {
             request(app)
                 .get(`${basePath}/user/validate/email?email=test`)
@@ -227,6 +280,10 @@ describe('# User Controller Test', () => {
     });
 
     describe('# validateName Test', () => {
+        mockUserService.validateName = async (nickname) => {
+            if (nickname && nickname != 'duplicate') return true;
+            else return false;
+        };
         it('success case', (done) => {
             request(app)
                 .get(`${basePath}/user/validate/name?nickname=test`)
