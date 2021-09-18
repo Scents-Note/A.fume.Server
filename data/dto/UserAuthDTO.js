@@ -1,6 +1,6 @@
 'use strict';
 
-const { GRADE_MANAGER } = require('../../../utils/constantUtil');
+const { GRADE_MANAGER } = require('../../utils/constantUtil');
 
 class UserAuthDTO {
     constructor({ isAuth, isAdmin }) {
