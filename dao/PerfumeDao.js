@@ -6,7 +6,6 @@ const {
 
 const {
     Perfume,
-    PerfumeDetail,
     PerfumeSurvey,
     Brand,
     LikePerfume,
@@ -17,6 +16,16 @@ const {
 const { Op } = Sequelize;
 
 const { ranking } = require('../mongoose_models');
+
+PERFUME_THUMB_COLUMNS = [
+    'perfumeIdx',
+    'name',
+    'englishName',
+    'imageUrl',
+    'brandIdx',
+    'createdAt',
+    'updatedAt',
+];
 
 const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
     'SELECT ' +
@@ -210,6 +219,7 @@ module.exports.readNewPerfume = async (fromDate, pagingIndex, pagingSize) => {
                 [Op.gte]: fromDate,
             },
         },
+        attributes: PERFUME_THUMB_COLUMNS,
         include: [
             {
                 model: Brand,
@@ -236,19 +246,11 @@ module.exports.readByPerfumeIdx = async (perfumeIdx) => {
     const options = _.merge({}, defaultOption, {
         where: { perfumeIdx },
     });
-    options.include.push({
-        model: PerfumeDetail,
-        as: 'PerfumeDetail',
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
-        required: true,
-    });
     const perfume = await Perfume.findOne(options);
     if (!perfume) {
         throw new NotMatchedError();
     }
-    perfume.PerfumeDetail.volumeAndPrice = perfume.PerfumeDetail.volumeAndPrice
+    perfume.volumeAndPrice = perfume.volumeAndPrice
         .split(',')
         .filter((str) => str.length > 0)
         .map((str) => {
@@ -270,6 +272,7 @@ module.exports.readLikedPerfume = async (userIdx, pagingIndex, pagingSize) => {
     const options = _.merge({}, defaultOption, {
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
+        attributes: PERFUME_THUMB_COLUMNS,
     });
     options.include.push({
         model: LikePerfume,
@@ -306,6 +309,7 @@ module.exports.recentSearchPerfumeList = async (
                 'desc',
             ],
         ],
+        attributes: PERFUME_THUMB_COLUMNS,
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
     });
@@ -353,6 +357,7 @@ module.exports.recommendPerfumeByAgeAndGender = async (
             type: sequelize.QueryTypes.SELECT,
             offset: (pagingIndex - 1) * pagingSize,
             limit: pagingSize,
+            attributes: PERFUME_THUMB_COLUMNS,
             raw: true,
             nest: true,
         }

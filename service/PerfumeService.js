@@ -234,10 +234,7 @@ function numberWithCommas(x) {
  **/
 exports.getPerfumeById = async (perfumeIdx, userIdx) => {
     let _perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
-    const perfume = [...commonJob, flatJob('PerfumeDetail')].reduce(
-        (prev, cur) => cur(prev),
-        _perfume
-    );
+    const perfume = commonJob.reduce((prev, cur) => cur(prev), _perfume);
     perfume.abundanceRate = ABUNDANCE_RATE_LIST[perfume.abundanceRate];
 
     const likePerfume = await likePerfumeDao

@@ -5,7 +5,7 @@ const chai = require('chai');
 const { expect } = chai;
 
 const perfumeDao = require('../../dao/PerfumeDao.js');
-const { Perfume, PerfumeDetail, Note, Sequelize } = require('../../models');
+const { Perfume, Note, Sequelize } = require('../../models');
 const { Op } = Sequelize;
 
 const { GENDER_WOMAN } = require('../../utils/constantUtil');
@@ -59,11 +59,9 @@ describe('# perfumeDao Test', () => {
                         expect(result.Brand.firstInitial).to.be.oneOf(
                             allowFirstInitialArr
                         );
-
-                        expect(result.PerfumeDetail.perfumeIdx).to.be.eq(1);
-                        expect(result.PerfumeDetail.story).to.be.eq('스토리1');
-                        expect(result.PerfumeDetail.abundanceRate).to.be.eq(1);
-                        expect(result.PerfumeDetail.volumeAndPrice).to.deep.eq([
+                        expect(result.story).to.be.eq('스토리1');
+                        expect(result.abundanceRate).to.be.eq(1);
+                        expect(result.volumeAndPrice).to.deep.eq([
                             { volume: 30, price: 95000 },
                             { volume: 100, price: 190000 },
                         ]);
