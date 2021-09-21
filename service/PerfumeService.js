@@ -20,6 +20,8 @@ const {
     NOTE_TYPE_LIST,
 } = require('../utils/constantUtil.js');
 
+const { NoteDictDTO } = require('../data/dto');
+
 const {
     NotMatchedError,
     FailedToCreateError,
@@ -128,25 +130,10 @@ function normalize(obj) {
 }
 
 async function generateNote(perfumeIdx) {
-    const noteMap = (await noteDao.readByPerfumeIdx(perfumeIdx))
-        .map((it) => {
-            it.type = NOTE_TYPE_LIST[it.type];
-            return it;
-        })
-        .reduce(
-            (prev, cur) => {
-                let type = cur.type;
-                prev[type].push(cur.ingredientName);
-                return prev;
-            },
-            makeInitMap(NOTE_TYPE_LIST, () => [])
-        );
-    for (const key in noteMap) {
-        if (!noteMap[key] instanceof Array) throw 'Invalid Type Exception';
-        noteMap[key] = noteMap[key].join(', ');
-    }
-    const noteType = noteMap.single.length > 0 ? 1 : 0;
-    return { noteType, ingredients: noteMap };
+    const noteList = await noteDao.readByPerfumeIdx(perfumeIdx);
+    const noteDictDTO = NoteDictDTO.createByNoteList(noteList);
+    const noteType = noteDictDTO.single.length > 0 ? 1 : 0;
+    return { noteType, ingredients: noteDictDTO };
 }
 
 async function generateSummary(perfumeIdx) {
