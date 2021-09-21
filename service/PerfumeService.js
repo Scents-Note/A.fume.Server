@@ -75,42 +75,6 @@ const commonJob = [
     ),
 ];
 
-/**
- * 향수 정보 추가
- *
- * @param {Object} Perfume
- * @returns {Promise}
- **/
-exports.createPerfume = ({
-    brandIdx,
-    name,
-    englishName,
-    volumeAndPrice,
-    story,
-    abundanceRate,
-    imageUrl,
-}) => {
-    return perfumeDao.create({
-        brandIdx,
-        name,
-        englishName,
-        volumeAndPrice,
-        imageUrl,
-        story,
-        abundanceRate,
-    });
-};
-
-/**
- * 향수 삭제
- *
- * @param {number} perfumeIdx
- * @returns {Promise}
- **/
-exports.deletePerfume = (perfumeIdx) => {
-    return perfumeDao.delete(perfumeIdx);
-};
-
 function makeZeroMap(arr) {
     return arr.reduce((prev, cur) => {
         prev[cur] = 0;
@@ -354,36 +318,6 @@ exports.getSurveyPerfume = (userIdx) => {
                 removeKeyJob('PerfumeSurvey')
             );
         });
-};
-
-/**
- * 향수 정보 업데이트
- *
- * @param {Object} Perfume
- * @returns {Promise}
- **/
-exports.updatePerfume = ({
-    perfumeIdx,
-    name,
-    brandIdx,
-    englishName,
-    volumeAndPrice,
-    imageThumbnailUrl,
-    story,
-    abundanceRate,
-    imageUrl,
-}) => {
-    return perfumeDao.update({
-        perfumeIdx,
-        name,
-        brandIdx,
-        englishName,
-        volumeAndPrice,
-        imageThumbnailUrl,
-        story,
-        abundanceRate,
-        imageUrl,
-    });
 };
 
 /**
