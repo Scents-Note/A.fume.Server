@@ -1070,6 +1070,15 @@ paths:
       operationId: getFilterSeries
       produces:
       - application/json
+      parameters:
+      - name: pagingSize
+        in: query
+        type: integer
+        required: false
+      - name: pagingIndex
+        in: query
+        type: integer
+        required: false
       responses:
         200:
           description: 성공
