@@ -1,11 +1,11 @@
 'use strict';
 
-const perfumeDao = require('../dao/PerfumeDao.js');
-const reviewDao = require('../dao/ReviewDao.js');
-const noteDao = require('../dao/NoteDao');
-const likePerfumeDao = require('../dao/LikePerfumeDao.js');
-const keywordDao = require('../dao/KeywordDao.js');
-const userDao = require('../dao/UserDao.js');
+let perfumeDao = require('../dao/PerfumeDao.js');
+let reviewDao = require('../dao/ReviewDao.js');
+let noteDao = require('../dao/NoteDao');
+let likePerfumeDao = require('../dao/LikePerfumeDao.js');
+let keywordDao = require('../dao/KeywordDao.js');
+let userDao = require('../dao/UserDao.js');
 const { getImageList } = require('../lib/s3.js');
 
 const { parseSortToOrder } = require('../utils/parser.js');
@@ -575,4 +575,28 @@ exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
  **/
 exports.findPerfumeIdxByEnglishName = (englishName) => {
     return perfumeDao.findPerfumeIdx({ englishName });
+};
+
+exports.setPerfumeDao = (dao) => {
+    perfumeDao = dao;
+};
+
+exports.setReviewDao = (dao) => {
+    reviewDao = dao;
+};
+
+exports.setNoteDao = (dao) => {
+    noteDao = dao;
+};
+
+exports.setLikePerfumeDao = (dao) => {
+    likePerfumeDao = dao;
+};
+
+exports.setKeywordDao = (dao) => {
+    keywordDao = dao;
+};
+
+exports.setUserDao = (dao) => {
+    userDao = dao;
 };
