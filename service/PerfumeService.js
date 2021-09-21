@@ -13,14 +13,9 @@ const { parseSortToOrder } = require('../utils/parser.js');
 const {
     GENDER_WOMAN,
     ABUNDANCE_RATE_LIST,
-    SEASONAL_LIST,
-    SILLAGE_LIST,
-    LONGEVITY_LIST,
-    GENDER_LIST,
-    NOTE_TYPE_LIST,
 } = require('../utils/constantUtil.js');
 
-const { NoteDictDTO } = require('../data/dto');
+const { NoteDictDTO, PerfumeSummaryDTO } = require('../data/dto');
 
 const {
     NotMatchedError,
@@ -77,58 +72,6 @@ const commonJob = [
     ),
 ];
 
-function makeZeroMap(arr) {
-    return arr.reduce((prev, cur) => {
-        prev[cur] = 0;
-        return prev;
-    }, {});
-}
-
-function makeInitMap(arr, initFunc) {
-    return arr.reduce((prev, cur) => {
-        prev[cur] = initFunc();
-        return prev;
-    }, {});
-}
-
-function updateCount(obj, prop) {
-    if (!obj[prop]) {
-        return;
-    }
-    obj[prop] = obj[prop] + 1;
-}
-
-function normalize(obj) {
-    const result = {};
-    const entries = Object.entries(obj);
-    const total = entries.reduce((prev, cur) => {
-        return prev + cur[1];
-    }, 0);
-    if (total == 0) {
-        let remain = 100;
-        for (let i = 0; i < entries.length - 2; i++) {
-            const key = entries[i][0];
-            obj[key] = parseInt(100 / entries.length);
-            remain -= obj[key];
-        }
-        obj[entries[entries.length - 1][0]] += remain;
-        return obj;
-    }
-    let remain = 100;
-    let maxKey = 0;
-    let max = 0;
-    for (const [key, value] of entries) {
-        result[key] = parseInt((parseFloat(value) / total) * 100);
-        remain -= result[key];
-        if (max < value) {
-            max = value;
-            maxKey = key;
-        }
-    }
-    result[maxKey] += remain;
-    return result;
-}
-
 async function generateNote(perfumeIdx) {
     const noteList = await noteDao.readByPerfumeIdx(perfumeIdx);
     const noteDictDTO = NoteDictDTO.createByNoteList(noteList);
@@ -137,39 +80,8 @@ async function generateNote(perfumeIdx) {
 }
 
 async function generateSummary(perfumeIdx) {
-    let sum = 0,
-        cnt = 0;
-    let seasonalMap = makeZeroMap(SEASONAL_LIST.slice(1));
-    let sillageMap = makeZeroMap(SILLAGE_LIST.slice(1));
-    let longevityMap = makeZeroMap(LONGEVITY_LIST.slice(1));
-    let genderMap = makeZeroMap(GENDER_LIST.slice(1));
-
-    console.log(seasonalMap);
-    (await reviewDao.readAllOfPerfume(perfumeIdx))
-        .map((it) => {
-            it.seasonal = SEASONAL_LIST[it.seasonal];
-            it.sillage = SILLAGE_LIST[it.sillage];
-            it.longevity = LONGEVITY_LIST[it.longevity];
-            it.gender = GENDER_LIST[it.gender];
-            return it;
-        })
-        .forEach((review) => {
-            if (review.score) {
-                sum += review.score;
-                cnt++;
-            }
-            updateCount(longevityMap, review.longevity);
-            updateCount(sillageMap, review.sillage);
-            updateCount(seasonalMap, review.seasonal);
-            updateCount(genderMap, review.gender);
-        });
-    return {
-        score: parseFloat((parseFloat(sum) / cnt).toFixed(2)) || 0,
-        seasonal: normalize(seasonalMap),
-        sillage: normalize(sillageMap),
-        longevity: normalize(longevityMap),
-        gender: normalize(genderMap),
-    };
+    const reviewList = await reviewDao.readAllOfPerfume(perfumeIdx);
+    return PerfumeSummaryDTO.create(reviewList);
 }
 
 function numberWithCommas(x) {
