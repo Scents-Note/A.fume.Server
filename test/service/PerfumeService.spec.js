@@ -8,15 +8,25 @@ const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
 const PerfumeThumbDTO = require('../data/dto/PerfumeThumbDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 
+const mockS3FileDao = {};
+Perfume.setS3FileDao(mockS3FileDao);
+
 describe('# Perfume Service Test', () => {
     before(async function () {
         await require('../dao/common/presets.js')(this);
     });
     describe('# read Test', () => {
         it('# read detail Test', (done) => {
+            mockS3FileDao.getS3ImageList = async () => {
+                return ['imageUrl1', 'imageUrl2'];
+            };
             Perfume.getPerfumeById(1, 1)
                 .then((it) => {
                     PerfumeIntegralDTO.validTest.call(it);
+                    expect(it.imageUrls).to.be.deep.eq([
+                        'imageUrl1',
+                        'imageUrl2',
+                    ]);
                     done();
                 })
                 .catch((err) => done(err));
