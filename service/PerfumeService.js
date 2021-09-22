@@ -19,6 +19,7 @@ const {
     NoteDictDTO,
     PerfumeSummaryDTO,
     PerfumeThumbDTO,
+    PerfumeThumbKeywordDTO,
 } = require('../data/dto');
 
 const {
@@ -315,13 +316,14 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
             perfumeIdxList
         );
 
-        return updateRows(
+        updateRows(
             result,
             ...commonJob,
-            removeKeyJob('SearchHistory'),
             isLikeJob(likePerfumeList),
             addKeyword(joinKeywordList)
         );
+        result.rows = result.rows.map((it) => new PerfumeThumbKeywordDTO(it));
+        return result;
     });
 };
 

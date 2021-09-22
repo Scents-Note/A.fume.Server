@@ -12,6 +12,7 @@ const statusCode = require('../../utils/statusCode');
 
 const Perfume = require('../../controllers/Perfume.js');
 const PerfumeThumbDTO = require('../data/dto/PerfumeThumbDTO');
+const PerfumeThumbKeywordDTO = require('../data/dto/PerfumeThumbKeywordDTO');
 const PerfumeDetailResponseDTO = require('../data/response_dto/perfume/PerfumeDetailResponseDTO');
 const PerfumeResponseDTO = require('../data/response_dto/perfume/PerfumeResponseDTO');
 const PerfumeRecommendResponseDTO = require('../data/response_dto/perfume/PerfumeRecommendResponseDTO');
@@ -33,10 +34,14 @@ const mockPerfumeList = [
     PerfumeThumbDTO.createWithIdx(2467),
     PerfumeThumbDTO.createWithIdx(2466),
 ];
-const mockPerfumeKeywordList = mockPerfumeList.map((it, idx) => {
-    it.keywordList = [`키워드${idx}`];
-    return it;
-});
+const mockPerfumeKeywordList = [
+    PerfumeThumbKeywordDTO.createWithIdx(1, ['키워드 1', '키워드2']),
+    PerfumeThumbKeywordDTO.createWithIdx(2, ['키워드']),
+    PerfumeThumbKeywordDTO.createWithIdx(3, ['키워드 1', '키워드2', '키워드3']),
+    PerfumeThumbKeywordDTO.createWithIdx(4, []),
+    PerfumeThumbKeywordDTO.createWithIdx(6, ['키워드 1', '키워드2']),
+    PerfumeThumbKeywordDTO.createWithIdx(8, ['키워드']),
+];
 Perfume.setPerfumeService(mockPerfumeService);
 Perfume.setSearchHistoryService(mockSearchHistoryService);
 
