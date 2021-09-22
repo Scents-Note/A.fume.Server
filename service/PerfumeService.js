@@ -22,6 +22,7 @@ const {
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
     PerfumeIntegralDTO,
+    ListAndCountDTO,
 } = require('../data/dto');
 
 const {
@@ -201,8 +202,10 @@ exports.searchPerfume = (
                 perfumeIdxList
             );
             updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
-            result.rows = result.rows.map((it) => new PerfumeThumbDTO(it));
-            return result;
+            return new ListAndCountDTO({
+                count: result.count,
+                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            });
         });
 };
 
@@ -224,9 +227,11 @@ exports.getSurveyPerfume = (userIdx) => {
                 userIdx,
                 perfumeIdxList
             );
-            updateRows(result, ...commonJob);
-            result.rows = result.rows.map((it) => new PerfumeThumbDTO(it));
-            return result;
+            updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
+            return new ListAndCountDTO({
+                count: result.count,
+                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            });
         });
 };
 
@@ -280,8 +285,10 @@ exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
                 perfumeIdxList
             );
             updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
-            result.rows = result.rows.map((it) => new PerfumeThumbDTO(it));
-            return result;
+            return new ListAndCountDTO({
+                count: result.count,
+                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            });
         });
 };
 
@@ -333,8 +340,10 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
             isLikeJob(likePerfumeList),
             addKeyword(joinKeywordList)
         );
-        result.rows = result.rows.map((it) => new PerfumeThumbKeywordDTO(it));
-        return result;
+        return new ListAndCountDTO({
+            count: result.count,
+            rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+        });
     });
 };
 
@@ -381,8 +390,10 @@ exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
                 perfumeIdxList
             );
             updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
-            result.rows = result.rows.map((it) => new PerfumeThumbDTO(it));
-            return result;
+            return new ListAndCountDTO({
+                count: result.count,
+                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            });
         });
 };
 
@@ -404,8 +415,10 @@ exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
                 perfumeIdxList
             );
             updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
-            result.rows = result.rows.map((it) => new PerfumeThumbDTO(it));
-            return result;
+            return new ListAndCountDTO({
+                count: result.count,
+                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            });
         });
 };
 
