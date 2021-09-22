@@ -92,35 +92,8 @@ async function generateSummary(perfumeIdx) {
     return PerfumeSummaryDTO.create(reviewList);
 }
 
-/**
- * 향수 세부 정보 조회
- *
- * @param {number} perfumeIdx
- * @param {number} userIdx
- * @returns {Promise<Perfume>}
- **/
-exports.getPerfumeById = async (perfumeIdx, userIdx) => {
-    let _perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
-    const perfume = [...commonJob, flatJob('PerfumeDetail')].reduce(
-        (prev, cur) => cur(prev),
-        _perfume
-    );
-
-    const likePerfume = await likePerfumeDao
-        .read(userIdx, perfumeIdx)
-        .then((it) => true)
-        .catch((err) => {
-            if (err instanceof NotMatchedError) {
-                return false;
-            }
-            throw err;
-        });
-    perfume.isLiked = likePerfume ? true : false;
-    const keywordList = (await keywordDao.readAllOfPerfume(perfumeIdx)).map(
-        (it) => it.name
-    );
-
-    const imageUrls = await getImageList({
+function getS3ImageList(perfumeIdx) {
+    return getImageList({
         Bucket: 'afume',
         Prefix: `perfume/${perfumeIdx}/`,
     }).then((it) => {
@@ -136,9 +109,43 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
                 return `${process.env.AWS_S3_URL}/${it}`;
             });
     });
+}
 
+function isLike({ userIdx, perfumeIdx }) {
+    return likePerfumeDao
+        .read(userIdx, perfumeIdx)
+        .then((it) => true)
+        .catch((err) => {
+            if (err instanceof NotMatchedError) {
+                return false;
+            }
+            throw err;
+        });
+}
+
+/**
+ * 향수 세부 정보 조회
+ *
+ * @param {number} perfumeIdx
+ * @param {number} userIdx
+ * @returns {Promise<Perfume>}
+ **/
+exports.getPerfumeById = async (perfumeIdx, userIdx) => {
+    let _perfume = await perfumeDao.readByPerfumeIdx(perfumeIdx);
+    const perfume = [...commonJob, flatJob('PerfumeDetail')].reduce(
+        (prev, cur) => cur(prev),
+        _perfume
+    );
+
+    perfume.isLiked = await isLike({ userIdx, perfumeIdx });
+    const keywordList = (await keywordDao.readAllOfPerfume(perfumeIdx)).map(
+        (it) => it.name
+    );
+
+    const imageUrls = await getS3ImageList(perfumeIdx);
     const { noteType, noteDictDTO } = await generateNote(perfumeIdx);
     const perfumeSummaryDTO = await generateSummary(perfumeIdx);
+
     for (const key in perfume) {
         if (!perfume[key] instanceof String) continue;
         perfume[key] = emptyCheck(perfume[key]);
