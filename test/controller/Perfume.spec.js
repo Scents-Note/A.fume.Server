@@ -11,6 +11,7 @@ const basePath = '/A.fume/api/0.0.1';
 const statusCode = require('../../utils/statusCode');
 
 const Perfume = require('../../controllers/Perfume.js');
+const PerfumeThumbDTO = require('../data/dto/PerfumeThumbDTO');
 const PerfumeDetailResponseDTO = require('../data/response_dto/perfume/PerfumeDetailResponseDTO');
 const PerfumeResponseDTO = require('../data/response_dto/perfume/PerfumeResponseDTO');
 const PerfumeRecommendResponseDTO = require('../data/response_dto/perfume/PerfumeRecommendResponseDTO');
@@ -21,86 +22,16 @@ const user1token = token.create({ userIdx: 1 });
 const mockPerfumeService = {};
 const mockSearchHistoryService = {};
 const mockPerfumeList = [
-    {
-        perfumeIdx: 2475,
-        name: 'White Patchouli Tom Ford for women',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2475/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2474,
-        name: 'Violet Blonde Tom Ford for women',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2474/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2473,
-        name: 'Tom Ford for Men Extreme Tom Ford for men',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2473/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2472,
-        name: 'Tom Ford for Men Tom Ford for men',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2472/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2471,
-        name: 'Sahara Noir Tom Ford for women',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2471/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2470,
-        name: 'Ombré Leather (2018) Tom Ford for women and men',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2470/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2469,
-        name: 'Metallique Tom Ford for women',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2469/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2468,
-        name: 'Beau De Jour Eau de Parfum Tom Ford for men',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2468/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2467,
-        name: 'Eau de Vert Boheme Tom Ford for women',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2467/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2466,
-        name: 'Eau de Jasmin Rouge Tom Ford for women',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2466/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
+    PerfumeThumbDTO.createWithIdx(2775),
+    PerfumeThumbDTO.createWithIdx(2774),
+    PerfumeThumbDTO.createWithIdx(2773),
+    PerfumeThumbDTO.createWithIdx(2772),
+    PerfumeThumbDTO.createWithIdx(2471),
+    PerfumeThumbDTO.createWithIdx(2470),
+    PerfumeThumbDTO.createWithIdx(2469),
+    PerfumeThumbDTO.createWithIdx(2468),
+    PerfumeThumbDTO.createWithIdx(2467),
+    PerfumeThumbDTO.createWithIdx(2466),
 ];
 const mockPerfumeKeywordList = mockPerfumeList.map((it, idx) => {
     it.keywordList = [`키워드${idx}`];
