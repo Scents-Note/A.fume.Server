@@ -21,6 +21,8 @@ module.exports.getPerfume = (req, res, next) => {
         SearchHistory.incrementCount(loginUserIdx, perfumeIdx),
     ])
         .then(([result]) => {
+            result.Keywords = result.keywordList;
+            result.ingredients = result.noteDict;
             return new PerfumeDetailResponseDTO(result);
         })
         .then((data) => {

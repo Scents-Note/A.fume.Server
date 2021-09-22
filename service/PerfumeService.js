@@ -10,16 +10,14 @@ const { getImageList } = require('../lib/s3.js');
 
 const { parseSortToOrder } = require('../utils/parser.js');
 
-const {
-    GENDER_WOMAN,
-    ABUNDANCE_RATE_LIST,
-} = require('../utils/constantUtil.js');
+const { GENDER_WOMAN } = require('../utils/constantUtil.js');
 
 const {
     NoteDictDTO,
     PerfumeSummaryDTO,
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
+    PerfumeIntegralDTO,
 } = require('../data/dto');
 
 const {
@@ -89,10 +87,6 @@ async function generateSummary(perfumeIdx) {
     return PerfumeSummaryDTO.create(reviewList);
 }
 
-function numberWithCommas(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-}
-
 /**
  * 향수 세부 정보 조회
  *
@@ -106,7 +100,6 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
         (prev, cur) => cur(prev),
         _perfume
     );
-    perfume.abundanceRate = ABUNDANCE_RATE_LIST[perfume.abundanceRate];
 
     const likePerfume = await likePerfumeDao
         .read(userIdx, perfumeIdx)
@@ -118,15 +111,11 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
             throw err;
         });
     perfume.isLiked = likePerfume ? true : false;
-    perfume.Keywords = (await keywordDao.readAllOfPerfume(perfumeIdx)).map(
+    const keywordList = (await keywordDao.readAllOfPerfume(perfumeIdx)).map(
         (it) => it.name
     );
-    perfume.volumeAndPrice = perfume.volumeAndPrice.map((it) => {
-        return `${numberWithCommas(it.price)}/${it.volume}ml`;
-    });
 
-    delete perfume.imageUrl;
-    perfume.imageUrls = await getImageList({
+    const imageUrls = await getImageList({
         Bucket: 'afume',
         Prefix: `perfume/${perfumeIdx}/`,
     }).then((it) => {
@@ -143,13 +132,20 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
             });
     });
 
-    Object.assign(perfume, await generateNote(perfumeIdx));
-    Object.assign(perfume, await generateSummary(perfumeIdx));
+    const { noteType, noteDictDTO } = await generateNote(perfumeIdx);
+    const perfumeSummaryDTO = await generateSummary(perfumeIdx);
     for (const key in perfume) {
         if (!perfume[key] instanceof String) continue;
         perfume[key] = emptyCheck(perfume[key]);
     }
-    return perfume;
+    return PerfumeIntegralDTO.create({
+        perfumeDTO: perfume,
+        keywordList,
+        perfumeSummaryDTO,
+        noteDictDTO,
+        noteType,
+        imageUrls,
+    });
 };
 
 /**
