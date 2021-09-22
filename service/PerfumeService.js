@@ -6,7 +6,7 @@ let noteDao = require('../dao/NoteDao');
 let likePerfumeDao = require('../dao/LikePerfumeDao.js');
 let keywordDao = require('../dao/KeywordDao.js');
 let userDao = require('../dao/UserDao.js');
-const { getImageList } = require('../lib/s3.js');
+let s3FileDao = require('../dao/S3FileDao.js');
 
 const { parseSortToOrder } = require('../utils/parser.js');
 
@@ -93,25 +93,6 @@ async function generateSummary(perfumeIdx) {
     return PerfumeSummaryDTO.create(reviewList);
 }
 
-function getS3ImageList(perfumeIdx) {
-    return getImageList({
-        Bucket: 'afume',
-        Prefix: `perfume/${perfumeIdx}/`,
-    }).then((it) => {
-        if (!it.length) {
-            console.log('Failed to read imageList from s3');
-            return [];
-        }
-        return it
-            .filter((it) => {
-                return it.search(/\.jpg$|\.png$/i) > 0;
-            })
-            .map((it) => {
-                return `${process.env.AWS_S3_URL}/${it}`;
-            });
-    });
-}
-
 function isLike({ userIdx, perfumeIdx }) {
     return likePerfumeDao
         .read(userIdx, perfumeIdx)
@@ -143,7 +124,7 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
         (it) => it.name
     );
 
-    const imageUrls = await getS3ImageList(perfumeIdx);
+    const imageUrls = await s3FileDao.getS3ImageList(perfumeIdx);
     const { noteType, noteDictDTO } = await generateNote(perfumeIdx);
     const perfumeSummaryDTO = await generateSummary(perfumeIdx);
 
@@ -454,4 +435,8 @@ exports.setKeywordDao = (dao) => {
 
 exports.setUserDao = (dao) => {
     userDao = dao;
+};
+
+exports.setS3FileDao = (dao) => {
+    s3FileDao = dao;
 };
