@@ -4,7 +4,7 @@ dotenv.config();
 const chai = require('chai');
 const { expect } = chai;
 const Perfume = require('../../service/PerfumeService.js');
-const PerfumeIntegralDTO = require('../../data/dto/PerfumeIntegralDTO');
+const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
 
 describe('# Perfume Service Test', () => {
     before(async function () {

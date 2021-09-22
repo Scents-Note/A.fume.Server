@@ -1,8 +1,8 @@
 'use strict';
-
+const { expect } = require('chai');
 const PerfumeIntegralDTO = require('../../../data/dto/PerfumeIntegralDTO');
 
-PerfumeIntegralDTO.validTest = () => {
+PerfumeIntegralDTO.validTest = function () {
     expect(this.brandName).to.be.ok;
     expect(this.isLiked).to.be.true;
     expect(this.story).to.be.ok;
@@ -31,11 +31,11 @@ PerfumeIntegralDTO.validTest = () => {
         return sum;
     };
     expect(this.seasonal).to.be.ok;
-    expect(sumOfMapFunc(it.seasonal)).to.be.eq(100);
+    expect(sumOfMapFunc(this.seasonal)).to.be.eq(100);
     expect(this.longevity).to.be.ok;
-    expect(sumOfMapFunc(it.longevity)).to.be.eq(100);
+    expect(sumOfMapFunc(this.longevity)).to.be.eq(100);
     expect(this.gender).to.be.ok;
-    expect(sumOfMapFunc(it.gender)).to.be.eq(100);
+    expect(sumOfMapFunc(this.gender)).to.be.eq(100);
 };
 
 PerfumeIntegralDTO.createMock = (condition) => {

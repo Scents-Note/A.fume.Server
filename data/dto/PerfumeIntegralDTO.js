@@ -50,10 +50,8 @@ class PerfumeIntegralDTO {
         perfumeDTO.volumeAndPrice = perfumeDTO.volumeAndPrice.map((it) => {
             return `${numberWithCommas(it.price)}/${it.volume}ml`;
         });
-
         perfumeDTO.abundanceRate =
             ABUNDANCE_RATE_LIST[perfumeDTO.abundanceRate];
-        console.log(noteDictDTO);
         return new PerfumeIntegralDTO(
             Object.assign(
                 { keywordList, noteDict: noteDictDTO, noteType, imageUrls },

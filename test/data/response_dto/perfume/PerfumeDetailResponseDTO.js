@@ -70,7 +70,7 @@ PerfumeDetailResponseDTO.validTest = function () {
     expect.isPercentage.call(gender);
 
     expect(Keywords).instanceOf(Array);
-    Keywords.forEach((it) => expect(it).instanceOf(String));
+    Keywords.forEach((it) => expect(it).to.be.a('string'));
 
     expect(noteType).to.be.oneOf([NOTE_TYPE_SINGLE, NOTE_TYPE_NORMAL]);
 
