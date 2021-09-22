@@ -16,6 +16,7 @@ const PerfumeThumbKeywordDTO = require('../data/dto/PerfumeThumbKeywordDTO');
 const PerfumeDetailResponseDTO = require('../data/response_dto/perfume/PerfumeDetailResponseDTO');
 const PerfumeResponseDTO = require('../data/response_dto/perfume/PerfumeResponseDTO');
 const PerfumeRecommendResponseDTO = require('../data/response_dto/perfume/PerfumeRecommendResponseDTO');
+const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
 
 const token = require('../../lib/token');
 const user1token = token.create({ userIdx: 1 });
@@ -49,48 +50,7 @@ describe('# Perfume Controller Test', () => {
     describe('# getPerfume Test', () => {
         it('success case', (done) => {
             mockPerfumeService.getPerfumeById = async () => {
-                return {
-                    perfumeIdx: 1,
-                    name: '향수1',
-                    brandName: '브랜드1',
-                    story: '스토리1',
-                    abundanceRate: '오 드 코롱',
-                    volumeAndPrice: [],
-                    isLiked: false,
-                    Keywords: [],
-                    imageUrls: [],
-                    noteType: 0,
-                    ingredients: {
-                        top: '재료1, 재료1, 재료1, 재료1',
-                        middle: '재료1',
-                        base: '',
-                        single: '',
-                    },
-                    score: 1,
-                    seasonal: {
-                        spring: 15,
-                        summer: 0,
-                        fall: 78,
-                        winter: 7,
-                    },
-                    sillage: {
-                        light: 7,
-                        medium: 86,
-                        heavy: 7,
-                    },
-                    longevity: {
-                        veryWeak: 93,
-                        weak: 0,
-                        normal: 0,
-                        strong: 7,
-                        veryStrong: 0,
-                    },
-                    gender: {
-                        male: 7,
-                        neutral: 7,
-                        female: 86,
-                    },
-                };
+                return PerfumeIntegralDTO.createMock();
             };
             mockSearchHistoryService.incrementCount = async () => {};
 
