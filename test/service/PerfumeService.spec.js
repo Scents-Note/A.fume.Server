@@ -5,6 +5,8 @@ const chai = require('chai');
 const { expect } = chai;
 const Perfume = require('../../service/PerfumeService.js');
 const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
+const PerfumeThumbDTO = require('../data/dto/PerfumeThumbDTO');
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 
 describe('# Perfume Service Test', () => {
     before(async function () {
@@ -23,6 +25,11 @@ describe('# Perfume Service Test', () => {
         it('# isLike Test', (done) => {
             Perfume.searchPerfume([], [], [], '', 1, 100, null, 1)
                 .then((result) => {
+                    expect(result).to.be.instanceOf(ListAndCountDTO);
+                    ListAndCountDTO.validTest.call(
+                        result,
+                        PerfumeThumbDTO.validTest
+                    );
                     expect(
                         result.rows.filter((it) => it.isLiked == true).length
                     ).to.eq(5);
