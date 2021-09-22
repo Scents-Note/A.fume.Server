@@ -10,7 +10,11 @@ const { getImageList } = require('../lib/s3.js');
 
 const { parseSortToOrder } = require('../utils/parser.js');
 
-const { GENDER_WOMAN } = require('../utils/constantUtil.js');
+const {
+    GENDER_WOMAN,
+    NOTE_TYPE_SINGLE,
+    NOTE_TYPE_NORMAL,
+} = require('../utils/constantUtil.js');
 
 const {
     NoteDictDTO,
@@ -78,8 +82,9 @@ const commonJob = [
 async function generateNote(perfumeIdx) {
     const noteList = await noteDao.readByPerfumeIdx(perfumeIdx);
     const noteDictDTO = NoteDictDTO.createByNoteList(noteList);
-    const noteType = noteDictDTO.single.length > 0 ? 1 : 0;
-    return { noteType, ingredients: noteDictDTO };
+    const noteType =
+        noteDictDTO.single.length > 0 ? NOTE_TYPE_SINGLE : NOTE_TYPE_NORMAL;
+    return { noteType, noteDictDTO };
 }
 
 async function generateSummary(perfumeIdx) {
