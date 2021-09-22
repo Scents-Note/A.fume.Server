@@ -13,6 +13,7 @@ const statusCode = require('../../utils/statusCode');
 const Perfume = require('../../controllers/Perfume.js');
 const PerfumeDetailResponseDTO = require('../data/response_dto/perfume/PerfumeDetailResponseDTO');
 const PerfumeResponseDTO = require('../data/response_dto/perfume/PerfumeResponseDTO');
+const PerfumeRecommendResponseDTO = require('../data/response_dto/perfume/PerfumeRecommendResponseDTO');
 
 const token = require('../../lib/token');
 const user1token = token.create({ userIdx: 1 });
@@ -101,6 +102,10 @@ const mockPerfumeList = [
         isLiked: false,
     },
 ];
+const mockPerfumeKeywordList = mockPerfumeList.map((it, idx) => {
+    it.keywordList = [`키워드${idx}`];
+    return it;
+});
 Perfume.setPerfumeService(mockPerfumeService);
 Perfume.setSearchHistoryService(mockSearchHistoryService);
 
@@ -298,7 +303,7 @@ describe('# Perfume Controller Test', () => {
             it('success case', (done) => {
                 mockPerfumeService.recommendByUser = async () => {
                     return {
-                        rows: mockPerfumeList,
+                        rows: mockPerfumeKeywordList,
                         count: 20,
                     };
                 };
@@ -313,7 +318,7 @@ describe('# Perfume Controller Test', () => {
                         const { count, rows } = data;
                         expect(count).to.be.gte(0);
                         rows.forEach((it) => {
-                            PerfumeResponseDTO.validTest.call(it);
+                            PerfumeRecommendResponseDTO.validTest.call(it);
                         });
                         done();
                     })
@@ -337,7 +342,7 @@ describe('# Perfume Controller Test', () => {
             it('success case', (done) => {
                 mockPerfumeService.recommendByUser = async () => {
                     return {
-                        rows: mockPerfumeList,
+                        rows: mockPerfumeKeywordList,
                         count: 20,
                     };
                 };
@@ -353,7 +358,7 @@ describe('# Perfume Controller Test', () => {
                         const { count, rows } = data;
                         expect(count).to.be.gte(0);
                         rows.forEach((it) => {
-                            PerfumeResponseDTO.validTest.call(it);
+                            PerfumeRecommendResponseDTO.validTest.call(it);
                         });
                         done();
                     })
