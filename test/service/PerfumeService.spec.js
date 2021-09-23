@@ -7,6 +7,10 @@ const Perfume = require('../../service/PerfumeService.js');
 const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
 const PerfumeThumbDTO = require('../data/dto/PerfumeThumbDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
+const {
+    PagingRequestDTO,
+    PerfumeSearchRequestDTO,
+} = require('../../data/request_dto');
 
 const mockS3FileDao = {};
 Perfume.setS3FileDao(mockS3FileDao);
@@ -33,7 +37,19 @@ describe('# Perfume Service Test', () => {
         });
 
         it('# isLike Test', (done) => {
-            Perfume.searchPerfume([], [], [], '', 1, 100, null, 1)
+            const perfumeSearchRequestDTO = new PerfumeSearchRequestDTO({
+                keywordList: [],
+                brandList: [],
+                ingredientList: [],
+                searchText: '',
+                userIdx: 1,
+            });
+            const pagingRequestDTO = new PagingRequestDTO({
+                pagingSize: 100,
+                pagingIndex: 1,
+                order: null,
+            });
+            Perfume.searchPerfume({ perfumeSearchRequestDTO, pagingRequestDTO })
                 .then((result) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     ListAndCountDTO.validTest.call(

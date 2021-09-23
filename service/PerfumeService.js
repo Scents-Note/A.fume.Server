@@ -8,8 +8,6 @@ let keywordDao = require('../dao/KeywordDao.js');
 let userDao = require('../dao/UserDao.js');
 let s3FileDao = require('../dao/S3FileDao.js');
 
-const { parseSortToOrder } = require('../utils/parser.js');
-
 const {
     GENDER_WOMAN,
     NOTE_TYPE_SINGLE,
@@ -23,6 +21,8 @@ const {
     PerfumeThumbKeywordDTO,
     PerfumeIntegralDTO,
     ListAndCountDTO,
+    PagingDTO,
+    PerfumeSearchDTO,
 } = require('../data/dto');
 
 const {
@@ -145,27 +145,20 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
 /**
  * 향수 검색
  *
- * @param {number[]} brandIdxList
- * @param {number[]} ingredientIdxList
- * @param {number[]} keywordIdxList
- * @param {string} searchText
- * @param {number} pagingIndex
- * @param {number} pagingSize
- * @param {array} sort
- * @param {number} userIdx
+ * @param {PerfumeSearchRequestDTO} perfumeSearchRequestDTO
+ * @param {PagingRequestDTO} pagingRequestDTO
  * @returns {Promise<Perfume[]>}
  **/
-exports.searchPerfume = (
-    brandIdxList,
-    ingredientIdxList,
-    keywordIdxList,
-    searchText,
-    pagingIndex,
-    pagingSize,
-    sort,
-    userIdx
-) => {
-    const order = parseSortToOrder(sort);
+exports.searchPerfume = ({ perfumeSearchRequestDTO, pagingRequestDTO }) => {
+    const { pagingIndex, pagingSize, order } =
+        PagingDTO.create(pagingRequestDTO);
+    const {
+        brandIdxList,
+        ingredientIdxList,
+        keywordIdxList,
+        searchText,
+        userIdx,
+    } = PerfumeSearchDTO.create(perfumeSearchRequestDTO);
     return perfumeDao
         .search(
             brandIdxList,
@@ -252,11 +245,11 @@ exports.likePerfume = (userIdx, perfumeIdx) => {
  * 유저의 최근 검색한 향수 조회
  *
  * @param {number} userIdx
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {PagingRequestDTO} pagingRequestDTO
  * @returns {Promise<Perfume[]>}
  **/
-exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
+exports.recentSearch = ({ userIdx, pagingRequestDTO }) => {
+    const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
     return perfumeDao
         .recentSearchPerfumeList(userIdx, pagingIndex, pagingSize)
         .then(async (result) => {
@@ -277,11 +270,11 @@ exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
  * 유저 연령대 및 성별에 따른 향수 추천
  *
  * @param {number} userIdx
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {number} pagingRequestDTO
  * @returns {Promise<Perfume[]>}
  **/
-exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
+exports.recommendByUser = async ({ userIdx, pagingRequestDTO }) => {
+    const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
     let ageGroup, gender;
     if (userIdx == -1) {
         gender = GENDER_WOMAN;
@@ -340,9 +333,9 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
 exports.recommendByGenderAgeAndGender = (
     gender,
     ageGroup,
-    pagingIndex,
-    pagingSize
+    pagingRequestDTO
 ) => {
+    const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
     return perfumeDao.recommendPerfumeByAgeAndGender(
         gender,
         ageGroup,
@@ -355,11 +348,11 @@ exports.recommendByGenderAgeAndGender = (
  * 새로 추가된 향수 조회
  *
  * @param {number} userIdx
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {number} pagingRequestDTO
  * @returns {Promise<Perfume[]>}
  **/
-exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
+exports.getNewPerfume = ({ userIdx, pagingRequestDTO }) => {
+    const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
     const fromDate = new Date();
     fromDate.setDate(fromDate.getDate() - 7);
     return perfumeDao
@@ -382,11 +375,11 @@ exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
  * 유저가 좋아요한 향수 조회
  *
  * @param {number} userIdx
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {number} pagingRequestDTO
  * @returns {Promise<Perfume[]>}
  **/
-exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
+exports.getLikedPerfume = ({ userIdx, pagingRequestDTO }) => {
+    const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
     return perfumeDao
         .readLikedPerfume(userIdx, pagingIndex, pagingSize)
         .then(async (result) => {
