@@ -12,16 +12,29 @@ const {
 
 const basePath = '/A.fume/api/0.0.1';
 
+const statusCode = require('../../utils/statusCode');
+
 const User = require('../../controllers/User.js');
-User.setUserService(require('../service/UserService.mock.js'));
+const mockUserService = {};
+User.setUserService(mockUserService);
+
+const UserResponseDTO = require('../data/response_dto/user/UserResponseDTO');
+const UserRegisterResponseDTO = require('../data/response_dto/user/UserRegisterResponseDTO');
+const UserAuthResponseDTO = require('../data/response_dto/user/UserAuthResponseDTO');
 
 const token = require('../../lib/token');
+const LoginResponseDTO = require('../data/response_dto/user/LoginResponseDTO.js');
+const TokenGroupDTO = require('../data/dto/TokenGroupDTO');
+const LoginInfoDTO = require('../data/dto/LoginInfoDTO');
+const UserDTO = require('../data/dto/UserDTO');
+const { UserAuthDTO } = require('../../data/dto');
 const user1token = token.create({ userIdx: 1 });
 const invalidToken =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWR4IjoyMDAsIm5pY2tuYW1lIjoi7L-87Lm066eoMiIsImdlbmRlciI6ImZlbWFsZSIsImVtYWlsIjoiaGVlLnlvdW4yQHNhbXN1bmcuY29tIiwiYmlydGgiOjE5OTUsImlhdCI6MTYyOTEwNzc3NSwiZXhwIjoxNjMwODM1Nzc1LCJpc3MiOiJhZnVtZS1qYWNrcG90In0.hWxF0OHzIWZoQhPhkkOyJs3HYB2tPdrpIaVqe0IZRKI';
 
 describe('# User Controller Test', () => {
     describe('# registerUser Test', () => {
+        mockUserService.createUser = async () => TokenGroupDTO.createMock();
         it('success case', (done) => {
             request(app)
                 .post(`${basePath}/user/register`)
@@ -33,12 +46,10 @@ describe('# User Controller Test', () => {
                     password: 'test',
                 })
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('회원가입 성공');
-                    expect(data).to.be.have.property('userIdx');
-                    expect(data).to.be.have.property('token');
-                    expect(data).to.be.have.property('refreshToken');
+                    UserRegisterResponseDTO.validTest.call(data);
                     done();
                 })
                 .catch((err) => done(err));
@@ -46,11 +57,15 @@ describe('# User Controller Test', () => {
     });
 
     describe('# deleteUser Test', () => {
+        mockUserService.deleteUser = async () => {
+            const affectedRows = 1;
+            return affectedRows;
+        };
         it('success case', (done) => {
             request(app)
                 .delete(`${basePath}/user/1`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message } = res.body;
                     expect(message).to.be.eq('유저 삭제 성공');
                     done();
@@ -59,26 +74,10 @@ describe('# User Controller Test', () => {
         });
     });
 
-    describe('# getUserByIdx Test', () => {
-        it('success case', (done) => {
-            request(app)
-                .get(`${basePath}/user/1`)
-                .expect((res) => {
-                    expect(res.status).to.be.eq(200);
-                    const { message, data } = res.body;
-                    expect(message).to.be.eq('유저 조회 성공');
-                    expect(data).to.be.have.property('userIdx');
-                    expect(data).to.be.have.property('nickname');
-                    expect(data).to.be.have.property('gender');
-                    expect(data).to.be.have.property('email');
-                    expect(data).to.be.have.property('birth');
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
     describe('# loginUser Test', () => {
+        mockUserService.loginUser = async (email, password) => {
+            return LoginInfoDTO.createMock({ email });
+        };
         it('success case', (done) => {
             request(app)
                 .post(`${basePath}/user/login`)
@@ -87,50 +86,20 @@ describe('# User Controller Test', () => {
                     password: 'test',
                 })
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('로그인 성공');
-                    expect(data).to.be.have.property('userIdx');
-                    expect(data).to.be.have.property('nickname');
-                    expect(data).to.be.have.property('gender');
-                    expect(data).to.be.have.property('email');
-                    expect(data).to.be.have.property('birth');
-                    expect(data).to.be.have.property('token');
-                    expect(data).to.be.have.property('refreshToken');
+                    LoginResponseDTO.validTest.call(data);
                     done();
                 })
                 .catch((err) => done(err));
         });
     });
 
-    // describe('# logoutUser Test', () => {
-    //     it('success case', (done) => {
-    //         request(app)
-    //             .get(`${basePath}/user/logout`)
-    //             .set('x-access-token', 'Bearer {token}')
-    //             .expect((res) => {
-    //                 expect(res.status).to.be.eq(200);
-    //                 const { message, data } = res.body;
-    //                 expect(message).to.be.eq('로그아웃');
-    //                 done();
-    //             })
-    //             .catch((err) => done(err));
-    //     });
-
-    //     it('No permission case', (done) => {
-    //         request(app)
-    //             .get(`${basePath}/user/logout`)
-    //             .expect((res) => {
-    //                 expect(res.status).to.be.eq(401);
-    //                 const { message } = res.body;
-    //                 expect(message).to.be.eq('권한이 없습니다.');
-    //                 done();
-    //             })
-    //             .catch((err) => done(err));
-    //     });
-    // });
-
     describe('# updateUser Test', () => {
+        mockUserService.updateUser = async () => {
+            return UserDTO.createMock();
+        };
         it('success case', (done) => {
             request(app)
                 .put(`${basePath}/user/1`)
@@ -142,14 +111,10 @@ describe('# User Controller Test', () => {
                     birth: 1995,
                 })
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('유저 수정 성공');
-                    expect(data).to.be.have.property('userIdx');
-                    expect(data).to.be.have.property('nickname');
-                    expect(data).to.be.have.property('gender');
-                    expect(data).to.be.have.property('email');
-                    expect(data).to.be.have.property('birth');
+                    UserResponseDTO.validTest.call(data);
                     done();
                 })
                 .catch((err) => done(err));
@@ -161,7 +126,7 @@ describe('# User Controller Test', () => {
                 .set('x-access-token', 'Bearer ' + invalidToken)
                 .send({})
                 .expect((res) => {
-                    expect(res.status).to.be.eq(401);
+                    expect(res.status).to.be.eq(statusCode.UNAUTHORIZED);
                     const { message } = res.body;
                     expect(message).to.be.eq('유효하지 않는 토큰입니다.');
                     done();
@@ -175,7 +140,7 @@ describe('# User Controller Test', () => {
                 .set('x-access-token', 'Bearer ' + user1token)
                 .send({})
                 .expect((res) => {
-                    expect(res.status).to.be.eq(401);
+                    expect(res.status).to.be.eq(statusCode.UNAUTHORIZED);
                     const { message } = res.body;
                     expect(message).to.be.eq('유효하지 않는 접근입니다.');
                     done();
@@ -185,6 +150,10 @@ describe('# User Controller Test', () => {
     });
 
     describe('# changePassword Test', () => {
+        mockUserService.changePassword = async ({}) => {
+            const affectedRows = 1;
+            return affectedRows;
+        };
         it('success case', (done) => {
             request(app)
                 .put(`${basePath}/user/changePassword`)
@@ -194,7 +163,7 @@ describe('# User Controller Test', () => {
                     newPassword: 'change',
                 })
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message } = res.body;
                     expect(message).to.be.eq('비밀번호 변경 성공');
                     done();
@@ -207,7 +176,7 @@ describe('# User Controller Test', () => {
                 .put(`${basePath}/user/changePassword`)
                 .send({})
                 .expect((res) => {
-                    expect(res.status).to.be.eq(401);
+                    expect(res.status).to.be.eq(statusCode.UNAUTHORIZED);
                     const { message } = res.body;
                     expect(message).to.be.eq('유효하지 않는 토큰입니다.');
                     done();
@@ -217,16 +186,18 @@ describe('# User Controller Test', () => {
     });
 
     describe('# authUser Test', () => {
+        mockUserService.authUser = async () => {
+            return new UserAuthDTO({ isAuth: false, isAdmin: false });
+        };
         it('success case', (done) => {
             request(app)
                 .post(`${basePath}/user/auth`)
                 .set('x-access-token', 'Bearer ' + user1token)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('권한 조회');
-                    expect(data).to.be.have.property('isAuth');
-                    expect(data).to.be.have.property('isAdmin');
+                    UserAuthResponseDTO.validTest.call(data);
                     done();
                 })
                 .catch((err) => done(err));
@@ -237,11 +208,10 @@ describe('# User Controller Test', () => {
                 .post(`${basePath}/user/auth`)
                 .send({})
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('권한 조회');
-                    expect(data).to.be.have.property('isAuth');
-                    expect(data).to.be.have.property('isAdmin');
+                    UserAuthResponseDTO.validTest.call(data);
                     expect(data.isAuth).to.be.false;
                     expect(data.isAdmin).to.be.false;
                     done();
@@ -251,11 +221,15 @@ describe('# User Controller Test', () => {
     });
 
     describe('# validateEmail Test', () => {
+        mockUserService.validateEmail = async (email) => {
+            if (email && email != 'duplicate') return true;
+            else return false;
+        };
         it('success case', (done) => {
             request(app)
                 .get(`${basePath}/user/validate/email?email=test`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('Email 중복 체크: 사용 가능');
                     expect(data).to.be.true;
@@ -268,7 +242,7 @@ describe('# User Controller Test', () => {
             request(app)
                 .get(`${basePath}/user/validate/email?email=duplicate`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(409);
+                    expect(res.status).to.be.eq(statusCode.CONFLICT);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('Email 중복 체크: 사용 불가능');
                     expect(data).to.be.false;
@@ -279,11 +253,15 @@ describe('# User Controller Test', () => {
     });
 
     describe('# validateName Test', () => {
+        mockUserService.validateName = async (nickname) => {
+            if (nickname && nickname != 'duplicate') return true;
+            else return false;
+        };
         it('success case', (done) => {
             request(app)
                 .get(`${basePath}/user/validate/name?nickname=test`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('Name 중복 체크: 사용 가능');
                     expect(data).to.be.true;
@@ -296,7 +274,7 @@ describe('# User Controller Test', () => {
             request(app)
                 .get(`${basePath}/user/validate/name?nickname=duplicate`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(409);
+                    expect(res.status).to.be.eq(statusCode.CONFLICT);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('Name 중복 체크: 사용 불가능');
                     expect(data).to.be.false;
