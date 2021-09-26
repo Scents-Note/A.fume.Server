@@ -377,16 +377,6 @@ exports.getLikedPerfume = ({ userIdx, pagingRequestDTO }) => {
         });
 };
 
-/**
- * 향수 idx값 조회
- *
- * @param {string} englishName
- * @returns {Promise<number>}
- **/
-exports.findPerfumeIdxByEnglishName = (englishName) => {
-    return perfumeDao.findPerfumeIdx({ englishName });
-};
-
 async function getAgeGroupAndGender(userIdx) {
     if (userIdx == -1) {
         return {

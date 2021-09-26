@@ -408,21 +408,6 @@ module.exports.readPerfumeSurvey = async (gender) => {
 };
 
 /**
- * 향수 Index 조회
- *
- * @param {Object} condition
- * @returns {Promise<number>} perfumeIdx
- */
-module.exports.findPerfumeIdx = ({ englishName }) => {
-    return Perfume.findOne({ where: { englishName } }).then((it) => {
-        if (!it) {
-            throw new NotMatchedError();
-        }
-        return it.perfumeIdx;
-    });
-};
-
-/**
  * 향수 전체 조회
  *
  * @returns {Promise<Perfume[]>}
