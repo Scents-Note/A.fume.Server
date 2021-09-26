@@ -83,7 +83,8 @@ describe('# Perfume Service Test', () => {
                 })
                 .catch((err) => done(err));
         });
-
+    });
+    describe('# like Test', () => {
         it('# likePerfume Test (좋아요)', (done) => {
             mockLikePerfumeDao.read = async (userIdx, perfumeIdx) => {
                 throw new NotMatchedError();
