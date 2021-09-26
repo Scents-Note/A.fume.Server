@@ -12,12 +12,16 @@ const {
     PerfumeSearchRequestDTO,
 } = require('../../data/request_dto');
 const { NotMatchedError } = require('../../utils/errors/errors.js');
+const { GENDER_WOMAN } = require('../../utils/constantUtil.js');
 
 const mockS3FileDao = {};
 Perfume.setS3FileDao(mockS3FileDao);
 
 const mockLikePerfumeDao = {};
 Perfume.setLikePerfumeDao(mockLikePerfumeDao);
+
+const mockUserDao = {};
+Perfume.setUserDao(mockUserDao);
 
 describe('# Perfume Service Test', () => {
     before(async function () {
@@ -72,6 +76,9 @@ describe('# Perfume Service Test', () => {
         });
 
         it('# getSurveyPerfume Test', (done) => {
+            mockUserDao.readByIdx = async () => ({
+                gender: GENDER_WOMAN,
+            });
             Perfume.getSurveyPerfume(1)
                 .then((result) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
