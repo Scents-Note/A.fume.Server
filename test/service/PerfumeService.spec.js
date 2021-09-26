@@ -11,9 +11,13 @@ const {
     PagingRequestDTO,
     PerfumeSearchRequestDTO,
 } = require('../../data/request_dto');
+const { NotMatchedError } = require('../../utils/errors/errors.js');
 
 const mockS3FileDao = {};
 Perfume.setS3FileDao(mockS3FileDao);
+
+const mockLikePerfumeDao = {};
+Perfume.setLikePerfumeDao(mockLikePerfumeDao);
 
 describe('# Perfume Service Test', () => {
     before(async function () {
@@ -23,6 +27,9 @@ describe('# Perfume Service Test', () => {
         it('# read detail Test', (done) => {
             mockS3FileDao.getS3ImageList = async () => {
                 return ['imageUrl1', 'imageUrl2'];
+            };
+            mockLikePerfumeDao.read = async (userIdx, perfumeIdx) => {
+                return false;
             };
             Perfume.getPerfumeById(1, 1)
                 .then((it) => {
@@ -37,6 +44,9 @@ describe('# Perfume Service Test', () => {
         });
 
         it('# search Test', (done) => {
+            mockLikePerfumeDao.readLikeInfo = async (userIdx, perfumeIdx) => {
+                return [{ userIdx: 1, perfumeIdx: 2 }];
+            };
             const perfumeSearchRequestDTO = new PerfumeSearchRequestDTO({
                 keywordList: [],
                 brandList: [],
@@ -73,6 +83,41 @@ describe('# Perfume Service Test', () => {
                 })
                 .catch((err) => done(err));
         });
+
+        it('# likePerfume Test (좋아요)', (done) => {
+            mockLikePerfumeDao.read = async (userIdx, perfumeIdx) => {
+                throw new NotMatchedError();
+            };
+            mockLikePerfumeDao.delete = async (userIdx, perfumeIdx) => {
+                return;
+            };
+            mockLikePerfumeDao.create = async (userIdx, perfumeIdx) => {
+                return;
+            };
+            Perfume.likePerfume(1, 1)
+                .then((result) => {
+                    expect(result).to.be.true;
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it('# likePerfume Test (좋아요 취소)', (done) => {
+            mockLikePerfumeDao.read = async (userIdx, perfumeIdx) => {
+                return true;
+            };
+            mockLikePerfumeDao.delete = async (userIdx, perfumeIdx) => {
+                return;
+            };
+            mockLikePerfumeDao.create = async (userIdx, perfumeIdx) => {
+                return;
+            };
+            Perfume.likePerfume(1, 1)
+                .then((result) => {
+                    expect(result).to.be.false;
+                    done();
+                })
+                .catch((err) => done(err));
         });
     });
 });
