@@ -37,7 +37,7 @@ describe('# seriesDao Test', () => {
                     expect(result).to.be.instanceOf(CreatedResultDTO);
                     result.validTest((created) => {
                         expect(created).instanceOf(SeriesDTO);
-                        created.validTest();
+                        SeriesDTO.validTest.call(created);
                         expect(created.name).to.be.eq('테스트 데이터');
                         expect(created.englishName).to.be.eq('Test Data');
                         expect(created.description).to.be.eq('왈라왈라');
@@ -88,7 +88,7 @@ describe('# seriesDao Test', () => {
                 .readByIdx(seriesIdx)
                 .then((result) => {
                     expect(result).instanceOf(SeriesDTO);
-                    result.validTest();
+                    SeriesDTO.validTest.call(result);
                     expect(result.seriesIdx).to.be.eq(seriesIdx);
                     expect(result.name).to.be.eq('읽기 데이터');
                     expect(result.englishName).to.be.eq('Test Data');
@@ -101,7 +101,7 @@ describe('# seriesDao Test', () => {
                 .readByName('읽기 데이터')
                 .then((result) => {
                     expect(result).instanceOf(SeriesDTO);
-                    result.validTest();
+                    SeriesDTO.validTest.call(result);
                     expect(result.name).to.be.eq('읽기 데이터');
                     expect(result.englishName).to.be.eq('Test Data');
                     done();
@@ -121,7 +121,7 @@ describe('# seriesDao Test', () => {
                     expect(result).instanceOf(ListAndCountDTO);
                     result.validTest((item) => {
                         expect(item).instanceOf(SeriesDTO);
-                        item.validTest();
+                        SeriesDTO.validTest.call(item);
                     });
                     done();
                 })
@@ -143,7 +143,7 @@ describe('# seriesDao Test', () => {
                     expect(result).instanceOf(ListAndCountDTO);
                     result.validTest((item) => {
                         expect(item).instanceOf(SeriesDTO);
-                        item.validTest();
+                        SeriesDTO.validTest.call(item);
                     });
                     const originString = result.rows
                         .map((it) => it.seriesIdx)
@@ -166,7 +166,7 @@ describe('# seriesDao Test', () => {
                 .then((result) => {
                     expect(result.seriesIdx).to.be.eq(1);
                     expect(result.name).to.be.eq('계열1');
-                    result.validTest();
+                    SeriesDTO.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));

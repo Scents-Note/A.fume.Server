@@ -27,7 +27,7 @@ describe('# Brand Service Test', () => {
                     expect(res).instanceOf(CreatedResultDTO);
                     res.validTest((created) => {
                         expect(created).instanceOf(SeriesDTO);
-                        created.validTest();
+                        SeriesDTO.validTest.call(created);
                     });
                     done();
                 })
@@ -40,7 +40,7 @@ describe('# Brand Service Test', () => {
             seriesService
                 .getSeriesByIdx(1)
                 .then((seriesDTO) => {
-                    seriesDTO.validTest();
+                    SeriesDTO.validTest.call(seriesDTO);
                     done();
                 })
                 .catch((err) => done(err));
@@ -55,7 +55,7 @@ describe('# Brand Service Test', () => {
                     expect(result).instanceOf(ListAndCountDTO);
                     result.validTest((item) => {
                         expect(item).instanceOf(SeriesDTO);
-                        item.validTest();
+                        SeriesDTO.validTest.call(item);
                     });
                     done();
                 })
@@ -71,7 +71,7 @@ describe('# Brand Service Test', () => {
                     expect(result).instanceOf(ListAndCountDTO);
                     result.validTest((item) => {
                         expect(item).instanceOf(SeriesDTO);
-                        item.validTest();
+                        SeriesDTO.validTest.call(item);
                     });
                     done();
                 })
@@ -162,7 +162,7 @@ describe('# Brand Service Test', () => {
                 .findSeriesByEnglishName('')
                 .then((result) => {
                     expect(result).instanceOf(SeriesDTO);
-                    result.validTest();
+                    SeriesDTO.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
