@@ -5,64 +5,18 @@ const chai = require('chai');
 const { expect } = chai;
 const ingredientDao = require('../../dao/IngredientDao.js');
 const {
-    DuplicatedEntryError,
     NotMatchedError,
     UnExpectedError,
 } = require('../../utils/errors/errors.js');
 const { Ingredient } = require('../../models');
 
 const { IngredientConditionDTO } = require('../../data/dto');
-const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 const IngredientDTO = require('../data/dto/IngredientDTO');
 
 describe('# ingredientDao Test', () => {
     before(async function () {
         await require('./common/presets.js')(this);
-    });
-    describe(' # create Test', () => {
-        before(async () => {
-            await Ingredient.destroy({ where: { name: '테스트 데이터' } });
-        });
-        it(' # success case', (done) => {
-            ingredientDao
-                .create({
-                    name: '테스트 데이터',
-                    englishName: 'Test Data',
-                    description: '왈라왈라',
-                    seriesIdx: 1,
-                    imageUrl: 'test',
-                })
-                .then((result) => {
-                    expect(result).instanceOf(CreatedResultDTO);
-                    result.validTest((created) => {
-                        expect(created).instanceOf(IngredientDTO);
-                        IngredientDTO.validTest.call(created);
-                    });
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-
-        it(' # DuplicatedEntryError case', (done) => {
-            ingredientDao
-                .create({
-                    name: '테스트 데이터',
-                    englishName: 'Test Data',
-                    description: '왈라왈라',
-                    seriesIdx: 1,
-                    imageUrl: 'test',
-                })
-                .then(() => done(new UnExpectedError(DuplicatedEntryError)))
-                .catch((err) => {
-                    expect(err).instanceOf(DuplicatedEntryError);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-        after(async () => {
-            await Ingredient.destroy({ where: { name: '테스트 데이터' } });
-        });
     });
 
     describe(' # read test', () => {
@@ -181,88 +135,6 @@ describe('# ingredientDao Test', () => {
                     done();
                 })
                 .catch((err) => done(err));
-        });
-    });
-
-    describe('# update Test', () => {
-        let ingredientIdx;
-        before(async () => {
-            ingredientIdx = (
-                await Ingredient.upsert({
-                    name: '테스트 데이터',
-                    englishName: 'Test Data',
-                    description: 'description',
-                    seriesIdx: 1,
-                    imageUrl: 'image-url',
-                })
-            )[0].ingredientIdx;
-        });
-        it('# success case', (done) => {
-            ingredientDao
-                .update({
-                    ingredientIdx,
-                    name: '수정 데이터',
-                    englishName: 'Update Data',
-                })
-                .then((result) => {
-                    expect(result).eq(1);
-                    return ingredientDao.readByIdx(ingredientIdx);
-                })
-                .then((result) => {
-                    expect(result).instanceOf(IngredientDTO);
-                    IngredientDTO.validTest.call(result);
-                    expect(result.ingredientIdx).to.be.eq(ingredientIdx);
-                    expect(result.name).to.be.eq('수정 데이터');
-                    expect(result.englishName).to.be.eq('Update Data');
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-        it('# Duplicate Error case', (done) => {
-            ingredientDao
-                .update({
-                    ingredientIdx,
-                    name: '재료5',
-                    englishName: 'Update Data',
-                })
-                .then(() => {
-                    done(new UnExpectedError(NotMatchedError));
-                })
-                .catch((err) => {
-                    expect(err).instanceOf(DuplicatedEntryError);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-        after(async () => {
-            await Ingredient.destroy({ where: { ingredientIdx } });
-        });
-    });
-
-    describe('# delete Test', () => {
-        let ingredientIdx;
-        before(async () => {
-            ingredientIdx = (
-                await Ingredient.upsert({
-                    name: '삭제 데이터',
-                    englishName: 'Delete Data',
-                    description: 'description',
-                    seriesIdx: 1,
-                    imageUrl: 'image-url',
-                })
-            )[0].ingredientIdx;
-        });
-        it('# success case', (done) => {
-            ingredientDao
-                .delete(ingredientIdx)
-                .then((result) => {
-                    expect(result).eq(1);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-        after(async () => {
-            await Ingredient.destroy({ where: { ingredientIdx } });
         });
     });
 });

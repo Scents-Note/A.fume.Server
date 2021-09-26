@@ -1,26 +1,5 @@
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 const IngredientDTO = require('../data/dto/IngredientDTO');
-const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
-
-module.exports.create = async ({
-    seriesIdx,
-    name,
-    englishName,
-    description,
-    imageUrl,
-}) => {
-    return new CreatedResultDTO({
-        idx: 4,
-        created: new IngredientDTO({
-            ingredientIdx: 4,
-            seriesIdx,
-            name,
-            englishName,
-            description,
-            imageUrl,
-        }),
-    });
-};
 
 module.exports.readByIdx = async (ingredientIdx) => {
     return new IngredientDTO({
@@ -79,20 +58,6 @@ module.exports.search = async (pagingIndex, pagingSize, order) => {
                 })
         ),
     });
-};
-
-module.exports.update = async ({
-    ingredientIdx,
-    name,
-    englishName,
-    description,
-    imageUrl,
-}) => {
-    return 1;
-};
-
-module.exports.delete = async (ingredientIdx) => {
-    return;
 };
 
 module.exports.readBySeriesIdxList = async (seriesIdxList) => {

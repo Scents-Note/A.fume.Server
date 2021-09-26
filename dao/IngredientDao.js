@@ -13,49 +13,6 @@ const {
 const { Op } = Sequelize;
 
 /**
- * 재료 생성
- *
- * @param {ingredientDTO} ingredientDTO
- * @return {Promise<CreatedResultDTO>} createdResultDTO
- * @throws {FailedToCreateError}
- * @throws {DuplicatedEntryError}
- */
-module.exports.create = ({
-    seriesIdx,
-    name,
-    englishName,
-    description,
-    imageUrl,
-}) => {
-    return Ingredient.create({
-        seriesIdx,
-        name,
-        englishName,
-        description,
-        imageUrl,
-    })
-        .then((ingredient) => {
-            if (!ingredient) {
-                throw new FailedToCreateError();
-            }
-            return new CreatedResultDTO({
-                idx: ingredient.ingredientIdx,
-                created: new IngredientDTO(ingredient),
-            });
-        })
-        .catch((err) => {
-            if (
-                err.parent &&
-                (err.parent.errno === 1062 ||
-                    err.parent.code === 'ER_DUP_ENTRY')
-            ) {
-                throw new DuplicatedEntryError();
-            }
-            throw err;
-        });
-};
-
-/**
  * 재료 PK로 조회
  *
  * @param {number} ingredientIdx
@@ -133,53 +90,6 @@ module.exports.search = (pagingIndex, pagingSize, order) => {
             rows: rows.map((it) => new IngredientDTO(it)),
         });
     });
-};
-
-/**
- * 재료 수정
- *
- * @param {IngredientDTO} ingredientDTO
- * @return {Promise<number>} affectedRows
- * @throws {NotMatchedError}
- * @throws {DuplicatedEntryError}
- */
-module.exports.update = ({
-    ingredientIdx,
-    name,
-    englishName,
-    description,
-    imageUrl,
-}) => {
-    return Ingredient.update(
-        { name, englishName, description, imageUrl },
-        { where: { ingredientIdx } }
-    )
-        .then(([affectedRows]) => {
-            if (affectedRows == 0) {
-                throw new NotMatchedError();
-            }
-            return affectedRows;
-        })
-        .catch((err) => {
-            if (
-                err.parent &&
-                (err.parent.errno === 1062 ||
-                    err.parent.code === 'ER_DUP_ENTRY')
-            ) {
-                throw new DuplicatedEntryError();
-            }
-            throw err;
-        });
-};
-
-/**
- * 재료 삭제
- *
- * @param {number} ingredientIdx
- * @returns {Promise<number>} affectedRow
- */
-module.exports.delete = (ingredientIdx) => {
-    return Ingredient.destroy({ where: { ingredientIdx } });
 };
 
 /**
