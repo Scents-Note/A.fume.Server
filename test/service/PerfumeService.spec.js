@@ -59,8 +59,11 @@ describe('# Perfume Service Test', () => {
         });
 
         it('# search Test', (done) => {
-            mockLikePerfumeDao.readLikeInfo = async (userIdx, perfumeIdx) => {
-                return [{ userIdx: 1, perfumeIdx: 2 }];
+            mockLikePerfumeDao.readLikeInfo = async (
+                userIdx,
+                perfumeIdxList
+            ) => {
+                return [{ userIdx, perfumeIdx: 2 }];
             };
             const perfumeSearchRequestDTO = new PerfumeSearchRequestDTO({
                 keywordList: [],
@@ -194,6 +197,30 @@ describe('# Perfume Service Test', () => {
                                 break;
                         }
                     }
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it('# getNewPerfume Test', (done) => {
+            const pagingRequestDTO = new PagingRequestDTO({
+                pagingSize: 100,
+                pagingIndex: 1,
+                order: null,
+            });
+            mockLikePerfumeDao.readLikeInfo = async (
+                userIdx,
+                perfumeIdxList
+            ) => {
+                return [{ userIdx, perfumeIdx: 2 }];
+            };
+            Perfume.getNewPerfume({ userIdx: 1, pagingRequestDTO })
+                .then((result) => {
+                    expect(result).to.be.instanceOf(ListAndCountDTO);
+                    ListAndCountDTO.validTest.call(
+                        result,
+                        PerfumeThumbDTO.validTest
+                    );
                     done();
                 })
                 .catch((err) => done(err));
