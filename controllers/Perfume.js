@@ -9,6 +9,7 @@ const { PagingRequestDTO } = require('../data/request_dto');
 const {
     PerfumeDetailResponseDTO,
     PerfumeResponseDTO,
+    PerfumeRecommendResponseDTO,
 } = require('../data/response_dto/perfume');
 const { ResponseDTO } = require('../data/response_dto/common');
 
@@ -20,6 +21,8 @@ module.exports.getPerfume = (req, res, next) => {
         SearchHistory.incrementCount(loginUserIdx, perfumeIdx),
     ])
         .then(([result]) => {
+            result.Keywords = result.keywordList;
+            result.ingredients = result.noteDict;
             return new PerfumeDetailResponseDTO(result);
         })
         .then((data) => {
@@ -107,7 +110,7 @@ module.exports.recommendPersonalPerfume = (req, res, next) => {
         .then(({ count, rows }) => {
             return {
                 count,
-                rows: rows.map((it) => new PerfumeResponseDTO(it)),
+                rows: rows.map((it) => new PerfumeRecommendResponseDTO(it)),
             };
         })
         .then((data) => {
@@ -128,7 +131,7 @@ module.exports.recommendCommonPerfume = (req, res, next) => {
         .then(({ count, rows }) => {
             return {
                 count,
-                rows: rows.map((it) => new PerfumeResponseDTO(it)),
+                rows: rows.map((it) => new PerfumeRecommendResponseDTO(it)),
             };
         })
         .then((data) => {

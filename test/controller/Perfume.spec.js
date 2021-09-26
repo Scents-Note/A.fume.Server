@@ -11,8 +11,12 @@ const basePath = '/A.fume/api/0.0.1';
 const statusCode = require('../../utils/statusCode');
 
 const Perfume = require('../../controllers/Perfume.js');
+const PerfumeThumbDTO = require('../data/dto/PerfumeThumbDTO');
+const PerfumeThumbKeywordDTO = require('../data/dto/PerfumeThumbKeywordDTO');
 const PerfumeDetailResponseDTO = require('../data/response_dto/perfume/PerfumeDetailResponseDTO');
 const PerfumeResponseDTO = require('../data/response_dto/perfume/PerfumeResponseDTO');
+const PerfumeRecommendResponseDTO = require('../data/response_dto/perfume/PerfumeRecommendResponseDTO');
+const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
 
 const token = require('../../lib/token');
 const user1token = token.create({ userIdx: 1 });
@@ -20,86 +24,24 @@ const user1token = token.create({ userIdx: 1 });
 const mockPerfumeService = {};
 const mockSearchHistoryService = {};
 const mockPerfumeList = [
-    {
-        perfumeIdx: 2475,
-        name: 'White Patchouli Tom Ford for women',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2475/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2474,
-        name: 'Violet Blonde Tom Ford for women',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2474/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2473,
-        name: 'Tom Ford for Men Extreme Tom Ford for men',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2473/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2472,
-        name: 'Tom Ford for Men Tom Ford for men',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2472/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2471,
-        name: 'Sahara Noir Tom Ford for women',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2471/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2470,
-        name: 'Ombré Leather (2018) Tom Ford for women and men',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2470/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2469,
-        name: 'Metallique Tom Ford for women',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2469/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2468,
-        name: 'Beau De Jour Eau de Parfum Tom Ford for men',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2468/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2467,
-        name: 'Eau de Vert Boheme Tom Ford for women',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2467/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
-    {
-        perfumeIdx: 2466,
-        name: 'Eau de Jasmin Rouge Tom Ford for women',
-        imageUrl:
-            'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2466/1.jpg',
-        brandName: '톰 포드',
-        isLiked: false,
-    },
+    PerfumeThumbDTO.createWithIdx(2775),
+    PerfumeThumbDTO.createWithIdx(2774),
+    PerfumeThumbDTO.createWithIdx(2773),
+    PerfumeThumbDTO.createWithIdx(2772),
+    PerfumeThumbDTO.createWithIdx(2471),
+    PerfumeThumbDTO.createWithIdx(2470),
+    PerfumeThumbDTO.createWithIdx(2469),
+    PerfumeThumbDTO.createWithIdx(2468),
+    PerfumeThumbDTO.createWithIdx(2467),
+    PerfumeThumbDTO.createWithIdx(2466),
+];
+const mockPerfumeKeywordList = [
+    PerfumeThumbKeywordDTO.createWithIdx(1, ['키워드 1', '키워드2']),
+    PerfumeThumbKeywordDTO.createWithIdx(2, ['키워드']),
+    PerfumeThumbKeywordDTO.createWithIdx(3, ['키워드 1', '키워드2', '키워드3']),
+    PerfumeThumbKeywordDTO.createWithIdx(4, []),
+    PerfumeThumbKeywordDTO.createWithIdx(6, ['키워드 1', '키워드2']),
+    PerfumeThumbKeywordDTO.createWithIdx(8, ['키워드']),
 ];
 Perfume.setPerfumeService(mockPerfumeService);
 Perfume.setSearchHistoryService(mockSearchHistoryService);
@@ -108,48 +50,7 @@ describe('# Perfume Controller Test', () => {
     describe('# getPerfume Test', () => {
         it('success case', (done) => {
             mockPerfumeService.getPerfumeById = async () => {
-                return {
-                    perfumeIdx: 1,
-                    name: '향수1',
-                    brandName: '브랜드1',
-                    story: '스토리1',
-                    abundanceRate: '오 드 코롱',
-                    volumeAndPrice: [],
-                    isLiked: false,
-                    Keywords: [],
-                    imageUrls: [],
-                    noteType: 0,
-                    ingredients: {
-                        top: '재료1, 재료1, 재료1, 재료1',
-                        middle: '재료1',
-                        base: '',
-                        single: '',
-                    },
-                    score: 1,
-                    seasonal: {
-                        spring: 15,
-                        summer: 0,
-                        fall: 78,
-                        winter: 7,
-                    },
-                    sillage: {
-                        light: 7,
-                        medium: 86,
-                        heavy: 7,
-                    },
-                    longevity: {
-                        veryWeak: 93,
-                        weak: 0,
-                        normal: 0,
-                        strong: 7,
-                        veryStrong: 0,
-                    },
-                    gender: {
-                        male: 7,
-                        neutral: 7,
-                        female: 86,
-                    },
-                };
+                return PerfumeIntegralDTO.createMock();
             };
             mockSearchHistoryService.incrementCount = async () => {};
 
@@ -298,7 +199,7 @@ describe('# Perfume Controller Test', () => {
             it('success case', (done) => {
                 mockPerfumeService.recommendByUser = async () => {
                     return {
-                        rows: mockPerfumeList,
+                        rows: mockPerfumeKeywordList,
                         count: 20,
                     };
                 };
@@ -313,7 +214,7 @@ describe('# Perfume Controller Test', () => {
                         const { count, rows } = data;
                         expect(count).to.be.gte(0);
                         rows.forEach((it) => {
-                            PerfumeResponseDTO.validTest.call(it);
+                            PerfumeRecommendResponseDTO.validTest.call(it);
                         });
                         done();
                     })
@@ -337,7 +238,7 @@ describe('# Perfume Controller Test', () => {
             it('success case', (done) => {
                 mockPerfumeService.recommendByUser = async () => {
                     return {
-                        rows: mockPerfumeList,
+                        rows: mockPerfumeKeywordList,
                         count: 20,
                     };
                 };
@@ -353,7 +254,7 @@ describe('# Perfume Controller Test', () => {
                         const { count, rows } = data;
                         expect(count).to.be.gte(0);
                         rows.forEach((it) => {
-                            PerfumeResponseDTO.validTest.call(it);
+                            PerfumeRecommendResponseDTO.validTest.call(it);
                         });
                         done();
                     })
