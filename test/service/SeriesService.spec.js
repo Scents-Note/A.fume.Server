@@ -10,28 +10,6 @@ const SeriesDTO = require('../data/dto/SeriesDTO');
 const IngredientDTO = require('../data/dto/IngredientDTO');
 const SeriesFilterVO = require('../data/vo/SeriesFilterVO');
 
-const mockSeriesDTO = new SeriesDTO({
-    seriesIdx: 1,
-    name: '계열1',
-    englishName: 'SERIES1',
-    imageUrl: 'http://',
-    description: '이것은 계열',
-    createdAt: '2021-07-24T03:38:52.000Z',
-    updatedAt: '2021-07-24T03:38:52.000Z',
-});
-
-const mockIngredient = (ingredientIdx, seriesIdx) =>
-    new IngredientDTO({
-        ingredientIdx: ingredientIdx,
-        name: '재료' + ingredientIdx,
-        englishName: 'Ingredient ' + ingredientIdx,
-        seriesIdx: seriesIdx,
-        imageUrl: 'http://',
-        description: '이것은 재료',
-        createdAt: '2021-07-24T03:38:52.000Z',
-        updatedAt: '2021-07-24T03:38:52.000Z',
-    });
-
 const seriesService = require('../../service/SeriesService');
 seriesService.setSeriesDao(require('../dao/SeriesDao.mock.js'));
 const mockIngredientDAO = require('../dao/IngredientDao.mock');
@@ -44,7 +22,7 @@ describe('# Brand Service Test', () => {
     describe('# postSeries Test', () => {
         it('# success Test', (done) => {
             seriesService
-                .postSeries(mockSeriesDTO)
+                .postSeries(SeriesDTO.createWithIdx(1))
                 .then((res) => {
                     expect(res).instanceOf(CreatedResultDTO);
                     res.validTest((created) => {
@@ -104,7 +82,7 @@ describe('# Brand Service Test', () => {
     describe('# putSeries Test', () => {
         it('# success Test', (done) => {
             seriesService
-                .putSeries(mockSeriesDTO)
+                .putSeries(SeriesDTO.createWithIdx(1))
                 .then((affectedRow) => {
                     expect(affectedRow).to.be.eq(1);
                     done();
@@ -129,9 +107,27 @@ describe('# Brand Service Test', () => {
             const isNoteCountOver10 = (ingredientIdx) => ingredientIdx % 2 == 1;
             mockIngredientDAO.readBySeriesIdxList = async (seriesIdxList) => {
                 const ret = [];
-                for (let i = 1; i <= 5; i++) ret.push(mockIngredient(i, 1));
-                for (let i = 6; i <= 7; i++) ret.push(mockIngredient(i, 2));
-                for (let i = 8; i <= 10; i++) ret.push(mockIngredient(i, 3));
+                for (let i = 1; i <= 5; i++)
+                    ret.push(
+                        IngredientDTO.createWithIdx({
+                            ingredientIdx: i,
+                            seriesIdx: 1,
+                        })
+                    );
+                for (let i = 6; i <= 7; i++)
+                    ret.push(
+                        IngredientDTO.createWithIdx({
+                            ingredientIdx: i,
+                            seriesIdx: 2,
+                        })
+                    );
+                for (let i = 8; i <= 10; i++)
+                    ret.push(
+                        IngredientDTO.createWithIdx({
+                            ingredientIdx: i,
+                            seriesIdx: 3,
+                        })
+                    );
                 return ret;
             };
             mockNoteDAO.countIngredientUsed = async (ingredientIdxList) =>
