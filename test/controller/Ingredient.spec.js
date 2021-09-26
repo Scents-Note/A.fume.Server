@@ -9,14 +9,26 @@ const app = require('../../index.js');
 const basePath = '/A.fume/api/0.0.1';
 
 const Ingredient = require('../../controllers/Ingredient.js');
-const mockIngredientService = Object.assign(
-    {},
-    require('../service/IngredientService.mock.js')
-);
+const IngredientDTO = require('../data/dto/IngredientDTO');
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
+
+const mockIngredientService = {};
 Ingredient.setIngredientService(mockIngredientService);
 
 describe('# Ingredient Controller Test', () => {
     describe('# getIngredientAll Test', () => {
+        mockIngredientService.getIngredientAll = async () => {
+            const seriesIdx = 1;
+            return new ListAndCountDTO({
+                count: 5,
+                rows: [1, 2, 3, 4, 5].map((idx) =>
+                    IngredientDTO.createWithIdx({
+                        ingredientIdx: idx,
+                        seriesIdx,
+                    })
+                ),
+            });
+        };
         it('success case', (done) => {
             request(app)
                 .get(`${basePath}/ingredient`)
@@ -38,6 +50,11 @@ describe('# Ingredient Controller Test', () => {
     });
 
     describe('# getIngredientByEnglishName Test', () => {
+        mockIngredientService.findIngredient = async (
+            ingredientConditionDTO
+        ) => {
+            return IngredientDTO.create(ingredientConditionDTO);
+        };
         it('success case', (done) => {
             request(app)
                 .post(`${basePath}/ingredient/find`)
