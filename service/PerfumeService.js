@@ -275,17 +275,7 @@ exports.recentSearch = ({ userIdx, pagingRequestDTO }) => {
  **/
 exports.recommendByUser = async ({ userIdx, pagingRequestDTO }) => {
     const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
-    let ageGroup, gender;
-    if (userIdx == -1) {
-        gender = GENDER_WOMAN;
-        ageGroup = 20;
-    } else {
-        const user = await userDao.readByIdx(userIdx);
-        const today = new Date();
-        const age = today.getFullYear() - user.birth + 1;
-        gender = user.gender;
-        ageGroup = parseInt(age / 10) * 10;
-    }
+    const { ageGroup, gender } = getAgeGroupAndGender(userIdx);
 
     const recommendedList = this.recommendByGenderAgeAndGender(
         gender,
@@ -405,6 +395,21 @@ exports.getLikedPerfume = ({ userIdx, pagingRequestDTO }) => {
 exports.findPerfumeIdxByEnglishName = (englishName) => {
     return perfumeDao.findPerfumeIdx({ englishName });
 };
+
+async function getAgeGroupAndGender(userIdx) {
+    if (userIdx == -1) {
+        return {
+            gender: GENDER_WOMAN,
+            ageGroup: 20,
+        };
+    }
+    const user = await userDao.readByIdx(userIdx);
+    const today = new Date();
+    const age = today.getFullYear() - user.birth + 1;
+    const gender = user.gender;
+    const ageGroup = parseInt(age / 10) * 10;
+    return { gender, ageGroup };
+}
 
 exports.setPerfumeDao = (dao) => {
     perfumeDao = dao;
