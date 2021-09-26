@@ -83,6 +83,24 @@ describe('# Perfume Service Test', () => {
                 })
                 .catch((err) => done(err));
         });
+
+        it('# recentSearch Test', (done) => {
+            const pagingRequestDTO = new PagingRequestDTO({
+                pagingSize: 100,
+                pagingIndex: 1,
+                order: null,
+            });
+            Perfume.recentSearch({ userIdx: 1, pagingRequestDTO })
+                .then((result) => {
+                    expect(result).to.be.instanceOf(ListAndCountDTO);
+                    ListAndCountDTO.validTest.call(
+                        result,
+                        PerfumeThumbDTO.validTest
+                    );
+                    done();
+                })
+                .catch((err) => done(err));
+        });
     });
     describe('# like Test', () => {
         it('# likePerfume Test (좋아요)', (done) => {
