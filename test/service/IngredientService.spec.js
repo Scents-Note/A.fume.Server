@@ -8,15 +8,15 @@ const IngredientDTO = require('../data/dto/IngredientDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 
 const ingredientService = require('../../service/IngredientService');
-const mockIngredientDAO = Object.assign(
-    {},
-    require('../dao/IngredientDao.mock.js')
-);
+const mockIngredientDAO = {};
 ingredientService.setIngredientDao(mockIngredientDAO);
 
 describe('# Ingredient Service Test', () => {
     describe('# read test', () => {
         describe('# findSIngredient Test', () => {
+            mockIngredientDAO.findIngredient = async (condition) => {
+                return IngredientDTO.create(condition);
+            };
             it('# success Test', (done) => {
                 ingredientService
                     .findIngredient({ name: '재료 이름' })
@@ -30,6 +30,18 @@ describe('# Ingredient Service Test', () => {
         });
 
         describe('# getIngredientAll Test', () => {
+            mockIngredientDAO.readAll = async (where = {}) => {
+                const seriesIdx = where.seriesIdx || 1;
+                return new ListAndCountDTO({
+                    count: 5,
+                    rows: [1, 2, 3, 4, 5].map((idx) =>
+                        IngredientDTO.createWithIdx({
+                            ingredientIdx: idx,
+                            seriesIdx,
+                        })
+                    ),
+                });
+            };
             it('# success Test', (done) => {
                 ingredientService
                     .getIngredientAll()
@@ -46,6 +58,18 @@ describe('# Ingredient Service Test', () => {
         });
 
         describe('# getIngredientList Test', () => {
+            mockIngredientDAO.readAll = async (where = {}) => {
+                const seriesIdx = where.seriesIdx || 1;
+                return new ListAndCountDTO({
+                    count: 5,
+                    rows: [1, 2, 3, 4, 5].map((idx) =>
+                        IngredientDTO.createWithIdx({
+                            ingredientIdx: idx,
+                            seriesIdx,
+                        })
+                    ),
+                });
+            };
             it('# success Test', (done) => {
                 ingredientService
                     .getIngredientList(1)

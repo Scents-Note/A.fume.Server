@@ -12,7 +12,7 @@ const SeriesFilterVO = require('../data/vo/SeriesFilterVO');
 
 const seriesService = require('../../service/SeriesService');
 seriesService.setSeriesDao(require('../dao/SeriesDao.mock.js'));
-const mockIngredientDAO = require('../dao/IngredientDao.mock');
+const mockIngredientDAO = {};
 seriesService.setIngredientDao(mockIngredientDAO);
 
 const mockNoteDAO = {};
