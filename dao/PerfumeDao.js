@@ -366,7 +366,7 @@ module.exports.recommendPerfumeByAgeAndGender = async (
         delete it.SearchHistory;
     });
     const result = {
-        count: Math.min(pagingSize, perfumeList.length),
+        count: perfumeList.length,
         rows: perfumeList,
     };
     ranking.upsert(

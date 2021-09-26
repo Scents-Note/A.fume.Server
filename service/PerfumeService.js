@@ -266,16 +266,16 @@ exports.recentSearch = ({ userIdx, pagingRequestDTO }) => {
  **/
 exports.recommendByUser = async ({ userIdx, pagingRequestDTO }) => {
     const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
-    const { ageGroup, gender } = getAgeGroupAndGender(userIdx);
+    const { ageGroup, gender } = await getAgeGroupAndGender(userIdx);
 
-    const recommendedList = this.recommendByGenderAgeAndGender(
+    const recommendedListPromise = this.recommendByGenderAgeAndGender(
         gender,
         ageGroup,
         pagingIndex,
         pagingSize
     );
 
-    return recommendedList.then(async (result) => {
+    return recommendedListPromise.then(async (result) => {
         const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
         let likePerfumeList = [];
         if (userIdx > -1) {
@@ -297,7 +297,7 @@ exports.recommendByUser = async ({ userIdx, pagingRequestDTO }) => {
         );
         return new ListAndCountDTO({
             count: result.count,
-            rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            rows: result.rows.map((it) => new PerfumeThumbKeywordDTO(it)),
         });
     });
 };
