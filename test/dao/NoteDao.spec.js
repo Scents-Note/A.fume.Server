@@ -18,14 +18,14 @@ describe('# NoteDao Test', () => {
     });
     describe(' # create Test', () => {
         before(async () => {
-            await Note.destroy({ where: { ingredientIdx: 5, perfumeIdx: 1 } });
+            await Note.destroy({ where: { ingredientIdx: 5, perfumeIdx: 5 } });
         });
         it(' # success case', (done) => {
             noteDao
-                .create({ ingredientIdx: 5, perfumeIdx: 1, type: 1 })
+                .create({ ingredientIdx: 5, perfumeIdx: 5, type: 1 })
                 .then((result) => {
                     expect(result.ingredientIdx).to.be.eq(5);
-                    expect(result.perfumeIdx).to.be.eq(1);
+                    expect(result.perfumeIdx).to.be.eq(5);
                     expect(result.type).to.be.eq(1);
                     expect(result.createdAt).to.be.ok;
                     expect(result.updatedAt).to.be.ok;
@@ -36,7 +36,7 @@ describe('# NoteDao Test', () => {
 
         it(' # DuplicatedEntryError case', (done) => {
             noteDao
-                .create({ ingredientIdx: 5, perfumeIdx: 1, type: 1 })
+                .create({ ingredientIdx: 5, perfumeIdx: 5, type: 1 })
                 .then(() => done(new UnExpectedError(DuplicatedEntryError)))
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
@@ -47,7 +47,7 @@ describe('# NoteDao Test', () => {
 
         it(' # fail case (invalid ingredientIdx) ', (done) => {
             noteDao
-                .create({ ingredientIdx: -5, perfumeIdx: 1, type: 1 })
+                .create({ ingredientIdx: -5, perfumeIdx: 5, type: 1 })
                 .then(() => done(new UnExpectedError(NotMatchedError)))
                 .catch((err) => {
                     expect(err).to.be.instanceOf(NotMatchedError);
@@ -69,7 +69,7 @@ describe('# NoteDao Test', () => {
 
         it(' # fail case (invalid type) ', (done) => {
             noteDao
-                .create({ ingredientIdx: 5, perfumeIdx: 1, type: 6 })
+                .create({ ingredientIdx: 5, perfumeIdx: 5, type: 6 })
                 .then(() => done(new UnExpectedError(InvalidInputError)))
                 .catch((err) => {
                     expect(err).to.be.instanceOf(InvalidInputError);
@@ -78,7 +78,7 @@ describe('# NoteDao Test', () => {
                 .catch((err) => done(err));
         });
         after(async () => {
-            await Note.destroy({ where: { ingredientIdx: 5, perfumeIdx: 1 } });
+            await Note.destroy({ where: { ingredientIdx: 5, perfumeIdx: 5 } });
         });
     });
 
