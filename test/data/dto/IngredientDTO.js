@@ -2,7 +2,7 @@ const { expect } = require('chai');
 
 const IngredientDTO = require('../../../data/dto/IngredientDTO');
 
-IngredientDTO.prototype.validTest = function () {
+IngredientDTO.validTest = function () {
     expect(this.ingredientIdx).to.be.ok;
     expect(this.name).to.be.ok;
     expect(this.englishName).to.be.ok;

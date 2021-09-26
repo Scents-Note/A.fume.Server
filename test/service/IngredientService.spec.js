@@ -22,7 +22,7 @@ describe('# Ingredient Service Test', () => {
                     .findIngredient({ name: '재료 이름' })
                     .then((result) => {
                         expect(result).instanceOf(IngredientDTO);
-                        result.validTest();
+                        IngredientDTO.validTest.call(result);
                         done();
                     })
                     .catch((err) => done(err));
@@ -37,7 +37,7 @@ describe('# Ingredient Service Test', () => {
                         expect(result).instanceOf(ListAndCountDTO);
                         result.validTest((item) => {
                             expect(item).instanceOf(IngredientDTO);
-                            item.validTest();
+                            IngredientDTO.validTest.call(item);
                         });
                         done();
                     })
@@ -53,6 +53,7 @@ describe('# Ingredient Service Test', () => {
                         expect(result).instanceOf(ListAndCountDTO);
                         result.validTest((item) => {
                             expect(item).instanceOf(IngredientDTO);
+                            IngredientDTO.validTest.call(item);
                             expect(item.seriesIdx).to.be.eq(1);
                         });
                         done();

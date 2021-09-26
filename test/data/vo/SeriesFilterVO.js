@@ -13,7 +13,7 @@ SeriesFilterVO.prototype.validTest = function () {
     expect(this.updatedAt).to.be.ok;
     for (const ingredient of this.ingredients) {
         expect(ingredient).instanceOf(IngredientDTO);
-        ingredient.validTest();
+        IngredientDTO.validTest.call(ingredient);
     }
 };
 

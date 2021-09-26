@@ -37,7 +37,7 @@ describe('# ingredientDao Test', () => {
                     expect(result).instanceOf(CreatedResultDTO);
                     result.validTest((created) => {
                         expect(created).instanceOf(IngredientDTO);
-                        created.validTest();
+                        IngredientDTO.validTest.call(created);
                     });
                     done();
                 })
@@ -71,7 +71,7 @@ describe('# ingredientDao Test', () => {
                 .readByIdx(1)
                 .then((result) => {
                     expect(result).instanceOf(IngredientDTO);
-                    result.validTest();
+                    IngredientDTO.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
@@ -81,7 +81,7 @@ describe('# ingredientDao Test', () => {
                 .readByName('재료2')
                 .then((result) => {
                     expect(result).instanceOf(IngredientDTO);
-                    result.validTest();
+                    IngredientDTO.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
@@ -97,7 +97,7 @@ describe('# ingredientDao Test', () => {
                     expect(result).instanceOf(ListAndCountDTO);
                     result.validTest((item) => {
                         expect(item).instanceOf(IngredientDTO);
-                        item.validTest();
+                        IngredientDTO.validTest.call(item);
                     });
                     done();
                 })
@@ -113,7 +113,7 @@ describe('# ingredientDao Test', () => {
                     expect(result).instanceOf(ListAndCountDTO);
                     result.validTest((item) => {
                         expect(item).instanceOf(IngredientDTO);
-                        item.validTest();
+                        IngredientDTO.validTest.call(item);
                     });
                     done();
                 })
@@ -126,7 +126,7 @@ describe('# ingredientDao Test', () => {
                     expect(result.length).gte(5);
                     for (const ingredient of result) {
                         expect(ingredient).instanceOf(IngredientDTO);
-                        ingredient.validTest();
+                        IngredientDTO.validTest.call(ingredient);
                         expect(ingredient.seriesIdx).to.be.oneOf([
                             1, 2, 3, 4, 5,
                         ]);
@@ -145,7 +145,7 @@ describe('# ingredientDao Test', () => {
                 )
                 .then((result) => {
                     expect(result).instanceOf(IngredientDTO);
-                    result.validTest();
+                    IngredientDTO.validTest.call(result);
                     expect(result.name).eq('재료2');
                     expect(result.ingredientIdx).eq(2);
                     done();
@@ -160,7 +160,7 @@ describe('# ingredientDao Test', () => {
                 })
                 .then((result) => {
                     expect(result).instanceOf(IngredientDTO);
-                    result.validTest();
+                    IngredientDTO.validTest.call(result);
                     expect(result.name).eq('재료1');
                     expect(result.ingredientIdx).eq(1);
                     done();
@@ -210,7 +210,7 @@ describe('# ingredientDao Test', () => {
                 })
                 .then((result) => {
                     expect(result).instanceOf(IngredientDTO);
-                    result.validTest();
+                    IngredientDTO.validTest.call(result);
                     expect(result.ingredientIdx).to.be.eq(ingredientIdx);
                     expect(result.name).to.be.eq('수정 데이터');
                     expect(result.englishName).to.be.eq('Update Data');
