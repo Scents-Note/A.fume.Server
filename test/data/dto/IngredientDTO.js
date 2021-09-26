@@ -29,6 +29,7 @@ IngredientDTO.create = (condition) => {
             condition
         )
     );
+};
 IngredientDTO.createWithIdx = function ({ ingredientIdx, seriesIdx }) {
     return new IngredientDTO({
         ingredientIdx,
