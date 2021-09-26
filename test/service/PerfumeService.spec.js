@@ -4,6 +4,12 @@ dotenv.config();
 const chai = require('chai');
 const { expect } = chai;
 const Perfume = require('../../service/PerfumeService.js');
+const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
+const PerfumeThumbDTO = require('../data/dto/PerfumeThumbDTO');
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
+
+const mockS3FileDao = {};
+Perfume.setS3FileDao(mockS3FileDao);
 
 describe('# Perfume Service Test', () => {
     before(async function () {
@@ -11,41 +17,16 @@ describe('# Perfume Service Test', () => {
     });
     describe('# read Test', () => {
         it('# read detail Test', (done) => {
+            mockS3FileDao.getS3ImageList = async () => {
+                return ['imageUrl1', 'imageUrl2'];
+            };
             Perfume.getPerfumeById(1, 1)
                 .then((it) => {
-                    expect(it.brandName).to.be.ok;
-                    expect(it.isLiked).to.be.true;
-                    expect(it.story).to.be.ok;
-                    if (it.noteType == 1) {
-                        expect(it.ingredients.top).be.empty;
-                        expect(it.ingredients.middle).be.empty;
-                        expect(it.ingredients.base).be.empty;
-                        expect(it.ingredients.single).be.ok;
-                    } else {
-                        expect(
-                            [
-                                it.ingredients.top,
-                                it.ingredients.middle,
-                                it.ingredients.base,
-                            ].filter((it) => it.length > 0).length
-                        ).be.gt(0);
-                        expect(it.ingredients.single).be.empty;
-                    }
-                    expect(it.score).to.be.gte(0);
-
-                    const sumOfMapFunc = (map) => {
-                        let sum = 0;
-                        for (const key in map) {
-                            sum += map[key];
-                        }
-                        return sum;
-                    };
-                    expect(it.seasonal).to.be.ok;
-                    expect(sumOfMapFunc(it.seasonal)).to.be.eq(100);
-                    expect(it.longevity).to.be.ok;
-                    expect(sumOfMapFunc(it.longevity)).to.be.eq(100);
-                    expect(it.gender).to.be.ok;
-                    expect(sumOfMapFunc(it.gender)).to.be.eq(100);
+                    PerfumeIntegralDTO.validTest.call(it);
+                    expect(it.imageUrls).to.be.deep.eq([
+                        'imageUrl1',
+                        'imageUrl2',
+                    ]);
                     done();
                 })
                 .catch((err) => done(err));
@@ -54,6 +35,11 @@ describe('# Perfume Service Test', () => {
         it('# isLike Test', (done) => {
             Perfume.searchPerfume([], [], [], '', 1, 100, null, 1)
                 .then((result) => {
+                    expect(result).to.be.instanceOf(ListAndCountDTO);
+                    ListAndCountDTO.validTest.call(
+                        result,
+                        PerfumeThumbDTO.validTest
+                    );
                     expect(
                         result.rows.filter((it) => it.isLiked == true).length
                     ).to.eq(5);

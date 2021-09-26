@@ -2,7 +2,7 @@ const {
     NotMatchedError,
     DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
-const { Perfume, LikePerfume, Sequelize, sequelize } = require('../models');
+const { LikePerfume, Sequelize, sequelize } = require('../models');
 const { Op } = Sequelize;
 
 /**
@@ -13,36 +13,11 @@ const { Op } = Sequelize;
  * @returns {Promise}
  */
 module.exports.create = (userIdx, perfumeIdx) => {
-    return sequelize.transaction((t) => {
-        const createLikePerfume = LikePerfume.create(
-            { userIdx, perfumeIdx },
-            { transaction: t }
-        ).catch((err) => {
-            if (
-                err.parent.errno === 1062 ||
-                err.parent.code === 'ER_DUP_ENTRY'
-            ) {
-                throw new DuplicatedEntryError();
-            }
-            throw err;
-        });
-        const updateLikeCntOfPerfume = Perfume.findOne({
-            where: { perfumeIdx },
-        }).then((perfume) => {
-            return Perfume.update(
-                { likeCnt: perfume.likeCnt + 1 },
-                {
-                    where: { perfumeIdx: perfume.perfumeIdx },
-                    transaction: t,
-                    silent: true,
-                }
-            );
-        });
-        return Promise.all([createLikePerfume, updateLikeCntOfPerfume]).then(
-            (it) => {
-                return it[0];
-            }
-        );
+    return LikePerfume.create({ userIdx, perfumeIdx }).catch((err) => {
+        if (err.parent.errno === 1062 || err.parent.code === 'ER_DUP_ENTRY') {
+            throw new DuplicatedEntryError();
+        }
+        throw err;
     });
 };
 
@@ -72,39 +47,13 @@ module.exports.read = (userIdx, perfumeIdx) => {
  * @returns {Promise}
  */
 module.exports.delete = (userIdx, perfumeIdx) => {
-    return sequelize.transaction((t) => {
-        const deleteLikePerfume = LikePerfume.destroy({
-            where: { userIdx, perfumeIdx },
-            raw: true,
-            nest: true,
-            transaction: t,
-        }).then((it) => {
-            if (it == 0) throw new NotMatchedError();
-            return it;
-        });
-        const updateLikeCntOfPerfume = Perfume.findOne({
-            where: { perfumeIdx },
-            raw: true,
-            nest: true,
-            transaction: t,
-        }).then((perfume) => {
-            if (perfume == null) {
-                throw new NotMatchedError();
-            }
-            return Perfume.update(
-                { likeCnt: perfume.likeCnt - 1 },
-                {
-                    where: { perfumeIdx: perfume.perfumeIdx },
-                    transaction: t,
-                    silent: true,
-                }
-            );
-        });
-        return Promise.all([deleteLikePerfume, updateLikeCntOfPerfume]).then(
-            (it) => {
-                return it[0];
-            }
-        );
+    return LikePerfume.destroy({
+        where: { userIdx, perfumeIdx },
+        raw: true,
+        nest: true,
+    }).then((it) => {
+        if (it == 0) throw new NotMatchedError();
+        return it;
     });
 };
 

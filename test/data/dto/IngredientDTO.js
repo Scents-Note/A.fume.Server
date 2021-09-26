@@ -29,6 +29,17 @@ IngredientDTO.create = (condition) => {
             condition
         )
     );
+IngredientDTO.createWithIdx = function ({ ingredientIdx, seriesIdx }) {
+    return new IngredientDTO({
+        ingredientIdx,
+        name: `재료${ingredientIdx}`,
+        englishName: `Ingredient ${ingredientIdx}`,
+        description: `이것은 재료 ${ingredientIdx}`,
+        imageUrl: 'http://',
+        seriesIdx,
+        createdAt: '2021-07-24T03:38:52.000Z',
+        updatedAt: '2021-07-24T03:38:52.000Z',
+    });
 };
 
 module.exports = IngredientDTO;

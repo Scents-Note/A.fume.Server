@@ -33,7 +33,7 @@ describe('# KeywordDao Test', () => {
             keywordDao
                 .readAllOfPerfume(1, [['count', 'desc']], { [Op.gte]: 1 })
                 .then((result) => {
-                    expect(result.length).to.be.gte(3);
+                    expect(result.length).to.be.gte(2);
                     for (const keyword of result) {
                         expect(keyword.id).to.be.ok;
                         expect(keyword.name).to.be.ok;
@@ -71,7 +71,7 @@ describe('# KeywordDao Test', () => {
             keywordDao
                 .readAllPerfumeKeywordCount([1])
                 .then((result) => {
-                    expect(result.length).gte(4);
+                    expect(result.length).gte(2);
                     for (const keyword of result) {
                         expect(keyword.keywordIdx).to.be.ok;
                         expect(keyword.count).to.be.ok;

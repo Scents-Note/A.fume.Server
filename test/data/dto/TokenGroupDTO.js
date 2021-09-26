@@ -8,4 +8,17 @@ TokenGroupDTO.prototype.validTest = function () {
     expect(this.refreshToken).to.be.ok;
 };
 
+TokenGroupDTO.createMock = function (condition) {
+    return new TokenGroupDTO(
+        Object.assign(
+            {
+                userIdx: 1,
+                token: 'token',
+                refreshToken: 'refreshToken',
+            },
+            condition
+        )
+    );
+};
+
 module.exports = TokenGroupDTO;

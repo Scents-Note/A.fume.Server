@@ -1,24 +1,29 @@
 'use strict';
 
-const perfumeDao = require('../dao/PerfumeDao.js');
-const reviewDao = require('../dao/ReviewDao.js');
-const noteDao = require('../dao/NoteDao');
-const likePerfumeDao = require('../dao/LikePerfumeDao.js');
-const keywordDao = require('../dao/KeywordDao.js');
-const userDao = require('../dao/UserDao.js');
-const { getImageList } = require('../lib/s3.js');
+let perfumeDao = require('../dao/PerfumeDao.js');
+let reviewDao = require('../dao/ReviewDao.js');
+let noteDao = require('../dao/NoteDao');
+let likePerfumeDao = require('../dao/LikePerfumeDao.js');
+let keywordDao = require('../dao/KeywordDao.js');
+let userDao = require('../dao/UserDao.js');
+let s3FileDao = require('../dao/S3FileDao.js');
 
 const { parseSortToOrder } = require('../utils/parser.js');
 
 const {
     GENDER_WOMAN,
-    ABUNDANCE_RATE_LIST,
-    SEASONAL_LIST,
-    SILLAGE_LIST,
-    LONGEVITY_LIST,
-    GENDER_LIST,
-    NOTE_TYPE_LIST,
+    NOTE_TYPE_SINGLE,
+    NOTE_TYPE_NORMAL,
 } = require('../utils/constantUtil.js');
+
+const {
+    NoteDictDTO,
+    PerfumeSummaryDTO,
+    PerfumeThumbDTO,
+    PerfumeThumbKeywordDTO,
+    PerfumeIntegralDTO,
+    ListAndCountDTO,
+} = require('../data/dto');
 
 const {
     NotMatchedError,
@@ -33,6 +38,7 @@ const {
 } = require('../utils/func.js');
 
 function emptyCheck(x) {
+    if (x instanceof Array) return [];
     if (x == null || x.length == 0) x = '정보 없음';
     return x;
 }
@@ -69,153 +75,34 @@ const commonJob = [
         'perfume_idx',
         'englishName',
         'brandIdx',
-        'likeCnt',
         'createdAt',
         'updatedAt'
     ),
 ];
 
-/**
- * 향수 정보 추가
- *
- * @param {Object} Perfume
- * @returns {Promise}
- **/
-exports.createPerfume = ({
-    brandIdx,
-    name,
-    englishName,
-    volumeAndPrice,
-    story,
-    abundanceRate,
-    imageUrl,
-}) => {
-    return perfumeDao.create({
-        brandIdx,
-        name,
-        englishName,
-        volumeAndPrice,
-        imageUrl,
-        story,
-        abundanceRate,
-    });
-};
-
-/**
- * 향수 삭제
- *
- * @param {number} perfumeIdx
- * @returns {Promise}
- **/
-exports.deletePerfume = (perfumeIdx) => {
-    return perfumeDao.delete(perfumeIdx);
-};
-
-function makeZeroMap(arr) {
-    return arr.reduce((prev, cur) => {
-        prev[cur] = 0;
-        return prev;
-    }, {});
-}
-
-function makeInitMap(arr, initFunc) {
-    return arr.reduce((prev, cur) => {
-        prev[cur] = initFunc();
-        return prev;
-    }, {});
-}
-
-function updateCount(obj, prop) {
-    if (!obj[prop]) {
-        obj[prop] = 0;
-    }
-    obj[prop] = obj[prop] + 1;
-}
-
-function normalize(obj) {
-    const result = {};
-    const entries = Object.entries(obj);
-    const total = entries.reduce((prev, cur) => {
-        return prev + cur[1];
-    }, 0);
-    if (total == 0) {
-        return obj;
-    }
-    let remain = 100;
-    let maxKey = 0;
-    let max = 0;
-    for (const [key, value] of entries) {
-        result[key] = parseInt((parseFloat(value) / total) * 100);
-        remain -= result[key];
-        if (max < value) {
-            max = value;
-            maxKey = key;
-        }
-    }
-    result[maxKey] += remain;
-    return result;
-}
-
 async function generateNote(perfumeIdx) {
-    const noteMap = (await noteDao.readByPerfumeIdx(perfumeIdx))
-        .map((it) => {
-            it.type = NOTE_TYPE_LIST[it.type];
-            return it;
-        })
-        .reduce(
-            (prev, cur) => {
-                let type = cur.type;
-                prev[type].push(cur.ingredientName);
-                return prev;
-            },
-            makeInitMap(NOTE_TYPE_LIST, () => [])
-        );
-    for (const key in noteMap) {
-        if (!noteMap[key] instanceof Array) throw 'Invalid Type Exception';
-        noteMap[key] = noteMap[key].join(', ');
-    }
-    const noteType = noteMap.single.length > 0 ? 1 : 0;
-    return { noteType, ingredients: noteMap };
+    const noteList = await noteDao.readByPerfumeIdx(perfumeIdx);
+    const noteDictDTO = NoteDictDTO.createByNoteList(noteList);
+    const noteType =
+        noteDictDTO.single.length > 0 ? NOTE_TYPE_SINGLE : NOTE_TYPE_NORMAL;
+    return { noteType, noteDictDTO };
 }
 
 async function generateSummary(perfumeIdx) {
-    let sum = 0,
-        cnt = 0;
-    let seasonalMap = makeZeroMap(SEASONAL_LIST);
-    let sillageMap = makeZeroMap(SILLAGE_LIST);
-    let longevityMap = makeZeroMap(LONGEVITY_LIST);
-    let genderMap = makeZeroMap(GENDER_LIST);
-
-    (await reviewDao.readAllOfPerfume(perfumeIdx))
-        .map((it) => {
-            it.seasonal = SEASONAL_LIST[it.seasonal];
-            it.sillage = SILLAGE_LIST[it.sillage];
-            it.longevity = LONGEVITY_LIST[it.longevity];
-            it.gender = GENDER_LIST[it.gender];
-            return it;
-        })
-        .forEach((review) => {
-            if (review.score) {
-                sum += review.score;
-                cnt++;
-                updateCount(longevityMap, review.longevity);
-                updateCount(sillageMap, review.sillage);
-                updateCount(seasonalMap, review.seasonal);
-                updateCount(genderMap, review.gender);
-            }
-        });
-
-    return {
-        score: parseFloat((parseFloat(sum) / cnt).toFixed(2)) || 0,
-        seasonal: normalize(seasonalMap),
-        sillage: normalize(sillageMap),
-        longevity: normalize(longevityMap),
-        gender: normalize(genderMap),
-    };
+    const reviewList = await reviewDao.readAllOfPerfume(perfumeIdx);
+    return PerfumeSummaryDTO.create(reviewList);
 }
 
-function numberWithCommas(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+function isLike({ userIdx, perfumeIdx }) {
+    return likePerfumeDao
+        .read(userIdx, perfumeIdx)
+        .then((it) => true)
+        .catch((err) => {
+            if (err instanceof NotMatchedError) {
+                return false;
+            }
+            throw err;
+        });
 }
 
 /**
@@ -231,50 +118,28 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
         (prev, cur) => cur(prev),
         _perfume
     );
-    perfume.abundanceRate = ABUNDANCE_RATE_LIST[perfume.abundanceRate];
 
-    const likePerfume = await likePerfumeDao
-        .read(userIdx, perfumeIdx)
-        .then((it) => true)
-        .catch((err) => {
-            if (err instanceof NotMatchedError) {
-                return false;
-            }
-            throw err;
-        });
-    perfume.isLiked = likePerfume ? true : false;
-    perfume.Keywords = (await keywordDao.readAllOfPerfume(perfumeIdx)).map(
+    perfume.isLiked = await isLike({ userIdx, perfumeIdx });
+    const keywordList = (await keywordDao.readAllOfPerfume(perfumeIdx)).map(
         (it) => it.name
     );
-    perfume.volumeAndPrice = perfume.volumeAndPrice.map((it) => {
-        return `${numberWithCommas(it.price)}/${it.volume}ml`;
-    });
 
-    delete perfume.imageUrl;
-    perfume.imageUrls = await getImageList({
-        Bucket: 'afume',
-        Prefix: `perfume/${perfumeIdx}/`,
-    }).then((it) => {
-        if (!it.length) {
-            console.log('Failed to read imageList from s3');
-            return [];
-        }
-        return it
-            .filter((it) => {
-                return it.search(/\.jpg$|\.png$/i) > 0;
-            })
-            .map((it) => {
-                return `${process.env.AWS_S3_URL}/${it}`;
-            });
-    });
+    const imageUrls = await s3FileDao.getS3ImageList(perfumeIdx);
+    const { noteType, noteDictDTO } = await generateNote(perfumeIdx);
+    const perfumeSummaryDTO = await generateSummary(perfumeIdx);
 
-    Object.assign(perfume, await generateNote(perfumeIdx));
-    Object.assign(perfume, await generateSummary(perfumeIdx));
     for (const key in perfume) {
         if (!perfume[key] instanceof String) continue;
         perfume[key] = emptyCheck(perfume[key]);
     }
-    return perfume;
+    return PerfumeIntegralDTO.create({
+        perfumeDTO: perfume,
+        keywordList,
+        perfumeSummaryDTO,
+        noteDictDTO,
+        noteType,
+        imageUrls,
+    });
 };
 
 /**
@@ -317,12 +182,11 @@ exports.searchPerfume = (
                 userIdx,
                 perfumeIdxList
             );
-            return updateRows(
-                result,
-                ...commonJob,
-                removeKeyJob('SearchHistory', 'Score'),
-                isLikeJob(likePerfumeList)
-            );
+            updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
+            return new ListAndCountDTO({
+                count: result.count,
+                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            });
         });
 };
 
@@ -344,42 +208,12 @@ exports.getSurveyPerfume = (userIdx) => {
                 userIdx,
                 perfumeIdxList
             );
-            return updateRows(
-                result,
-                ...commonJob,
-                removeKeyJob('PerfumeSurvey')
-            );
+            updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
+            return new ListAndCountDTO({
+                count: result.count,
+                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            });
         });
-};
-
-/**
- * 향수 정보 업데이트
- *
- * @param {Object} Perfume
- * @returns {Promise}
- **/
-exports.updatePerfume = ({
-    perfumeIdx,
-    name,
-    brandIdx,
-    englishName,
-    volumeAndPrice,
-    imageThumbnailUrl,
-    story,
-    abundanceRate,
-    imageUrl,
-}) => {
-    return perfumeDao.update({
-        perfumeIdx,
-        name,
-        brandIdx,
-        englishName,
-        volumeAndPrice,
-        imageThumbnailUrl,
-        story,
-        abundanceRate,
-        imageUrl,
-    });
 };
 
 /**
@@ -431,12 +265,11 @@ exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
                 userIdx,
                 perfumeIdxList
             );
-            return updateRows(
-                result,
-                ...commonJob,
-                removeKeyJob('SearchHistory'),
-                isLikeJob(likePerfumeList)
-            );
+            updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
+            return new ListAndCountDTO({
+                count: result.count,
+                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            });
         });
 };
 
@@ -482,13 +315,16 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
             perfumeIdxList
         );
 
-        return updateRows(
+        updateRows(
             result,
             ...commonJob,
-            removeKeyJob('SearchHistory'),
             isLikeJob(likePerfumeList),
             addKeyword(joinKeywordList)
         );
+        return new ListAndCountDTO({
+            count: result.count,
+            rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+        });
     });
 };
 
@@ -534,7 +370,11 @@ exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
                 userIdx,
                 perfumeIdxList
             );
-            return updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
+            updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
+            return new ListAndCountDTO({
+                count: result.count,
+                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            });
         });
 };
 
@@ -555,11 +395,11 @@ exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
                 userIdx,
                 perfumeIdxList
             );
-            return updateRows(
-                result,
-                ...commonJob,
-                removeKeyJob('LikePerfume')
-            );
+            updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
+            return new ListAndCountDTO({
+                count: result.count,
+                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            });
         });
 };
 
@@ -571,4 +411,32 @@ exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
  **/
 exports.findPerfumeIdxByEnglishName = (englishName) => {
     return perfumeDao.findPerfumeIdx({ englishName });
+};
+
+exports.setPerfumeDao = (dao) => {
+    perfumeDao = dao;
+};
+
+exports.setReviewDao = (dao) => {
+    reviewDao = dao;
+};
+
+exports.setNoteDao = (dao) => {
+    noteDao = dao;
+};
+
+exports.setLikePerfumeDao = (dao) => {
+    likePerfumeDao = dao;
+};
+
+exports.setKeywordDao = (dao) => {
+    keywordDao = dao;
+};
+
+exports.setUserDao = (dao) => {
+    userDao = dao;
+};
+
+exports.setS3FileDao = (dao) => {
+    s3FileDao = dao;
 };
