@@ -5,8 +5,8 @@ const PerfumeDetailResponseDTO = require('../../../data/response_dto/perfume/Per
 const volumeAndPriceRegex = '^[0-9,]+/[0-9,]+ml$';
 
 const {
-    NOTE_TYPE_SINGLE,
-    NOTE_TYPE_NORMAL,
+    PERFUME_NOTE_TYPE_SINGLE,
+    PERFUME_NOTE_TYPE_NORMAL,
     MIN_SCORE,
     MAX_SCORE,
 } = require('../../../../utils/constantUtil');
@@ -72,7 +72,10 @@ PerfumeDetailResponseDTO.validTest = function () {
     expect(Keywords).instanceOf(Array);
     Keywords.forEach((it) => expect(it).to.be.a('string'));
 
-    expect(noteType).to.be.oneOf([NOTE_TYPE_SINGLE, NOTE_TYPE_NORMAL]);
+    expect(noteType).to.be.oneOf([
+        PERFUME_NOTE_TYPE_SINGLE,
+        PERFUME_NOTE_TYPE_NORMAL,
+    ]);
 
     expect.hasProperties.call(ingredients, 'top', 'middle', 'base', 'single');
     const { top, middle, base, single } = ingredients;

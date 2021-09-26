@@ -28,8 +28,8 @@ module.exports = {
     ],
     GENDER_LIST: ['None', 'male', 'neutral', 'female'],
     NOTE_TYPE_LIST: ['None', 'top', 'middle', 'base', 'single'],
-    NOTE_TYPE_SINGLE: 1,
-    NOTE_TYPE_NORMAL: 0,
+    PERFUME_NOTE_TYPE_SINGLE: 1,
+    PERFUME_NOTE_TYPE_NORMAL: 0,
     MIN_SCORE: 0,
     MAX_SCORE: 10,
 };

@@ -10,8 +10,8 @@ let s3FileDao = require('../dao/S3FileDao.js');
 
 const {
     GENDER_WOMAN,
-    NOTE_TYPE_SINGLE,
-    NOTE_TYPE_NORMAL,
+    PERFUME_NOTE_TYPE_SINGLE,
+    PERFUME_NOTE_TYPE_NORMAL,
 } = require('../utils/constantUtil.js');
 
 const {
@@ -78,7 +78,9 @@ async function generateNote(perfumeIdx) {
     const noteList = await noteDao.readByPerfumeIdx(perfumeIdx);
     const noteDictDTO = NoteDictDTO.createByNoteList(noteList);
     const noteType =
-        noteDictDTO.single.length > 0 ? NOTE_TYPE_SINGLE : NOTE_TYPE_NORMAL;
+        noteDictDTO.single.length > 0
+            ? PERFUME_NOTE_TYPE_SINGLE
+            : PERFUME_NOTE_TYPE_NORMAL;
     return { noteType, noteDictDTO };
 }
 
