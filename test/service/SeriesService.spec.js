@@ -146,7 +146,7 @@ describe('# Brand Service Test', () => {
                     expect(result).instanceOf(ListAndCountDTO);
                     result.validTest((item) => {
                         expect(item).instanceOf(SeriesFilterVO);
-                        item.validTest();
+                        SeriesFilterVO.validTest.call(item);
                         for (const ingredientDTO of item.ingredients) {
                             expect(
                                 isNoteCountOver10(ingredientDTO.ingredientIdx)
