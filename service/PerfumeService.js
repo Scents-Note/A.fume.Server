@@ -37,12 +37,6 @@ const {
     flatJob,
 } = require('../utils/func.js');
 
-function emptyCheck(x) {
-    if (x instanceof Array) return [];
-    if (x == null || x.length == 0) x = '정보 없음';
-    return x;
-}
-
 function isLikeJob(likePerfumeList) {
     const likeMap = likePerfumeList.reduce((prev, cur) => {
         prev[cur.perfumeIdx] = true;
@@ -128,10 +122,6 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
     const { noteType, noteDictDTO } = await generateNote(perfumeIdx);
     const perfumeSummaryDTO = await generateSummary(perfumeIdx);
 
-    for (const key in perfume) {
-        if (!perfume[key] instanceof String) continue;
-        perfume[key] = emptyCheck(perfume[key]);
-    }
     return PerfumeIntegralDTO.create({
         perfumeDTO: perfume,
         keywordList,
