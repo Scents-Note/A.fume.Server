@@ -208,21 +208,22 @@ exports.getSurveyPerfume = (userIdx) => {
  **/
 exports.likePerfume = (userIdx, perfumeIdx) => {
     return new Promise((resolve, reject) => {
-        let exist = false;
         likePerfumeDao
             .read(userIdx, perfumeIdx)
             .then((res) => {
-                exist = true;
-                return likePerfumeDao.delete(userIdx, perfumeIdx);
+                return likePerfumeDao
+                    .delete(userIdx, perfumeIdx)
+                    .then((it) => true);
             })
             .catch((err) => {
-                exist = false;
                 if (err instanceof NotMatchedError) {
-                    return likePerfumeDao.create(userIdx, perfumeIdx);
+                    return likePerfumeDao
+                        .create(userIdx, perfumeIdx)
+                        .then((it) => false);
                 }
                 reject(new FailedToCreateError());
             })
-            .then(() => {
+            .then((exist) => {
                 resolve(!exist);
             })
             .catch((err) => {
