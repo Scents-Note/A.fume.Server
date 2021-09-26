@@ -47,10 +47,10 @@ describe('# Ingredient Service Test', () => {
                     .getIngredientAll()
                     .then((result) => {
                         expect(result).instanceOf(ListAndCountDTO);
-                        result.validTest((item) => {
-                            expect(item).instanceOf(IngredientDTO);
-                            IngredientDTO.validTest.call(item);
-                        });
+                        ListAndCountDTO.validTest.call(
+                            result,
+                            IngredientDTO.validTest
+                        );
                         done();
                     })
                     .catch((err) => done(err));
@@ -75,9 +75,11 @@ describe('# Ingredient Service Test', () => {
                     .getIngredientList(1)
                     .then((result) => {
                         expect(result).instanceOf(ListAndCountDTO);
-                        result.validTest((item) => {
-                            expect(item).instanceOf(IngredientDTO);
-                            IngredientDTO.validTest.call(item);
+                        ListAndCountDTO.validTest.call(
+                            result,
+                            IngredientDTO.validTest
+                        );
+                        result.rows.forEach((item) => {
                             expect(item.seriesIdx).to.be.eq(1);
                         });
                         done();

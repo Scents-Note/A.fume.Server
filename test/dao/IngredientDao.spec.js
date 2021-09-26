@@ -48,10 +48,10 @@ describe('# ingredientDao Test', () => {
                 .then((result) => {
                     expect(result.count).greaterThan(4);
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest((item) => {
-                        expect(item).instanceOf(IngredientDTO);
-                        IngredientDTO.validTest.call(item);
-                    });
+                    ListAndCountDTO.validTest.call(
+                        result,
+                        IngredientDTO.validTest
+                    );
                     done();
                 })
                 .catch((err) => done(err));
@@ -64,10 +64,10 @@ describe('# ingredientDao Test', () => {
                 .readAll({ seriesIdx: 1 })
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest((item) => {
-                        expect(item).instanceOf(IngredientDTO);
-                        IngredientDTO.validTest.call(item);
-                    });
+                    ListAndCountDTO.validTest.call(
+                        result,
+                        IngredientDTO.validTest
+                    );
                     done();
                 })
                 .catch((err) => done(err));
