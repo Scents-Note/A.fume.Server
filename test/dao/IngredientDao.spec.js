@@ -8,7 +8,6 @@ const {
     NotMatchedError,
     UnExpectedError,
 } = require('../../utils/errors/errors.js');
-const { Ingredient } = require('../../models');
 
 const { IngredientConditionDTO } = require('../../data/dto');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');

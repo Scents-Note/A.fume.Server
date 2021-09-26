@@ -48,28 +48,4 @@ describe('# Ingredient Controller Test', () => {
                 .catch((err) => done(err));
         });
     });
-
-    describe('# getIngredientByEnglishName Test', () => {
-        mockIngredientService.findIngredient = async (
-            ingredientConditionDTO
-        ) => {
-            return IngredientDTO.create(ingredientConditionDTO);
-        };
-        it('success case', (done) => {
-            request(app)
-                .post(`${basePath}/ingredient/find`)
-                .send({ seriesIdx: 4 })
-                .expect((res) => {
-                    expect(res.status).to.be.eq(200);
-                    const { message, data } = res.body;
-
-                    expect(message).to.be.eq('재료 조회 성공');
-                    expect(data).to.be.have.property('ingredientIdx');
-                    expect(data).to.be.have.property('name');
-                    expect(Object.entries(data).length).to.be.eq(2);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
 });

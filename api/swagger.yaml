@@ -589,41 +589,6 @@ paths:
         401:
           description: Token is missing or invalid
       x-swagger-router-controller: Ingredient
-  /ingredient/find:
-    post:
-      tags:
-      - SUB_ingredient
-      summary: 재료 조회
-      operationId: getIngredientByEnglishName
-      parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          type: object
-          properties:
-            englishName:
-              type: string
-              example: Grapefruit
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: 재료 조회 성공
-              data:
-                allOf:
-                - $ref: '#/definitions/IngredientInfo'
-                - type: object
-                  properties:
-                    ingredientIdx:
-                      type: integer
-                  example:
-                    ingredientIdx: 1
-      x-swagger-router-controller: Ingredient
   /series:
     get:
       tags:
