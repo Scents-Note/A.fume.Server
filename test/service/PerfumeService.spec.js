@@ -36,7 +36,7 @@ describe('# Perfume Service Test', () => {
                 .catch((err) => done(err));
         });
 
-        it('# isLike Test', (done) => {
+        it('# search Test', (done) => {
             const perfumeSearchRequestDTO = new PerfumeSearchRequestDTO({
                 keywordList: [],
                 brandList: [],
@@ -56,9 +56,6 @@ describe('# Perfume Service Test', () => {
                         result,
                         PerfumeThumbDTO.validTest
                     );
-                    expect(
-                        result.rows.filter((it) => it.isLiked == true).length
-                    ).to.eq(5);
                     done();
                 })
                 .catch((err) => done(err));
