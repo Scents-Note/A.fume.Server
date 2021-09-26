@@ -60,5 +60,19 @@ describe('# Perfume Service Test', () => {
                 })
                 .catch((err) => done(err));
         });
+
+        it('# getSurveyPerfume Test', (done) => {
+            Perfume.getSurveyPerfume(1)
+                .then((result) => {
+                    expect(result).to.be.instanceOf(ListAndCountDTO);
+                    ListAndCountDTO.validTest.call(
+                        result,
+                        PerfumeThumbDTO.validTest
+                    );
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+        });
     });
 });
