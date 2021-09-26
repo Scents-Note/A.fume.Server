@@ -17,25 +17,25 @@ class PerfumeIntegralDTO {
     }
 
     static create(reviewList) {
-        const seasonalMap = {
+        const seasonalCountMap = {
             spring: 0,
             summer: 0,
             fall: 0,
             winter: 0,
         };
-        const sillageMap = {
+        const sillageCountMap = {
             light: 0,
             normal: 0,
             heavy: 0,
         };
-        const longevityMap = {
+        const longevityCountMap = {
             veryWeak: 0,
             weak: 0,
             medium: 0,
             strong: 0,
             veryStrong: 0,
         };
-        const genderMap = {
+        const genderCountMap = {
             male: 0,
             neutral: 0,
             female: 0,
@@ -56,17 +56,17 @@ class PerfumeIntegralDTO {
                     sum += score;
                     cnt++;
                 }
-                longevityMap[longevity]++;
-                sillageMap[sillage]++;
-                seasonalMap[seasonal]++;
-                genderMap[gender]++;
+                longevityCountMap[longevity]++;
+                sillageCountMap[sillage]++;
+                seasonalCountMap[seasonal]++;
+                genderCountMap[gender]++;
             });
         return {
             score: parseFloat((parseFloat(sum) / cnt).toFixed(2)) || 0,
-            seasonal: normalize(seasonalMap),
-            sillage: normalize(sillageMap),
-            longevity: normalize(longevityMap),
-            gender: normalize(genderMap),
+            seasonal: normalize(seasonalCountMap),
+            sillage: normalize(sillageCountMap),
+            longevity: normalize(longevityCountMap),
+            gender: normalize(genderCountMap),
         };
     }
 }
