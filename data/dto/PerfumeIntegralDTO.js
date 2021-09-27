@@ -66,7 +66,7 @@ class PerfumeIntegralDTO {
 }
 
 function emptyCheck(x) {
-    if (x == null || x.length == 0) {
+    if (x == null || x == undefined || x.length == 0) {
         if (x instanceof Array) {
             return [];
         }
