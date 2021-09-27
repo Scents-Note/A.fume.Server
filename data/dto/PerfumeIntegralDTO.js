@@ -75,8 +75,9 @@ function emptyCheck(x) {
     return x;
 }
 
+const shouldBeAddedCommasRegex = /\B(?=(\d{3})+(?!\d))/g;
 function numberWithCommas(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return x.toString().replace(shouldBeAddedCommasRegex, ',');
 }
 
 module.exports = PerfumeIntegralDTO;
