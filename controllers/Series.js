@@ -1,10 +1,8 @@
 'use strict';
 
 let Series = require('../service/SeriesService');
+let Ingredient = require('../service/IngredientService');
 
-module.exports.setSeriesService = (seriesService) => {
-    Series = seriesService;
-};
 const { OK } = require('../utils/statusCode.js');
 
 const { PagingRequestDTO } = require('../data/request_dto');
@@ -41,7 +39,7 @@ module.exports.getSeriesAll = (req, res, next) => {
 
 module.exports.getIngredients = (req, res, next) => {
     const seriesIdx = req.swagger.params['seriesIdx'].value;
-    Series.getIngredientList(seriesIdx)
+    Ingredient.getIngredientList(seriesIdx)
         .then((result) => {
             res.status(OK).json(
                 new ResponseDTO({
@@ -71,4 +69,12 @@ module.exports.getFilterSeries = (req, res, next) => {
             );
         })
         .catch((err) => next(err));
+};
+
+module.exports.setSeriesService = (service) => {
+    Series = service;
+};
+
+module.exports.setIngredientService = (service) => {
+    Ingredient = service;
 };

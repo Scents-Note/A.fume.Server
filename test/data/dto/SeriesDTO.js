@@ -2,7 +2,7 @@ const { expect } = require('chai');
 
 const SeriesDTO = require('../../../data/dto/SeriesDTO');
 
-SeriesDTO.prototype.validTest = function () {
+SeriesDTO.validTest = function () {
     expect(this.seriesIdx).to.be.ok;
     expect(this.englishName).to.be.ok;
     expect(this.name).to.be.ok;

@@ -119,13 +119,11 @@ describe('# brandDao Test', () => {
                     })
                 )
                 .then((result) => {
-                    expect(result).instanceOf(ListAndCountDTO);
                     expect(result.count).gte(5);
                     expect(result.rows.length).gte(5);
-                    result.validTest((item) => {
-                        expect(item).instanceOf(BrandDTO);
-                        item.validTest();
-                    });
+                    for (const brand of result.rows) {
+                        brand.validTest();
+                    }
                     done();
                 })
                 .catch((err) => done(err));
@@ -137,11 +135,11 @@ describe('# brandDao Test', () => {
             brandDao
                 .readAll()
                 .then((result) => {
-                    expect(result.count).gte(5);
-                    expect(result.rows.length).gte(5);
-                    for (const brand of result.rows) {
-                        brand.validTest();
-                    }
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest((item) => {
+                        expect(item).instanceOf(BrandDTO);
+                        item.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
