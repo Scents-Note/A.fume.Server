@@ -1,5 +1,7 @@
 'use strict';
 
+const NO_REVIEW = 0;
+
 class PerfumeDetailResponseDTO {
     constructor({
         perfumeIdx,
@@ -18,6 +20,7 @@ class PerfumeDetailResponseDTO {
         Keywords /* TODO change lower case */,
         noteType /* TODO change Value to String */,
         ingredients,
+        reviewIdx,
     }) {
         this.perfumeIdx = perfumeIdx;
         this.name = name;
@@ -35,6 +38,7 @@ class PerfumeDetailResponseDTO {
         this.Keywords = Keywords;
         this.noteType = noteType;
         this.ingredients = ingredients;
+        this.reviewIdx = reviewIdx || NO_REVIEW;
     }
 }
 

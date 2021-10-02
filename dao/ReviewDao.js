@@ -218,14 +218,24 @@ module.exports.delete = async (reviewIdx) => {
  * @return {Promise}
  */
 
-module.exports.deleteZeroCount = async() => {
-    return await JoinPerfumeKeyword.destroy(
-        {
-            where: {
-                count: {
-                    [Op.lte]: 0,
-                },
-            }
-        }
-    );
-}
+module.exports.deleteZeroCount = async () => {
+    return await JoinPerfumeKeyword.destroy({
+        where: {
+            count: {
+                [Op.lte]: 0,
+            },
+        },
+    });
+};
+
+/**
+ *
+ *
+ * @param
+ * @return {Review}
+ */
+module.exports.findOne = async ({ userIdx, perfumeIdx }) => {
+    /* TODO 구현 */
+    throw 'Not Implemented ReviewDao.findOne';
+    return { reviewIdx: 1 };
+};

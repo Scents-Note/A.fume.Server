@@ -27,6 +27,9 @@ Perfume.setUserDao(mockUserDao);
 const mockKeywordDao = {};
 Perfume.setKeywordDao(mockKeywordDao);
 
+const mockReviewDao = {};
+Perfume.setReviewDao(mockReviewDao);
+
 describe('# Perfume Service Test', () => {
     before(async function () {
         await require('../dao/common/presets.js')(this);
@@ -42,6 +45,36 @@ describe('# Perfume Service Test', () => {
             mockKeywordDao.readAllOfPerfume = async (perfumeIdx) => {
                 return [{ name: '키워드1' }, { name: '키워드2' }];
             };
+            const expectedReviewIdx = 4;
+            mockReviewDao.findOne = async () => {
+                return { reviewIdx: expectedReviewIdx };
+            };
+            mockReviewDao.readAllOfPerfume = async () => {
+                return [
+                    {
+                        reviewIdx: 1,
+                        score: 1,
+                        longevity: 1,
+                        sillage: 1,
+                        seasonal: 4,
+                        gender: 1,
+                        access: 1,
+                        content: '시향노트1',
+                        createdAt: '2021-09-26T08:38:33.000Z',
+                        User: {
+                            userIdx: 1,
+                            email: 'email1@afume.com',
+                            nickname: 'user1',
+                            password: 'test',
+                            gender: 2,
+                            birth: 1995,
+                            grade: 1,
+                            accessTime: '2021-09-26T08:38:33.000Z',
+                        },
+                        LikeReview: { likeCount: 1 },
+                    },
+                ];
+            };
             Perfume.getPerfumeById(1, 1)
                 .then((it) => {
                     PerfumeIntegralDTO.validTest.call(it);
@@ -53,6 +86,7 @@ describe('# Perfume Service Test', () => {
                         '키워드1',
                         '키워드2',
                     ]);
+                    expect(it.reviewIdx).to.be.eq(expectedReviewIdx);
                     done();
                 })
                 .catch((err) => done(err));

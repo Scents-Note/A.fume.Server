@@ -20,6 +20,7 @@ class PerfumeIntegralDTO {
         keywordList,
         noteType /* TODO change Value to String */,
         noteDict,
+        reviewIdx,
     }) {
         this.perfumeIdx = perfumeIdx;
         this.name = name;
@@ -37,6 +38,7 @@ class PerfumeIntegralDTO {
         this.keywordList = keywordList;
         this.noteType = noteType;
         this.noteDict = noteDict;
+        this.reviewIdx = reviewIdx;
     }
 
     static create({
@@ -46,6 +48,7 @@ class PerfumeIntegralDTO {
         noteDictDTO,
         noteType,
         imageUrls,
+        reviewIdx,
     }) {
         perfumeDTO.volumeAndPrice = perfumeDTO.volumeAndPrice.map((it) => {
             return `${numberWithCommas(it.price)}/${it.volume}ml`;
@@ -53,7 +56,13 @@ class PerfumeIntegralDTO {
         perfumeDTO.abundanceRate =
             ABUNDANCE_RATE_LIST[perfumeDTO.abundanceRate];
         const perfume = Object.assign(
-            { keywordList, noteDict: noteDictDTO, noteType, imageUrls },
+            {
+                keywordList,
+                noteDict: noteDictDTO,
+                noteType,
+                imageUrls,
+                reviewIdx,
+            },
             perfumeSummaryDTO,
             perfumeDTO
         );

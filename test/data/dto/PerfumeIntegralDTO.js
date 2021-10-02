@@ -36,6 +36,7 @@ PerfumeIntegralDTO.validTest = function () {
     expect(sumOfMapFunc(this.longevity)).to.be.eq(100);
     expect(this.gender).to.be.ok;
     expect(sumOfMapFunc(this.gender)).to.be.eq(100);
+    expect(this.reviewIdx).to.be.gte(0);
 };
 
 PerfumeIntegralDTO.createMock = (condition) => {

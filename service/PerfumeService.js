@@ -124,6 +124,7 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
     const { noteType, noteDictDTO } = await generateNote(perfumeIdx);
     const perfumeSummaryDTO = await generateSummary(perfumeIdx);
 
+    const { reviewIdx } = await reviewDao.findOne({ userIdx, perfumeIdx });
     return PerfumeIntegralDTO.create({
         perfumeDTO: perfume,
         keywordList,
@@ -131,6 +132,7 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
         noteDictDTO,
         noteType,
         imageUrls,
+        reviewIdx,
     });
 };
 
