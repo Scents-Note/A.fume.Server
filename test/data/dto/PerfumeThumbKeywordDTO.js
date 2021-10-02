@@ -1,6 +1,16 @@
 'use strict';
 
+const { expect } = require('chai');
 const PerfumeThumbKeywordDTO = require('../../../data/dto/PerfumeThumbKeywordDTO');
+
+PerfumeThumbKeywordDTO.validTest = function () {
+    expect(this.perfumeIdx).to.be.ok;
+    expect(this.name).to.be.ok;
+    expect(this.brandName).to.be.ok;
+    expect(this.imageUrl).to.be.ok;
+    expect(this.isLiked).to.be.oneOf([true, false]);
+    expect(this.keywordList).to.be.a('array');
+};
 
 PerfumeThumbKeywordDTO.createMock = (condition) => {
     return new PerfumeThumbKeywordDTO(

@@ -366,7 +366,7 @@ module.exports.recommendPerfumeByAgeAndGender = async (
         delete it.SearchHistory;
     });
     const result = {
-        count: Math.min(pagingSize, perfumeList.length),
+        count: perfumeList.length,
         rows: perfumeList,
     };
     ranking.upsert(
@@ -405,21 +405,6 @@ module.exports.readPerfumeSurvey = async (gender) => {
     });
     const perfumeList = await Perfume.findAndCountAll(options);
     return perfumeList;
-};
-
-/**
- * 향수 Index 조회
- *
- * @param {Object} condition
- * @returns {Promise<number>} perfumeIdx
- */
-module.exports.findPerfumeIdx = ({ englishName }) => {
-    return Perfume.findOne({ where: { englishName } }).then((it) => {
-        if (!it) {
-            throw new NotMatchedError();
-        }
-        return it.perfumeIdx;
-    });
 };
 
 /**

@@ -52,18 +52,32 @@ class PerfumeIntegralDTO {
         });
         perfumeDTO.abundanceRate =
             ABUNDANCE_RATE_LIST[perfumeDTO.abundanceRate];
-        return new PerfumeIntegralDTO(
-            Object.assign(
-                { keywordList, noteDict: noteDictDTO, noteType, imageUrls },
-                perfumeSummaryDTO,
-                perfumeDTO
-            )
+        const perfume = Object.assign(
+            { keywordList, noteDict: noteDictDTO, noteType, imageUrls },
+            perfumeSummaryDTO,
+            perfumeDTO
         );
+        for (const key in perfume) {
+            if (!perfume[key] instanceof String) continue;
+            perfume[key] = emptyCheck(perfume[key]);
+        }
+        return new PerfumeIntegralDTO(perfume);
     }
 }
 
+function emptyCheck(x) {
+    if (x == null || x == undefined || x.length == 0) {
+        if (x instanceof Array) {
+            return [];
+        }
+        return '정보 없음';
+    }
+    return x;
+}
+
+const shouldBeAddedCommasRegex = /\B(?=(\d{3})+(?!\d))/g;
 function numberWithCommas(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return x.toString().replace(shouldBeAddedCommasRegex, ',');
 }
 
 module.exports = PerfumeIntegralDTO;

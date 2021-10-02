@@ -3,20 +3,6 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
     class Note extends Model {
         static associate(models) {
-            models.Ingredient.belongsToMany(models.Perfume, {
-                foreignKey: 'perfumeIdx',
-                through: 'Note',
-                as: 'Perfumes',
-                onUpdate: 'CASCADE',
-                onDelete: 'CASCADE',
-            });
-            models.Perfume.belongsToMany(models.Ingredient, {
-                foreignKey: 'ingredientIdx',
-                through: 'Note',
-                as: 'Ingredients',
-                onUpdate: 'CASCADE',
-                onDelete: 'CASCADE',
-            });
             models.Ingredient.hasMany(this, {
                 foreignKey: 'ingredientIdx',
                 as: 'Notes',

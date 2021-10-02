@@ -8,6 +8,12 @@ const { Note, Ingredient, sequelize, Sequelize } = require('../models');
 const { Op } = Sequelize;
 const { NoteDTO } = require('../data/dto');
 
+const {
+    NOTE_TYPE_SINGLE,
+    NOTE_TYPE_TOP,
+    NOTE_TYPE_MIDDLE,
+    NOTE_TYPE_BASE,
+} = require('../utils/constantUtil');
 /**
  * 노트 생성
  *
@@ -15,7 +21,14 @@ const { NoteDTO } = require('../data/dto');
  * @returns {Promise<Note>}
  */
 module.exports.create = ({ ingredientIdx, perfumeIdx, type }) => {
-    if ([1, 2, 3, 4].indexOf(type) == -1) {
+    if (
+        [
+            NOTE_TYPE_SINGLE,
+            NOTE_TYPE_TOP,
+            NOTE_TYPE_MIDDLE,
+            NOTE_TYPE_BASE,
+        ].indexOf(type) == -1
+    ) {
         return new Promise((resolve, reject) => {
             reject(new InvalidInputError());
         });

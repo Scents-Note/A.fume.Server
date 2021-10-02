@@ -5,7 +5,10 @@ let SearchHistory = require('../service/SearchHistoryService');
 
 const { OK, FORBIDDEN } = require('../utils/statusCode.js');
 
-const { PagingRequestDTO } = require('../data/request_dto');
+const {
+    PagingRequestDTO,
+    PerfumeSearchRequestDTO,
+} = require('../data/request_dto');
 const {
     PerfumeDetailResponseDTO,
     PerfumeResponseDTO,
@@ -38,18 +41,14 @@ module.exports.getPerfume = (req, res, next) => {
 
 module.exports.searchPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
-    const { keywordList, brandList, ingredientList, searchText } = req.body;
-    const { pagingIndex, pagingSize, sort } = new PagingRequestDTO(req.query);
-    Perfume.searchPerfume(
-        brandList,
-        ingredientList,
-        keywordList,
-        searchText,
-        pagingIndex,
-        pagingSize,
-        sort,
-        loginUserIdx
-    )
+    const perfumeSearchRequestDTO = new PerfumeSearchRequestDTO(
+        Object.assign({ userIdx: loginUserIdx }, req.body)
+    );
+    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    Perfume.searchPerfume({
+        perfumeSearchRequestDTO,
+        pagingRequestDTO,
+    })
         .then(({ rows, count }) => {
             return {
                 count,
@@ -84,8 +83,8 @@ module.exports.likePerfume = (req, res, next) => {
 
 module.exports.getRecentPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    const { pagingIndex, pagingSize } = new PagingRequestDTO(req.query);
-    Perfume.recentSearch(loginUserIdx, pagingIndex, pagingSize)
+    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    Perfume.recentSearch({ userIdx: loginUserIdx, pagingRequestDTO })
         .then(({ count, rows }) => {
             return {
                 count,
@@ -105,8 +104,8 @@ module.exports.getRecentPerfume = (req, res, next) => {
 
 module.exports.recommendPersonalPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    const { pagingIndex, pagingSize } = new PagingRequestDTO(req.query);
-    Perfume.recommendByUser(loginUserIdx, pagingIndex, pagingSize)
+    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    Perfume.recommendByUser({ userIdx: loginUserIdx, pagingRequestDTO })
         .then(({ count, rows }) => {
             return {
                 count,
@@ -126,8 +125,8 @@ module.exports.recommendPersonalPerfume = (req, res, next) => {
 
 module.exports.recommendCommonPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    const { pagingIndex, pagingSize } = new PagingRequestDTO(req.query);
-    Perfume.recommendByUser(loginUserIdx, pagingIndex, pagingSize)
+    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    Perfume.recommendByUser({ loginUserIdx, pagingRequestDTO })
         .then(({ count, rows }) => {
             return {
                 count,
@@ -167,8 +166,8 @@ module.exports.getSurveyPerfume = (req, res, next) => {
 
 module.exports.getNewPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    const { pagingIndex, pagingSize } = new PagingRequestDTO(req.query);
-    Perfume.getNewPerfume(loginUserIdx, pagingIndex, pagingSize)
+    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    Perfume.getNewPerfume({ userIdx: loginUserIdx, pagingRequestDTO })
         .then(({ count, rows }) => {
             return {
                 count,
@@ -189,7 +188,7 @@ module.exports.getNewPerfume = (req, res, next) => {
 module.exports.getLikedPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
     const userIdx = req.swagger.params['userIdx'].value;
-    const { pagingIndex, pagingSize } = new PagingRequestDTO(req.query);
+    const pagingRequestDTO = new PagingRequestDTO(req.query);
     if (loginUserIdx != userIdx) {
         res.status(FORBIDDEN).json(
             new ResponseDTO({
@@ -198,7 +197,7 @@ module.exports.getLikedPerfume = (req, res, next) => {
         );
         return;
     }
-    Perfume.getLikedPerfume(loginUserIdx, pagingIndex, pagingSize)
+    Perfume.getLikedPerfume({ userIdx, pagingRequestDTO })
         .then(({ count, rows }) => {
             return {
                 count,

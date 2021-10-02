@@ -8,12 +8,10 @@ let keywordDao = require('../dao/KeywordDao.js');
 let userDao = require('../dao/UserDao.js');
 let s3FileDao = require('../dao/S3FileDao.js');
 
-const { parseSortToOrder } = require('../utils/parser.js');
-
 const {
     GENDER_WOMAN,
-    NOTE_TYPE_SINGLE,
-    NOTE_TYPE_NORMAL,
+    PERFUME_NOTE_TYPE_SINGLE,
+    PERFUME_NOTE_TYPE_NORMAL,
 } = require('../utils/constantUtil.js');
 
 const {
@@ -23,6 +21,8 @@ const {
     PerfumeThumbKeywordDTO,
     PerfumeIntegralDTO,
     ListAndCountDTO,
+    PagingDTO,
+    PerfumeSearchDTO,
 } = require('../data/dto');
 
 const {
@@ -36,12 +36,6 @@ const {
     extractJob,
     flatJob,
 } = require('../utils/func.js');
-
-function emptyCheck(x) {
-    if (x instanceof Array) return [];
-    if (x == null || x.length == 0) x = '정보 없음';
-    return x;
-}
 
 function isLikeJob(likePerfumeList) {
     const likeMap = likePerfumeList.reduce((prev, cur) => {
@@ -84,7 +78,9 @@ async function generateNote(perfumeIdx) {
     const noteList = await noteDao.readByPerfumeIdx(perfumeIdx);
     const noteDictDTO = NoteDictDTO.createByNoteList(noteList);
     const noteType =
-        noteDictDTO.single.length > 0 ? NOTE_TYPE_SINGLE : NOTE_TYPE_NORMAL;
+        noteDictDTO.single.length > 0
+            ? PERFUME_NOTE_TYPE_SINGLE
+            : PERFUME_NOTE_TYPE_NORMAL;
     return { noteType, noteDictDTO };
 }
 
@@ -128,10 +124,6 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
     const { noteType, noteDictDTO } = await generateNote(perfumeIdx);
     const perfumeSummaryDTO = await generateSummary(perfumeIdx);
 
-    for (const key in perfume) {
-        if (!perfume[key] instanceof String) continue;
-        perfume[key] = emptyCheck(perfume[key]);
-    }
     return PerfumeIntegralDTO.create({
         perfumeDTO: perfume,
         keywordList,
@@ -145,27 +137,20 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
 /**
  * 향수 검색
  *
- * @param {number[]} brandIdxList
- * @param {number[]} ingredientIdxList
- * @param {number[]} keywordIdxList
- * @param {string} searchText
- * @param {number} pagingIndex
- * @param {number} pagingSize
- * @param {array} sort
- * @param {number} userIdx
+ * @param {PerfumeSearchRequestDTO} perfumeSearchRequestDTO
+ * @param {PagingRequestDTO} pagingRequestDTO
  * @returns {Promise<Perfume[]>}
  **/
-exports.searchPerfume = (
-    brandIdxList,
-    ingredientIdxList,
-    keywordIdxList,
-    searchText,
-    pagingIndex,
-    pagingSize,
-    sort,
-    userIdx
-) => {
-    const order = parseSortToOrder(sort);
+exports.searchPerfume = ({ perfumeSearchRequestDTO, pagingRequestDTO }) => {
+    const { pagingIndex, pagingSize, order } =
+        PagingDTO.create(pagingRequestDTO);
+    const {
+        brandIdxList,
+        ingredientIdxList,
+        keywordIdxList,
+        searchText,
+        userIdx,
+    } = PerfumeSearchDTO.create(perfumeSearchRequestDTO);
     return perfumeDao
         .search(
             brandIdxList,
@@ -225,21 +210,22 @@ exports.getSurveyPerfume = (userIdx) => {
  **/
 exports.likePerfume = (userIdx, perfumeIdx) => {
     return new Promise((resolve, reject) => {
-        let exist = false;
         likePerfumeDao
             .read(userIdx, perfumeIdx)
             .then((res) => {
-                exist = true;
-                return likePerfumeDao.delete(userIdx, perfumeIdx);
+                return likePerfumeDao
+                    .delete(userIdx, perfumeIdx)
+                    .then((it) => true);
             })
             .catch((err) => {
-                exist = false;
                 if (err instanceof NotMatchedError) {
-                    return likePerfumeDao.create(userIdx, perfumeIdx);
+                    return likePerfumeDao
+                        .create(userIdx, perfumeIdx)
+                        .then((it) => false);
                 }
                 reject(new FailedToCreateError());
             })
-            .then(() => {
+            .then((exist) => {
                 resolve(!exist);
             })
             .catch((err) => {
@@ -252,11 +238,11 @@ exports.likePerfume = (userIdx, perfumeIdx) => {
  * 유저의 최근 검색한 향수 조회
  *
  * @param {number} userIdx
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {PagingRequestDTO} pagingRequestDTO
  * @returns {Promise<Perfume[]>}
  **/
-exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
+exports.recentSearch = ({ userIdx, pagingRequestDTO }) => {
+    const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
     return perfumeDao
         .recentSearchPerfumeList(userIdx, pagingIndex, pagingSize)
         .then(async (result) => {
@@ -277,31 +263,21 @@ exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
  * 유저 연령대 및 성별에 따른 향수 추천
  *
  * @param {number} userIdx
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {number} pagingRequestDTO
  * @returns {Promise<Perfume[]>}
  **/
-exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
-    let ageGroup, gender;
-    if (userIdx == -1) {
-        gender = GENDER_WOMAN;
-        ageGroup = 20;
-    } else {
-        const user = await userDao.readByIdx(userIdx);
-        const today = new Date();
-        const age = today.getFullYear() - user.birth + 1;
-        gender = user.gender;
-        ageGroup = parseInt(age / 10) * 10;
-    }
+exports.recommendByUser = async ({ userIdx, pagingRequestDTO }) => {
+    const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
+    const { ageGroup, gender } = await getAgeGroupAndGender(userIdx);
 
-    const recommendedList = this.recommendByGenderAgeAndGender(
+    const recommendedListPromise = this.recommendByGenderAgeAndGender(
         gender,
         ageGroup,
         pagingIndex,
         pagingSize
     );
 
-    return recommendedList.then(async (result) => {
+    return recommendedListPromise.then(async (result) => {
         const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
         let likePerfumeList = [];
         if (userIdx > -1) {
@@ -323,7 +299,7 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
         );
         return new ListAndCountDTO({
             count: result.count,
-            rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            rows: result.rows.map((it) => new PerfumeThumbKeywordDTO(it)),
         });
     });
 };
@@ -340,9 +316,9 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
 exports.recommendByGenderAgeAndGender = (
     gender,
     ageGroup,
-    pagingIndex,
-    pagingSize
+    pagingRequestDTO
 ) => {
+    const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
     return perfumeDao.recommendPerfumeByAgeAndGender(
         gender,
         ageGroup,
@@ -355,11 +331,11 @@ exports.recommendByGenderAgeAndGender = (
  * 새로 추가된 향수 조회
  *
  * @param {number} userIdx
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {number} pagingRequestDTO
  * @returns {Promise<Perfume[]>}
  **/
-exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
+exports.getNewPerfume = ({ userIdx, pagingRequestDTO }) => {
+    const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
     const fromDate = new Date();
     fromDate.setDate(fromDate.getDate() - 7);
     return perfumeDao
@@ -382,11 +358,11 @@ exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
  * 유저가 좋아요한 향수 조회
  *
  * @param {number} userIdx
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {number} pagingRequestDTO
  * @returns {Promise<Perfume[]>}
  **/
-exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
+exports.getLikedPerfume = ({ userIdx, pagingRequestDTO }) => {
+    const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
     return perfumeDao
         .readLikedPerfume(userIdx, pagingIndex, pagingSize)
         .then(async (result) => {
@@ -403,15 +379,20 @@ exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
         });
 };
 
-/**
- * 향수 idx값 조회
- *
- * @param {string} englishName
- * @returns {Promise<number>}
- **/
-exports.findPerfumeIdxByEnglishName = (englishName) => {
-    return perfumeDao.findPerfumeIdx({ englishName });
-};
+async function getAgeGroupAndGender(userIdx) {
+    if (userIdx == -1) {
+        return {
+            gender: GENDER_WOMAN,
+            ageGroup: 20,
+        };
+    }
+    const user = await userDao.readByIdx(userIdx);
+    const today = new Date();
+    const age = today.getFullYear() - user.birth + 1;
+    const gender = user.gender;
+    const ageGroup = parseInt(age / 10) * 10;
+    return { gender, ageGroup };
+}
 
 exports.setPerfumeDao = (dao) => {
     perfumeDao = dao;
