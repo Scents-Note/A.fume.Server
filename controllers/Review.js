@@ -57,7 +57,8 @@ module.exports.getPerfumeReview = function getPerfumeReview(
     next
 ) {
     var perfumeIdx = req.swagger.params['perfumeIdx'].value;
-    Review.getReviewOfPerfumeByLike(perfumeIdx)
+    const userIdx = req.middlewareToken.loginUserIdx;
+    Review.getReviewOfPerfumeByLike({perfumeIdx, userIdx})
         .then((response) => {
             res.status(OK).json({
                 message: '특정 향수의 시향노트 목록 인기순 조회 성공',

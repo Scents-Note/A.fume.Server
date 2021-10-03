@@ -190,17 +190,19 @@ exports.getReviewOfUser = async (userIdx) => {
  * @param {number} perfumeIdx
  * @returns {Promise<Review[]>} reviewList
  **/
-exports.getReviewOfPerfumeByLike = async (perfumeIdx) => {
+exports.getReviewOfPerfumeByLike = async ({ perfumeIdx, userIdx }) => {
     const reviewList = await reviewDao.readAllOfPerfume(perfumeIdx);
     const result = await reviewList.reduce(async(prevPromise, it) => {
         let prevResult = await prevPromise.then()
-        const approxAge = await getApproxAge(it.User.birth)
+        const approxAge = getApproxAge(it.User.birth)
+        const readLikeResult  = await likeReviewDao.read(userIdx, it.reviewIdx)
         const currentResult = {
             reviewIdx: it.reviewIdx,
             score: it.score,
             access: it.access == 1? true : false,
             content: it.content,
             likeCount: it.LikeReview.likeCount,
+            isLiked: readLikeResult? true : false,
             userGender: it.User.gender,
             age: approxAge,
             nickname: it.User.nickname,

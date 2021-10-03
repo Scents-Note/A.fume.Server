@@ -767,8 +767,10 @@ paths:
       tags:
       - review
       summary: 향수별 시향 노트 전체 조회 
-      description: 해당 향수에 작성된 시향 노트 리스트를 반환한다. <br/> 반환되는 정보 [시향노트]
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> 해당 향수에 작성된 시향 노트 리스트를 반환한다. <br/> 반환되는 정보 [시향노트]
       operationId: getPerfumeReview
+      security:
+        - userToken: []
       consumes:
       - application/json
       produces:
@@ -824,6 +826,8 @@ paths:
                     likeCount:
                       type: integer
                       format: int64
+                    isLiked: 
+                      type: boolean
                     age:
                       type: string
                     userGender: 
@@ -838,6 +842,7 @@ paths:
                     access: true
                     content: "시향노트 내용"
                     likeCount: 3
+                    isLiked: true
                     userGender: 여자
                     age: 20대 중반
                     nickname: 담담
