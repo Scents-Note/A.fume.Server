@@ -70,6 +70,10 @@ module.exports.read = async (reviewIdx) => {
         nest: true,
     });
 
+    if (!reviewList) {
+        throw new NotMatchedError();
+    }
+
     const keywordList = await JoinReviewKeyword.findAll({
         where: { reviewIdx },
         include: [
@@ -81,16 +85,12 @@ module.exports.read = async (reviewIdx) => {
         nest: true,
     });
 
-    reviewList.keywordList = await keywordList.map((it) => {
+    reviewList.keywordList = keywordList ? keywordList.map((it) => {
         return {
             keywordIdx: it.Keyword.id,
             keyword: it.Keyword.name,
         };
-    });
-
-    if (reviewList.length == 0) {
-        throw new NotMatchedError();
-    }
+    }) : [];
 
     return reviewList;
 };
