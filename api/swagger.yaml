@@ -832,7 +832,7 @@ paths:
                           keywordIdx:
                             type: integer
                             format: int64
-                          keyword:
+                          name:
                             type: string
                     Brand:
                       type: object
@@ -851,7 +851,7 @@ paths:
                     KeywordList:
                       -
                         keywordIdx: 1
-                        keyword: 달달한
+                        name: 달달한
                     Brand:
                       brandIdx: 1
                       brandName: Jo Malone
