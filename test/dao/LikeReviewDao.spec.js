@@ -119,7 +119,7 @@ describe('# LikeReviewDao Test', () => {
 
     describe('# delete Test', () => {
         before(async () => {
-            await likeReviewDao.create(3, 1)
+            await likeReviewDao.create(3, 1);
         });
 
         it('# success case', (done) => {

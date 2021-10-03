@@ -2,7 +2,6 @@ const {
     Brand,
     Series,
     Perfume,
-    PerfumeDetail,
     User,
     Note,
     LikePerfume,
@@ -70,19 +69,15 @@ module.exports = () => {
                 name: `향수${i}`,
                 englishName: `perfume-${i}`,
                 imageUrl: `http://perfume-image/${i}`,
-                likeCnt: 1,
+                story: `스토리${i}`,
+                abundanceRate: 1,
+                volumeAndPrice: '30/95000,100/190000',
             })
         );
     }
     const thirdJob = [];
     for (let i = 1; i <= 5; i++) {
         thirdJob.push(
-            PerfumeDetail.upsert({
-                perfumeIdx: i,
-                story: `스토리${i}`,
-                abundanceRate: 1,
-                volumeAndPrice: '30/95000,100/190000',
-            }),
             LikePerfume.upsert({ userIdx: 1, perfumeIdx: i }),
             SearchHistory.upsert({ userIdx: i, perfumeIdx: i }),
             SearchHistory.upsert({ userIdx: 1, perfumeIdx: i }),

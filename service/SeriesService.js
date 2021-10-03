@@ -81,20 +81,6 @@ exports.deleteSeries = (seriesIdx) => {
     return seriesDao.delete(seriesIdx);
 };
 
-// TODO getIngredientList move to Ingredient Service
-/**
- * 계열에 해당하는 재료 조회
- *
- * @param {number} seriesIdx
- * @returns {Promise<Ingredient[]>}
- */
-exports.getIngredientList = (seriesIdx) => {
-    return ingredientDao.readAll({ seriesIdx }).then((it) => {
-        delete it.JoinSeriesIngredient;
-        return it;
-    });
-};
-
 const FILTER_INGREDIENT_LIMIT_USED_COUNT = 10;
 async function filterByUsedCount(ingredientList) {
     const ingredientIdxList = ingredientList.map((it) => it.ingredientIdx);

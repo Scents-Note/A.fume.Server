@@ -5,7 +5,7 @@ const chai = require('chai');
 const { expect } = chai;
 
 const perfumeDao = require('../../dao/PerfumeDao.js');
-const { Perfume, PerfumeDetail, Note, Sequelize } = require('../../models');
+const { Perfume, Note, Sequelize } = require('../../models');
 const { Op } = Sequelize;
 
 const { GENDER_WOMAN } = require('../../utils/constantUtil');
@@ -40,70 +40,6 @@ describe('# perfumeDao Test', () => {
     before(async function () {
         await require('./common/presets.js')(this);
     });
-    describe('# create Test', () => {
-        before(async () => {
-            await Perfume.destroy({ where: { name: '삽입테스트' } });
-        });
-        it('# success case', (done) => {
-            const perfumeObj = {
-                name: '삽입테스트',
-                brandIdx: 1,
-                englishName: 'insert Test',
-                volumeAndPrice: {},
-                imageUrl: 'URL',
-                story: '스토리',
-                abundanceRate: 2,
-            };
-            perfumeDao
-                .create(perfumeObj)
-                .then((result) => {
-                    return perfumeDao.readByPerfumeIdx(result);
-                })
-                .then((result) => {
-                    expect(result.name).to.be.eq('삽입테스트');
-                    expect(result.brandIdx).to.be.eq(1);
-                    expect(result.englishName).to.be.eq('insert Test');
-                    expect(result.imageUrl).to.be.eq('URL');
-                    expect(result.PerfumeDetail.volumeAndPrice).to.deep.equal(
-                        []
-                    );
-                    expect(result.PerfumeDetail.perfumeIdx).to.be.eq(
-                        result.perfumeIdx
-                    );
-                    expect(result.PerfumeDetail.story).to.be.eq('스토리');
-                    expect(result.PerfumeDetail.abundanceRate).to.be.eq(2);
-                    expect(result.Brand.name).to.be.eq('브랜드1');
-                    expect(result.Brand.englishName).to.be.ok;
-                    expect(result.Brand.firstInitial).to.be.oneOf(
-                        allowFirstInitialArr
-                    );
-                    expect(result.Brand.description).to.be.ok;
-                    expect(result.Brand.brandIdx).to.be.eq(1);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-        it('# DuplicatedEntry Error case', (done) => {
-            perfumeDao
-                .create({
-                    name: '삽입테스트',
-                    brandIdx: 1,
-                    englishName: 'insert Test',
-                    volumeAndPrice: '',
-                    imageUrl: 'URL',
-                    story: '스토리',
-                    abundanceRate: 2,
-                })
-                .then(() => {
-                    throw new UnExpectedError(DuplicatedEntryError);
-                })
-                .catch((err) => {
-                    expect(err).instanceOf(DuplicatedEntryError);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
     describe('# read Test', () => {
         describe('# read by perfume_idx Test', () => {
             it('# success case', (done) => {
@@ -114,7 +50,6 @@ describe('# perfumeDao Test', () => {
                         expect(result.name).to.be.eq('향수1');
                         expect(result.englishName).to.be.ok;
                         expect(result.imageUrl).to.be.ok;
-                        expect(result.likeCnt).to.be.gte(0);
 
                         expect(result.Brand.brandIdx).to.be.eq(result.brandIdx);
                         expect(result.Brand.name).to.be.eq('브랜드1');
@@ -124,11 +59,9 @@ describe('# perfumeDao Test', () => {
                         expect(result.Brand.firstInitial).to.be.oneOf(
                             allowFirstInitialArr
                         );
-
-                        expect(result.PerfumeDetail.perfumeIdx).to.be.eq(1);
-                        expect(result.PerfumeDetail.story).to.be.eq('스토리1');
-                        expect(result.PerfumeDetail.abundanceRate).to.be.eq(1);
-                        expect(result.PerfumeDetail.volumeAndPrice).to.deep.eq([
+                        expect(result.story).to.be.eq('스토리1');
+                        expect(result.abundanceRate).to.be.eq(1);
+                        expect(result.volumeAndPrice).to.deep.eq([
                             { volume: 30, price: 95000 },
                             { volume: 100, price: 190000 },
                         ]);
@@ -157,7 +90,6 @@ describe('# perfumeDao Test', () => {
                             expect(perfume.imageUrl).to.be.ok;
                             expect(perfume.createdAt).to.be.not.undefined;
                             expect(perfume.updatedAt).to.be.not.undefined;
-                            expect(perfume.likeCnt).to.be.gte(0);
 
                             expect(perfume.Brand.brandIdx).to.be.oneOf(brands);
                             expect(perfume.Brand.name).to.be.ok;
@@ -224,7 +156,6 @@ describe('# perfumeDao Test', () => {
                             expect(perfume.imageUrl).to.be.ok;
                             expect(perfume.createdAt).to.be.not.undefined;
                             expect(perfume.updatedAt).to.be.not.undefined;
-                            expect(perfume.likeCnt).to.be.gte(0);
 
                             expect(perfume.Brand.brandIdx).to.be.ok;
                             expect(perfume.Brand.name).to.be.ok;
@@ -291,27 +222,6 @@ describe('# perfumeDao Test', () => {
                                 perfume.brandIdx
                             );
                         });
-                        done();
-                    })
-                    .catch((err) => done(err));
-            });
-
-            it('# success case (order by like) ', (done) => {
-                perfumeDao
-                    .search([], [], [], '', 1, 100, [['likeCnt', 'asc']])
-                    .then((result) => {
-                        expect(result.count).to.be.gte(3);
-                        expect(result.rows.length).to.be.gte(3);
-                        const sortedByDao = result.rows
-                            .map((it) => it.perfumeIdx)
-                            .join(',');
-                        const sortedByJS = result.rows
-                            .sort((a, b) => {
-                                return a.likeCnt - b.likeCnt;
-                            })
-                            .map((it) => it.perfumeIdx)
-                            .join(',');
-                        expect(sortedByJS).eq(sortedByDao);
                         done();
                     })
                     .catch((err) => done(err));
@@ -395,9 +305,6 @@ describe('# perfumeDao Test', () => {
                     .then((result) => {
                         expect(result.count).to.be.gte(3);
                         expect(result.rows.length).to.be.gte(3);
-                        for (const perfume of result.rows) {
-                            expect(perfume.likeCnt).to.be.gt(0);
-                        }
                         done();
                     })
                     .catch((err) => done(err));
@@ -441,7 +348,6 @@ describe('# perfumeDao Test', () => {
                             expect(perfume.imageUrl).to.be.ok;
                             expect(perfume.createdAt).to.be.not.undefined;
                             expect(perfume.updatedAt).to.be.not.undefined;
-                            expect(perfume.likeCnt).to.be.gte(0);
 
                             expect(perfume.Brand.brandIdx).to.be.ok;
                             expect(perfume.Brand.name).to.be.ok;
@@ -472,7 +378,6 @@ describe('# perfumeDao Test', () => {
                             expect(perfume.imageUrl).to.be.ok;
                             expect(perfume.createdAt).to.be.not.undefined;
                             expect(perfume.updatedAt).to.be.not.undefined;
-                            expect(perfume.likeCnt).to.be.gte(0);
 
                             expect(perfume.Brand.brandIdx).to.be.ok;
                             expect(perfume.Brand.name).to.be.ok;
@@ -487,139 +392,6 @@ describe('# perfumeDao Test', () => {
                     })
                     .catch((err) => done(err));
             });
-        });
-        describe('# find Test', () => {
-            it('# findPerfumeIdx success case', (done) => {
-                perfumeDao
-                    .findPerfumeIdx({
-                        englishName: 'perfume-1',
-                    })
-                    .then((result) => {
-                        expect(result).eq(1);
-                        done();
-                    })
-                    .catch((err) => done(err));
-            });
-            it('# findPerfumeIdx not found case', (done) => {
-                perfumeDao
-                    .findPerfumeIdx({
-                        englishName: 'perfume-10',
-                    })
-                    .then(() => {
-                        throw new UnExpectedError(NotMatchedError);
-                    })
-                    .catch((err) => {
-                        expect(err).instanceOf(NotMatchedError);
-                        done();
-                    })
-                    .catch((err) => done(err));
-            });
-        });
-    });
-
-    describe('# update Test', () => {
-        let perfumeIdx;
-        before(async () => {
-            const previousPerfume = await Perfume.findOne({
-                where: { name: '수정 테스트' },
-                raw: true,
-                nest: true,
-            });
-            previousPerfume &&
-                (await Promise.all(
-                    Perfume.destroy({ where: { name: '수정 테스트' } }),
-                    PerfumeDetail.destroy({ where: previousPerfume.perfumeIdx })
-                ));
-            const { dataValues } = await Perfume.create({
-                brandIdx: 1,
-                name: '수정 테스트',
-                englishName: 'perfume_delete_test',
-                imageUrl: 'URL',
-            });
-            perfumeIdx = dataValues.perfumeIdx;
-            await PerfumeDetail.create({
-                perfumeIdx: perfumeIdx,
-                story: '향수 수정 스토리',
-                abundanceRate: 2,
-                volumeAndPrice: '',
-            });
-        });
-        it('# success case', (done) => {
-            const perfumeObj = {
-                perfumeIdx,
-                name: '수정된 이름',
-                brandIdx: 2,
-                englishName: '수정된 영어이름',
-                volumeAndPrice: '',
-                imageUrl: '수정된url',
-                story: '수정된스토리',
-                abundanceRate: 2,
-            };
-            perfumeDao
-                .update(perfumeObj)
-                .then((result) => {
-                    expect(result.filter((it) => it == 1)).to.lengthOf(2);
-                    return perfumeDao.readByPerfumeIdx(perfumeIdx);
-                })
-                .then((result) => {
-                    expect(result.perfumeIdx).to.be.eq(perfumeIdx);
-                    expect(result.name).to.be.eq('수정된 이름');
-                    expect(result.brandIdx).to.be.eq(2);
-                    expect(result.englishName).to.be.eq('수정된 영어이름');
-                    expect(result.imageUrl).to.be.eq('수정된url');
-                    expect(result.PerfumeDetail.perfumeIdx).to.be.eq(
-                        perfumeIdx
-                    );
-                    expect(result.PerfumeDetail.story).to.be.eq('수정된스토리');
-                    expect(result.PerfumeDetail.abundanceRate).to.be.eq(2);
-                    expect(result.PerfumeDetail.volumeAndPrice).to.be.deep.eq(
-                        []
-                    );
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-        after(async () => {
-            if (!perfumeIdx) return;
-            await Promise.all([
-                Perfume.destroy({ where: { perfumeIdx } }),
-                PerfumeDetail.destroy({ where: { perfumeIdx } }),
-            ]);
-        });
-    });
-    describe('# delete Test', () => {
-        let perfumeIdx;
-        before(async () => {
-            const { dataValues: perfume } = await Perfume.create({
-                brandIdx: 1,
-                name: '향수 삭제 테스트',
-                englishName: 'perfume_delete_test',
-                imageUrl: 'URL',
-            });
-            perfumeIdx = perfume.perfumeIdx;
-            await PerfumeDetail.create({
-                perfumeIdx,
-                story: '향수 삭제 테스트 용',
-                abundanceRate: 2,
-                volumeAndPrice: '',
-            });
-        });
-
-        it('# success case', (done) => {
-            perfumeDao
-                .delete(perfumeIdx)
-                .then((result) => {
-                    expect(result).eq(1);
-                    return PerfumeDetail.findOne({
-                        where: { perfumeIdx: perfumeIdx },
-                    });
-                })
-                .then((it) => done())
-                .catch((err) => done(err));
-        });
-        after(() => {
-            Perfume.destroy({ perfumeIdx });
-            PerfumeDetail.destroy({ perfumeIdx });
         });
     });
 });

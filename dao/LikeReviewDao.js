@@ -41,9 +41,7 @@ module.exports.create = (userIdx, reviewIdx) => {
             }
         );
 
-        return Promise.all([createLike, updateLikeCnt]).then((it) => {
-            return it;
-        });
+        return Promise.all([createLike, updateLikeCnt]);
     });
 };
 

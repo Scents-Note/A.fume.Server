@@ -6,7 +6,6 @@ const {
 
 const {
     Perfume,
-    PerfumeDetail,
     PerfumeSurvey,
     Brand,
     LikePerfume,
@@ -18,10 +17,20 @@ const { Op } = Sequelize;
 
 const { ranking } = require('../mongoose_models');
 
+PERFUME_THUMB_COLUMNS = [
+    'perfumeIdx',
+    'name',
+    'englishName',
+    'imageUrl',
+    'brandIdx',
+    'createdAt',
+    'updatedAt',
+];
+
 const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
     'SELECT ' +
     'COUNT(*) AS "SearchHistory.weight", ' +
-    'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.created_at AS createdAt, p.updated_at AS updatedAt, p.like_cnt AS likeCnt, ' +
+    'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.created_at AS createdAt, p.updated_at AS updatedAt, ' +
     'b.brand_idx AS "Brand.brandIdx", ' +
     'b.name AS "Brand.name", ' +
     'b.english_name AS "Brand.englishName", ' +
@@ -38,7 +47,7 @@ const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT =
 
 const SQL_SEARCH_PERFUME_SELECT =
     'SELECT ' +
-    'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.created_at AS createdAt, p.updated_at AS updatedAt, p.like_cnt AS likeCnt, ' +
+    'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.created_at AS createdAt, p.updated_at AS updatedAt, ' +
     'b.brand_idx AS "Brand.brandIdx", ' +
     'b.name AS "Brand.name", ' +
     'b.english_name AS "Brand.englishName", ' +
@@ -91,51 +100,6 @@ function compactVolumeAndPrice(volumeAndPrice) {
         })
         .join(',');
 }
-
-/**
- * 향수 추가
- *
- * @param {Object} perfume
- * @returns {Promise}
- */
-module.exports.create = ({
-    brandIdx,
-    name,
-    englishName,
-    volumeAndPrice,
-    imageUrl,
-    story,
-    abundanceRate,
-}) => {
-    volumeAndPrice = compactVolumeAndPrice(volumeAndPrice);
-    return sequelize
-        .transaction(async (t) => {
-            const { dataValues: perfumeResult } = await Perfume.create(
-                {
-                    brandIdx,
-                    name,
-                    englishName,
-                    imageUrl,
-                },
-                { transaction: t }
-            );
-            const perfumeIdx = perfumeResult.perfumeIdx;
-            await PerfumeDetail.create(
-                { perfumeIdx, story, abundanceRate, volumeAndPrice },
-                { transaction: t }
-            );
-            return perfumeIdx;
-        })
-        .catch((err) => {
-            if (
-                err.parent.errno === 1062 ||
-                err.parent.code === 'ER_DUP_ENTRY'
-            ) {
-                throw new DuplicatedEntryError();
-            }
-            throw err;
-        });
-};
 
 /**
  * 향수 검색
@@ -255,6 +219,7 @@ module.exports.readNewPerfume = async (fromDate, pagingIndex, pagingSize) => {
                 [Op.gte]: fromDate,
             },
         },
+        attributes: PERFUME_THUMB_COLUMNS,
         include: [
             {
                 model: Brand,
@@ -281,19 +246,11 @@ module.exports.readByPerfumeIdx = async (perfumeIdx) => {
     const options = _.merge({}, defaultOption, {
         where: { perfumeIdx },
     });
-    options.include.push({
-        model: PerfumeDetail,
-        as: 'PerfumeDetail',
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
-        required: true,
-    });
     const perfume = await Perfume.findOne(options);
     if (!perfume) {
         throw new NotMatchedError();
     }
-    perfume.PerfumeDetail.volumeAndPrice = perfume.PerfumeDetail.volumeAndPrice
+    perfume.volumeAndPrice = perfume.volumeAndPrice
         .split(',')
         .filter((str) => str.length > 0)
         .map((str) => {
@@ -315,6 +272,7 @@ module.exports.readLikedPerfume = async (userIdx, pagingIndex, pagingSize) => {
     const options = _.merge({}, defaultOption, {
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
+        attributes: PERFUME_THUMB_COLUMNS,
     });
     options.include.push({
         model: LikePerfume,
@@ -351,6 +309,7 @@ module.exports.recentSearchPerfumeList = async (
                 'desc',
             ],
         ],
+        attributes: PERFUME_THUMB_COLUMNS,
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
     });
@@ -398,6 +357,7 @@ module.exports.recommendPerfumeByAgeAndGender = async (
             type: sequelize.QueryTypes.SELECT,
             offset: (pagingIndex - 1) * pagingSize,
             limit: pagingSize,
+            attributes: PERFUME_THUMB_COLUMNS,
             raw: true,
             nest: true,
         }
@@ -406,10 +366,11 @@ module.exports.recommendPerfumeByAgeAndGender = async (
         delete it.SearchHistory;
     });
     const result = {
-        count: Math.min(pagingSize, perfumeList.length),
+        count: perfumeList.length,
         rows: perfumeList,
     };
-    ranking.upsert( // mongo DB 응답이 없는 경우 무한 대기하는 현상 방지를 위해 await 제거
+    ranking.upsert(
+        // mongo DB 응답이 없는 경우 무한 대기하는 현상 방지를 위해 await 제거
         { gender, ageGroup },
         { title: '나이 및 성별에 따른 추천', result }
     );
@@ -444,76 +405,6 @@ module.exports.readPerfumeSurvey = async (gender) => {
     });
     const perfumeList = await Perfume.findAndCountAll(options);
     return perfumeList;
-};
-
-/**
- * 향수 수정
- *
- * @param {Object} perfume - perfume & perfumeDetail을 합친 정보
- * @returns {Promise}
- */
-module.exports.update = async ({
-    perfumeIdx,
-    name,
-    brandIdx,
-    englishName,
-    volumeAndPrice,
-    imageUrl,
-    story,
-    abundanceRate,
-}) => {
-    volumeAndPrice = compactVolumeAndPrice(volumeAndPrice);
-    const result = await sequelize.transaction(async (t) => {
-        const [perfumeAffectedRows] = await Perfume.update(
-            {
-                brandIdx,
-                name,
-                englishName,
-                imageUrl,
-            },
-            { where: { perfumeIdx }, transaction: t }
-        );
-        if (perfumeAffectedRows == 0) {
-            throw new NotMatchedError();
-        }
-        const detailAffectedRows = (
-            await PerfumeDetail.update(
-                { story, abundanceRate, volumeAndPrice },
-                { where: { perfumeIdx }, transaction: t }
-            )
-        )[0];
-        return [perfumeAffectedRows, detailAffectedRows];
-    });
-    return result;
-};
-
-/**
- * 향수 삭제
- *
- * @param {number} perfumeIdx
- * @return {Promise<number>}
- */
-module.exports.delete = async (perfumeIdx) => {
-    const result = await Promise.all([
-        Perfume.destroy({ where: { perfumeIdx } }),
-        PerfumeDetail.destroy({ where: { perfumeIdx } }),
-    ]);
-    return result[0];
-};
-
-/**
- * 향수 Index 조회
- *
- * @param {Object} condition
- * @returns {Promise<number>} perfumeIdx
- */
-module.exports.findPerfumeIdx = ({ englishName }) => {
-    return Perfume.findOne({ where: { englishName } }).then((it) => {
-        if (!it) {
-            throw new NotMatchedError();
-        }
-        return it.perfumeIdx;
-    });
 };
 
 /**

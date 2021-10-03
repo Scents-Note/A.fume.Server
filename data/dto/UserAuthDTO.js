@@ -1,5 +1,7 @@
 'use strict';
 
+const { GRADE_MANAGER } = require('../../utils/constantUtil');
+
 class UserAuthDTO {
     constructor({ isAuth, isAdmin }) {
         this.isAuth = isAuth;
@@ -9,7 +11,7 @@ class UserAuthDTO {
     static create(user) {
         return new UserAuthDTO({
             isAuth: true,
-            isAdmin: user.grade >= 1,
+            isAdmin: user.grade >= GRADE_MANAGER,
         });
     }
 }

@@ -27,6 +27,11 @@ module.exports = (sequelize, DataTypes) => {
                 as: 'LikeToReview',
                 targetKey: 'id',
             });
+            this.belongsTo(models.User, {
+                foreignKey: 'userIdx',
+                as: 'LikeToUser',
+                targetKey: 'userIdx',
+            });
         }
     }
     LikeReview.init(

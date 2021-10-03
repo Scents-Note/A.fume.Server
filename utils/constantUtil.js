@@ -1,6 +1,9 @@
 module.exports = {
     GENDER_MAN: 1,
     GENDER_WOMAN: 2,
+    GRADE_USER: 0,
+    GRADE_MANAGER: 1,
+    GRADE_SYSTEM_ADMIN: 9,
     ABUNDANCE_RATE_LIST: [
         'None',
         '오 드 코롱',
@@ -25,4 +28,8 @@ module.exports = {
     ],
     GENDER_LIST: ['None', 'male', 'neutral', 'female'],
     NOTE_TYPE_LIST: ['None', 'top', 'middle', 'base', 'single'],
+    PERFUME_NOTE_TYPE_SINGLE: 1,
+    PERFUME_NOTE_TYPE_NORMAL: 0,
+    MIN_SCORE: 0,
+    MAX_SCORE: 10,
 };

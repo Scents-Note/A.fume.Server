@@ -10,29 +10,28 @@ const { UnAuthorizedError } = require('../utils/errors/errors');
 const { OK, CONFLICT } = require('../utils/statusCode.js');
 
 const { ResponseDTO } = require('../data/response_dto/common');
-const { UserResponseDTO } = require('../data/response_dto/user');
+const {
+    UserResponseDTO,
+    UserRegisterResponseDTO,
+    UserAuthResponseDTO,
+    LoginResponseDTO,
+} = require('../data/response_dto/user');
 
-const genderMap = {
-    MAN: 1,
-    WOMAN: 2,
-};
-
-const gradeMap = {
-    USER: 0,
-    OPERATOR: 1,
-    SYSTEM: 9,
-};
+const { GRADE_USER } = require('../utils/constantUtil');
+const UserRegisterRequestDTO = require('../data/request_dto/UserRegisterRequestDTO');
+const UserEditRequestDTO = require('../data/request_dto/UserEditRequestDTO');
 
 module.exports.registerUser = (req, res, next) => {
     const body = req.swagger.params['body'].value;
-    body.grade = body.grade || 'USER';
-    body.grade = gradeMap[body.grade];
-    if (body.grade > 0) {
+    const userRegisterRequestDTO = new UserRegisterRequestDTO(body);
+    if (userRegisterRequestDTO.grade > GRADE_USER) {
         next(new UnAuthorizedError());
         return;
     }
-    body.gender = genderMap[body.gender] || 0;
-    User.createUser(body)
+    User.createUser(userRegisterRequestDTO)
+        .then((result) => {
+            return new UserRegisterResponseDTO(result);
+        })
         .then((response) => {
             res.status(OK).json(
                 new ResponseDTO({
@@ -58,43 +57,16 @@ module.exports.deleteUser = (req, res, next) => {
         .catch((err) => next(err));
 };
 
-module.exports.getUserByIdx = (req, res, next) => {
-    const userIdx = req.swagger.params['userIdx'].value;
-    User.getUserByIdx(userIdx)
-        .then((result) => {
-            return new UserResponseDTO(result);
-        })
-        .then((response) => {
-            res.status(OK).json(
-                new ResponseDTO({
-                    message: '유저 조회 성공',
-                    data: response,
-                })
-            );
-        })
-        .catch((err) => next(err));
-};
-
 module.exports.loginUser = (req, res, next) => {
     const { email, password } = req.body;
     User.loginUser(email, password)
+        .then((result) => {
+            return new LoginResponseDTO(result);
+        })
         .then((response) => {
             res.status(OK).json(
                 new ResponseDTO({
                     message: '로그인 성공',
-                    data: response,
-                })
-            );
-        })
-        .catch((err) => next(err));
-};
-
-module.exports.logoutUser = (req, res, next) => {
-    User.logoutUser()
-        .then((response) => {
-            res.status(OK).json(
-                new ResponseDTO({
-                    message: '로그아웃',
                     data: response,
                 })
             );
@@ -110,11 +82,10 @@ module.exports.updateUser = (req, res, next) => {
         return;
     }
     const body = req.swagger.params['body'].value;
-    body.gender = genderMap[body.gender] || 0;
-    const payload = Object.assign(body, {
-        userIdx,
-    });
-    User.updateUser(payload)
+    const userEditRequestDTO = new UserEditRequestDTO(
+        Object.assign({ userIdx }, body)
+    );
+    User.updateUser(userEditRequestDTO)
         .then((result) => {
             return new UserResponseDTO(result);
         })
@@ -146,6 +117,9 @@ module.exports.changePassword = (req, res, next) => {
 module.exports.authUser = (req, res, next) => {
     const { token } = req.body;
     User.authUser(token)
+        .then((result) => {
+            return new UserAuthResponseDTO(result);
+        })
         .then((response) => {
             res.status(OK).json(
                 new ResponseDTO({
