@@ -321,4 +321,18 @@ describe('# reviewDao Test', () => {
             await Review.destroy({ where: { content: '리뷰삭제테스트' } });
         });
     });
+
+    describe('# findOne Test', () => {
+        it('# success case', (done) => {
+            reviewDao
+                .findOne({ userIdx: 1, perfumeIdx: 1 })
+                .then((it) => {
+                    expect(it.id).to.be.eq(1);
+                    expect(it.userIdx).to.be.eq(1);
+                    expect(it.perfumeIdx).to.be.eq(1);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+    });
 });

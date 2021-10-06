@@ -234,8 +234,13 @@ module.exports.deleteZeroCount = async () => {
  * @param
  * @return {Review}
  */
-module.exports.findOne = async ({ userIdx, perfumeIdx }) => {
-    /* TODO 구현 */
-    throw 'Not Implemented ReviewDao.findOne';
-    return { reviewIdx: 1 };
+module.exports.findOne = ({ userIdx, perfumeIdx }) => {
+    return Review.findOne({
+        where: {
+            userIdx,
+            perfumeIdx,
+        },
+        raw: true,
+        nest: true,
+    });
 };

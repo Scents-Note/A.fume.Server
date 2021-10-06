@@ -47,7 +47,7 @@ describe('# Perfume Service Test', () => {
             };
             const expectedReviewIdx = 4;
             mockReviewDao.findOne = async () => {
-                return { reviewIdx: expectedReviewIdx };
+                return { id: expectedReviewIdx };
             };
             mockReviewDao.readAllOfPerfume = async () => {
                 return [
