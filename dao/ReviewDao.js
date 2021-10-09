@@ -218,14 +218,29 @@ module.exports.delete = async (reviewIdx) => {
  * @return {Promise}
  */
 
-module.exports.deleteZeroCount = async() => {
-    return await JoinPerfumeKeyword.destroy(
-        {
-            where: {
-                count: {
-                    [Op.lte]: 0,
-                },
-            }
-        }
-    );
-}
+module.exports.deleteZeroCount = async () => {
+    return await JoinPerfumeKeyword.destroy({
+        where: {
+            count: {
+                [Op.lte]: 0,
+            },
+        },
+    });
+};
+
+/**
+ *
+ *
+ * @param
+ * @return {Review}
+ */
+module.exports.findOne = ({ userIdx, perfumeIdx }) => {
+    return Review.findOne({
+        where: {
+            userIdx,
+            perfumeIdx,
+        },
+        raw: true,
+        nest: true,
+    });
+};

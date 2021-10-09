@@ -376,6 +376,8 @@ paths:
                   properties:
                     isLiked:
                       type: integer
+                    reviewIdx:
+                      type: integer
                     Keywords:
                       type: array
                       items:
@@ -397,6 +399,7 @@ paths:
                   - 시원한
                   - 차가운
                   noteType: 0
+                  reviewIdx: 1
                   ingredients:
                     top: 재료1, 재료5
                     middle: 재료2, 재료6

@@ -29,7 +29,8 @@ PerfumeDetailResponseDTO.validTest = function () {
         'isLiked',
         'Keywords',
         'noteType',
-        'ingredients'
+        'ingredients',
+        'reviewIdx'
     );
 
     expect(this.volumeAndPrice).instanceOf(Array);
