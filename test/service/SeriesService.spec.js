@@ -4,7 +4,6 @@ dotenv.config();
 const chai = require('chai');
 const { expect } = chai;
 
-const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 const SeriesDTO = require('../data/dto/SeriesDTO');
 const IngredientDTO = require('../data/dto/IngredientDTO');

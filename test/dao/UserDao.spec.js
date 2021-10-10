@@ -36,10 +36,7 @@ describe('# userDao Test', () => {
                 })
                 .then((result) => {
                     expect(result).instanceOf(CreatedResultDTO);
-                    result.validTest((created) => {
-                        expect(created).instanceOf(UserDTO);
-                        UserDTO.validTest.call(created);
-                    });
+                    CreatedResultDTO.validTest.call(result, UserDTO.validTest);
                     done();
                 })
                 .catch((err) => done(err));
