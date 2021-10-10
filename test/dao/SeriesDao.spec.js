@@ -119,10 +119,7 @@ describe('# seriesDao Test', () => {
                 .readAll(new PagingDTO({ pagingIndex: 1, pagingSize: 100 }))
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest((item) => {
-                        expect(item).instanceOf(SeriesDTO);
-                        SeriesDTO.validTest.call(item);
-                    });
+                    ListAndCountDTO.validTest.call(result, SeriesDTO.validTest);
                     done();
                 })
                 .catch((err) => done(err));
@@ -141,10 +138,7 @@ describe('# seriesDao Test', () => {
                 )
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest((item) => {
-                        expect(item).instanceOf(SeriesDTO);
-                        SeriesDTO.validTest.call(item);
-                    });
+                    ListAndCountDTO.validTest.call(result, SeriesDTO.validTest);
                     const originString = result.rows
                         .map((it) => it.seriesIdx)
                         .toString();

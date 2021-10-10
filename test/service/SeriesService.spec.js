@@ -53,10 +53,7 @@ describe('# Brand Service Test', () => {
                 .getSeriesAll({})
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest((item) => {
-                        expect(item).instanceOf(SeriesDTO);
-                        SeriesDTO.validTest.call(item);
-                    });
+                    ListAndCountDTO.validTest.call(result, SeriesDTO.validTest);
                     done();
                 })
                 .catch((err) => done(err));
@@ -69,10 +66,7 @@ describe('# Brand Service Test', () => {
                 .searchSeries({})
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest((item) => {
-                        expect(item).instanceOf(SeriesDTO);
-                        SeriesDTO.validTest.call(item);
-                    });
+                    ListAndCountDTO.validTest.call(result, SeriesDTO.validTest);
                     done();
                 })
                 .catch((err) => done(err));
@@ -140,10 +134,9 @@ describe('# Brand Service Test', () => {
                 .getFilterSeries({})
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest((item) => {
-                        expect(item).instanceOf(SeriesFilterDTO);
-                        SeriesFilterDTO.validTest.call(item);
-                        for (const ingredientDTO of item.ingredients) {
+                    ListAndCountDTO.validTest.call(result, function () {
+                        SeriesFilterDTO.validTest.call(this);
+                        for (const ingredientDTO of this.ingredients) {
                             expect(
                                 isNoteCountOver10(ingredientDTO.ingredientIdx)
                             ).to.be.eq(true);

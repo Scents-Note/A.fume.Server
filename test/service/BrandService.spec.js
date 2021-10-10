@@ -38,10 +38,7 @@ describe('# Brand Service Test', () => {
             Brand.searchBrand(new PagingRequestDTO({}))
                 .then((res) => {
                     expect(res).instanceOf(ListAndCountDTO);
-                    res.validTest((item) => {
-                        expect(item).to.be.instanceOf(BrandDTO);
-                        BrandDTO.validTest.call(item);
-                    });
+                    ListAndCountDTO.validTest.call(res, BrandDTO.validTest);
                     done();
                 })
                 .catch((err) => done(err));
@@ -53,10 +50,7 @@ describe('# Brand Service Test', () => {
             Brand.getBrandAll(1)
                 .then((res) => {
                     expect(res).instanceOf(ListAndCountDTO);
-                    res.validTest((item) => {
-                        expect(item).to.be.instanceOf(BrandDTO);
-                        BrandDTO.validTest.call(item);
-                    });
+                    ListAndCountDTO.validTest.call(res, BrandDTO.validTest);
                     done();
                 })
                 .catch((err) => done(err));
