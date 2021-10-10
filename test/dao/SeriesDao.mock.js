@@ -1,8 +1,4 @@
-const {
-    SeriesDTO,
-    CreatedResultDTO,
-    ListAndCountDTO,
-} = require('../../data/dto');
+const { SeriesDTO, ListAndCountDTO } = require('../../data/dto');
 
 const mockSeriesDTO = new SeriesDTO({
     seriesIdx: 1,
@@ -35,15 +31,8 @@ const mockListAndCountDTO = new ListAndCountDTO({
 });
 
 module.exports = {
-    create: async (seriesInputDTO) =>
-        new CreatedResultDTO({
-            idx: 1,
-            created: mockSeriesDTO,
-        }),
     readByIdx: async (seriesIdx) => mockSeriesDTO,
     readAll: async () => mockListAndCountDTO,
     search: async () => mockListAndCountDTO,
-    update: async () => 1,
-    delete: async () => 1,
     findSeries: async () => mockSeriesDTO,
 };

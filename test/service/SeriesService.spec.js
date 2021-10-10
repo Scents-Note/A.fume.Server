@@ -18,23 +18,7 @@ seriesService.setIngredientDao(mockIngredientDAO);
 const mockNoteDAO = {};
 seriesService.setNoteDao(mockNoteDAO);
 
-describe('# Brand Service Test', () => {
-    describe('# postSeries Test', () => {
-        it('# success Test', (done) => {
-            seriesService
-                .postSeries(SeriesDTO.createWithIdx(1))
-                .then((res) => {
-                    expect(res).instanceOf(CreatedResultDTO);
-                    res.validTest((created) => {
-                        expect(created).instanceOf(SeriesDTO);
-                        SeriesDTO.validTest.call(created);
-                    });
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
+describe('# Series Service Test', () => {
     describe('# getSeriesByIdx Test', () => {
         it('# success Test', (done) => {
             seriesService
@@ -67,29 +51,6 @@ describe('# Brand Service Test', () => {
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
                     ListAndCountDTO.validTest.call(result, SeriesDTO.validTest);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
-    describe('# putSeries Test', () => {
-        it('# success Test', (done) => {
-            seriesService
-                .putSeries(SeriesDTO.createWithIdx(1))
-                .then((affectedRow) => {
-                    expect(affectedRow).to.be.eq(1);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
-    describe('# deleteSeries Test', () => {
-        it('# success Test', (done) => {
-            seriesService
-                .deleteSeries(1)
-                .then(() => {
                     done();
                 })
                 .catch((err) => done(err));

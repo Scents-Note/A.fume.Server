@@ -20,16 +20,6 @@ const { PagingRequestDTO } = require('../data/request_dto');
 const { ListAndCountDTO, SeriesFilterDTO, PagingDTO } = require('../data/dto');
 
 /**
- * 계열 삽입
- *
- * @param {SeriesInputDTO} seriesInputDTO
- * @returns {Promise<CreatedResultDTO<Series>>} createdResultDTO
- **/
-exports.postSeries = (seriesInputDTO) => {
-    return seriesDao.create(seriesInputDTO);
-};
-
-/**
  * 특정 계열 조회
  *
  * @param {integer} seriesIdx
@@ -57,26 +47,6 @@ exports.getSeriesAll = (pagingRequestDTO) => {
  **/
 exports.searchSeries = (pagingRequestDTO) => {
     return seriesDao.search(PagingDTO.create(pagingRequestDTO));
-};
-
-/**
- * 계열 수정
- *
- * @param {SeriesInputDTO} seriesInputDTO
- * @returns {Promise<number>} affectedRows
- **/
-exports.putSeries = (seriesInputDTO) => {
-    return seriesDao.update(seriesInputDTO);
-};
-
-/**
- * 계열 삭제
- *
- * @param {number} seriesIdx
- * @returns {Promise<number>}
- **/
-exports.deleteSeries = (seriesIdx) => {
-    return seriesDao.delete(seriesIdx);
 };
 
 const FILTER_INGREDIENT_LIMIT_USED_COUNT = 10;
