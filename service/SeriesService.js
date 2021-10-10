@@ -17,9 +17,9 @@ module.exports.setNoteDao = (dao) => {
 
 const { PagingRequestDTO } = require('../data/request_dto');
 
-const { ListAndCountDTO } = require('../data/dto');
+const { ListAndCountDTO, SeriesFilterDTO } = require('../data/dto');
 
-const { PagingVO, SeriesFilterVO } = require('../data/vo');
+const { PagingVO } = require('../data/vo');
 
 /**
  * 계열 삽입
@@ -119,7 +119,7 @@ exports.getFilterSeries = async (pagingVO) => {
     return new ListAndCountDTO({
         count: result.count,
         rows: result.rows.map((it) => {
-            return new SeriesFilterVO({
+            return new SeriesFilterDTO({
                 series: it,
                 ingredients: ingredientMap[it.seriesIdx] || [],
             });

@@ -9,7 +9,7 @@ const { PagingRequestDTO } = require('../../data/request_dto');
 const BrandDTO = require('../data/dto/BrandDTO');
 const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
-const BrandFilterVO = require('../data/vo/BrandFilterVO');
+const BrandFilterDTO = require('../data/dto/BrandFilterDTO');
 
 const mockBrandDTO = new BrandDTO({
     brandIdx: 1,
@@ -122,9 +122,9 @@ describe('# Brand Service Test', () => {
         it('# success Test', (done) => {
             Brand.getFilterBrand()
                 .then((result) => {
-                    for (const brandFilterVO of result) {
-                        expect(brandFilterVO).to.be.instanceOf(BrandFilterVO);
-                        brandFilterVO.validTest();
+                    for (const item of result) {
+                        expect(item).to.be.instanceOf(BrandFilterDTO);
+                        BrandFilterDTO.validTest.call(item);
                     }
                     done();
                 })

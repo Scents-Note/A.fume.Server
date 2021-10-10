@@ -1,6 +1,7 @@
 'use strict';
 
-const { PagingVO, BrandFilterVO } = require('../data/vo/index.js');
+const { PagingVO } = require('../data/vo/index.js');
+const { BrandFilterDTO } = require('../data/dto');
 
 class BrandService {
     constructor(brandDao) {
@@ -80,7 +81,7 @@ class BrandService {
                 return prev;
             }, {});
             return Object.keys(firstInitialMap).map((key) => {
-                return new BrandFilterVO({
+                return new BrandFilterDTO({
                     firstInitial: key,
                     brands: firstInitialMap[key],
                 });

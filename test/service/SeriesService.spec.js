@@ -8,7 +8,7 @@ const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 const SeriesDTO = require('../data/dto/SeriesDTO');
 const IngredientDTO = require('../data/dto/IngredientDTO');
-const SeriesFilterVO = require('../data/vo/SeriesFilterVO');
+const SeriesFilterDTO = require('../data/dto/SeriesFilterDTO');
 
 const seriesService = require('../../service/SeriesService');
 seriesService.setSeriesDao(require('../dao/SeriesDao.mock.js'));
@@ -141,8 +141,8 @@ describe('# Brand Service Test', () => {
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
                     result.validTest((item) => {
-                        expect(item).instanceOf(SeriesFilterVO);
-                        SeriesFilterVO.validTest.call(item);
+                        expect(item).instanceOf(SeriesFilterDTO);
+                        SeriesFilterDTO.validTest.call(item);
                         for (const ingredientDTO of item.ingredients) {
                             expect(
                                 isNoteCountOver10(ingredientDTO.ingredientIdx)
