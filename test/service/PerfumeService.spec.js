@@ -79,6 +79,7 @@ describe('# Perfume Service Test', () => {
                 .then((it) => {
                     PerfumeIntegralDTO.validTest.call(it);
                     expect(it.imageUrls).to.be.deep.eq([
+                        'http://perfume-image/1',
                         'imageUrl1',
                         'imageUrl2',
                     ]);

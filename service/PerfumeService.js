@@ -120,7 +120,10 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
         (it) => it.name
     );
 
-    const imageUrls = await s3FileDao.getS3ImageList(perfumeIdx);
+    const imageUrls = [
+        perfume.imageUrl,
+        ...(await s3FileDao.getS3ImageList(perfumeIdx)),
+    ];
     const { noteType, noteDictDTO } = await generateNote(perfumeIdx);
     const perfumeSummaryDTO = await generateSummary(perfumeIdx);
 
