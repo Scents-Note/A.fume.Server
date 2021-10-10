@@ -1,7 +1,6 @@
 'use strict';
 
-const { PagingVO } = require('../data/vo/index.js');
-const { BrandFilterDTO } = require('../data/dto');
+const { BrandFilterDTO, PagingDTO } = require('../data/dto');
 
 class BrandService {
     constructor(brandDao) {
@@ -14,8 +13,8 @@ class BrandService {
      * @returns {Promise<ListAndCountDTO<BrandDTO>>} listAndCountDTO
      **/
     searchBrand(pagingRequestDTO) {
-        const pagingVO = new PagingVO(pagingRequestDTO);
-        return this.brandDao.search(pagingVO);
+        const pagingDTO = PagingDTO.create(pagingRequestDTO);
+        return this.brandDao.search(pagingDTO);
     }
     /**
      * 브랜드 전체 조회

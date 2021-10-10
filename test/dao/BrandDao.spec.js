@@ -10,7 +10,7 @@ const {
     NotMatchedError,
     UnExpectedError,
 } = require('../../utils/errors/errors.js');
-const { PagingVO } = require('../../data/vo');
+const PagingDTO = require('../../data/dto/PagingDTO');
 const BrandDTO = require('../data/dto/BrandDTO.js');
 const CreatedResultDTO = require('../data/dto/CreatedResultDTO.js');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO.js');
@@ -112,7 +112,7 @@ describe('# brandDao Test', () => {
         it('# success case', (done) => {
             brandDao
                 .search(
-                    new PagingVO({
+                    new PagingDTO({
                         pagingIndex: 1,
                         pagingSize: 10,
                         order: [['createdAt', 'desc']],

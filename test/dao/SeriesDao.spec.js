@@ -12,7 +12,7 @@ const {
 const { Series } = require('../../models/index.js');
 const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
-const { PagingVO } = require('../../data/vo');
+const PagingDTO = require('../../data/dto/PagingDTO.js');
 const SeriesDTO = require('../data/dto/SeriesDTO.js');
 
 describe('# seriesDao Test', () => {
@@ -116,7 +116,7 @@ describe('# seriesDao Test', () => {
     describe(' # readAll Test', () => {
         it(' # success case', (done) => {
             seriesDao
-                .readAll(new PagingVO({ pagingIndex: 1, pagingSize: 100 }))
+                .readAll(new PagingDTO({ pagingIndex: 1, pagingSize: 100 }))
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
                     result.validTest((item) => {
@@ -133,7 +133,7 @@ describe('# seriesDao Test', () => {
         it('# success case', (done) => {
             seriesDao
                 .search(
-                    new PagingVO({
+                    new PagingDTO({
                         pagingIndex: 1,
                         pagingSize: 10,
                         order: [['createdAt', 'desc']],
