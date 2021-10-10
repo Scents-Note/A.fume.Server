@@ -10,7 +10,8 @@ const IngredientDTO = require('../data/dto/IngredientDTO');
 const SeriesFilterDTO = require('../data/dto/SeriesFilterDTO');
 
 const seriesService = require('../../service/SeriesService');
-seriesService.setSeriesDao(require('../dao/SeriesDao.mock.js'));
+const mockSeriesDAO = {};
+seriesService.setSeriesDao(mockSeriesDAO);
 const mockIngredientDAO = {};
 seriesService.setIngredientDao(mockIngredientDAO);
 
@@ -20,6 +21,7 @@ seriesService.setNoteDao(mockNoteDAO);
 describe('# Series Service Test', () => {
     describe('# getSeriesByIdx Test', () => {
         it('# success Test', (done) => {
+            mockSeriesDAO.readByIdx = async () => SeriesDTO.createWithIdx(1);
             seriesService
                 .getSeriesByIdx(1)
                 .then((seriesDTO) => {
@@ -32,6 +34,15 @@ describe('# Series Service Test', () => {
 
     describe('# getSeriesAll Test', () => {
         it('# success Test', (done) => {
+            mockSeriesDAO.readAll = async () =>
+                new ListAndCountDTO({
+                    count: 3,
+                    rows: [
+                        SeriesDTO.createWithIdx(1),
+                        SeriesDTO.createWithIdx(2),
+                        SeriesDTO.createWithIdx(3),
+                    ],
+                });
             seriesService
                 .getSeriesAll({})
                 .then((result) => {
@@ -45,6 +56,15 @@ describe('# Series Service Test', () => {
 
     describe('# searchSeries Test', () => {
         it('# success Test', (done) => {
+            mockSeriesDAO.search = async () =>
+                new ListAndCountDTO({
+                    count: 3,
+                    rows: [
+                        SeriesDTO.createWithIdx(1),
+                        SeriesDTO.createWithIdx(2),
+                        SeriesDTO.createWithIdx(3),
+                    ],
+                });
             seriesService
                 .searchSeries({})
                 .then((result) => {
@@ -111,8 +131,10 @@ describe('# Series Service Test', () => {
 
     describe('# findSeriesByEnglishName Test', () => {
         it('# success Test', (done) => {
+            mockSeriesDAO.findSeries = async () =>
+                SeriesDTO.create({ name: 'test' });
             seriesService
-                .findSeriesByEnglishName('')
+                .findSeriesByEnglishName('test')
                 .then((result) => {
                     expect(result).instanceOf(SeriesDTO);
                     SeriesDTO.validTest.call(result);
