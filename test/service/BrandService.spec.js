@@ -7,7 +7,6 @@ const { expect } = chai;
 const { PagingRequestDTO } = require('../../data/request_dto');
 
 const BrandDTO = require('../data/dto/BrandDTO');
-const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 const BrandFilterDTO = require('../data/dto/BrandFilterDTO');
 
@@ -27,16 +26,9 @@ const mockListAndCountDTO = new ListAndCountDTO({
     rows: [mockBrandDTO, mockBrandDTO, mockBrandDTO],
 });
 const Brand = new (require('../../service/BrandService'))({
-    create: async (brandDTO) =>
-        new CreatedResultDTO({
-            idx: 1,
-            created: mockBrandDTO,
-        }),
     read: async (brandIdx) => mockBrandDTO,
     search: async (pagingDTO) => mockListAndCountDTO,
     readAll: async () => mockListAndCountDTO,
-    update: async (brandDTO) => 1,
-    delete: async (brandIdx) => 1,
     findBrand: async (condition) => mockBrandDTO,
 });
 
@@ -83,42 +75,6 @@ describe('# Brand Service Test', () => {
         });
     });
 
-    describe('# insertBrand Test', () => {
-        it('# success Test', (done) => {
-            Brand.insertBrand(mockBrandDTO)
-                .then((res) => {
-                    expect(res).instanceOf(CreatedResultDTO);
-                    res.validTest((created) => {
-                        expect(created).to.be.instanceOf(BrandDTO);
-                        BrandDTO.validTest.call(created);
-                    });
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
-    describe('# putBrand Test', () => {
-        it('# success Test', (done) => {
-            Brand.putBrand(mockBrandDTO)
-                .then((affectedRow) => {
-                    expect(affectedRow).to.be.eq(1);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
-    describe('# deleteBrand Test', () => {
-        it('# success Test', (done) => {
-            Brand.deleteBrand(1)
-                .then(() => {
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
     describe('# getFilterBrand Test', () => {
         it('# success Test', (done) => {
             Brand.getFilterBrand()
@@ -127,18 +83,6 @@ describe('# Brand Service Test', () => {
                         expect(item).to.be.instanceOf(BrandFilterDTO);
                         BrandFilterDTO.validTest.call(item);
                     }
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
-    describe('# findBrandByEnglishName Test', () => {
-        it('# success Test', (done) => {
-            Brand.findBrandByEnglishName('브랜드')
-                .then((brandDTO) => {
-                    expect(brandDTO).to.be.instanceOf(BrandDTO);
-                    BrandDTO.validTest.call(brandDTO);
                     done();
                 })
                 .catch((err) => done(err));

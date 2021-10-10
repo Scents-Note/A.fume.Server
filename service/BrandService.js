@@ -36,36 +36,6 @@ class BrandService {
     }
 
     /**
-     * 브랜드 삽입
-     *
-     * @param {BrandInputDTO} brandInputDto
-     * @returns {Promise<CreatedResultDTO<Brand>>} createdResultDTO
-     **/
-    insertBrand(brandInputDTO) {
-        return this.brandDao.create(brandInputDTO);
-    }
-
-    /**
-     * 브랜드 수정
-     *
-     * @param {BrandInputDTO} brandInputDto
-     * @returns {Promise}
-     **/
-    putBrand(brandInputDTO) {
-        return this.brandDao.update(brandInputDTO);
-    }
-
-    /**
-     * 브랜드 삭제
-     *
-     * @param {number} brandIdx
-     * @returns {Promise}
-     **/
-    deleteBrand(brandIdx) {
-        return this.brandDao.delete(brandIdx);
-    }
-
-    /**
      * 브랜드 필터 조회
      *
      * @returns {Promise<BrandFilterVO[]>} brandFilterVO[]
@@ -86,16 +56,6 @@ class BrandService {
                 });
             });
         });
-    }
-
-    /**
-     * 브랜드 영어 이름으로 조회
-     *
-     * @param {string} englishName
-     * @returns {Promise<BrandDTO>} brandDTO
-     **/
-    findBrandByEnglishName(englishName) {
-        return this.brandDao.findBrand({ englishName });
     }
 }
 

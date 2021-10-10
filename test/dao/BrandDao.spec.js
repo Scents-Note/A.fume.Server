@@ -4,64 +4,17 @@ dotenv.config();
 const chai = require('chai');
 const { expect } = chai;
 const brandDao = require('../../dao/BrandDao.js');
-const { Brand } = require('../../models');
 const {
-    DuplicatedEntryError,
     NotMatchedError,
     UnExpectedError,
 } = require('../../utils/errors/errors.js');
 const PagingDTO = require('../../data/dto/PagingDTO');
 const BrandDTO = require('../data/dto/BrandDTO.js');
-const CreatedResultDTO = require('../data/dto/CreatedResultDTO.js');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO.js');
 
 describe('# brandDao Test', () => {
     before(async function () {
         await require('./common/presets.js')(this);
-    });
-    describe('# create Test', () => {
-        before(async () => {
-            await Brand.destroy({ where: { name: '삽입테스트' } });
-        });
-        it('# success case', (done) => {
-            brandDao
-                .create({
-                    name: '삽입테스트',
-                    englishName: 'insert Test',
-                    firstInitial: 'ㅅ',
-                    imageUrl: 'image-url',
-                    description: 'brand 생성 테스트를 위한 더미데이터입니다.',
-                })
-                .then((result) => {
-                    expect(result).instanceOf(CreatedResultDTO);
-                    result.validTest((created) => {
-                        expect(created).instanceOf(BrandDTO);
-                        BrandDTO.validTest.call(created);
-                    });
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-        it('# DuplicatedEntryError case', (done) => {
-            brandDao
-                .create({
-                    name: '삽입테스트',
-                    englishName: 'insert Test',
-                    firstInitial: 'ㅅ',
-                    imageUrl: 'image-url',
-                    description: 'description',
-                })
-                .then(() => {
-                    done(new UnExpectedError(DuplicatedEntryError));
-                })
-                .catch((err) => {
-                    expect(err).instanceOf(DuplicatedEntryError);
-                    done();
-                });
-        });
-        after(async () => {
-            await Brand.destroy({ where: { name: '삽입테스트' } });
-        });
     });
 
     describe('# read Test', () => {
@@ -144,77 +97,6 @@ describe('# brandDao Test', () => {
                     done();
                 })
                 .catch((err) => done(err));
-        });
-    });
-
-    describe('# update Test', () => {
-        let brandIdx;
-        let origin = {
-            name: '수정테스트',
-            englishName: 'modify test',
-            firstInitial: 'ㅅ',
-            imageUrl: 'test',
-            description: 'test',
-        };
-
-        before(async () => {
-            let { dataValues } = await Brand.create(origin);
-            brandIdx = dataValues.brandIdx;
-        });
-        it('# success case', (done) => {
-            brandDao
-                .update({
-                    brandIdx,
-                    name: '변경된 이름',
-                    englishName: 'modified_name',
-                    firstInitial: 'ㅂ',
-                    imageUrl: 'image_url',
-                    description: '변경완료',
-                })
-                .then((result) => {
-                    expect(result).eq(1);
-                    return brandDao.read(brandIdx);
-                })
-                .then((updated) => {
-                    expect(updated.name).eq('변경된 이름');
-                    expect(updated.englishName).eq('modified_name');
-                    expect(updated.firstInitial).eq('ㅂ');
-                    expect(updated.imageUrl).eq('image_url');
-                    expect(updated.description).eq('변경완료');
-                    BrandDTO.validTest.call(updated);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-        after(async () => {
-            await Brand.destroy({ where: { brandIdx } });
-        });
-    });
-
-    describe('# delete Test', () => {
-        let brandIdx;
-        before(async () => {
-            const { dataValues } = await Brand.create({
-                name: '삭제테스트',
-                englishName: 'delete test',
-                firstInitial: 'ㅅ',
-                imageUrl: 'image-url',
-                description: 'description',
-            });
-            brandIdx = dataValues.brandIdx;
-        });
-        it('# success case', (done) => {
-            brandDao
-                .delete(brandIdx)
-                .then((result) => {
-                    expect(result).eq(1);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-        after(async () => {
-            if (!brandIdx) return;
-            await Brand.destroy({ where: { brandIdx } });
         });
     });
 });
