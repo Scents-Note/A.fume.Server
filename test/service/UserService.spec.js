@@ -80,7 +80,7 @@ describe('# User Service Test', () => {
                 .loginUser('', 'decrypted')
                 .then((result) => {
                     expect(result).to.be.instanceOf(LoginInfoDTO);
-                    result.validTest();
+                    LoginInfoDTO.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
