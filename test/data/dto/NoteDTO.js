@@ -8,7 +8,7 @@ const {
 } = require('../../../utils/constantUtil');
 const NoteDTO = require('../../../data/dto/NoteDTO');
 
-NoteDTO.prototype.validTest = function () {
+NoteDTO.validTest = function () {
     expect(this.perfumeIdx).to.be.ok;
     expect(this.ingredientIdx).to.be.ok;
     expect(this.ingredientName).to.be.ok;
