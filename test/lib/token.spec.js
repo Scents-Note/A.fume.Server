@@ -2,14 +2,13 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const chai = require('chai');
-const {
-    expect
-} = chai;
+const { expect } = chai;
 const {
     InvalidTokenError,
-    ExpiredTokenError
+    ExpiredTokenError,
 } = require('../../utils/errors/errors.js');
 const jwt = require('../../lib/token.js');
+const TokenPayloadDTO = require('../../data/dto/TokenPayloadDTO.js');
 
 describe('# publish Test', () => {
     it(' # create case', () => {
@@ -17,30 +16,26 @@ describe('# publish Test', () => {
             userIdx: 200,
             nickname: '쿼카맨2',
             gender: 'female',
-            phone: '010-2081-38',
             email: 'hee.youn2@samsung.com',
-            birth: 1995
+            birth: 1995,
         };
-        const {
-            token,
-            refreshToken
-        } = jwt.publish(payload);
+        const { token, refreshToken } = jwt.publish(payload);
         expect(token.length).gt(0);
         expect(refreshToken.length).gt(0);
     });
 });
 
-
 describe('# create Test', () => {
     it(' # success case', () => {
-        const token = jwt.create({
+        const user = {
             userIdx: 200,
             nickname: '쿼카맨2',
             gender: 'female',
-            phone: '010-2081-38',
             email: 'hee.youn2@samsung.com',
-            birth: 1995
-        });
+            birth: 1995,
+        };
+        const payload = new TokenPayloadDTO(user);
+        const token = jwt.create(payload);
         expect(token.length).to.not.eq(0);
     });
 });
@@ -51,9 +46,8 @@ describe('# verify Test', () => {
         userIdx: 200,
         nickname: '쿼카맨2',
         gender: 'female',
-        phone: '010-2081-38',
         email: 'hee.youn2@samsung.com',
-        birth: 1995
+        birth: 1995,
     };
     before(() => {
         token = jwt.create(payload);
@@ -63,16 +57,24 @@ describe('# verify Test', () => {
         delete result.iat;
         delete result.exp;
         delete result.iss;
-        expect(result).to.deep.eq(payload);
+        expect({ ...result }).to.deep.eq({ ...payload });
     });
-    it(' # fail case (Expired Token)', () => {
-        const expiredToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWR4IjoxLCJlbWFpbCI6ImhlZS55b3VuQHNhbXN1bmcuY29tIiwibmlja25hbWUiOiLsv7zsubTrp6giLCJnZW5kZXIiOjEsInBob25lIjoiMDEwLTIwODEtMzgxOCIsImJpcnRoIjoxOTk1LCJncmFkZSI6MCwiYWNjZXNzVGltZSI6IjIwMjEtMDEtMDVUMTI6NTg6MTAuMDAwWiIsImNyZWF0ZWRBdCI6IjIwMjEtMDEtMDVUMTI6NTg6MTAuMDAwWiIsInVwZGF0ZWRBdCI6IjIwMjEtMDEtMDVUMTI6NTg6MTAuMDAwWiIsImlhdCI6MTYwOTg1MTQ5MywiZXhwIjoxNjExNTc5NDkzLCJpc3MiOiJhZnVtZS1qYWNrcG90In0.sVzdA4L4w-kHDImSpW0j2L30UhBKhVZTrlT1wMrzygw';
-        try {
-            jwt.verify(expiredToken);
-            expect(false).eq(true);
-        } catch (err) {
-            expect(err).instanceOf(ExpiredTokenError);
-        }
+    it(' # fail case (Expired Token)', (done) => {
+        const jwtSecret = process.env.JWT_SECRET;
+        const expiredToken = require('jsonwebtoken').sign(payload, jwtSecret, {
+            expiresIn: '1s',
+            issuer: 'afume-jackpot',
+        });
+        setTimeout(() => {
+            try {
+                jwt.verify(expiredToken);
+                expect(false).eq(true);
+                done();
+            } catch (err) {
+                expect(err).instanceOf(ExpiredTokenError);
+                done();
+            }
+        }, 2000);
     });
     it(' # fail case (Invalid Token)', () => {
         try {
@@ -84,17 +86,15 @@ describe('# verify Test', () => {
     });
 });
 
-
 describe('# reissue Test', () => {
-    let token, refreshToken;
-    const payload = {
+    let refreshToken;
+    const payload = new TokenPayloadDTO({
         userIdx: 200,
         nickname: '쿼카맨2',
         gender: 'female',
-        phone: '010-2081-38',
         email: 'hee.youn2@samsung.com',
-        birth: 1995
-    };
+        birth: 1995,
+    });
     before(() => {
         const result = jwt.publish(payload);
         token = result.token;
@@ -103,9 +103,7 @@ describe('# reissue Test', () => {
     it('# success case', () => {
         const tokenStr = jwt.reissue(refreshToken);
         const result = jwt.verify(tokenStr);
-        delete result.iat;
-        delete result.exp;
-        delete result.iss;
-        expect(result).to.deep.eq(payload);
+        expect(result).to.be.instanceOf(TokenPayloadDTO);
+        expect({ ...result }).to.deep.eq({ ...payload });
     });
 });

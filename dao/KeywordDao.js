@@ -27,6 +27,7 @@ module.exports.create = async ({ reviewIdx, keywordIdx, perfumeIdx }) => {
 
             const createPerfumeKeyword = await JoinPerfumeKeyword.findOrCreate({
                 where: { perfumeIdx, keywordIdx },
+                transaction: t,
             });
 
             const updatePerfumeKeyword = await JoinPerfumeKeyword.update(
@@ -36,16 +37,56 @@ module.exports.create = async ({ reviewIdx, keywordIdx, perfumeIdx }) => {
                     transaction: t,
                 }
             );
-            return Promise.all([
+            return [
                 createReviewKeyword,
                 createPerfumeKeyword,
                 updatePerfumeKeyword,
-            ]).then((it) => {
-                return it;
-            });
+            ];
         } catch (err) {
             console.log(err);
         }
+    });
+};
+
+/**
+ * 시향노트에 키워드 삭제
+ *
+ * @param {Object} Review
+ * @returns {Promise}
+ */
+module.exports.deleteReviewKeyword = async ({ reviewIdx, perfumeIdx }) => {
+    return sequelize.transaction(async (t) => {
+        const keywordList = await JoinReviewKeyword.findAll({
+            where: { reviewIdx },
+            attributes: {
+                exclude: ['reviewIdx', 'createdAt', 'updatedAt'],
+            },
+            transaction: t,
+        });
+        const deleteReviewKeyword = await JoinReviewKeyword.destroy({
+            where: { reviewIdx },
+            transaction: t,
+        });
+        const updatePerfumeKeyword = await Promise.all(
+            keywordList.map((it) => {
+                return JoinPerfumeKeyword.update(
+                    { count: sequelize.literal('count - 1') },
+                    {
+                        where: { perfumeIdx, keywordIdx: it.keywordIdx },
+                        transaction: t,
+                    }
+                );
+            })
+        );
+        const removeZeroCountRows = await JoinPerfumeKeyword.destroy({
+            where: {
+                count: {
+                    [Op.lte]: 0,
+                },
+            },
+            transaction: t,
+        });
+        return deleteReviewKeyword;
     });
 };
 
@@ -106,6 +147,57 @@ module.exports.readAllOfPerfume = async (
 };
 
 /**
+ * 향수가 가진 키워드별 개수 조회
+ *
+ * @param {number} perfumeIdx
+ * @returns {Promise<Keyword[]>} keywordList
+ */
+module.exports.readAllPerfumeKeywordCount = async (
+    perfumeIdx,
+    sort = [['count', 'desc']]
+) => {
+    let result = await JoinPerfumeKeyword.findAll({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt', 'perfumeIdx'],
+        },
+        order: sort,
+        where: { perfumeIdx },
+        raw: true, //Set this to true if you don't have a model definition for your query.
+        nest: true,
+    });
+
+    if (result === undefined) {
+        throw new NotMatchedError();
+    }
+    return result;
+};
+
+/**
+ * 향수가 가진 특정 키워드 개수 조회
+ *
+ * @param {number} perfumeIdx, keywordIdx
+ * @returns {number} count
+ */
+module.exports.readPerfumeKeywordCount = async ({ perfumeIdx, keywordIdx }) => {
+    let result = await JoinPerfumeKeyword.findOne({
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        where: {
+            perfumeIdx,
+            keywordIdx,
+        },
+        raw: true, //Set this to true if you don't have a model definition for your query.
+        nest: true,
+    });
+
+    if (!result) {
+        throw new NotMatchedError();
+    }
+    return result.count;
+};
+
+/**
  * 향수 idx에 해당하는 모든 Join Keyword 목록 조회
  *
  * @param {number[]} perfumeIdxList
@@ -144,4 +236,42 @@ module.exports.readAllOfPerfumeIdxList = async (
     }
 
     return result;
+};
+
+module.exports.readAllOfReview = async (reviewIdx) => {
+    const keywordList = await JoinReviewKeyword.findAll({
+        where: { reviewIdx },
+        attributes: {
+            exclude: ['createdAt', 'updatedAt'],
+        },
+        include: [
+            {
+                model: Keyword,
+                attributes: {
+                    exclude: ['createdAt', 'updatedAt'],
+                },
+            },
+        ],
+        raw: true,
+        nest: true,
+    });
+    return keywordList ? keywordList : [];
+};
+
+module.exports.readKeywordIdx = async (keywordName) => {
+    const keyword = await Keyword.findOne({
+        where: { name: keywordName },
+        raw: true,
+        nest: true,
+    });
+    return keyword.id;
+};
+
+module.exports.readKeywordName = async (keywordIdx) => {
+    const keyword = await Keyword.findByPk({
+        where: { keywordIdx },
+        raw: true,
+        nest: true,
+    });
+    return keyword.name;
 };

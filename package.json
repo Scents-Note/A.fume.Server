@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "_prestart": "npm install",
-    "start": "node index.js",
-    "test": "mocha --recursive --exit -t 5000"
+    "start": "cross-env NODE_ENV=development node index.js",
+    "test": "cross-env NODE_ENV=test mocha --recursive --exit -t 5000"
   },
   "keywords": [
     "swagger"
@@ -14,23 +14,26 @@
   "license": "Unlicense",
   "private": true,
   "dependencies": {
-    "chai": "^4.2.0",
-    "connect": "^3.2.0",
+    "aws-sdk": "^2.987.0",
+    "chai": "^4.3.4",
+    "connect": "^3.7.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^10.0.0",
     "express": "^4.17.1",
-    "js-yaml": "^3.3.0",
+    "js-yaml": "^4.1.0",
     "jsonwebtoken": "^8.5.1",
-    "lodash": "^4.17.20",
-    "mongoose": "^5.11.15",
-    "mysql2": "^2.2.5",
-    "node-cron": "^2.0.3",
-    "promise-mysql": "^4.1.3",
-    "sequelize": "^6.3.5",
+    "lodash": "^4.17.21",
+    "mongoose": "^6.0.5",
+    "mysql2": "^2.3.0",
+    "node-cron": "^3.0.0",
+    "promise-mysql": "^5.0.3",
+    "sequelize": "^6.6.5",
     "swagger-tools": "^0.10.4"
   },
   "devDependencies": {
-    "sequelize-cli": "^6.2.0"
+    "sequelize-cli": "^6.2.0",
+    "supertest": "^6.1.6"
   }
 }

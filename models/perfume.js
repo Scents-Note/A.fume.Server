@@ -13,10 +13,6 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE',
                 onDelete: 'RESTRICT',
             });
-            Perfume.hasOne(models.PerfumeDetail, {
-                foreignKey: 'perfumeIdx',
-                as: 'PerfumeDetail',
-            });
             Perfume.hasOne(models.PerfumeSurvey, {
                 foreignKey: 'perfumeIdx',
                 as: 'PerfumeSurvey',
@@ -45,14 +41,19 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            releaseDate: {
-                type: DataTypes.DATEONLY,
+            story: {
+                type: DataTypes.STRING,
                 allowNull: false,
             },
-            likeCnt: {
+            abundanceRate: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
-                defaultValue: 0,
+                comment:
+                    '0: None, 1: 오 드 코롱, 2: 코롱, 3: 오 드 뚜왈렛, 4: 오 드 퍼퓸, 5: 퍼퓸',
+            },
+            volumeAndPrice: {
+                type: DataTypes.STRING,
+                allowNull: false,
             },
         },
         {

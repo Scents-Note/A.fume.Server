@@ -1,0 +1,32 @@
+module.exports = {
+    development: {
+        username: process.env.MYSQL_DEV_USERNAME,
+        password: process.env.MYSQL_DEV_PASSWORD,
+        database: process.env.MYSQL_DEV_DATABASE,
+        host: process.env.MYSQL_DEV_HOST,
+        port: process.env.MYSQL_DEV_PORT,
+        dialect: process.env.MYSQL_DEV_DIALECT,
+        timezone: '+09:00',
+        logging: false,
+    },
+    test: {
+        username: process.env.MYSQL_TST_USERNAME,
+        password: process.env.MYSQL_TST_PASSWORD,
+        database: process.env.MYSQL_TST_DATABASE,
+        host: process.env.MYSQL_TST_HOST,
+        port: process.env.MYSQL_TST_PORT,
+        dialect: process.env.MYSQL_TST_DIALECT,
+        timezone: '+09:00',
+        logging: false,
+    },
+    production: {
+        username: process.env.MYSQL_PRD_USERNAME,
+        password: process.env.MYSQL_PRD_PASSWORD,
+        database: process.env.MYSQL_PRD_DATABASE,
+        host: process.env.MYSQL_PRD_HOST,
+        port: process.env.MYSQL_PRD_PORT,
+        dialect: process.env.MYSQL_PRD_DIALECT,
+        timezone: '+09:00',
+        logging: false,
+    },
+};

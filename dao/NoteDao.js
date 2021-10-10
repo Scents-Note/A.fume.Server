@@ -1,10 +1,19 @@
 const {
     NotMatchedError,
     DuplicatedEntryError,
+    InvalidInputError,
 } = require('../utils/errors/errors.js');
 
-const { Note } = require('../models');
+const { Note, Ingredient, sequelize, Sequelize } = require('../models');
+const { Op } = Sequelize;
+const { NoteDTO } = require('../data/dto');
 
+const {
+    NOTE_TYPE_SINGLE,
+    NOTE_TYPE_TOP,
+    NOTE_TYPE_MIDDLE,
+    NOTE_TYPE_BASE,
+} = require('../utils/constantUtil');
 /**
  * 노트 생성
  *
@@ -12,7 +21,25 @@ const { Note } = require('../models');
  * @returns {Promise<Note>}
  */
 module.exports.create = ({ ingredientIdx, perfumeIdx, type }) => {
-    return Note.create({ ingredientIdx, perfumeIdx, type })
+    if (
+        [
+            NOTE_TYPE_SINGLE,
+            NOTE_TYPE_TOP,
+            NOTE_TYPE_MIDDLE,
+            NOTE_TYPE_BASE,
+        ].indexOf(type) == -1
+    ) {
+        return new Promise((resolve, reject) => {
+            reject(new InvalidInputError());
+        });
+    }
+    return Note.create(
+        { ingredientIdx, perfumeIdx, type },
+        {
+            raw: true,
+            note: true,
+        }
+    )
         .then((note) => {
             return note;
         })
@@ -22,6 +49,12 @@ module.exports.create = ({ ingredientIdx, perfumeIdx, type }) => {
                 err.parent.code === 'ER_DUP_ENTRY'
             ) {
                 throw new DuplicatedEntryError();
+            }
+            if (
+                err.parent.errno === 1452 ||
+                err.parent.code === 'ER_NO_REFERENCED_ROW_2'
+            ) {
+                throw new NotMatchedError();
             }
             throw err;
         });
@@ -39,8 +72,8 @@ module.exports.read = (where) => {
             exclude: ['updatedAt', 'createdAt'],
         },
         where,
-        nest: false,
-        raw: false,
+        nest: true,
+        raw: true,
     });
 };
 
@@ -69,5 +102,62 @@ module.exports.updateType = async ({ type, perfumeIdx, ingredientIdx }) => {
  * @returns {Promise}
  */
 module.exports.delete = (perfumeIdx, ingredientIdx) => {
-    return Note.destroy({ where: { perfumeIdx, ingredientIdx } });
+    return Note.destroy({
+        where: { perfumeIdx, ingredientIdx },
+    });
+};
+
+/**
+ * 재료별 사용된 향수 개수 카운트
+ *
+ * @param {number[]} ingredientIdxList
+ * @returns {Promise<Ingredient>}
+ */
+module.exports.countIngredientUsed = async (ingredientIdxList) => {
+    const result = await Note.findAll({
+        attributes: {
+            include: [
+                [sequelize.fn('count', sequelize.col('perfume_idx')), 'count'],
+            ],
+        },
+        where: {
+            ingredientIdx: {
+                [Op.in]: ingredientIdxList,
+            },
+        },
+        group: ['ingredient_idx'],
+        raw: true,
+        nest: true,
+    });
+
+    return result;
+};
+
+/**
+ * 향수에 해당하는 재료 조회
+ *
+ * @param {number} perfumeIdx
+ * @return {Promise<NoteDTO[]>} NoteDTO[]
+ */
+module.exports.readByPerfumeIdx = async (perfumeIdx) => {
+    const result = await Note.findAll({
+        include: [
+            {
+                model: Ingredient,
+                as: 'Ingredients',
+                attributes: ['name'],
+            },
+        ],
+        where: {
+            perfumeIdx,
+        },
+        raw: true,
+        nest: true,
+    });
+    return result.map(
+        (it) =>
+            new NoteDTO(
+                Object.assign({}, it, { ingredientName: it.Ingredients.name })
+            )
+    );
 };

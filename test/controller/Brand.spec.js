@@ -1,0 +1,76 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
+const request = require('supertest');
+const app = require('../../index.js');
+const expect = require('../utils/expect');
+
+const basePath = '/A.fume/api/0.0.1';
+const { ListAndCountDTO } = require('../../data/dto');
+const BrandDTO = require('../data/dto/BrandDTO');
+const BrandFilterDTO = require('../../data/dto/BrandFilterDTO');
+const BrandFilterResponseDTO = require('../data/response_dto/brand/BrandFilterResponseDTO');
+const BrandResponseDTO = require('../data/response_dto/brand/BrandResponseDTO');
+const statusCode = require('../../utils/statusCode');
+
+const Brand = require('../../controllers/Brand.js');
+
+const mockBrandService = {};
+Brand.setBrandService(mockBrandService);
+
+describe('# Brand Controller Test', () => {
+    describe('# getBrandAll Test', () => {
+        mockBrandService.getBrandAll = async () =>
+            new ListAndCountDTO({
+                count: 1,
+                rows: [BrandDTO.create(), BrandDTO.create(), BrandDTO.create()],
+            });
+        it('success case', (done) => {
+            request(app)
+                .get(`${basePath}/brand`)
+                .expect((res) => {
+                    expect(res.status).to.be.eq(statusCode.OK);
+                    const { message, data } = res.body;
+
+                    expect(message).to.be.eq('브랜드 조회 성공');
+                    expect(data.count).to.be.gt(0);
+                    data.rows.forEach((brand) => {
+                        BrandResponseDTO.validTest.call(brand);
+                    });
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+    });
+
+    describe('# getFilterBrand Test', () => {
+        mockBrandService.getFilterBrand = async (condition) => [
+            new BrandFilterDTO({
+                firstInitial: 'ㄱ',
+                brands: [],
+            }),
+            new BrandFilterDTO({
+                firstInitial: 'ㅂ',
+                brands: [
+                    BrandDTO.create(),
+                    BrandDTO.create(),
+                    BrandDTO.create(),
+                ],
+            }),
+        ];
+        it('success case', (done) => {
+            request(app)
+                .get(`${basePath}/filter/brand`)
+                .expect((res) => {
+                    expect(res.status).to.be.eq(statusCode.OK);
+                    const { message, data } = res.body;
+                    expect(message).to.be.eq('브랜드 필터 조회 성공');
+                    for (const item of data) {
+                        BrandFilterResponseDTO.validTest.call(item);
+                    }
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+    });
+});

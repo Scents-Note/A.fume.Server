@@ -12,7 +12,7 @@ const { sequelize, LikeReview, Review } = require('../models');
  * @returns {Promise}
  */
 
-module.exports.create = ({ userIdx, reviewIdx }) => {
+module.exports.create = (userIdx, reviewIdx) => {
     return sequelize.transaction((t) => {
         const createLike = LikeReview.create(
             { userIdx, reviewIdx },
@@ -41,9 +41,7 @@ module.exports.create = ({ userIdx, reviewIdx }) => {
             }
         );
 
-        return Promise.all([createLike, updateLikeCnt]).then((it) => {
-            return it;
-        });
+        return Promise.all([createLike, updateLikeCnt]);
     });
 };
 
@@ -58,9 +56,6 @@ module.exports.create = ({ userIdx, reviewIdx }) => {
 module.exports.read = async (userIdx, reviewIdx) => {
     return await LikeReview.findOne({
         where: { userIdx, reviewIdx },
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
         raw: true,
         nest: true,
     });
@@ -80,9 +75,6 @@ module.exports.readAllOfUser = async ({ userIdx, perfumeIdx }) => {
             {
                 model: Review,
                 as: 'LikeToReview',
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt'],
-                },
                 where: { perfumeIdx },
             },
         ],
@@ -108,7 +100,7 @@ module.exports.readAllOfUser = async ({ userIdx, perfumeIdx }) => {
  * @returns Boolean
  */
 
-module.exports.delete = async ({ userIdx, reviewIdx }) => {
+module.exports.delete = async (userIdx, reviewIdx) => {
     return sequelize.transaction((t) => {
         const deleteLike = LikeReview.destroy({
             where: { userIdx, reviewIdx },

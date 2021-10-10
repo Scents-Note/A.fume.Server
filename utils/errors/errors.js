@@ -72,6 +72,18 @@ class InvalidInputError extends Error {
     }
 }
 
+class InvalidValueError extends Error {
+    constructor(code = 'GENERIC', status = statusCode.BAD_REQUEST, ...params) {
+        super(...params);
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, InvalidValueError);
+        }
+        this.code = code;
+        this.status = status;
+        this.message = '유효하지 않는 값입니다.';
+    }
+}
+
 class InvalidTokenError extends Error {
     constructor(code = 'GENERIC', status = statusCode.UNAUTHORIZED, ...params) {
         super(...params);
@@ -122,14 +134,19 @@ class PasswordPolicyError extends Error {
 }
 
 class UnAuthorizedError extends Error {
-    constructor(code = 'GENERIC', status = statusCode.UNAUTHORIZED, ...params) {
+    constructor(
+        message = '권한이 없습니다.',
+        code = 'GENERIC',
+        status = statusCode.UNAUTHORIZED,
+        ...params
+    ) {
         super(...params);
         if (Error.captureStackTrace) {
             Error.captureStackTrace(this, UnAuthorizedError);
         }
         this.code = code;
         this.status = status;
-        this.message = '권한이 없습니다.';
+        this.message = message;
     }
 }
 
@@ -152,6 +169,16 @@ class InvalidRequestError extends Error {
     }
 }
 
+class UnExpectedError extends Error {
+    constructor(expectedError, ...params) {
+        super(...params);
+        if (Error.captureStackTrace) {
+            Error.captureStackTrace(this, PasswordPolicyError);
+        }
+        this.message = `${expectedError.name}: must be caught or declared to be thrown`;
+    }
+}
+
 module.exports.DatabaseError = DatabaseError;
 module.exports.NoReferencedRowError = NoReferencedRowError;
 module.exports.DuplicatedEntryError = DuplicatedEntryError;
@@ -164,3 +191,5 @@ module.exports.WrongPasswordError = WrongPasswordError;
 module.exports.UnAuthorizedError = UnAuthorizedError;
 module.exports.PasswordPolicyError = PasswordPolicyError;
 module.exports.InvalidRequestError = InvalidRequestError;
+module.exports.InvalidValueError = InvalidValueError;
+module.exports.UnExpectedError = UnExpectedError;

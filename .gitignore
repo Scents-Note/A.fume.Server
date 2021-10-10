@@ -103,13 +103,6 @@ dist
 # TernJS port file
 .tern-port
 
-# package-lock.json file
-package-lock.json
-
-# config files
-config/
-configs/
-
 # pm2 ecosystem
 ecosystem.json
 

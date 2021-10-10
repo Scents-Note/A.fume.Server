@@ -4,30 +4,27 @@ const {
 } = require('../utils/errors/errors.js');
 
 const { Brand } = require('../models');
-
+const { BrandDTO, ListAndCountDTO, CreatedResultDTO } = require('../data/dto');
 /**
  * 브랜드 생성
  *
- * @param {Object} brand
+ * @param {BrandDTO} brandDTO
  * @param {Promise}
- * @returns {integer} brandIdx
+ * @returns {Promise<CreatedResultDTO<BrandDTO>>} createdResultDTO
  */
-module.exports.create = ({
-    name,
-    englishName,
-    firstInitial,
-    imageUrl,
-    description,
-}) => {
+module.exports.create = (brandDTO) => {
     return Brand.create({
-        name,
-        englishName,
-        firstInitial,
-        imageUrl,
-        description,
+        name: brandDTO.name,
+        englishName: brandDTO.englishName,
+        firstInitial: brandDTO.firstInitial,
+        imageUrl: brandDTO.imageUrl,
+        description: brandDTO.description,
     })
         .then((brand) => {
-            return brand.dataValues.brandIdx;
+            return new CreatedResultDTO({
+                idx: brand.brandIdx,
+                created: new BrandDTO(brand),
+            });
         })
         .catch((err) => {
             if (
@@ -44,44 +41,52 @@ module.exports.create = ({
  * 브랜드 세부 조회
  *
  * @param {number} brandIdx
- * @returns {Promise<Brand>}
+ * @returns {Promise<BrandDTO>}
  */
 module.exports.read = async (brandIdx) => {
-    const result = await Brand.findByPk(brandIdx);
+    const result = await Brand.findByPk(brandIdx, {
+        nest: true,
+        raw: true,
+    });
     if (!result) {
         throw new NotMatchedError();
     }
-    return result.dataValues;
+    return new BrandDTO(result);
 };
 
 /**
  * 브랜드 검색
  *
- * @param {number} pagingIndex
- * @param {number} pagingSize
- * @param {array} order
- * @returns {Promise<Brand[]>}
+ * @param {PagingVO} pagingVO
+ * @returns {Promise<ListAndCountDTO<BrandDTO>>}
  */
-module.exports.search = (pagingIndex, pagingSize, order) => {
+module.exports.search = ({ pagingSize, pagingIndex, order }) => {
     return Brand.findAndCountAll({
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,
         order,
+        raw: true,
+        nest: true,
+    }).then((it) => {
+        it.rows = it.rows.map((it) => new BrandDTO(it));
+        return new ListAndCountDTO(it);
     });
 };
 
 /**
  * 브랜드 전체 목록 조회
  *
- * @returns {Promise<Brand[]>}
+ * @returns {Promise<ListAndCountDTO<BrandDTO>>}
  */
 module.exports.readAll = async () => {
     return Brand.findAndCountAll({
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
         raw: true,
         nest: true,
+    }).then((result) => {
+        return new ListAndCountDTO({
+            count: result.count,
+            rows: result.rows.map((it) => new BrandDTO(it)),
+        });
     });
 };
 
@@ -89,9 +94,9 @@ module.exports.readAll = async () => {
  * 브랜드 수정
  *
  * @param {Object} Brand
- * @return {Promise}
+ * @return {Promise<boolean>} isSuccess
  */
-module.exports.update = async ({
+module.exports.update = ({
     brandIdx,
     name,
     englishName,
@@ -99,7 +104,7 @@ module.exports.update = async ({
     imageUrl,
     description,
 }) => {
-    const [affectedRows] = await Brand.update(
+    return Brand.update(
         {
             name,
             englishName,
@@ -108,11 +113,22 @@ module.exports.update = async ({
             description,
         },
         { where: { brandIdx } }
-    );
-    if (affectedRows == 0) {
-        throw new NotMatchedError();
-    }
-    return affectedRows;
+    )
+        .catch((err) => {
+            if (
+                err.parent.errno === 1062 ||
+                err.parent.code === 'ER_DUP_ENTRY'
+            ) {
+                throw new DuplicatedEntryError();
+            }
+            throw err;
+        })
+        .then(([affectedRows]) => {
+            if (affectedRows == 0) {
+                throw new NotMatchedError();
+            }
+            return affectedRows;
+        });
 };
 
 /**
@@ -132,10 +148,14 @@ module.exports.delete = (brandIdx) => {
  * @returns {Promise<Brand>}
  */
 module.exports.findBrand = (condition) => {
-    return Brand.findOne({ where: condition }).then((it) => {
+    return Brand.findOne({
+        where: { ...condition },
+        nest: true,
+        raw: true,
+    }).then((it) => {
         if (!it) {
             throw new NotMatchedError();
         }
-        return it;
+        return new BrandDTO(it);
     });
 };

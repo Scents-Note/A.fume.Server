@@ -1,135 +1,102 @@
 'use strict';
 
-const brandDao = require('../dao/BrandDao.js');
-const { parseSortToOrder } = require('../utils/parser.js');
+const { PagingVO, BrandFilterVO } = require('../data/vo/index.js');
 
-const { updateList, removeKeyJob } = require('../utils/func.js');
+class BrandService {
+    constructor(brandDao) {
+        this.brandDao = brandDao || require('../dao/BrandDao.js');
+    }
+    /**
+     * 브랜드 검색
+     *
+     * @param {PagingRequestDTO} pagingRequestDTO
+     * @returns {Promise<ListAndCountDTO<BrandDTO>>} listAndCountDTO
+     **/
+    searchBrand(pagingRequestDTO) {
+        const pagingVO = new PagingVO(pagingRequestDTO);
+        return this.brandDao.search(pagingVO);
+    }
+    /**
+     * 브랜드 전체 조회
+     *
+     * @returns {Promise<ListAndCountDTO<BrandDTO>>} listAndCountDTO
+     **/
+    getBrandAll() {
+        return this.brandDao.readAll();
+    }
 
-/**
- * 브랜드 검색
- *
- * @param {number} pagingIndex
- * @param {number} pagingSize
- * @param {string} sort
- * @returns {Promise<Brand[]>}
- **/
-exports.searchBrand = (pagingIndex, pagingSize, sort) => {
-    const order = parseSortToOrder(sort);
-    return brandDao.search(pagingIndex, pagingSize, order);
-};
+    /**
+     * 브랜드 조회
+     *
+     * @param {number} brandIdx
+     * @returns {Promise<BrandDTO>} brandDTO
+     **/
+    getBrandByIdx(brandIdx) {
+        return this.brandDao.read(brandIdx);
+    }
 
-/**
- * 브랜드 전체 조회
- *
- * @returns {Promise<Brand[]>}
- **/
-exports.getBrandAll = () => {
-    return brandDao.readAll();
-};
+    /**
+     * 브랜드 삽입
+     *
+     * @param {BrandInputDTO} brandInputDto
+     * @returns {Promise<CreatedResultDTO<Brand>>} createdResultDTO
+     **/
+    insertBrand(brandInputDTO) {
+        return this.brandDao.create(brandInputDTO);
+    }
 
-/**
- * 브랜드 조회
- *
- * @param {number} brandIdx
- * @returns {Promise<Brand>}
- **/
-exports.getBrandByIdx = (brandIdx) => {
-    return brandDao.read(brandIdx);
-};
+    /**
+     * 브랜드 수정
+     *
+     * @param {BrandInputDTO} brandInputDto
+     * @returns {Promise}
+     **/
+    putBrand(brandInputDTO) {
+        return this.brandDao.update(brandInputDTO);
+    }
 
-/**
- * 브랜드 삽입
- *
- * @param {Object} Brand
- * @returns {Promise}
- **/
-exports.insertBrand = ({
-    name,
-    englishName,
-    firstInitial,
-    imageUrl,
-    description,
-}) => {
-    return brandDao.create({
-        name,
-        englishName,
-        firstInitial,
-        imageUrl,
-        description,
-    });
-};
+    /**
+     * 브랜드 삭제
+     *
+     * @param {number} brandIdx
+     * @returns {Promise}
+     **/
+    deleteBrand(brandIdx) {
+        return this.brandDao.delete(brandIdx);
+    }
 
-/**
- * 브랜드 수정
- *
- * @param {Object} Brand
- * @returns {Promise}
- **/
-exports.putBrand = ({
-    brandIdx,
-    name,
-    englishName,
-    firstInitial,
-    imageUrl,
-    description,
-}) => {
-    return brandDao.update({
-        brandIdx,
-        name,
-        englishName,
-        firstInitial,
-        imageUrl,
-        description,
-    });
-};
-
-/**
- * 브랜드 삭제
- *
- * @param {number} brandIdx
- * @returns {Promise}
- **/
-exports.deleteBrand = (brandIdx) => {
-    return brandDao.delete(brandIdx);
-};
-
-/**
- * 브랜드 필터 조회
- *
- * @returns {Promise}
- */
-exports.getFilterBrand = () => {
-    return brandDao.readAll().then((result) => {
-        const firstInitialMap = result.rows.reduce((prev, cur) => {
-            if (!prev[cur.firstInitial]) {
-                prev[cur.firstInitial] = [];
-            }
-            prev[cur.firstInitial].push(cur);
-            return prev;
-        }, {});
-        return Object.keys(firstInitialMap).map((key) => {
-            return {
-                firstInitial: key,
-                brands: updateList(
-                    firstInitialMap[key],
-                    removeKeyJob(
-                        'englishName',
-                        'description',
-                        'imageUrl',
-                        'firstInitial'
-                    )
-                ),
-            };
+    /**
+     * 브랜드 필터 조회
+     *
+     * @returns {Promise<BrandFilterVO[]>} brandFilterVO[]
+     */
+    getFilterBrand() {
+        return this.brandDao.readAll().then((result) => {
+            const firstInitialMap = result.rows.reduce((prev, cur) => {
+                if (!prev[cur.firstInitial]) {
+                    prev[cur.firstInitial] = [];
+                }
+                prev[cur.firstInitial].push(cur);
+                return prev;
+            }, {});
+            return Object.keys(firstInitialMap).map((key) => {
+                return new BrandFilterVO({
+                    firstInitial: key,
+                    brands: firstInitialMap[key],
+                });
+            });
         });
-    });
-};
+    }
 
-/**
- * 브랜드 영어 이름으로 조회
- *
- * @param {string} englishName
- * @returns {Promise<Brand>}
- **/
-exports.findBrandByEnglishName = (englishName) => {
-    return brandDao.findBrand({ englishName });
-};
+    /**
+     * 브랜드 영어 이름으로 조회
+     *
+     * @param {string} englishName
+     * @returns {Promise<BrandDTO>} brandDTO
+     **/
+    findBrandByEnglishName(englishName) {
+        return this.brandDao.findBrand({ englishName });
+    }
+}
+
+module.exports = BrandService;

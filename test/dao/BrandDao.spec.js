@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-dotenv.config({ path: './config/.env.test' });
+dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;
@@ -8,7 +8,12 @@ const { Brand } = require('../../models');
 const {
     DuplicatedEntryError,
     NotMatchedError,
+    UnExpectedError,
 } = require('../../utils/errors/errors.js');
+const { PagingVO } = require('../../data/vo');
+const BrandDTO = require('../data/dto/BrandDTO.js');
+const CreatedResultDTO = require('../data/dto/CreatedResultDTO.js');
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO.js');
 
 describe('# brandDao Test', () => {
     before(async function () {
@@ -24,11 +29,15 @@ describe('# brandDao Test', () => {
                     name: '삽입테스트',
                     englishName: 'insert Test',
                     firstInitial: 'ㅅ',
-                    imageUrl: '',
+                    imageUrl: 'image-url',
                     description: 'brand 생성 테스트를 위한 더미데이터입니다.',
                 })
                 .then((result) => {
-                    expect(result).gt(0);
+                    expect(result).instanceOf(CreatedResultDTO);
+                    result.validTest((created) => {
+                        expect(created).instanceOf(BrandDTO);
+                        created.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
@@ -39,17 +48,19 @@ describe('# brandDao Test', () => {
                     name: '삽입테스트',
                     englishName: 'insert Test',
                     firstInitial: 'ㅅ',
-                    imageUrl: '',
-                    description: '',
+                    imageUrl: 'image-url',
+                    description: 'description',
                 })
                 .then(() => {
-                    done(new Error('expected DuplicatedEntryError'));
+                    done(new UnExpectedError(DuplicatedEntryError));
                 })
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
                     done();
-                })
-                .catch((err) => done(err));
+                });
+        });
+        after(async () => {
+            await Brand.destroy({ where: { name: '삽입테스트' } });
         });
     });
 
@@ -58,9 +69,10 @@ describe('# brandDao Test', () => {
             brandDao
                 .read(2)
                 .then((result) => {
-                    expect(result.name).eq('브랜드2');
-                    expect(result.firstInitial).eq('ㅂ');
-                    expect(result.description.length).gt(0);
+                    expect(result.brandIdx).to.be.eq(2);
+                    expect(result.name).to.be.eq('브랜드2');
+                    expect(result.firstInitial).to.be.eq('ㅂ');
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -72,8 +84,10 @@ describe('# brandDao Test', () => {
                     name: '브랜드1',
                 })
                 .then((result) => {
-                    expect(result.name).eq('브랜드1');
-                    expect(result.brandIdx).eq(1);
+                    expect(result.brandIdx).to.be.eq(1);
+                    expect(result.name).to.be.eq('브랜드1');
+                    expect(result.firstInitial).to.be.eq('ㅂ');
+                    result.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -84,7 +98,7 @@ describe('# brandDao Test', () => {
                     name: '브랜드10',
                 })
                 .then(() => {
-                    throw new Error('Must be occur NotMatchedError');
+                    done(new UnExpectedError(NotMatchedError));
                 })
                 .catch((err) => {
                     expect(err).instanceOf(NotMatchedError);
@@ -97,10 +111,19 @@ describe('# brandDao Test', () => {
     describe('# search Test', () => {
         it('# success case', (done) => {
             brandDao
-                .search(1, 10, [['createdAt', 'desc']])
+                .search(
+                    new PagingVO({
+                        pagingIndex: 1,
+                        pagingSize: 10,
+                        order: [['createdAt', 'desc']],
+                    })
+                )
                 .then((result) => {
-                    expect(result.count).gt(0);
-                    expect(result.rows.length).gt(0);
+                    expect(result.count).gte(5);
+                    expect(result.rows.length).gte(5);
+                    for (const brand of result.rows) {
+                        brand.validTest();
+                    }
                     done();
                 })
                 .catch((err) => done(err));
@@ -110,9 +133,13 @@ describe('# brandDao Test', () => {
     describe('# readAll Test', () => {
         it('# success case', (done) => {
             brandDao
-                .readAll([['createdAt', 'desc']])
+                .readAll()
                 .then((result) => {
-                    expect(result.rows.length).gt(0);
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest((item) => {
+                        expect(item).instanceOf(BrandDTO);
+                        item.validTest();
+                    });
                     done();
                 })
                 .catch((err) => done(err));
@@ -125,8 +152,8 @@ describe('# brandDao Test', () => {
             name: '수정테스트',
             englishName: 'modify test',
             firstInitial: 'ㅅ',
-            imageUrl: '',
-            description: '',
+            imageUrl: 'test',
+            description: 'test',
         };
 
         before(async () => {
@@ -143,14 +170,17 @@ describe('# brandDao Test', () => {
                     imageUrl: 'image_url',
                     description: '변경완료',
                 })
-                .then(async (result) => {
+                .then((result) => {
                     expect(result).eq(1);
-                    const updated = await brandDao.read(brandIdx);
+                    return brandDao.read(brandIdx);
+                })
+                .then((updated) => {
                     expect(updated.name).eq('변경된 이름');
                     expect(updated.englishName).eq('modified_name');
                     expect(updated.firstInitial).eq('ㅂ');
                     expect(updated.imageUrl).eq('image_url');
                     expect(updated.description).eq('변경완료');
+                    updated.validTest();
                     done();
                 })
                 .catch((err) => done(err));
@@ -167,8 +197,8 @@ describe('# brandDao Test', () => {
                 name: '삭제테스트',
                 englishName: 'delete test',
                 firstInitial: 'ㅅ',
-                imageUrl: '',
-                description: '',
+                imageUrl: 'image-url',
+                description: 'description',
             });
             brandIdx = dataValues.brandIdx;
         });

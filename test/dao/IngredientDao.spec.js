@@ -1,58 +1,21 @@
 const dotenv = require('dotenv');
-dotenv.config({ path: './config/.env.test' });
+dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;
 const ingredientDao = require('../../dao/IngredientDao.js');
 const {
-    DuplicatedEntryError,
     NotMatchedError,
+    UnExpectedError,
 } = require('../../utils/errors/errors.js');
-const { Ingredient } = require('../../models');
+
+const { IngredientConditionDTO } = require('../../data/dto');
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
+const IngredientDTO = require('../data/dto/IngredientDTO');
 
 describe('# ingredientDao Test', () => {
     before(async function () {
         await require('./common/presets.js')(this);
-    });
-    describe(' # create Test', () => {
-        before(async () => {
-            await Ingredient.destroy({ where: { name: '테스트 데이터' } });
-        });
-        it(' # success case', (done) => {
-            ingredientDao
-                .create({
-                    name: '테스트 데이터',
-                    englishName: 'Test Data',
-                    description: '왈라왈라',
-                    seriesIdx: 1,
-                    imageUrl: '',
-                })
-                .then((result) => {
-                    expect(result).gt(0);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-        // 중복 데이터 발생 케이스
-        it(' # DuplicatedEntryError case', (done) => {
-            ingredientDao
-                .create({
-                    name: '테스트 데이터',
-                    englishName: 'Test Data',
-                    description: '왈라왈라',
-                    seriesIdx: 1,
-                    imageUrl: '',
-                })
-                .then(() => done(new Error('expected DuplicatedEntryError')))
-                .catch((err) => {
-                    expect(err).instanceOf(DuplicatedEntryError);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-        after(async () => {
-            await Ingredient.destroy({ where: { name: '테스트 데이터' } });
-        });
     });
 
     describe(' # read test', () => {
@@ -60,7 +23,8 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readByIdx(1)
                 .then((result) => {
-                    expect(result.name).eq('재료1');
+                    expect(result).instanceOf(IngredientDTO);
+                    IngredientDTO.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
@@ -69,7 +33,8 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readByName('재료2')
                 .then((result) => {
-                    expect(result.ingredientIdx).eq(2);
+                    expect(result).instanceOf(IngredientDTO);
+                    IngredientDTO.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
@@ -81,7 +46,12 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readAll()
                 .then((result) => {
-                    expect(result.rows.length).greaterThan(4);
+                    expect(result.count).greaterThan(4);
+                    expect(result).instanceOf(ListAndCountDTO);
+                    ListAndCountDTO.validTest.call(
+                        result,
+                        IngredientDTO.validTest
+                    );
                     done();
                 })
                 .catch((err) => done(err));
@@ -93,13 +63,11 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readAll({ seriesIdx: 1 })
                 .then((result) => {
-                    expect(result.rows.length).eq(5);
-                    expect(
-                        result.rows.reduce(
-                            (prev, cur) => prev && cur.seriesIdx == 1,
-                            true
-                        )
-                    ).to.be.true;
+                    expect(result).instanceOf(ListAndCountDTO);
+                    ListAndCountDTO.validTest.call(
+                        result,
+                        IngredientDTO.validTest
+                    );
                     done();
                 })
                 .catch((err) => done(err));
@@ -108,7 +76,31 @@ describe('# ingredientDao Test', () => {
             ingredientDao
                 .readBySeriesIdxList([1, 2, 3, 4, 5])
                 .then((result) => {
-                    expect(result.length).eq(5);
+                    expect(result.length).gte(5);
+                    for (const ingredient of result) {
+                        expect(ingredient).instanceOf(IngredientDTO);
+                        IngredientDTO.validTest.call(ingredient);
+                        expect(ingredient.seriesIdx).to.be.oneOf([
+                            1, 2, 3, 4, 5,
+                        ]);
+                    }
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it('# findIngredient success case', (done) => {
+            ingredientDao
+                .findIngredient(
+                    new IngredientConditionDTO({
+                        name: '재료2',
+                    })
+                )
+                .then((result) => {
+                    expect(result).instanceOf(IngredientDTO);
+                    IngredientDTO.validTest.call(result);
+                    expect(result.name).eq('재료2');
+                    expect(result.ingredientIdx).eq(2);
                     done();
                 })
                 .catch((err) => done(err));
@@ -117,119 +109,31 @@ describe('# ingredientDao Test', () => {
         it('# findIngredient success case', (done) => {
             ingredientDao
                 .findIngredient({
-                    name: '재료1',
+                    englishName: 'ingredient english-name',
                 })
                 .then((result) => {
+                    expect(result).instanceOf(IngredientDTO);
+                    IngredientDTO.validTest.call(result);
                     expect(result.name).eq('재료1');
                     expect(result.ingredientIdx).eq(1);
                     done();
                 })
                 .catch((err) => done(err));
         });
+
         it('# findIngredient not found case', (done) => {
             ingredientDao
                 .findIngredient({
                     name: '재료10',
                 })
                 .then(() => {
-                    throw new Error('Must be occur NotMatchedError');
+                    done(new UnExpectedError(NotMatchedError));
                 })
                 .catch((err) => {
                     expect(err).instanceOf(NotMatchedError);
                     done();
                 })
                 .catch((err) => done(err));
-        });
-    });
-
-    describe('# read By perfumeIdx Test', () => {
-        it('# success case', (done) => {
-            ingredientDao
-                .readByPerfumeIdx(1)
-                .then((result) => {
-                    expect(result.length).to.be.gte(3);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
-    describe('# update Test', () => {
-        let ingredientIdx;
-        before(async () => {
-            ingredientIdx = (
-                await Ingredient.upsert({
-                    name: '테스트 데이터',
-                    englishName: 'Test Data',
-                    description: '',
-                    seriesIdx: 1,
-                    imageUrl: '',
-                })
-            )[0].ingredientIdx;
-        });
-        it('# success case', (done) => {
-            ingredientDao
-                .update({
-                    ingredientIdx,
-                    name: '수정 데이터',
-                    englishName: 'Update Data',
-                })
-                .then((result) => {
-                    expect(result).eq(1);
-                    return Ingredient.findByPk(ingredientIdx);
-                })
-                .then((result) => {
-                    expect(result.name).eq('수정 데이터');
-                    expect(result.englishName).eq('Update Data');
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-        it('# Duplicate Error case', (done) => {
-            ingredientDao
-                .update({
-                    ingredientIdx,
-                    name: '재료5',
-                    englishName: 'Update Data',
-                })
-                .then((result) => {
-                    throw new Error('Must be occur NotMatchedError');
-                })
-                .catch((err) => {
-                    expect(err).instanceOf(DuplicatedEntryError);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-        after(async () => {
-            await Ingredient.destroy({ where: { ingredientIdx } });
-        });
-    });
-
-    describe('# delete Test', () => {
-        let ingredientIdx;
-        before(async () => {
-            ingredientIdx = (
-                await Ingredient.upsert({
-                    name: '삭제 데이터',
-                    englishName: 'Delete Data',
-                    description: '',
-                    seriesIdx: 1,
-                    imageUrl: '',
-                })
-            )[0].ingredientIdx;
-        });
-        it('# success case', (done) => {
-            ingredientDao
-                .delete(ingredientIdx)
-                .then((result) => {
-                    expect(result).eq(1);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-        after(async () => {
-            await Ingredient.destroy({ where: { ingredientIdx } });
         });
     });
 });

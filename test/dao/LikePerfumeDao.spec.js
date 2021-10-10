@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-dotenv.config({ path: './config/.env.test' });
+dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;
@@ -7,13 +7,15 @@ const likePerfumeDao = require('../../dao/LikePerfumeDao.js');
 const {
     DuplicatedEntryError,
     NotMatchedError,
+    UnExpectedError,
 } = require('../../utils/errors/errors.js');
 const { LikePerfume } = require('../../models');
 
-describe('# likeDao Test', () => {
+describe('# likePerfumeDao Test', () => {
     before(async function () {
         await require('./common/presets.js')(this);
     });
+
     describe('# create Test', () => {
         before(async () => {
             await LikePerfume.destroy({ where: { userIdx: 5, perfumeIdx: 5 } });
@@ -22,7 +24,10 @@ describe('# likeDao Test', () => {
             likePerfumeDao
                 .create(5, 5)
                 .then((result) => {
-                    expect(result).to.be.not.null;
+                    expect(result.userIdx).to.be.eq(5);
+                    expect(result.perfumeIdx).to.be.eq(5);
+                    expect(result.createdAt).to.be.not.undefined;
+                    expect(result.updatedAt).to.be.not.undefined;
                     done();
                 })
                 .catch((err) => done(err));
@@ -31,7 +36,7 @@ describe('# likeDao Test', () => {
             likePerfumeDao
                 .create(5, 5)
                 .then(() => {
-                    done(new Error('must be expected DuplicatedEntryError'));
+                    done(new UnExpectedError(DuplicatedEntryError));
                 })
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
@@ -39,25 +44,59 @@ describe('# likeDao Test', () => {
                 })
                 .catch((err) => done(err));
         });
+        after(async () => {
+            await LikePerfume.destroy({ where: { userIdx: 5, perfumeIdx: 5 } });
+        });
     });
 
     describe('# read case', () => {
-        it('# success case', (done) => {
+        it('# success case (state: like)', (done) => {
             likePerfumeDao
                 .read(1, 1)
                 .then((result) => {
                     expect(result.userIdx).eq(1);
                     expect(result.perfumeIdx).eq(1);
+                    expect(result.createdAt).to.be.not.undefined;
+                    expect(result.updatedAt).to.be.not.undefined;
                     done();
                 })
                 .catch((err) => done(err));
         });
 
-        it('# fail case', (done) => {
+        it('# success case (state: unlike)', (done) => {
+            likePerfumeDao
+                .read(2, 2)
+                .then(() => {
+                    done(new UnExpectedError(NotMatchedError));
+                })
+                .catch((err) => {
+                    expect(err).instanceOf(NotMatchedError);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it('# fail case (invalid userIdx)', (done) => {
             likePerfumeDao
                 .read(-1, 1)
-                .then((it) => {
-                    expect(it).not.be.ok;
+                .then((result) => {
+                    done(new UnExpectedError(NotMatchedError));
+                })
+                .catch((err) => {
+                    expect(err).to.be.instanceOf(NotMatchedError);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it('# fail case (invalid perfumeIdx)', (done) => {
+            likePerfumeDao
+                .read(1, -1)
+                .then((result) => {
+                    done(new UnExpectedError(NotMatchedError));
+                })
+                .catch((err) => {
+                    expect(err).to.be.instanceOf(NotMatchedError);
                     done();
                 })
                 .catch((err) => done(err));
@@ -67,10 +106,15 @@ describe('# likeDao Test', () => {
             likePerfumeDao
                 .readLikeInfo(1, [1, 2, 3, 4, 5])
                 .then((result) => {
-                    expect(result.filter((it) => it.userIdx == 1).length).eq(
-                        result.length
-                    );
                     expect(result.length).gte(5);
+                    for (const likePerfume of result) {
+                        expect(likePerfume.userIdx).to.eq(1);
+                        expect(likePerfume.perfumeIdx).to.be.oneOf([
+                            1, 2, 3, 4, 5,
+                        ]);
+                        expect(likePerfume.createdAt).to.be.not.undefined;
+                        expect(likePerfume.updatedAt).to.be.not.undefined;
+                    }
                     done();
                 })
                 .catch((err) => done(err));
@@ -79,10 +123,10 @@ describe('# likeDao Test', () => {
 
     describe('# delete Test', () => {
         before(async () => {
-            LikePerfume.upsert({
+            await LikePerfume.upsert({
                 userIdx: 5,
                 perfumeIdx: 5,
-            }).catch((err) => done(err));
+            });
         });
         it('# success case', (done) => {
             likePerfumeDao
@@ -92,6 +136,36 @@ describe('# likeDao Test', () => {
                     done();
                 })
                 .catch((err) => done(err));
+        });
+
+        it('# fail case (not like state)', (done) => {
+            likePerfumeDao
+                .delete(5, 15)
+                .then(() => {
+                    done(new UnExpectedError(NotMatchedError));
+                })
+                .catch((err) => {
+                    expect(err).to.be.instanceOf(NotMatchedError);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it('# fail case (invalid argument)', (done) => {
+            likePerfumeDao
+                .delete(-5, 15)
+                .then(() => {
+                    done(new UnExpectedError(NotMatchedError));
+                })
+                .catch((err) => {
+                    expect(err).to.be.instanceOf(NotMatchedError);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        after(async () => {
+            await LikePerfume.destroy({ where: { userIdx: 5, perfumeIdx: 5 } });
         });
     });
 });

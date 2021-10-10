@@ -1,7 +1,7 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class PerfumeDetail extends Model {
+    class PerfumeDefaultReview extends Model {
         static associate(models) {
             this.belongsTo(models.Perfume, {
                 foreignKey: {
@@ -15,34 +15,50 @@ module.exports = (sequelize, DataTypes) => {
             });
         }
     }
-    PerfumeDetail.init(
+    PerfumeDefaultReview.init(
         {
             perfumeIdx: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 primaryKey: true,
             },
-            story: {
+            rating: {
+                type: DataTypes.FLOAT,
+                allowNull: false,
+                comment: '0.5 ~ 5.0',
+            },
+            seasonal: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                comment: '{spring}/{summer}/{fall}/{winter}',
             },
-            abundanceRate: {
-                type: DataTypes.INTEGER,
-                allowNull: false,
-                comment:
-                    '0: None, 1: 오 드 코롱, 2: 코롱, 3: 오 드 뚜왈렛, 4: 오 드 퍼퓸, 5: 퍼퓸',
-            },
-            volumeAndPrice: {
+            gender: {
                 type: DataTypes.STRING,
                 allowNull: false,
+                comment: '{male}/{neutral}/{female}',
+            },
+            sillage: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                comment: '{light}/{medium}/{heavy}',
+            },
+            longevity: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                comment: '{veryWeak}/{weak}/{normal}/{strong}/{veryStrong}',
+            },
+            keyword: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                comment: '[{keywordIdx},{},{},...]',
             },
         },
         {
-            modelName: 'PerfumeDetail',
+            modelName: 'PerfumeDefaultReview',
             timestamps: true,
             underscored: true,
             sequelize,
         }
     );
-    return PerfumeDetail;
+    return PerfumeDefaultReview;
 };

@@ -54,7 +54,7 @@ let spec = fs.readFileSync(path.join(__dirname, 'api/swagger.yaml'), 'utf8');
 spec = spec
     .replace('{SERVER_URL}', localIpAddress)
     .replace('{SERVER_PORT}', serverPort);
-const swaggerDoc = jsyaml.safeLoad(spec);
+const swaggerDoc = jsyaml.load(spec);
 
 // Initialize the Swagger middleware
 swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
@@ -112,3 +112,5 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 });
 
 require('./lib/cron.js');
+
+module.exports = app;

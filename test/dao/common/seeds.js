@@ -2,7 +2,6 @@ const {
     Brand,
     Series,
     Perfume,
-    PerfumeDetail,
     User,
     Note,
     LikePerfume,
@@ -17,7 +16,7 @@ const {
     Sequelize,
     sequelize,
 } = require('../../../models');
-const { GENDER_MAN, GENDER_WOMAN } = require('../../../utils/code');
+const { GENDER_MAN, GENDER_WOMAN } = require('../../../utils/constantUtil');
 
 module.exports = () => {
     const firstJob = [];
@@ -36,6 +35,7 @@ module.exports = () => {
                 name: `계열${i}`,
                 englishName: 'series english-name',
                 description: '계열 설명 텍스트',
+                imageUrl: 'image-url',
             }),
             User.upsert({
                 userIdx: i,
@@ -49,11 +49,6 @@ module.exports = () => {
             Keyword.upsert({
                 id: i,
                 name: `키워드${i}`,
-            }),
-            JoinPerfumeKeyword.upsert({
-                perfumeIdx: i,
-                keywordIdx: i,
-                count: i,
             })
         );
     }
@@ -63,9 +58,10 @@ module.exports = () => {
             Ingredient.upsert({
                 ingredientIdx: i,
                 name: `재료${i}`,
-                seriesIdx: 1,
+                seriesIdx: i,
                 englishName: 'ingredient english-name',
                 description: '재료 설명 텍스트',
+                imageUrl: 'image-url',
             }),
             Perfume.upsert({
                 perfumeIdx: i,
@@ -73,20 +69,15 @@ module.exports = () => {
                 name: `향수${i}`,
                 englishName: `perfume-${i}`,
                 imageUrl: `http://perfume-image/${i}`,
-                releaseDate: `2021-01-1${i}`,
-                likeCnt: 1,
+                story: `스토리${i}`,
+                abundanceRate: 1,
+                volumeAndPrice: '30/95000,100/190000',
             })
         );
     }
     const thirdJob = [];
     for (let i = 1; i <= 5; i++) {
         thirdJob.push(
-            PerfumeDetail.upsert({
-                perfumeIdx: i,
-                story: `스토리${i}`,
-                abundanceRate: 1,
-                volumeAndPrice: '{"30":"95000","100":"190000"}',
-            }),
             LikePerfume.upsert({ userIdx: 1, perfumeIdx: i }),
             SearchHistory.upsert({ userIdx: i, perfumeIdx: i }),
             SearchHistory.upsert({ userIdx: 1, perfumeIdx: i }),
@@ -103,6 +94,11 @@ module.exports = () => {
                 access: 1,
                 content: `시향노트${i}`,
                 likeCnt: 5,
+            }),
+            JoinPerfumeKeyword.upsert({
+                perfumeIdx: (i % 2) + 1,
+                keywordIdx: i,
+                count: i,
             })
         );
     }

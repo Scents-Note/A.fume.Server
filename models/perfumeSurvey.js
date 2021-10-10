@@ -7,7 +7,6 @@ module.exports = (sequelize, DataTypes) => {
                 foreignKey: {
                     name: 'perfumeIdx',
                     allowNull: false,
-                    primaryKey: true,
                 },
                 as: 'Perfume',
                 onUpdate: 'CASCADE',
@@ -18,6 +17,10 @@ module.exports = (sequelize, DataTypes) => {
     PerfumeSurvey.init(
         {
             gender: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            perfumeIdx: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },

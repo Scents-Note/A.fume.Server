@@ -1,13 +1,17 @@
 const { NotMatchedError } = require('../utils/errors/errors.js');
 const {
     sequelize,
+    Sequelize,
     Review,
     Perfume,
     Brand,
     User,
+    LikeReview,
     JoinReviewKeyword,
+    JoinPerfumeKeyword,
     Keyword,
 } = require('../models');
+const { Op } = Sequelize;
 
 /**
  * 시향노트 작성
@@ -53,55 +57,40 @@ module.exports.create = async ({
 module.exports.read = async (reviewIdx) => {
     const reviewList = await Review.findByPk(reviewIdx, {
         where: { id: reviewIdx },
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
         include: [
             {
                 model: Perfume,
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt'],
-                },
                 include: {
                     model: Brand,
                     as: 'Brand',
-                    attributes: {
-                        exclude: ['createdAt', 'updatedAt'],
-                    },
                 },
             },
         ],
         raw: true,
         nest: true,
     });
+
+    if (!reviewList) {
+        throw new NotMatchedError();
+    }
 
     const keywordList = await JoinReviewKeyword.findAll({
         where: { reviewIdx },
-        attributes: {
-            exclude: ['createdAt', 'updatedAt'],
-        },
         include: [
             {
                 model: Keyword,
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt'],
-                },
             },
         ],
         raw: true,
         nest: true,
     });
 
-    reviewList.keywordList = await keywordList.map((it) => {
+    reviewList.keywordList = keywordList ? keywordList.map((it) => {
         return {
             keywordIdx: it.Keyword.id,
             keyword: it.Keyword.name,
         };
-    });
-
-    if (reviewList.length == 0) {
-        throw new NotMatchedError();
-    }
+    }) : [];
 
     return reviewList;
 };
@@ -121,15 +110,9 @@ module.exports.readAllOfUser = async (
         where: { userIdx },
         include: {
             model: Perfume,
-            attributes: {
-                exclude: ['createdAt', 'updatedAt'],
-            },
             include: {
                 model: Brand,
                 as: 'Brand',
-                attributes: {
-                    exclude: ['createdAt', 'updatedAt'],
-                },
             },
         },
         order: sort,
@@ -159,6 +142,7 @@ SQL_READ_ALL_OF_PERFUME = `
     r.gender as gender, 
     r.access as access, 
     r.content as content, 
+    r.created_at as createdAt,
     u.user_idx as "User.userIdx", 
     u.email as "User.email",
     u.nickname as "User.nickname", 
@@ -167,12 +151,11 @@ SQL_READ_ALL_OF_PERFUME = `
     u.birth as "User.birth", 
     u.grade as "User.grade", 
     u.access_time as "User.accessTime",
-    count(lr.review_idx) as "LikeReview.likeCount"
+    IF( likeCount IS NULL, 0, likeCount) as "LikeReview.likeCount"
     FROM reviews r
     join users u on u.user_idx = r.user_idx 
-    left outer join like_reviews lr on r.id = lr.review_idx 
-    where perfume_idx = $1
-    group by lr.review_idx 
+    left outer join (SELECT review_idx, COUNT(review_idx) as likeCount FROM like_reviews Group By review_idx) AS lr on r.id = lr.review_idx    
+    where r.perfume_idx = $1
     order by "LikeReview.likeCount" desc;`;
 
 module.exports.readAllOfPerfume = async (perfumeIdx) => {
@@ -184,30 +167,6 @@ module.exports.readAllOfPerfume = async (perfumeIdx) => {
         mapToModel: true,
         type: sequelize.QueryTypes.SELECT,
     });
-    // sequelize 시도
-    // let result = await Review.findAll({
-    //     attributes: {
-    //         exclude: ['createdAt', 'updatedAt'],
-    //     },
-    //     include: [
-    //         {
-    //             model: User,
-    //             attributes: {
-    //                 exclude: ['createdAt', 'updatedAt'],
-    //             },
-    //         },
-    //         {
-    //             model: LikeReview,
-    //             as: 'LikeReview',
-    //             //attributes: [sequelize.literal('(SELECT COUNT(*) FROM like_reviews WHERE like_reviews.review_idx = Review.id)'), 'likeCount']
-    //             attributes:[[sequelize.fn('count', 'reviewIdx'), 'likeCount']],
-    //         }
-    //     ],
-    //     order: [[sequelize.literal('"likeCount"'), 'DESC']],
-    //     where: {perfumeIdx: perfumeIdx},
-    //     raw: true,
-    //     nest: true
-    // });
     return reviewList;
 };
 
@@ -250,4 +209,38 @@ module.exports.update = async ({
 
 module.exports.delete = async (reviewIdx) => {
     return await Review.destroy({ where: { id: reviewIdx } });
+};
+
+/**
+ * 데이터 무결성을 위해, 향수 키워드 중 count가 0이하인 행 제거
+ *
+ * @param {number} reviewIdx
+ * @return {Promise}
+ */
+
+module.exports.deleteZeroCount = async () => {
+    return await JoinPerfumeKeyword.destroy({
+        where: {
+            count: {
+                [Op.lte]: 0,
+            },
+        },
+    });
+};
+
+/**
+ *
+ *
+ * @param
+ * @return {Review}
+ */
+module.exports.findOne = ({ userIdx, perfumeIdx }) => {
+    return Review.findOne({
+        where: {
+            userIdx,
+            perfumeIdx,
+        },
+        raw: true,
+        nest: true,
+    });
 };

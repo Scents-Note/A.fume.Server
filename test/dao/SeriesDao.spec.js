@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-dotenv.config({ path: './config/.env.test' });
+dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;
@@ -7,56 +7,65 @@ const seriesDao = require('../../dao/SeriesDao.js');
 const {
     DuplicatedEntryError,
     NotMatchedError,
+    UnExpectedError,
 } = require('../../utils/errors/errors.js');
 const { Series } = require('../../models/index.js');
+const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
+const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
+const { PagingVO } = require('../../data/vo');
+const SeriesDTO = require('../data/dto/SeriesDTO.js');
 
 describe('# seriesDao Test', () => {
     before(async function () {
         await require('./common/presets.js')(this);
     });
     describe(' # create Test', () => {
-        // 중복 데이터 미리 삭제
         before(async () => {
             await Series.destroy({ where: { name: '테스트 데이터' } });
         });
-        // 성공 케이스
         it(' # success case', (done) => {
             seriesDao
-                .create({
-                    name: '테스트 데이터',
-                    englishName: 'Test Data',
-                    description: '왈라왈라',
-                    imageUrl: 'imageUrl',
-                })
+                .create(
+                    new SeriesDTO({
+                        name: '테스트 데이터',
+                        englishName: 'Test Data',
+                        description: '왈라왈라',
+                        imageUrl: 'imageUrl',
+                    })
+                )
                 .then((result) => {
-                    return Series.findOne({ where: { name: '테스트 데이터' } });
-                })
-                .then((result) => {
-                    expect(result.name).eq('테스트 데이터');
-                    expect(result.englishName).eq('Test Data');
-                    expect(result.description).eq('왈라왈라');
-                    expect(result.imageUrl).eq('imageUrl');
+                    expect(result).to.be.instanceOf(CreatedResultDTO);
+                    result.validTest((created) => {
+                        expect(created).instanceOf(SeriesDTO);
+                        SeriesDTO.validTest.call(created);
+                        expect(created.name).to.be.eq('테스트 데이터');
+                        expect(created.englishName).to.be.eq('Test Data');
+                        expect(created.description).to.be.eq('왈라왈라');
+                        expect(created.imageUrl).to.be.eq('imageUrl');
+                    });
                     done();
                 })
                 .catch((err) => done(err));
         });
-        // 중복 데이터 발생 케이스
+
         it(' # DuplicatedEntryError case', (done) => {
             seriesDao
-                .create({
-                    name: '테스트 데이터',
-                    englishName: 'Test Data',
-                    description: '왈라왈라',
-                    imageUrl: 'imageUrl',
-                })
-                .then(() => done(new Error('expected DuplicatedEntryError')))
+                .create(
+                    new SeriesDTO({
+                        name: '테스트 데이터',
+                        englishName: 'Test Data',
+                        description: '왈라왈라',
+                        imageUrl: 'imageUrl',
+                    })
+                )
+                .then(() => done(new UnExpectedError(DuplicatedEntryError)))
                 .catch((err) => {
                     expect(err).instanceOf(DuplicatedEntryError);
                     done();
                 })
                 .catch((err) => done(err));
         });
-        // 테스트 데이터 삭제
+
         after(async () => {
             await Series.destroy({ where: { name: '테스트 데이터' } });
         });
@@ -69,7 +78,8 @@ describe('# seriesDao Test', () => {
                 await Series.upsert({
                     name: '읽기 데이터',
                     englishName: 'Test Data',
-                    description: '',
+                    description: 'description',
+                    imageUrl: 'image-url',
                 })
             )[0].seriesIdx;
         });
@@ -77,7 +87,11 @@ describe('# seriesDao Test', () => {
             seriesDao
                 .readByIdx(seriesIdx)
                 .then((result) => {
-                    expect(result.name).eq('읽기 데이터');
+                    expect(result).instanceOf(SeriesDTO);
+                    SeriesDTO.validTest.call(result);
+                    expect(result.seriesIdx).to.be.eq(seriesIdx);
+                    expect(result.name).to.be.eq('읽기 데이터');
+                    expect(result.englishName).to.be.eq('Test Data');
                     done();
                 })
                 .catch((err) => done(err));
@@ -86,7 +100,10 @@ describe('# seriesDao Test', () => {
             seriesDao
                 .readByName('읽기 데이터')
                 .then((result) => {
-                    expect(result.name).eq('읽기 데이터');
+                    expect(result).instanceOf(SeriesDTO);
+                    SeriesDTO.validTest.call(result);
+                    expect(result.name).to.be.eq('읽기 데이터');
+                    expect(result.englishName).to.be.eq('Test Data');
                     done();
                 })
                 .catch((err) => done(err));
@@ -99,10 +116,13 @@ describe('# seriesDao Test', () => {
     describe(' # readAll Test', () => {
         it(' # success case', (done) => {
             seriesDao
-                .readAll(1, 100)
+                .readAll(new PagingVO({ pagingIndex: 1, pagingSize: 100 }))
                 .then((result) => {
-                    expect(result.count).gt(0);
-                    expect(result.rows.length).greaterThan(0);
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest((item) => {
+                        expect(item).instanceOf(SeriesDTO);
+                        SeriesDTO.validTest.call(item);
+                    });
                     done();
                 })
                 .catch((err) => done(err));
@@ -111,11 +131,31 @@ describe('# seriesDao Test', () => {
 
     describe('# search Test', () => {
         it('# success case', (done) => {
-            seriesDao.search(1, 10, [['createdAt', 'desc']]).then((result) => {
-                expect(result.count).gt(0);
-                expect(result.rows.length).gt(0);
-                done();
-            });
+            seriesDao
+                .search(
+                    new PagingVO({
+                        pagingIndex: 1,
+                        pagingSize: 10,
+                        order: [['createdAt', 'desc']],
+                    })
+                )
+                .then((result) => {
+                    expect(result).instanceOf(ListAndCountDTO);
+                    result.validTest((item) => {
+                        expect(item).instanceOf(SeriesDTO);
+                        SeriesDTO.validTest.call(item);
+                    });
+                    const originString = result.rows
+                        .map((it) => it.seriesIdx)
+                        .toString();
+                    const sortedString = result.rows
+                        .sort((a, b) => a.createdAt > b.createdAt)
+                        .map((it) => it.seriesIdx)
+                        .toString();
+                    expect(sortedString).to.be.eq(originString);
+                    done();
+                })
+                .catch((err) => done(err));
         });
 
         it('# findSeries success case', (done) => {
@@ -124,8 +164,9 @@ describe('# seriesDao Test', () => {
                     name: '계열1',
                 })
                 .then((result) => {
-                    expect(result.name).eq('계열1');
-                    expect(result.seriesIdx).eq(1);
+                    expect(result.seriesIdx).to.be.eq(1);
+                    expect(result.name).to.be.eq('계열1');
+                    SeriesDTO.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
@@ -136,7 +177,7 @@ describe('# seriesDao Test', () => {
                     name: '계열10',
                 })
                 .then(() => {
-                    throw new Error('Must be occur NotMatchedError');
+                    throw new UnExpectedError(NotMatchedError);
                 })
                 .catch((err) => {
                     expect(err).instanceOf(NotMatchedError);
@@ -153,7 +194,7 @@ describe('# seriesDao Test', () => {
                 await Series.upsert({
                     name: '테스트 데이터',
                     englishName: 'Test Data',
-                    description: '',
+                    description: 'description',
                 })
             )[0].seriesIdx;
         });
@@ -182,7 +223,7 @@ describe('# seriesDao Test', () => {
                 await Series.upsert({
                     name: '테스트 데이터',
                     englishName: 'Test Data',
-                    description: '',
+                    description: 'description',
                 })
             )[0].seriesIdx;
         });

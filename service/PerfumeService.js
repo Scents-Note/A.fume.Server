@@ -1,15 +1,29 @@
 'use strict';
 
-const perfumeDao = require('../dao/PerfumeDao.js');
-const reviewDao = require('../dao/ReviewDao.js');
-const ingredientDao = require('../dao/IngredientDao.js');
-const likePerfumeDao = require('../dao/LikePerfumeDao.js');
-const keywordDao = require('../dao/KeywordDao.js');
-const userDao = require('../dao/UserDao.js');
+let perfumeDao = require('../dao/PerfumeDao.js');
+let reviewDao = require('../dao/ReviewDao.js');
+let noteDao = require('../dao/NoteDao');
+let likePerfumeDao = require('../dao/LikePerfumeDao.js');
+let keywordDao = require('../dao/KeywordDao.js');
+let userDao = require('../dao/UserDao.js');
+let s3FileDao = require('../dao/S3FileDao.js');
 
-const { parseSortToOrder } = require('../utils/parser.js');
+const {
+    GENDER_WOMAN,
+    PERFUME_NOTE_TYPE_SINGLE,
+    PERFUME_NOTE_TYPE_NORMAL,
+} = require('../utils/constantUtil.js');
 
-const { GENDER_WOMAN, abundanceRateArr } = require('../utils/code.js');
+const {
+    NoteDictDTO,
+    PerfumeSummaryDTO,
+    PerfumeThumbDTO,
+    PerfumeThumbKeywordDTO,
+    PerfumeIntegralDTO,
+    ListAndCountDTO,
+    PagingDTO,
+    PerfumeSearchDTO,
+} = require('../data/dto');
 
 const {
     NotMatchedError,
@@ -23,14 +37,9 @@ const {
     flatJob,
 } = require('../utils/func.js');
 
-function emptyCheck(x) {
-    if (x == null || x.length == 0) x = '정보 없음';
-    return x;
-}
-
 function isLikeJob(likePerfumeList) {
     const likeMap = likePerfumeList.reduce((prev, cur) => {
-        prev[cur] = true;
+        prev[cur.perfumeIdx] = true;
         return prev;
     }, {});
     return (obj) => {
@@ -58,163 +67,38 @@ const commonJob = [
     extractJob('Brand', ['name', 'brandName']),
     removeKeyJob(
         'perfume_idx',
-        'releaseDate',
         'englishName',
         'brandIdx',
-        'likeCnt'
+        'createdAt',
+        'updatedAt'
     ),
 ];
 
-/**
- * 향수 정보 추가
- *
- * @param {Object} Perfume
- * @returns {Promise}
- **/
-exports.createPerfume = ({
-    brandIdx,
-    name,
-    englishName,
-    volumeAndPrice,
-    story,
-    abundanceRate,
-    imageUrl,
-    releaseDate,
-}) => {
-    return perfumeDao.create({
-        brandIdx,
-        name,
-        englishName,
-        volumeAndPrice,
-        imageUrl,
-        story,
-        abundanceRate,
-        releaseDate,
-    });
-};
-
-/**
- * 향수 삭제
- *
- * @param {number} perfumeIdx
- * @returns {Promise}
- **/
-exports.deletePerfume = (perfumeIdx) => {
-    return perfumeDao.delete(perfumeIdx);
-};
-
-const seasonalArr = ['spring', 'summer', 'fall', 'winter'];
-const sillageArr = ['light', 'normal', 'heavy'];
-const longevityArr = ['veryWeak', 'weak', 'medium', 'strong', 'veryStrong'];
-const genderArr = ['male', 'neutral', 'female'];
-const noteTypeArr = ['top', 'middle', 'base', 'single'];
-
-function makeZeroMap(arr) {
-    return arr.reduce((prev, cur) => {
-        prev[cur] = 0;
-        return prev;
-    }, {});
-}
-
-function makeInitMap(arr, initFunc) {
-    return arr.reduce((prev, cur) => {
-        prev[cur] = initFunc();
-        return prev;
-    }, {});
-}
-
-function updateCount(obj, prop) {
-    if (!obj[prop]) {
-        obj[prop] = 0;
-    }
-    obj[prop] = obj[prop] + 1;
-}
-
-function normalize(obj) {
-    const result = {};
-    const entries = Object.entries(obj);
-    const total = entries.reduce((prev, cur) => {
-        return prev + cur[1];
-    }, 0);
-    if (total == 0) {
-        return obj;
-    }
-    let remain = 100;
-    let maxKey = 0;
-    let max = 0;
-    for (const [key, value] of entries) {
-        result[key] = parseInt((parseFloat(value) / total) * 100);
-        remain -= result[key];
-        if (max < value) {
-            max = value;
-            maxKey = key;
-        }
-    }
-    result[maxKey] += remain;
-    return result;
-}
-
 async function generateNote(perfumeIdx) {
-    const noteMap = (await ingredientDao.readByPerfumeIdx(perfumeIdx))
-        .map((it) => {
-            it.type = noteTypeArr[it.Notes.type - 1];
-            delete it.Notes;
-            return it;
-        })
-        .reduce(
-            (prev, cur) => {
-                let type = cur.type;
-                prev[type].push(cur.name);
-                return prev;
-            },
-            makeInitMap(noteTypeArr, () => [])
-        );
-    for (const key in noteMap) {
-        if (!noteMap[key] instanceof Array) throw 'Invalid Type Exception';
-        noteMap[key] = noteMap[key].join(', ');
-    }
-    const noteType = noteMap.single.length > 0 ? 1 : 0;
-    return { noteType, ingredients: noteMap };
+    const noteList = await noteDao.readByPerfumeIdx(perfumeIdx);
+    const noteDictDTO = NoteDictDTO.createByNoteList(noteList);
+    const noteType =
+        noteDictDTO.single.length > 0
+            ? PERFUME_NOTE_TYPE_SINGLE
+            : PERFUME_NOTE_TYPE_NORMAL;
+    return { noteType, noteDictDTO };
 }
 
 async function generateSummary(perfumeIdx) {
-    let sum = 0,
-        cnt = 0;
-    let seasonalMap = makeZeroMap(seasonalArr);
-    let sillageMap = makeZeroMap(sillageArr);
-    let longevityMap = makeZeroMap(longevityArr);
-    let genderMap = makeZeroMap(genderArr);
-
-    (await reviewDao.readAllOfPerfume(perfumeIdx))
-        .map((it) => {
-            it.seasonal = seasonalArr[it.seasonal - 1];
-            it.sillage = sillageArr[it.sillage - 1];
-            it.longevity = longevityArr[it.longevity - 1];
-            it.gender = genderArr[it.gender - 1];
-            return it;
-        })
-        .forEach((review) => {
-            if (review.score) {
-                sum += review.score;
-                cnt++;
-                updateCount(longevityMap, review.longevity);
-                updateCount(sillageMap, review.sillage);
-                updateCount(seasonalMap, review.seasonal);
-                updateCount(genderMap, review.gender);
-            }
-        });
-
-    return {
-        score: parseFloat((parseFloat(sum) / cnt).toFixed(2)) || 0,
-        seasonal: normalize(seasonalMap),
-        sillage: normalize(sillageMap),
-        longevity: normalize(longevityMap),
-        gender: normalize(genderMap),
-    };
+    const reviewList = await reviewDao.readAllOfPerfume(perfumeIdx);
+    return PerfumeSummaryDTO.create(reviewList);
 }
 
-function numberWithCommas(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+function isLike({ userIdx, perfumeIdx }) {
+    return likePerfumeDao
+        .read(userIdx, perfumeIdx)
+        .then((it) => true)
+        .catch((err) => {
+            if (err instanceof NotMatchedError) {
+                return false;
+            }
+            throw err;
+        });
 }
 
 /**
@@ -230,52 +114,54 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
         (prev, cur) => cur(prev),
         _perfume
     );
-    perfume.abundanceRate = abundanceRateArr[perfume.abundanceRate];
 
-    const likePerfumeList = await likePerfumeDao.read(userIdx, perfumeIdx);
-    perfume.isLiked = likePerfumeList ? true : false;
-    perfume.Keywords = (await keywordDao.readAllOfPerfume(perfumeIdx)).map(
+    perfume.isLiked = await isLike({ userIdx, perfumeIdx });
+    const keywordList = (await keywordDao.readAllOfPerfume(perfumeIdx)).map(
         (it) => it.name
     );
-    perfume.volumeAndPrice = perfume.volumeAndPrice.map((it) => {
-        return `${numberWithCommas(it.price)}/${it.volume}ml`;
+
+    const imageUrls = await s3FileDao.getS3ImageList(perfumeIdx);
+    const { noteType, noteDictDTO } = await generateNote(perfumeIdx);
+    const perfumeSummaryDTO = await generateSummary(perfumeIdx);
+
+    const reviewIdx = await reviewDao
+        .findOne({ userIdx, perfumeIdx })
+        .then((it) => it.id || 0)
+        .catch((_) => 0);
+    return PerfumeIntegralDTO.create({
+        perfumeDTO: perfume,
+        keywordList,
+        perfumeSummaryDTO,
+        noteDictDTO,
+        noteType,
+        imageUrls,
+        reviewIdx,
     });
-    Object.assign(perfume, await generateNote(perfumeIdx));
-    Object.assign(perfume, await generateSummary(perfumeIdx));
-    for (const key in perfume) {
-        if (!perfume[key] instanceof String) continue;
-        perfume[key] = emptyCheck(perfume[key]);
-    }
-    return perfume;
 };
 
 /**
  * 향수 검색
  *
- * @param {number[]} brandIdxList
- * @param {number[]} ingredientIdxList
- * @param {number[]} keywordIdxList
- * @param {number} pagingIndex
- * @param {number} pagingSize
- * @param {array} sort
- * @param {number} userIdx
+ * @param {PerfumeSearchRequestDTO} perfumeSearchRequestDTO
+ * @param {PagingRequestDTO} pagingRequestDTO
  * @returns {Promise<Perfume[]>}
  **/
-exports.searchPerfume = (
-    brandIdxList,
-    ingredientIdxList,
-    keywordIdxList,
-    pagingIndex,
-    pagingSize,
-    sort,
-    userIdx
-) => {
-    const order = parseSortToOrder(sort);
+exports.searchPerfume = ({ perfumeSearchRequestDTO, pagingRequestDTO }) => {
+    const { pagingIndex, pagingSize, order } =
+        PagingDTO.create(pagingRequestDTO);
+    const {
+        brandIdxList,
+        ingredientIdxList,
+        keywordIdxList,
+        searchText,
+        userIdx,
+    } = PerfumeSearchDTO.create(perfumeSearchRequestDTO);
     return perfumeDao
         .search(
             brandIdxList,
             ingredientIdxList,
             keywordIdxList,
+            searchText,
             pagingIndex,
             pagingSize,
             order
@@ -286,12 +172,11 @@ exports.searchPerfume = (
                 userIdx,
                 perfumeIdxList
             );
-            return updateRows(
-                result,
-                ...commonJob,
-                removeKeyJob('SearchHistory', 'Score'),
-                isLikeJob(likePerfumeList)
-            );
+            updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
+            return new ListAndCountDTO({
+                count: result.count,
+                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            });
         });
 };
 
@@ -313,42 +198,12 @@ exports.getSurveyPerfume = (userIdx) => {
                 userIdx,
                 perfumeIdxList
             );
-            return updateRows(
-                result,
-                ...commonJob,
-                removeKeyJob('PerfumeSurvey')
-            );
+            updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
+            return new ListAndCountDTO({
+                count: result.count,
+                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            });
         });
-};
-
-/**
- * 향수 정보 업데이트
- *
- * @param {Object} Perfume
- * @returns {Promise}
- **/
-exports.updatePerfume = ({
-    perfumeIdx,
-    name,
-    brandIdx,
-    englishName,
-    volumeAndPrice,
-    imageThumbnailUrl,
-    story,
-    abundanceRate,
-    imageUrl,
-}) => {
-    return perfumeDao.update({
-        perfumeIdx,
-        name,
-        brandIdx,
-        englishName,
-        volumeAndPrice,
-        imageThumbnailUrl,
-        story,
-        abundanceRate,
-        imageUrl,
-    });
 };
 
 /**
@@ -360,22 +215,23 @@ exports.updatePerfume = ({
  **/
 exports.likePerfume = (userIdx, perfumeIdx) => {
     return new Promise((resolve, reject) => {
-        let isExist = false;
         likePerfumeDao
             .read(userIdx, perfumeIdx)
             .then((res) => {
-                isExist = true;
-                return likePerfumeDao.delete(userIdx, perfumeIdx);
+                return likePerfumeDao
+                    .delete(userIdx, perfumeIdx)
+                    .then((it) => true);
             })
             .catch((err) => {
-                isExist = false;
                 if (err instanceof NotMatchedError) {
-                    return likePerfumeDao.create(userIdx, perfumeIdx);
+                    return likePerfumeDao
+                        .create(userIdx, perfumeIdx)
+                        .then((it) => false);
                 }
                 reject(new FailedToCreateError());
             })
-            .then(() => {
-                resolve(!isExist);
+            .then((exist) => {
+                resolve(!exist);
             })
             .catch((err) => {
                 reject(err);
@@ -387,11 +243,11 @@ exports.likePerfume = (userIdx, perfumeIdx) => {
  * 유저의 최근 검색한 향수 조회
  *
  * @param {number} userIdx
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {PagingRequestDTO} pagingRequestDTO
  * @returns {Promise<Perfume[]>}
  **/
-exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
+exports.recentSearch = ({ userIdx, pagingRequestDTO }) => {
+    const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
     return perfumeDao
         .recentSearchPerfumeList(userIdx, pagingIndex, pagingSize)
         .then(async (result) => {
@@ -400,12 +256,11 @@ exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
                 userIdx,
                 perfumeIdxList
             );
-            return updateRows(
-                result,
-                ...commonJob,
-                removeKeyJob('SearchHistory'),
-                isLikeJob(likePerfumeList)
-            );
+            updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
+            return new ListAndCountDTO({
+                count: result.count,
+                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            });
         });
 };
 
@@ -413,31 +268,21 @@ exports.recentSearch = (userIdx, pagingIndex, pagingSize) => {
  * 유저 연령대 및 성별에 따른 향수 추천
  *
  * @param {number} userIdx
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {number} pagingRequestDTO
  * @returns {Promise<Perfume[]>}
  **/
-exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
-    let ageGroup, gender;
-    if (userIdx == -1) {
-        gender = GENDER_WOMAN;
-        ageGroup = 20;
-    } else {
-        const user = await userDao.readByIdx(userIdx);
-        const today = new Date();
-        const age = today.getFullYear() - user.birth + 1;
-        gender = user.gender;
-        ageGroup = parseInt(age / 10) * 10;
-    }
+exports.recommendByUser = async ({ userIdx, pagingRequestDTO }) => {
+    const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
+    const { ageGroup, gender } = await getAgeGroupAndGender(userIdx);
 
-    const recommendedList = this.recommendByGenderAgeAndGender(
+    const recommendedListPromise = this.recommendByGenderAgeAndGender(
         gender,
         ageGroup,
         pagingIndex,
         pagingSize
     );
 
-    return recommendedList.then(async (result) => {
+    return recommendedListPromise.then(async (result) => {
         const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
         let likePerfumeList = [];
         if (userIdx > -1) {
@@ -451,13 +296,16 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
             perfumeIdxList
         );
 
-        return updateRows(
+        updateRows(
             result,
             ...commonJob,
-            removeKeyJob('SearchHistory'),
             isLikeJob(likePerfumeList),
             addKeyword(joinKeywordList)
         );
+        return new ListAndCountDTO({
+            count: result.count,
+            rows: result.rows.map((it) => new PerfumeThumbKeywordDTO(it)),
+        });
     });
 };
 
@@ -473,9 +321,9 @@ exports.recommendByUser = async (userIdx, pagingIndex, pagingSize) => {
 exports.recommendByGenderAgeAndGender = (
     gender,
     ageGroup,
-    pagingIndex,
-    pagingSize
+    pagingRequestDTO
 ) => {
+    const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
     return perfumeDao.recommendPerfumeByAgeAndGender(
         gender,
         ageGroup,
@@ -488,11 +336,11 @@ exports.recommendByGenderAgeAndGender = (
  * 새로 추가된 향수 조회
  *
  * @param {number} userIdx
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {number} pagingRequestDTO
  * @returns {Promise<Perfume[]>}
  **/
-exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
+exports.getNewPerfume = ({ userIdx, pagingRequestDTO }) => {
+    const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
     const fromDate = new Date();
     fromDate.setDate(fromDate.getDate() - 7);
     return perfumeDao
@@ -503,7 +351,11 @@ exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
                 userIdx,
                 perfumeIdxList
             );
-            return updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
+            updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
+            return new ListAndCountDTO({
+                count: result.count,
+                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            });
         });
 };
 
@@ -511,11 +363,11 @@ exports.getNewPerfume = (userIdx, pagingIndex, pagingSize) => {
  * 유저가 좋아요한 향수 조회
  *
  * @param {number} userIdx
- * @param {number} pagingIndex
- * @param {number} pagingSize
+ * @param {number} pagingRequestDTO
  * @returns {Promise<Perfume[]>}
  **/
-exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
+exports.getLikedPerfume = ({ userIdx, pagingRequestDTO }) => {
+    const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
     return perfumeDao
         .readLikedPerfume(userIdx, pagingIndex, pagingSize)
         .then(async (result) => {
@@ -524,20 +376,53 @@ exports.getLikedPerfume = (userIdx, pagingIndex, pagingSize) => {
                 userIdx,
                 perfumeIdxList
             );
-            return updateRows(
-                result,
-                ...commonJob,
-                removeKeyJob('LikePerfume')
-            );
+            updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
+            return new ListAndCountDTO({
+                count: result.count,
+                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
+            });
         });
 };
 
-/**
- * 향수 idx값 조회
- *
- * @param {string} englishName
- * @returns {Promise<number>}
- **/
-exports.findPerfumeIdxByEnglishName = (englishName) => {
-    return perfumeDao.findPerfumeIdx({ englishName });
+async function getAgeGroupAndGender(userIdx) {
+    if (userIdx == -1) {
+        return {
+            gender: GENDER_WOMAN,
+            ageGroup: 20,
+        };
+    }
+    const user = await userDao.readByIdx(userIdx);
+    const today = new Date();
+    const age = today.getFullYear() - user.birth + 1;
+    const gender = user.gender;
+    const ageGroup = parseInt(age / 10) * 10;
+    return { gender, ageGroup };
+}
+
+exports.setPerfumeDao = (dao) => {
+    perfumeDao = dao;
+};
+
+exports.setReviewDao = (dao) => {
+    reviewDao = dao;
+};
+
+exports.setNoteDao = (dao) => {
+    noteDao = dao;
+};
+
+exports.setLikePerfumeDao = (dao) => {
+    likePerfumeDao = dao;
+};
+
+exports.setKeywordDao = (dao) => {
+    keywordDao = dao;
+};
+
+exports.setUserDao = (dao) => {
+    userDao = dao;
+};
+
+exports.setS3FileDao = (dao) => {
+    s3FileDao = dao;
 };
