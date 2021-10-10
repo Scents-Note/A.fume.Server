@@ -36,7 +36,7 @@ describe('# brandDao Test', () => {
                     expect(result).instanceOf(CreatedResultDTO);
                     result.validTest((created) => {
                         expect(created).instanceOf(BrandDTO);
-                        created.validTest();
+                        BrandDTO.validTest.call(created);
                     });
                     done();
                 })
@@ -72,7 +72,7 @@ describe('# brandDao Test', () => {
                     expect(result.brandIdx).to.be.eq(2);
                     expect(result.name).to.be.eq('브랜드2');
                     expect(result.firstInitial).to.be.eq('ㅂ');
-                    result.validTest();
+                    BrandDTO.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
@@ -87,7 +87,7 @@ describe('# brandDao Test', () => {
                     expect(result.brandIdx).to.be.eq(1);
                     expect(result.name).to.be.eq('브랜드1');
                     expect(result.firstInitial).to.be.eq('ㅂ');
-                    result.validTest();
+                    BrandDTO.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
@@ -122,7 +122,8 @@ describe('# brandDao Test', () => {
                     expect(result.count).gte(5);
                     expect(result.rows.length).gte(5);
                     for (const brand of result.rows) {
-                        brand.validTest();
+                        expect(brand).to.be.instanceOf(BrandDTO);
+                        BrandDTO.validTest.call(brand);
                     }
                     done();
                 })
@@ -137,8 +138,8 @@ describe('# brandDao Test', () => {
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
                     result.validTest((item) => {
-                        expect(item).instanceOf(BrandDTO);
-                        item.validTest();
+                        expect(item).to.be.instanceOf(BrandDTO);
+                        BrandDTO.validTest.call(item);
                     });
                     done();
                 })
@@ -180,7 +181,7 @@ describe('# brandDao Test', () => {
                     expect(updated.firstInitial).eq('ㅂ');
                     expect(updated.imageUrl).eq('image_url');
                     expect(updated.description).eq('변경완료');
-                    updated.validTest();
+                    BrandDTO.validTest.call(updated);
                     done();
                 })
                 .catch((err) => done(err));

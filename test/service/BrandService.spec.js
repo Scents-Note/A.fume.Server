@@ -47,8 +47,8 @@ describe('# Brand Service Test', () => {
                 .then((res) => {
                     expect(res).instanceOf(ListAndCountDTO);
                     res.validTest((item) => {
-                        expect(item).instanceOf(BrandDTO);
-                        item.validTest();
+                        expect(item).to.be.instanceOf(BrandDTO);
+                        BrandDTO.validTest.call(item);
                     });
                     done();
                 })
@@ -62,8 +62,8 @@ describe('# Brand Service Test', () => {
                 .then((res) => {
                     expect(res).instanceOf(ListAndCountDTO);
                     res.validTest((item) => {
-                        expect(item).instanceOf(BrandDTO);
-                        item.validTest();
+                        expect(item).to.be.instanceOf(BrandDTO);
+                        BrandDTO.validTest.call(item);
                     });
                     done();
                 })
@@ -75,7 +75,8 @@ describe('# Brand Service Test', () => {
         it('# success Test', (done) => {
             Brand.getBrandByIdx(1)
                 .then((brandDTO) => {
-                    brandDTO.validTest();
+                    expect(brandDTO).to.be.instanceOf(BrandDTO);
+                    BrandDTO.validTest.call(brandDTO);
                     done();
                 })
                 .catch((err) => done(err));
@@ -88,8 +89,8 @@ describe('# Brand Service Test', () => {
                 .then((res) => {
                     expect(res).instanceOf(CreatedResultDTO);
                     res.validTest((created) => {
-                        expect(created).instanceOf(BrandDTO);
-                        created.validTest();
+                        expect(created).to.be.instanceOf(BrandDTO);
+                        BrandDTO.validTest.call(created);
                     });
                     done();
                 })
@@ -137,7 +138,7 @@ describe('# Brand Service Test', () => {
             Brand.findBrandByEnglishName('브랜드')
                 .then((brandDTO) => {
                     expect(brandDTO).to.be.instanceOf(BrandDTO);
-                    brandDTO.validTest();
+                    BrandDTO.validTest.call(brandDTO);
                     done();
                 })
                 .catch((err) => done(err));
