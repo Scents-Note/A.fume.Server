@@ -27,7 +27,7 @@ describe('# User Service Test', () => {
                 .createUser({})
                 .then((result) => {
                     expect(result).to.be.instanceOf(TokenGroupDTO);
-                    result.validTest();
+                    TokenGroupDTO.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
