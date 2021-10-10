@@ -93,7 +93,7 @@ describe('# User Service Test', () => {
                 .updateUser({ userIdx: 1 })
                 .then((it) => {
                     expect(it).to.be.instanceOf(UserDTO);
-                    it.validTest();
+                    UserDTO.validTest.call(it);
                     done();
                 })
                 .catch((err) => done(err));
