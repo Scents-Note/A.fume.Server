@@ -49,7 +49,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 comment:
-                    '0: None, 1: 오 드 코롱, 2: 코롱, 3: 오 드 뚜왈렛, 4: 오 드 퍼퓸, 5: 퍼퓸',
+                    '0: None, 1: 코롱, 2: 오 드 코롱, 3: 오 드 뚜왈렛, 4: 오 드 퍼퓸, 5: 퍼퓸, 6: 기타',
             },
             volumeAndPrice: {
                 type: DataTypes.STRING,

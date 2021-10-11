@@ -6,11 +6,12 @@ module.exports = {
     GRADE_SYSTEM_ADMIN: 9,
     ABUNDANCE_RATE_LIST: [
         'None',
-        '오 드 코롱',
         '코롱',
+        '오 드 코롱',
         '오 드 뚜왈렛',
         '오 드 퍼퓸',
         '퍼퓸',
+        '기타',
     ],
     NOTE_TYPE_TOP: 1,
     NOTE_TYPE_MIDDLE: 2,
