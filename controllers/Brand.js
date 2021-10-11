@@ -7,8 +7,6 @@ module.exports.setBrandService = (brandService) => {
 };
 const { OK } = require('../utils/statusCode.js');
 
-const { PagingRequestDTO } = require('../data/request_dto');
-
 const {
     ResponseDTO,
     ListAndCountResponseDTO,

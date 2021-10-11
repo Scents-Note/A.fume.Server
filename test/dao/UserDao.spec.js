@@ -36,10 +36,7 @@ describe('# userDao Test', () => {
                 })
                 .then((result) => {
                     expect(result).instanceOf(CreatedResultDTO);
-                    result.validTest((created) => {
-                        expect(created).instanceOf(UserDTO);
-                        created.validTest();
-                    });
+                    CreatedResultDTO.validTest.call(result, UserDTO.validTest);
                     done();
                 })
                 .catch((err) => done(err));
@@ -75,7 +72,7 @@ describe('# userDao Test', () => {
                     .read({ email: 'email1@afume.com' })
                     .then((result) => {
                         expect(result).instanceOf(UserDTO);
-                        result.validTest();
+                        UserDTO.validTest.call(result);
                         done();
                     })
                     .catch((err) => done(err));
@@ -99,7 +96,7 @@ describe('# userDao Test', () => {
                     .readByIdx(1)
                     .then((result) => {
                         expect(result).to.be.instanceOf(UserDTO);
-                        result.validTest();
+                        UserDTO.validTest.call(result);
                         expect(result.userIdx).to.be.eq(1);
                         done();
                     })
@@ -151,7 +148,7 @@ describe('# userDao Test', () => {
                 })
                 .then((result) => {
                     expect(result).to.be.instanceOf(UserDTO);
-                    result.validTest();
+                    UserDTO.validTest.call(result);
                     expect(result.userIdx).to.be.eq(userIdx);
                     expect(result.nickname).to.be.eq('수정 테스트(完)');
                     expect(result.email).to.be.eq('updateTest@afume.com');

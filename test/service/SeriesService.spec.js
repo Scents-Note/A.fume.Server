@@ -4,39 +4,24 @@ dotenv.config();
 const chai = require('chai');
 const { expect } = chai;
 
-const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 const SeriesDTO = require('../data/dto/SeriesDTO');
 const IngredientDTO = require('../data/dto/IngredientDTO');
-const SeriesFilterVO = require('../data/vo/SeriesFilterVO');
+const SeriesFilterDTO = require('../data/dto/SeriesFilterDTO');
 
 const seriesService = require('../../service/SeriesService');
-seriesService.setSeriesDao(require('../dao/SeriesDao.mock.js'));
+const mockSeriesDAO = {};
+seriesService.setSeriesDao(mockSeriesDAO);
 const mockIngredientDAO = {};
 seriesService.setIngredientDao(mockIngredientDAO);
 
 const mockNoteDAO = {};
 seriesService.setNoteDao(mockNoteDAO);
 
-describe('# Brand Service Test', () => {
-    describe('# postSeries Test', () => {
-        it('# success Test', (done) => {
-            seriesService
-                .postSeries(SeriesDTO.createWithIdx(1))
-                .then((res) => {
-                    expect(res).instanceOf(CreatedResultDTO);
-                    res.validTest((created) => {
-                        expect(created).instanceOf(SeriesDTO);
-                        SeriesDTO.validTest.call(created);
-                    });
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
+describe('# Series Service Test', () => {
     describe('# getSeriesByIdx Test', () => {
         it('# success Test', (done) => {
+            mockSeriesDAO.readByIdx = async () => SeriesDTO.createWithIdx(1);
             seriesService
                 .getSeriesByIdx(1)
                 .then((seriesDTO) => {
@@ -49,14 +34,20 @@ describe('# Brand Service Test', () => {
 
     describe('# getSeriesAll Test', () => {
         it('# success Test', (done) => {
+            mockSeriesDAO.readAll = async () =>
+                new ListAndCountDTO({
+                    count: 3,
+                    rows: [
+                        SeriesDTO.createWithIdx(1),
+                        SeriesDTO.createWithIdx(2),
+                        SeriesDTO.createWithIdx(3),
+                    ],
+                });
             seriesService
                 .getSeriesAll({})
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest((item) => {
-                        expect(item).instanceOf(SeriesDTO);
-                        SeriesDTO.validTest.call(item);
-                    });
+                    ListAndCountDTO.validTest.call(result, SeriesDTO.validTest);
                     done();
                 })
                 .catch((err) => done(err));
@@ -65,37 +56,20 @@ describe('# Brand Service Test', () => {
 
     describe('# searchSeries Test', () => {
         it('# success Test', (done) => {
+            mockSeriesDAO.search = async () =>
+                new ListAndCountDTO({
+                    count: 3,
+                    rows: [
+                        SeriesDTO.createWithIdx(1),
+                        SeriesDTO.createWithIdx(2),
+                        SeriesDTO.createWithIdx(3),
+                    ],
+                });
             seriesService
                 .searchSeries({})
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest((item) => {
-                        expect(item).instanceOf(SeriesDTO);
-                        SeriesDTO.validTest.call(item);
-                    });
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
-    describe('# putSeries Test', () => {
-        it('# success Test', (done) => {
-            seriesService
-                .putSeries(SeriesDTO.createWithIdx(1))
-                .then((affectedRow) => {
-                    expect(affectedRow).to.be.eq(1);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
-    describe('# deleteSeries Test', () => {
-        it('# success Test', (done) => {
-            seriesService
-                .deleteSeries(1)
-                .then(() => {
+                    ListAndCountDTO.validTest.call(result, SeriesDTO.validTest);
                     done();
                 })
                 .catch((err) => done(err));
@@ -140,10 +114,9 @@ describe('# Brand Service Test', () => {
                 .getFilterSeries({})
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.validTest((item) => {
-                        expect(item).instanceOf(SeriesFilterVO);
-                        SeriesFilterVO.validTest.call(item);
-                        for (const ingredientDTO of item.ingredients) {
+                    ListAndCountDTO.validTest.call(result, function () {
+                        SeriesFilterDTO.validTest.call(this);
+                        for (const ingredientDTO of this.ingredients) {
                             expect(
                                 isNoteCountOver10(ingredientDTO.ingredientIdx)
                             ).to.be.eq(true);
@@ -158,8 +131,10 @@ describe('# Brand Service Test', () => {
 
     describe('# findSeriesByEnglishName Test', () => {
         it('# success Test', (done) => {
+            mockSeriesDAO.findSeries = async () =>
+                SeriesDTO.create({ name: 'test' });
             seriesService
-                .findSeriesByEnglishName('')
+                .findSeriesByEnglishName('test')
                 .then((result) => {
                     expect(result).instanceOf(SeriesDTO);
                     SeriesDTO.validTest.call(result);

@@ -3,7 +3,8 @@ const { expect } = require('chai');
 const LoginInfoDTO = require('../../../data/dto/LoginInfoDTO');
 
 const { GENDER_WOMAN } = require('../../../utils/constantUtil');
-LoginInfoDTO.prototype.validTest = function () {
+
+LoginInfoDTO.validTest = function () {
     expect(this.userIdx).to.be.ok;
     expect(this.nickname).to.be.ok;
     expect(this.gender).to.be.ok;

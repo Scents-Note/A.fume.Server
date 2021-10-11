@@ -9,7 +9,7 @@ const {
     GRADE_SYSTEM_ADMIN,
 } = require('../../../utils/constantUtil');
 
-UserDTO.prototype.validTest = function () {
+UserDTO.validTest = function () {
     expect(this.userIdx).to.be.gt(0);
     expect(this.nickname).to.be.ok;
     expect(this.email).to.be.ok;

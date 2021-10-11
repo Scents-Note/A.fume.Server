@@ -4,7 +4,7 @@ const BrandDTO = require('../../../data/dto/BrandDTO');
 
 const FIRST_INITIAL_REGEX = /^[ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅍㅌㅎ]$/;
 
-BrandDTO.prototype.validTest = function () {
+BrandDTO.validTest = function () {
     expect(this.brandIdx).to.be.ok;
     expect(this.name).to.be.ok;
     expect(this.firstInitial).to.be.match(FIRST_INITIAL_REGEX);

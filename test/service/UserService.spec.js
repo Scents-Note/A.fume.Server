@@ -27,7 +27,7 @@ describe('# User Service Test', () => {
                 .createUser({})
                 .then((result) => {
                     expect(result).to.be.instanceOf(TokenGroupDTO);
-                    result.validTest();
+                    TokenGroupDTO.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
@@ -80,7 +80,7 @@ describe('# User Service Test', () => {
                 .loginUser('', 'decrypted')
                 .then((result) => {
                     expect(result).to.be.instanceOf(LoginInfoDTO);
-                    result.validTest();
+                    LoginInfoDTO.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
@@ -93,7 +93,7 @@ describe('# User Service Test', () => {
                 .updateUser({ userIdx: 1 })
                 .then((it) => {
                     expect(it).to.be.instanceOf(UserDTO);
-                    it.validTest();
+                    UserDTO.validTest.call(it);
                     done();
                 })
                 .catch((err) => done(err));

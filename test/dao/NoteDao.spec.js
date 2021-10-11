@@ -106,7 +106,7 @@ describe('# NoteDao Test', () => {
                 .then((result) => {
                     result.forEach((note) => {
                         expect(note).instanceOf(NoteDTO);
-                        note.validTest();
+                        NoteDTO.validTest.call(note);
                     });
                     done();
                 })

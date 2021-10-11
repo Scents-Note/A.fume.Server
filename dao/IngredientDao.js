@@ -1,15 +1,7 @@
-const {
-    NotMatchedError,
-    FailedToCreateError,
-    DuplicatedEntryError,
-} = require('../utils/errors/errors.js');
+const { NotMatchedError } = require('../utils/errors/errors.js');
 
 const { Ingredient, Sequelize } = require('../models');
-const {
-    IngredientDTO,
-    CreatedResultDTO,
-    ListAndCountDTO,
-} = require('../data/dto');
+const { IngredientDTO, ListAndCountDTO } = require('../data/dto');
 const { Op } = Sequelize;
 
 /**

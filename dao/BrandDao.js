@@ -4,38 +4,7 @@ const {
 } = require('../utils/errors/errors.js');
 
 const { Brand } = require('../models');
-const { BrandDTO, ListAndCountDTO, CreatedResultDTO } = require('../data/dto');
-/**
- * 브랜드 생성
- *
- * @param {BrandDTO} brandDTO
- * @param {Promise}
- * @returns {Promise<CreatedResultDTO<BrandDTO>>} createdResultDTO
- */
-module.exports.create = (brandDTO) => {
-    return Brand.create({
-        name: brandDTO.name,
-        englishName: brandDTO.englishName,
-        firstInitial: brandDTO.firstInitial,
-        imageUrl: brandDTO.imageUrl,
-        description: brandDTO.description,
-    })
-        .then((brand) => {
-            return new CreatedResultDTO({
-                idx: brand.brandIdx,
-                created: new BrandDTO(brand),
-            });
-        })
-        .catch((err) => {
-            if (
-                err.parent.errno === 1062 ||
-                err.parent.code === 'ER_DUP_ENTRY'
-            ) {
-                throw new DuplicatedEntryError();
-            }
-            throw err;
-        });
-};
+const { BrandDTO, ListAndCountDTO } = require('../data/dto');
 
 /**
  * 브랜드 세부 조회
@@ -88,57 +57,6 @@ module.exports.readAll = async () => {
             rows: result.rows.map((it) => new BrandDTO(it)),
         });
     });
-};
-
-/**
- * 브랜드 수정
- *
- * @param {Object} Brand
- * @return {Promise<boolean>} isSuccess
- */
-module.exports.update = ({
-    brandIdx,
-    name,
-    englishName,
-    firstInitial,
-    imageUrl,
-    description,
-}) => {
-    return Brand.update(
-        {
-            name,
-            englishName,
-            firstInitial,
-            imageUrl,
-            description,
-        },
-        { where: { brandIdx } }
-    )
-        .catch((err) => {
-            if (
-                err.parent.errno === 1062 ||
-                err.parent.code === 'ER_DUP_ENTRY'
-            ) {
-                throw new DuplicatedEntryError();
-            }
-            throw err;
-        })
-        .then(([affectedRows]) => {
-            if (affectedRows == 0) {
-                throw new NotMatchedError();
-            }
-            return affectedRows;
-        });
-};
-
-/**
- * 브랜드 전체 삭제
- *
- * @param {number} brandIdx
- * @returns {Promise}
- */
-module.exports.delete = (brandIdx) => {
-    return Brand.destroy({ where: { brandIdx } });
 };
 
 /**

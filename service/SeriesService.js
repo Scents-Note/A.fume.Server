@@ -17,19 +17,7 @@ module.exports.setNoteDao = (dao) => {
 
 const { PagingRequestDTO } = require('../data/request_dto');
 
-const { ListAndCountDTO } = require('../data/dto');
-
-const { PagingVO, SeriesFilterVO } = require('../data/vo');
-
-/**
- * 계열 삽입
- *
- * @param {SeriesInputDTO} seriesInputDTO
- * @returns {Promise<CreatedResultDTO<Series>>} createdResultDTO
- **/
-exports.postSeries = (seriesInputDTO) => {
-    return seriesDao.create(seriesInputDTO);
-};
+const { ListAndCountDTO, SeriesFilterDTO, PagingDTO } = require('../data/dto');
 
 /**
  * 특정 계열 조회
@@ -48,7 +36,7 @@ exports.getSeriesByIdx = (seriesIdx) => {
  * @returns {Promise<ListAndCountDTO<SeriesDTO>>} listAndCountDTO
  **/
 exports.getSeriesAll = (pagingRequestDTO) => {
-    return seriesDao.readAll(new PagingVO(pagingRequestDTO));
+    return seriesDao.readAll(PagingDTO.create(pagingRequestDTO));
 };
 
 /**
@@ -58,27 +46,7 @@ exports.getSeriesAll = (pagingRequestDTO) => {
  * @returns {Promise<ListAndCountDTO<SeriesDTO>>} listAndCountDTO
  **/
 exports.searchSeries = (pagingRequestDTO) => {
-    return seriesDao.search(new PagingVO(pagingRequestDTO));
-};
-
-/**
- * 계열 수정
- *
- * @param {SeriesInputDTO} seriesInputDTO
- * @returns {Promise<number>} affectedRows
- **/
-exports.putSeries = (seriesInputDTO) => {
-    return seriesDao.update(seriesInputDTO);
-};
-
-/**
- * 계열 삭제
- *
- * @param {number} seriesIdx
- * @returns {Promise<number>}
- **/
-exports.deleteSeries = (seriesIdx) => {
-    return seriesDao.delete(seriesIdx);
+    return seriesDao.search(PagingDTO.create(pagingRequestDTO));
 };
 
 const FILTER_INGREDIENT_LIMIT_USED_COUNT = 10;
@@ -98,11 +66,11 @@ async function filterByUsedCount(ingredientList) {
 /**
  * 필터에서 보여주는 Series 조회
  *
- * @param {pagingVO} pagingVO
+ * @param {pagingDTO} pagingDTO
  * @returns {Promise<ListAndCountDTO<SeriesFilterDTO>>} listAndCountDTO
  */
-exports.getFilterSeries = async (pagingVO) => {
-    const result = await seriesDao.readAll(pagingVO);
+exports.getFilterSeries = async (pagingDTO) => {
+    const result = await seriesDao.readAll(pagingDTO);
     const seriesIdxList = result.rows.map((it) => it.seriesIdx);
     const ingredientList = await ingredientDao.readBySeriesIdxList(
         seriesIdxList
@@ -119,7 +87,7 @@ exports.getFilterSeries = async (pagingVO) => {
     return new ListAndCountDTO({
         count: result.count,
         rows: result.rows.map((it) => {
-            return new SeriesFilterVO({
+            return new SeriesFilterDTO({
                 series: it,
                 ingredients: ingredientMap[it.seriesIdx] || [],
             });

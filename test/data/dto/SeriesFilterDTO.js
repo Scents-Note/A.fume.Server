@@ -4,7 +4,7 @@ const SeriesFilterDTO = require('../../../data/dto/SeriesFilterDTO');
 const IngredientDTO = require('./IngredientDTO');
 const SeriesDTO = require('./SeriesDTO');
 
-SeriesFilterDTO.prototype.validTest = function () {
+SeriesFilterDTO.validTest = function () {
     expect(this.seriesIdx).to.be.ok;
     expect(this.englishName).to.be.ok;
     expect(this.name).to.be.ok;
@@ -14,7 +14,7 @@ SeriesFilterDTO.prototype.validTest = function () {
     expect(this.updatedAt).to.be.ok;
     for (const ingredient of this.ingredients) {
         expect(ingredient).instanceOf(IngredientDTO);
-        ingredient.validTest();
+        IngredientDTO.validTest.call(ingredient);
     }
 };
 
