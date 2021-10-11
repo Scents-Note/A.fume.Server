@@ -33,7 +33,6 @@
     "swagger-tools": "^0.10.4"
   },
   "devDependencies": {
-    "sequelize-cli": "^6.2.0",
     "supertest": "^6.1.6"
   }
 }
