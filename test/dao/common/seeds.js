@@ -13,8 +13,7 @@ const {
     JoinPerfumeKeyword,
     JoinReviewKeyword,
     Review,
-    Sequelize,
-    sequelize,
+    PerfumeDefaultReview,
 } = require('../../../models');
 const { GENDER_MAN, GENDER_WOMAN } = require('../../../utils/constantUtil');
 
@@ -99,6 +98,15 @@ module.exports = () => {
                 perfumeIdx: (i % 2) + 1,
                 keywordIdx: i,
                 count: i,
+            }),
+            PerfumeDefaultReview.upsert({
+                perfumeIdx: 1,
+                rating: 2.23,
+                seasonal: '6/4/6/7',
+                gender: '3/0/0',
+                sillage: '2/9/4',
+                longevity: '2/1/4/8/0',
+                keyword: '31,20,23,22,51,42',
             })
         );
     }
