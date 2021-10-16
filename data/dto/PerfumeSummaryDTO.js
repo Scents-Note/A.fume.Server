@@ -7,7 +7,7 @@ const {
     LONGEVITY_LIST,
 } = require('../../utils/constantUtil.js');
 
-class PerfumeIntegralDTO {
+class PerfumeSummaryDTO {
     constructor({ score, seasonal, sillage, longevity, gender }) {
         this.score = score;
         this.seasonal = seasonal;
@@ -62,7 +62,8 @@ class PerfumeIntegralDTO {
                 genderCountMap[gender]++;
             });
         return {
-            score: parseFloat((parseFloat(sum) / cnt).toFixed(2)) || 0,
+            score:
+                cnt == 0 ? 0 : parseFloat((parseFloat(sum) / cnt).toFixed(2)),
             seasonal: normalize(seasonalCountMap),
             sillage: normalize(sillageCountMap),
             longevity: normalize(longevityCountMap),
@@ -71,7 +72,7 @@ class PerfumeIntegralDTO {
     }
 }
 
-module.exports = PerfumeIntegralDTO;
+module.exports = PerfumeSummaryDTO;
 
 function normalize(obj) {
     const result = {};
@@ -81,7 +82,7 @@ function normalize(obj) {
     }, 0);
     if (total == 0) {
         let remain = 100;
-        for (let i = 0; i < entries.length - 2; i++) {
+        for (let i = 0; i < entries.length - 1; i++) {
             const key = entries[i][0];
             obj[key] = parseInt(100 / entries.length);
             remain -= obj[key];
