@@ -86,6 +86,10 @@ async function generateNote(perfumeIdx) {
     return { noteType, noteDictDTO };
 }
 
+function getDefaultReviewRate(x) {
+    return 1 - Math.max(0, x / DEFAULT_REVIEW_THRESHOLD);
+}
+
 async function generateSummary(perfumeIdx, defaultReviewDTO) {
     const reviewList = await reviewDao.readAllOfPerfume(perfumeIdx);
     const userSummary = PerfumeSummaryDTO.createByReviewList(reviewList);
@@ -93,14 +97,12 @@ async function generateSummary(perfumeIdx, defaultReviewDTO) {
         return userSummary;
     }
     const defaultSummary = PerfumeSummaryDTO.createByDefault(defaultReviewDTO);
-    const defaultRate =
-        1 -
-        Math.max(
-            0,
-            (DEFAULT_REVIEW_THRESHOLD - reviewList.length) /
-                DEFAULT_REVIEW_THRESHOLD
-        );
-    return PerfumeSummaryDTO.merge(defaultSummary, userSummary, defaultRate);
+    const defaultReviewRate = getDefaultReviewRate(reviewList.length);
+    return PerfumeSummaryDTO.merge(
+        defaultSummary,
+        userSummary,
+        defaultReviewRate
+    );
 }
 
 function isLike({ userIdx, perfumeIdx }) {
@@ -131,14 +133,14 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
 
     const defaultReviewDTO = await defaultReviewDao
         .readByPerfumeIdx(perfumeIdx)
-        .catch((it) => {
+        .catch((err) => {
             return null;
         });
     perfume.isLiked = await isLike({ userIdx, perfumeIdx });
     const keywordList = [
         ...new Set(
             (await keywordDao.readAllOfPerfume(perfumeIdx))
-                .concat(defaultReviewDTO.keywordList)
+                .concat(defaultReviewDTO ? defaultReviewDTO.keywordList : [])
                 .map((it) => it.name)
         ),
     ];
@@ -455,3 +457,9 @@ exports.setUserDao = (dao) => {
 exports.setS3FileDao = (dao) => {
     s3FileDao = dao;
 };
+
+exports.setDefaultReviewDao = (dao) => {
+    defaultReviewDao = dao;
+};
+
+exports.getDefaultReviewRate = (x) => getDefaultReviewRate(x);
