@@ -89,6 +89,9 @@ async function generateNote(perfumeIdx) {
 async function generateSummary(perfumeIdx, defaultReviewDTO) {
     const reviewList = await reviewDao.readAllOfPerfume(perfumeIdx);
     const userSummary = PerfumeSummaryDTO.createByReviewList(reviewList);
+    if (!defaultReviewDTO) {
+        return userSummary;
+    }
     const defaultSummary = PerfumeSummaryDTO.createByDefault(defaultReviewDTO);
     const defaultRate =
         1 -
