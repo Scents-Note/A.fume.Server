@@ -25,13 +25,13 @@ class PerfumeIntegralDTO {
         };
         const sillageCountMap = {
             light: 0,
-            normal: 0,
+            medium: 0,
             heavy: 0,
         };
         const longevityCountMap = {
             veryWeak: 0,
             weak: 0,
-            medium: 0,
+            normal: 0,
             strong: 0,
             veryStrong: 0,
         };
