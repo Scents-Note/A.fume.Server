@@ -6,12 +6,14 @@ let noteDao = require('../dao/NoteDao');
 let likePerfumeDao = require('../dao/LikePerfumeDao.js');
 let keywordDao = require('../dao/KeywordDao.js');
 let userDao = require('../dao/UserDao.js');
+let defaultReviewDao = require('../dao/PerfumeDefaultReviewDao.js');
 let s3FileDao = require('../dao/S3FileDao.js');
 
 const {
     GENDER_WOMAN,
     PERFUME_NOTE_TYPE_SINGLE,
     PERFUME_NOTE_TYPE_NORMAL,
+    DEFAULT_REVIEW_THRESHOLD,
 } = require('../utils/constantUtil.js');
 
 const {
@@ -84,9 +86,18 @@ async function generateNote(perfumeIdx) {
     return { noteType, noteDictDTO };
 }
 
-async function generateSummary(perfumeIdx) {
+async function generateSummary(perfumeIdx, defaultReviewDTO) {
     const reviewList = await reviewDao.readAllOfPerfume(perfumeIdx);
-    return PerfumeSummaryDTO.create(reviewList);
+    const userSummary = PerfumeSummaryDTO.createByReviewList(reviewList);
+    const defaultSummary = PerfumeSummaryDTO.createByDefault(defaultReviewDTO);
+    const defaultRate =
+        1 -
+        Math.max(
+            0,
+            (DEFAULT_REVIEW_THRESHOLD - reviewList.length) /
+                DEFAULT_REVIEW_THRESHOLD
+        );
+    return PerfumeSummaryDTO.merge(defaultSummary, userSummary, defaultRate);
 }
 
 function isLike({ userIdx, perfumeIdx }) {
@@ -115,6 +126,12 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
         _perfume
     );
 
+    const defaultReviewDTO = await defaultReviewDao
+        .readByPerfumeIdx(perfumeIdx)
+        .catch((it) => {
+            return null;
+        });
+
     perfume.isLiked = await isLike({ userIdx, perfumeIdx });
     const keywordList = (await keywordDao.readAllOfPerfume(perfumeIdx)).map(
         (it) => it.name
@@ -124,8 +141,12 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
         perfume.imageUrl,
         ...(await s3FileDao.getS3ImageList(perfumeIdx)),
     ];
+
     const { noteType, noteDictDTO } = await generateNote(perfumeIdx);
-    const perfumeSummaryDTO = await generateSummary(perfumeIdx);
+    const perfumeSummaryDTO = await generateSummary(
+        perfumeIdx,
+        defaultReviewDTO
+    );
 
     const reviewIdx = await reviewDao
         .findOne({ userIdx, perfumeIdx })

@@ -16,7 +16,7 @@ class PerfumeSummaryDTO {
         this.gender = gender;
     }
 
-    static create(reviewList) {
+    static createByReviewList(reviewList) {
         const seasonalCountMap = {
             spring: 0,
             summer: 0,
@@ -68,6 +68,55 @@ class PerfumeSummaryDTO {
             sillage: normalize(sillageCountMap),
             longevity: normalize(longevityCountMap),
             gender: normalize(genderCountMap),
+        };
+    }
+
+    static createByDefault(defaultReviewDTO) {
+        return {
+            score: defaultReviewDTO.rating,
+            seasonal: normalize(defaultReviewDTO.seasonal),
+            sillage: normalize(defaultReviewDTO.sillage),
+            longevity: normalize(defaultReviewDTO.longevity),
+            gender: normalize(defaultReviewDTO.gender),
+        };
+    }
+
+    static merge(defaultSummary, userSummary, defaultRate) {
+        const merged = Object.assign({}, userSummary);
+        function calculate(defaultValue, userValue) {
+            return userValue * (1 - defaultRate) + defaultValue * defaultRate;
+        }
+        merged.score = calculate(defaultSummary.score, merged.score);
+        for (let key in merged.seasonal) {
+            merged.seasonal[key] = calculate(
+                defaultSummary.seasonal[key],
+                merged.seasonal[key]
+            );
+        }
+        for (let key in merged.longevity) {
+            merged.longevity[key] = calculate(
+                defaultSummary.longevity[key],
+                merged.longevity[key]
+            );
+        }
+        for (let key in merged.sillage) {
+            merged.sillage[key] = calculate(
+                defaultSummary.sillage[key],
+                merged.sillage[key]
+            );
+        }
+        for (let key in merged.gender) {
+            merged.gender[key] = calculate(
+                defaultSummary.gender[key],
+                merged.gender[key]
+            );
+        }
+        return {
+            score: merged.score,
+            seasonal: normalize(merged.seasonal),
+            sillage: normalize(merged.sillage),
+            longevity: normalize(merged.longevity),
+            gender: normalize(merged.gender),
         };
     }
 }
