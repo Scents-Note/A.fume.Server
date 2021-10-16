@@ -37,8 +37,10 @@ PerfumeDefaultReviewDTO.validTest = function () {
     expect.hasProperties.call(this.sillage, 'light', 'medium', 'heavy');
     expect.propertyTest.call(this.sillage, isNumber);
 
-    expect(this.keywordIdxList).instanceOf(Array);
-    this.keywordIdxList.forEach((it) => expect(it).to.be.a('number'));
+    expect(this.keywordList).instanceOf(Array);
+    this.keywordList.forEach((it) => {
+        expect.hasProperties.call(it, 'id', 'name');
+    });
 };
 
 module.exports = PerfumeDefaultReviewDTO;

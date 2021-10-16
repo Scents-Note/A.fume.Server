@@ -106,7 +106,7 @@ module.exports = () => {
                 gender: '3/0/0',
                 sillage: '2/9/4',
                 longevity: '2/1/4/8/0',
-                keyword: '31,20,23,22,51,42',
+                keyword: '1,2,3,4,5',
             })
         );
     }

@@ -8,7 +8,7 @@ class PerfumeDefaultReviewDTO {
         gender,
         sillage,
         longevity,
-        keywordIdxList,
+        keywordList,
     }) {
         this.perfumeIdx = perfumeIdx;
         this.rating = rating;
@@ -16,7 +16,7 @@ class PerfumeDefaultReviewDTO {
         this.gender = gender;
         this.sillage = sillage;
         this.longevity = longevity;
-        this.keywordIdxList = keywordIdxList;
+        this.keywordList = keywordList;
     }
 
     static create({
@@ -26,7 +26,7 @@ class PerfumeDefaultReviewDTO {
         gender,
         sillage,
         longevity,
-        keyword,
+        keywordList,
     }) {
         const seasonalList = seasonal.split('/').map((it) => parseInt(it));
         const sillageList = sillage.split('/').map((it) => parseInt(it));
@@ -58,7 +58,7 @@ class PerfumeDefaultReviewDTO {
                 neutral: genderList[1],
                 female: genderList[2],
             },
-            keywordIdxList: keyword.split(',').map((it) => parseInt(it)),
+            keywordList,
         });
     }
 }
