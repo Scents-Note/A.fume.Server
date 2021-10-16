@@ -45,10 +45,10 @@ class PerfumeSummaryDTO {
             cnt = 0;
         reviewList
             .map((it) => {
-                it.seasonal = SEASONAL_LIST[it.seasonal];
-                it.sillage = SILLAGE_LIST[it.sillage];
-                it.longevity = LONGEVITY_LIST[it.longevity];
-                it.gender = GENDER_LIST[it.gender];
+                it.seasonal = SEASONAL_LIST[it.seasonal || 0];
+                it.sillage = SILLAGE_LIST[it.sillage || 0];
+                it.longevity = LONGEVITY_LIST[it.longevity || 0];
+                it.gender = GENDER_LIST[it.gender || 0];
                 return it;
             })
             .forEach(({ score, longevity, sillage, seasonal, gender }) => {
@@ -56,10 +56,18 @@ class PerfumeSummaryDTO {
                     sum += score;
                     cnt++;
                 }
-                longevityCountMap[longevity]++;
-                sillageCountMap[sillage]++;
-                seasonalCountMap[seasonal]++;
-                genderCountMap[gender]++;
+                if (longevityCountMap[longevity]) {
+                    longevityCountMap[longevity]++;
+                }
+                if (sillageCountMap[sillage]) {
+                    sillageCountMap[sillage]++;
+                }
+                if (seasonalCountMap[seasonal]) {
+                    seasonalCountMap[seasonal]++;
+                }
+                if (genderCountMap[gender]) {
+                    genderCountMap[gender]++;
+                }
             });
         return {
             score:
