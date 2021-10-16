@@ -135,10 +135,13 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
             return null;
         });
     perfume.isLiked = await isLike({ userIdx, perfumeIdx });
-    const keywordList = (await keywordDao.readAllOfPerfume(perfumeIdx))
-        .map((it) => it.name)
-        .concat(defaultReviewDTO.keywordList);
-
+    const keywordList = [
+        ...new Set(
+            (await keywordDao.readAllOfPerfume(perfumeIdx))
+                .concat(defaultReviewDTO.keywordList)
+                .map((it) => it.name)
+        ),
+    ];
     const imageUrls = [
         perfume.imageUrl,
         ...(await s3FileDao.getS3ImageList(perfumeIdx)),
