@@ -238,27 +238,27 @@ describe('# Perfume Service Test', () => {
                             userSummary.score * (1 - defaultReviewRate);
                         expect(it.score).to.be.eq(expectedScore);
                         expect(it.seasonal).to.be.deep.eq({
-                            spring: 0,
-                            summer: 0,
-                            fall: 51,
-                            winter: 49,
+                            spring: 2,
+                            summer: 2,
+                            fall: 49,
+                            winter: 47,
                         });
                         expect(it.sillage).to.be.deep.eq({
-                            light: 0,
-                            medium: 49,
-                            heavy: 51,
+                            light: 3,
+                            medium: 48,
+                            heavy: 49,
                         });
                         expect(it.longevity).to.be.deep.eq({
-                            veryWeak: 0,
-                            weak: 0,
-                            normal: 0,
-                            strong: 51,
-                            veryStrong: 49,
+                            veryWeak: 1,
+                            weak: 1,
+                            normal: 1,
+                            strong: 50,
+                            veryStrong: 47,
                         });
                         expect(it.gender).to.be.deep.eq({
-                            male: 0,
-                            neutral: 49,
-                            female: 51,
+                            male: 3,
+                            neutral: 48,
+                            female: 49,
                         });
                         done();
                     })
