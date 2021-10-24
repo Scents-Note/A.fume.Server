@@ -7,7 +7,7 @@ const {
     LONGEVITY_LIST,
 } = require('../../utils/constantUtil.js');
 
-class PerfumeIntegralDTO {
+class PerfumeSummaryDTO {
     constructor({ score, seasonal, sillage, longevity, gender }) {
         this.score = score;
         this.seasonal = seasonal;
@@ -16,7 +16,7 @@ class PerfumeIntegralDTO {
         this.gender = gender;
     }
 
-    static create(reviewList) {
+    static createByReviewList(reviewList) {
         const seasonalCountMap = {
             spring: 0,
             summer: 0,
@@ -25,13 +25,13 @@ class PerfumeIntegralDTO {
         };
         const sillageCountMap = {
             light: 0,
-            normal: 0,
+            medium: 0,
             heavy: 0,
         };
         const longevityCountMap = {
             veryWeak: 0,
             weak: 0,
-            medium: 0,
+            normal: 0,
             strong: 0,
             veryStrong: 0,
         };
@@ -45,10 +45,10 @@ class PerfumeIntegralDTO {
             cnt = 0;
         reviewList
             .map((it) => {
-                it.seasonal = SEASONAL_LIST[it.seasonal];
-                it.sillage = SILLAGE_LIST[it.sillage];
-                it.longevity = LONGEVITY_LIST[it.longevity];
-                it.gender = GENDER_LIST[it.gender];
+                it.seasonal = SEASONAL_LIST[it.seasonal || 0];
+                it.sillage = SILLAGE_LIST[it.sillage || 0];
+                it.longevity = LONGEVITY_LIST[it.longevity || 0];
+                it.gender = GENDER_LIST[it.gender || 0];
                 return it;
             })
             .forEach(({ score, longevity, sillage, seasonal, gender }) => {
@@ -56,22 +56,80 @@ class PerfumeIntegralDTO {
                     sum += score;
                     cnt++;
                 }
-                longevityCountMap[longevity]++;
-                sillageCountMap[sillage]++;
-                seasonalCountMap[seasonal]++;
-                genderCountMap[gender]++;
+                if (longevityCountMap[longevity]) {
+                    longevityCountMap[longevity]++;
+                }
+                if (sillageCountMap[sillage]) {
+                    sillageCountMap[sillage]++;
+                }
+                if (seasonalCountMap[seasonal]) {
+                    seasonalCountMap[seasonal]++;
+                }
+                if (genderCountMap[gender]) {
+                    genderCountMap[gender]++;
+                }
             });
         return {
-            score: parseFloat((parseFloat(sum) / cnt).toFixed(2)) || 0,
+            score:
+                cnt == 0 ? 0 : parseFloat((parseFloat(sum) / cnt).toFixed(2)),
             seasonal: normalize(seasonalCountMap),
             sillage: normalize(sillageCountMap),
             longevity: normalize(longevityCountMap),
             gender: normalize(genderCountMap),
         };
     }
+
+    static createByDefault(defaultReviewDTO) {
+        return {
+            score: defaultReviewDTO.rating,
+            seasonal: normalize(defaultReviewDTO.seasonal),
+            sillage: normalize(defaultReviewDTO.sillage),
+            longevity: normalize(defaultReviewDTO.longevity),
+            gender: normalize(defaultReviewDTO.gender),
+        };
+    }
+
+    static merge(defaultSummary, userSummary, defaultRate) {
+        const merged = Object.assign({}, userSummary);
+        function calculate(defaultValue, userValue) {
+            return userValue * (1 - defaultRate) + defaultValue * defaultRate;
+        }
+        merged.score = calculate(defaultSummary.score, merged.score);
+        for (let key in merged.seasonal) {
+            merged.seasonal[key] = calculate(
+                defaultSummary.seasonal[key],
+                merged.seasonal[key]
+            );
+        }
+        for (let key in merged.longevity) {
+            merged.longevity[key] = calculate(
+                defaultSummary.longevity[key],
+                merged.longevity[key]
+            );
+        }
+        for (let key in merged.sillage) {
+            merged.sillage[key] = calculate(
+                defaultSummary.sillage[key],
+                merged.sillage[key]
+            );
+        }
+        for (let key in merged.gender) {
+            merged.gender[key] = calculate(
+                defaultSummary.gender[key],
+                merged.gender[key]
+            );
+        }
+        return {
+            score: merged.score,
+            seasonal: normalize(merged.seasonal),
+            sillage: normalize(merged.sillage),
+            longevity: normalize(merged.longevity),
+            gender: normalize(merged.gender),
+        };
+    }
 }
 
-module.exports = PerfumeIntegralDTO;
+module.exports = PerfumeSummaryDTO;
 
 function normalize(obj) {
     const result = {};
@@ -81,7 +139,7 @@ function normalize(obj) {
     }, 0);
     if (total == 0) {
         let remain = 100;
-        for (let i = 0; i < entries.length - 2; i++) {
+        for (let i = 0; i < entries.length - 1; i++) {
             const key = entries[i][0];
             obj[key] = parseInt(100 / entries.length);
             remain -= obj[key];

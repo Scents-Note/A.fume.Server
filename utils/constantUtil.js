@@ -18,12 +18,12 @@ module.exports = {
     NOTE_TYPE_BASE: 3,
     NOTE_TYPE_SINGLE: 4,
     SEASONAL_LIST: ['None', 'spring', 'summer', 'fall', 'winter'],
-    SILLAGE_LIST: ['None', 'light', 'normal', 'heavy'],
+    SILLAGE_LIST: ['None', 'light', 'medium', 'heavy'],
     LONGEVITY_LIST: [
         'None',
         'veryWeak',
         'weak',
-        'medium',
+        'normal',
         'strong',
         'veryStrong',
     ],
@@ -33,4 +33,5 @@ module.exports = {
     PERFUME_NOTE_TYPE_NORMAL: 0,
     MIN_SCORE: 0,
     MAX_SCORE: 10,
+    DEFAULT_REVIEW_THRESHOLD: 10,
 };

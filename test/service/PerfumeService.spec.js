@@ -13,7 +13,13 @@ const {
     PerfumeSearchRequestDTO,
 } = require('../../data/request_dto');
 const { NotMatchedError } = require('../../utils/errors/errors.js');
-const { GENDER_MAN, GENDER_WOMAN } = require('../../utils/constantUtil.js');
+const {
+    GENDER_MAN,
+    GENDER_WOMAN,
+    DEFAULT_REVIEW_THRESHOLD,
+} = require('../../utils/constantUtil.js');
+const PerfumeDefaultReviewDTO = require('../../data/dto/PerfumeDefaultReviewDTO.js');
+const PerfumeSummaryDTO = require('../../data/dto/PerfumeSummaryDTO.js');
 
 const mockS3FileDao = {};
 Perfume.setS3FileDao(mockS3FileDao);
@@ -30,33 +36,161 @@ Perfume.setKeywordDao(mockKeywordDao);
 const mockReviewDao = {};
 Perfume.setReviewDao(mockReviewDao);
 
+const mockDefaultReviewDao = {};
+Perfume.setDefaultReviewDao(mockDefaultReviewDao);
+
 describe('# Perfume Service Test', () => {
     before(async function () {
         await require('../dao/common/presets.js')(this);
     });
     describe('# read Test', () => {
-        it('# read detail Test', (done) => {
-            mockS3FileDao.getS3ImageList = async () => {
-                return ['imageUrl1', 'imageUrl2'];
-            };
-            mockLikePerfumeDao.read = async (userIdx, perfumeIdx) => {
-                return false;
-            };
-            mockKeywordDao.readAllOfPerfume = async (perfumeIdx) => {
-                return [{ name: '키워드1' }, { name: '키워드2' }];
-            };
-            const expectedReviewIdx = 4;
-            mockReviewDao.findOne = async () => {
-                return { id: expectedReviewIdx };
-            };
-            mockReviewDao.readAllOfPerfume = async () => {
-                return [
+        describe('# read detail Test', () => {
+            it('# success Test', (done) => {
+                mockS3FileDao.getS3ImageList = async () => {
+                    return ['imageUrl1', 'imageUrl2'];
+                };
+                mockLikePerfumeDao.read = async (userIdx, perfumeIdx) => {
+                    return false;
+                };
+                mockKeywordDao.readAllOfPerfume = async (perfumeIdx) => {
+                    return [{ name: '키워드1' }, { name: '키워드2' }];
+                };
+                const expectedReviewIdx = 4;
+                mockReviewDao.findOne = async () => {
+                    return { id: expectedReviewIdx };
+                };
+                mockDefaultReviewDao.readByPerfumeIdx = async () => {
+                    return new PerfumeDefaultReviewDTO({
+                        perfumeIdx: 1,
+                        rating: 2,
+                        seasonal: {
+                            spring: 1,
+                            summer: 1,
+                            fall: 1,
+                            winter: 1,
+                        },
+                        sillage: {
+                            light: 25,
+                            medium: 50,
+                            heavy: 21,
+                        },
+                        longevity: {
+                            veryWeak: 1,
+                            weak: 9,
+                            normal: 8,
+                            strong: 3,
+                            veryStrong: 6,
+                        },
+                        gender: {
+                            male: 2,
+                            neutral: 2,
+                            female: 1,
+                        },
+                        keywordList: [
+                            { id: 3, name: '키워드3' },
+                            { id: 1, name: '키워드1' },
+                            { id: 4, name: '키워드4' },
+                        ],
+                    });
+                };
+                mockReviewDao.readAllOfPerfume = async () => {
+                    return [
+                        {
+                            reviewIdx: 1,
+                            score: 1,
+                            longevity: 1,
+                            sillage: 1,
+                            seasonal: 4,
+                            gender: 1,
+                            access: 1,
+                            content: '시향노트1',
+                            createdAt: '2021-09-26T08:38:33.000Z',
+                            User: {
+                                userIdx: 1,
+                                email: 'email1@afume.com',
+                                nickname: 'user1',
+                                password: 'test',
+                                gender: 2,
+                                birth: 1995,
+                                grade: 1,
+                                accessTime: '2021-09-26T08:38:33.000Z',
+                            },
+                            LikeReview: { likeCount: 1 },
+                        },
+                    ];
+                };
+                Perfume.getPerfumeById(1, 1)
+                    .then((it) => {
+                        PerfumeIntegralDTO.validTest.call(it);
+                        expect(it.imageUrls).to.be.deep.eq([
+                            'http://perfume-image/1',
+                            'imageUrl1',
+                            'imageUrl2',
+                        ]);
+                        expect(it.keywordList).to.be.deep.eq([
+                            '키워드1',
+                            '키워드2',
+                            '키워드3',
+                            '키워드4',
+                        ]);
+                        expect(it.reviewIdx).to.be.eq(expectedReviewIdx);
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
+
+            it('# with defaultReview Test', (done) => {
+                mockS3FileDao.getS3ImageList = async () => [];
+                mockLikePerfumeDao.read = async (userIdx, perfumeIdx) => false;
+                mockKeywordDao.readAllOfPerfume = async (perfumeIdx) => {
+                    return [{ name: '키워드1' }, { name: '키워드2' }];
+                };
+                const expectedReviewIdx = 4;
+                mockReviewDao.findOne = async () => {
+                    return { id: expectedReviewIdx };
+                };
+                const mockDefaultReview = new PerfumeDefaultReviewDTO({
+                    perfumeIdx: 1,
+                    rating: 5,
+                    seasonal: {
+                        spring: 0,
+                        summer: 0,
+                        fall: 100,
+                        winter: 100,
+                    },
+                    sillage: {
+                        light: 0,
+                        medium: 100,
+                        heavy: 100,
+                    },
+                    longevity: {
+                        veryWeak: 0,
+                        weak: 0,
+                        normal: 0,
+                        strong: 100,
+                        veryStrong: 100,
+                    },
+                    gender: {
+                        male: 0,
+                        neutral: 100,
+                        female: 100,
+                    },
+                    keywordList: [
+                        { id: 3, name: '키워드3' },
+                        { id: 1, name: '키워드1' },
+                        { id: 4, name: '키워드4' },
+                    ],
+                });
+                mockDefaultReviewDao.readByPerfumeIdx = async () => {
+                    return mockDefaultReview;
+                };
+                const mockReviewList = [
                     {
                         reviewIdx: 1,
                         score: 1,
                         longevity: 1,
                         sillage: 1,
-                        seasonal: 4,
+                        seasonal: 1,
                         gender: 1,
                         access: 1,
                         content: '시향노트1',
@@ -74,23 +208,117 @@ describe('# Perfume Service Test', () => {
                         LikeReview: { likeCount: 1 },
                     },
                 ];
-            };
-            Perfume.getPerfumeById(1, 1)
-                .then((it) => {
-                    PerfumeIntegralDTO.validTest.call(it);
-                    expect(it.imageUrls).to.be.deep.eq([
-                        'http://perfume-image/1',
-                        'imageUrl1',
-                        'imageUrl2',
-                    ]);
-                    expect(it.keywordList).to.be.deep.eq([
-                        '키워드1',
-                        '키워드2',
-                    ]);
-                    expect(it.reviewIdx).to.be.eq(expectedReviewIdx);
-                    done();
-                })
-                .catch((err) => done(err));
+                mockReviewDao.readAllOfPerfume = async () => {
+                    return mockReviewList;
+                };
+                Perfume.getPerfumeById(1, 1)
+                    .then((it) => {
+                        PerfumeIntegralDTO.validTest.call(it);
+
+                        expect(it.keywordList).to.be.deep.eq([
+                            '키워드1',
+                            '키워드2',
+                            '키워드3',
+                            '키워드4',
+                        ]);
+                        expect(it.reviewIdx).to.be.eq(expectedReviewIdx);
+                        const defaultReviewRate = Perfume.getDefaultReviewRate(
+                            mockReviewList.length
+                        );
+                        const defaultSummary =
+                            PerfumeSummaryDTO.createByDefault(
+                                mockDefaultReview
+                            );
+                        const userSummary =
+                            PerfumeSummaryDTO.createByReviewList(
+                                mockReviewList
+                            );
+                        const expectedScore =
+                            defaultSummary.score * defaultReviewRate +
+                            userSummary.score * (1 - defaultReviewRate);
+                        expect(it.score).to.be.eq(expectedScore);
+                        expect(it.seasonal).to.be.deep.eq({
+                            spring: 2,
+                            summer: 2,
+                            fall: 49,
+                            winter: 47,
+                        });
+                        expect(it.sillage).to.be.deep.eq({
+                            light: 3,
+                            medium: 48,
+                            heavy: 49,
+                        });
+                        expect(it.longevity).to.be.deep.eq({
+                            veryWeak: 1,
+                            weak: 1,
+                            normal: 1,
+                            strong: 50,
+                            veryStrong: 47,
+                        });
+                        expect(it.gender).to.be.deep.eq({
+                            male: 3,
+                            neutral: 48,
+                            female: 49,
+                        });
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
+
+            it('# without defaultReview Test', (done) => {
+                mockS3FileDao.getS3ImageList = async () => {
+                    return ['imageUrl1', 'imageUrl2'];
+                };
+                mockLikePerfumeDao.read = async (userIdx, perfumeIdx) => {
+                    return false;
+                };
+                mockKeywordDao.readAllOfPerfume = async (perfumeIdx) => {
+                    return [{ name: '키워드1' }, { name: '키워드2' }];
+                };
+                const expectedReviewIdx = 4;
+                mockReviewDao.findOne = async () => {
+                    return { id: expectedReviewIdx };
+                };
+                mockDefaultReviewDao.readByPerfumeIdx = async () => {
+                    throw NotMatchedError();
+                };
+                mockReviewDao.readAllOfPerfume = async () => {
+                    return [
+                        {
+                            reviewIdx: 1,
+                            score: 1,
+                            longevity: 1,
+                            sillage: 1,
+                            seasonal: 4,
+                            gender: 1,
+                            access: 1,
+                            content: '시향노트1',
+                            createdAt: '2021-09-26T08:38:33.000Z',
+                            User: {
+                                userIdx: 1,
+                                email: 'email1@afume.com',
+                                nickname: 'user1',
+                                password: 'test',
+                                gender: 2,
+                                birth: 1995,
+                                grade: 1,
+                                accessTime: '2021-09-26T08:38:33.000Z',
+                            },
+                            LikeReview: { likeCount: 1 },
+                        },
+                    ];
+                };
+                Perfume.getPerfumeById(1, 1)
+                    .then((it) => {
+                        PerfumeIntegralDTO.validTest.call(it);
+                        expect(it.keywordList).to.be.deep.eq([
+                            '키워드1',
+                            '키워드2',
+                        ]);
+                        done();
+                    })
+                    .catch((err) => done(err));
+            });
         });
 
         it('# search Test', (done) => {
