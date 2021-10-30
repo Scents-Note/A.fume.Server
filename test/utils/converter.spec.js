@@ -4,7 +4,7 @@ dotenv.config();
 const chai = require('chai');
 const { expect } = chai;
 
-const converter = require('../../utils/converter.js');
+const converter = require('../../src/utils/converter.js');
 
 describe('# converter Test', () => {
     it(' # Input Str < - > DB Int Test', (done) => {
@@ -33,14 +33,19 @@ describe('# converter Test', () => {
                         expect(result.sillage).to.be.not.null;
                         expect(result.seasonalList).to.be.instanceof(Array);
                         expect(result.gender).to.be.not.null;
-                        return converter.inputStrToDBIntOfReview({...result, keywordList});
+                        return converter.inputStrToDBIntOfReview({
+                            ...result,
+                            keywordList,
+                        });
                     })
                     .then((recover) => {
                         expect(recover.longevity).to.be.eq(longevity);
                         expect(recover.sillage).to.be.eq(sillage);
                         expect(recover.sumOfBitSeasonal).to.be.eq(seasonal);
                         expect(recover.gender).to.be.eq(gender);
-                        expect(recover.keywordList).to.be.deep.eq(keywordIdxList);
+                        expect(recover.keywordList).to.be.deep.eq(
+                            keywordIdxList
+                        );
                     });
             })
         )
@@ -61,14 +66,17 @@ describe('# converter Test', () => {
                 longevity,
                 sillage,
                 sumOfBitSeasonal: seasonal,
-                gender
+                gender,
             })
             .then((result) => {
                 expect(result.longevity).to.be.not.null;
                 expect(result.sillage).to.be.not.null;
                 expect(result.seasonalList).to.be.instanceof(Array);
                 expect(result.gender).to.be.not.null;
-                return converter.inputStrToDBIntOfReview({...result, keywordList});
+                return converter.inputStrToDBIntOfReview({
+                    ...result,
+                    keywordList,
+                });
             })
             .then((recover) => {
                 expect(recover.longevity).to.be.eq(longevity);
@@ -80,7 +88,7 @@ describe('# converter Test', () => {
             })
             .catch((err) => done(err));
     });
-    
+
     it(' # Input Int < - > DB Int Test', (done) => {
         Promise.all(
             [0, 1, 2, 3, 4, 5].map((idx) => {
@@ -94,7 +102,7 @@ describe('# converter Test', () => {
                         longevity,
                         sillage,
                         sumOfBitSeasonal: seasonal,
-                        gender
+                        gender,
                     })
                     .then((result) => {
                         expect(result.longevity).to.be.not.null;
@@ -102,7 +110,10 @@ describe('# converter Test', () => {
                         expect(result.seasonalList).to.be.instanceof(Array);
                         expect(result.gender).to.be.not.null;
                         expect(result.keywordList).to.be.not.null;
-                        return converter.InputIntToDBIntOfReview({...result, keywordList});
+                        return converter.InputIntToDBIntOfReview({
+                            ...result,
+                            keywordList,
+                        });
                     })
                     .then((recover) => {
                         expect(recover.longevity).to.be.eq(longevity);
@@ -130,14 +141,17 @@ describe('# converter Test', () => {
                 longevity,
                 sillage,
                 sumOfBitSeasonal: seasonal,
-                gender
+                gender,
             })
             .then((result) => {
                 expect(result.longevity).to.be.not.null;
                 expect(result.sillage).to.be.not.null;
                 expect(result.seasonalList).to.be.instanceof(Array);
                 expect(result.gender).to.be.not.null;
-                return converter.InputIntToDBIntOfReview({...result, keywordList});
+                return converter.InputIntToDBIntOfReview({
+                    ...result,
+                    keywordList,
+                });
             })
             .then((recover) => {
                 expect(recover.longevity).to.be.eq(longevity);

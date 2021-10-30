@@ -18,7 +18,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 console.log(`ENV: ${process.env.NODE_ENV}`);
 
-const sequelize = require('./models').sequelize;
+const sequelize = require('../models').sequelize;
 sequelize.sync();
 
 app.use(cookieParser());
@@ -50,7 +50,7 @@ var options = {
 };
 
 // The Swagger document (require it, build it programmatically, fetch it from a URL, ...)
-let spec = fs.readFileSync(path.join(__dirname, 'api/swagger.yaml'), 'utf8');
+let spec = fs.readFileSync(path.join(__dirname, '../api/swagger.yaml'), 'utf8');
 spec = spec
     .replace('{SERVER_URL}', localIpAddress)
     .replace('{SERVER_PORT}', serverPort);

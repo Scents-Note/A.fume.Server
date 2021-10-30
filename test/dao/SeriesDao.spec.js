@@ -3,16 +3,16 @@ dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;
-const seriesDao = require('../../dao/SeriesDao.js');
+const seriesDao = require('../../src/dao/SeriesDao.js');
 const {
     DuplicatedEntryError,
     NotMatchedError,
     UnExpectedError,
-} = require('../../utils/errors/errors.js');
+} = require('../../src/utils/errors/errors.js');
 const { Series } = require('../../models/index.js');
 const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
-const PagingDTO = require('../../data/dto/PagingDTO.js');
+const PagingDTO = require('../../src/data/dto/PagingDTO.js');
 const SeriesDTO = require('../data/dto/SeriesDTO.js');
 
 describe('# seriesDao Test', () => {

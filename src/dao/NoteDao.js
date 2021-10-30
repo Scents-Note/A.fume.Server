@@ -4,7 +4,7 @@ const {
     InvalidInputError,
 } = require('../utils/errors/errors.js');
 
-const { Note, Ingredient, sequelize, Sequelize } = require('../models');
+const { Note, Ingredient, sequelize, Sequelize } = require('../../models');
 const { Op } = Sequelize;
 const { NoteDTO } = require('../data/dto');
 

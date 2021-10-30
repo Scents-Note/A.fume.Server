@@ -4,7 +4,7 @@ dotenv.config();
 const chai = require('chai');
 const { expect } = chai;
 
-const { PagingRequestDTO } = require('../../data/request_dto');
+const { PagingRequestDTO } = require('../../src/data/request_dto');
 
 const BrandDTO = require('../data/dto/BrandDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
@@ -25,7 +25,7 @@ const mockListAndCountDTO = new ListAndCountDTO({
     count: 1,
     rows: [mockBrandDTO, mockBrandDTO, mockBrandDTO],
 });
-const Brand = new (require('../../service/BrandService'))({
+const Brand = new (require('../../src/service/BrandService'))({
     read: async (brandIdx) => mockBrandDTO,
     search: async (pagingDTO) => mockListAndCountDTO,
     readAll: async () => mockListAndCountDTO,

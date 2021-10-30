@@ -2,18 +2,18 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const request = require('supertest');
-const app = require('../../index.js');
+const app = require('../../src/index.js');
 const expect = require('../utils/expect');
 
 const basePath = '/A.fume/api/0.0.1';
-const { ListAndCountDTO } = require('../../data/dto');
+const { ListAndCountDTO } = require('../../src/data/dto');
 const BrandDTO = require('../data/dto/BrandDTO');
-const BrandFilterDTO = require('../../data/dto/BrandFilterDTO');
+const BrandFilterDTO = require('../../src/data/dto/BrandFilterDTO');
 const BrandFilterResponseDTO = require('../data/response_dto/brand/BrandFilterResponseDTO');
 const BrandResponseDTO = require('../data/response_dto/brand/BrandResponseDTO');
-const statusCode = require('../../utils/statusCode');
+const statusCode = require('../../src/utils/statusCode');
 
-const Brand = require('../../controllers/Brand.js');
+const Brand = require('../../src/controllers/Brand.js');
 
 const mockBrandService = {};
 Brand.setBrandService(mockBrandService);

@@ -3,12 +3,12 @@ dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;
-const likePerfumeDao = require('../../dao/LikePerfumeDao.js');
+const likePerfumeDao = require('../../src/dao/LikePerfumeDao.js');
 const {
     DuplicatedEntryError,
     NotMatchedError,
     UnExpectedError,
-} = require('../../utils/errors/errors.js');
+} = require('../../src/utils/errors/errors.js');
 const { LikePerfume } = require('../../models');
 
 describe('# likePerfumeDao Test', () => {

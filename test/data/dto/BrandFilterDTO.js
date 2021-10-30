@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const BrandFilterDTO = require('../../../data/dto/BrandFilterDTO');
+const BrandFilterDTO = require('../../../src/data/dto/BrandFilterDTO');
 const BrandDTO = require('./BrandDTO');
 
 const FIRST_INITIAL_REGEX = /^[ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅍㅌㅎ]$/;

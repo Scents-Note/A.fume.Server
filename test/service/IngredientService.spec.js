@@ -7,7 +7,7 @@ const { expect } = chai;
 const IngredientDTO = require('../data/dto/IngredientDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 
-const ingredientService = require('../../service/IngredientService');
+const ingredientService = require('../../src/service/IngredientService.js');
 const mockIngredientDAO = {};
 ingredientService.setIngredientDao(mockIngredientDAO);
 

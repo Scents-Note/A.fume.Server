@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const SeriesFilterDTO = require('../../../data/dto/SeriesFilterDTO');
+const SeriesFilterDTO = require('../../../src/data/dto/SeriesFilterDTO');
 const IngredientDTO = require('./IngredientDTO');
 const SeriesDTO = require('./SeriesDTO');
 

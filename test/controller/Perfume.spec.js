@@ -4,13 +4,13 @@ dotenv.config();
 const request = require('supertest');
 const chai = require('chai');
 const { expect } = chai;
-const app = require('../../index.js');
+const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';
 
-const statusCode = require('../../utils/statusCode');
+const statusCode = require('../../src/utils/statusCode');
 
-const Perfume = require('../../controllers/Perfume.js');
+const Perfume = require('../../src/controllers/Perfume.js');
 const PerfumeThumbDTO = require('../data/dto/PerfumeThumbDTO');
 const PerfumeThumbKeywordDTO = require('../data/dto/PerfumeThumbKeywordDTO');
 const PerfumeDetailResponseDTO = require('../data/response_dto/perfume/PerfumeDetailResponseDTO');
@@ -18,7 +18,7 @@ const PerfumeResponseDTO = require('../data/response_dto/perfume/PerfumeResponse
 const PerfumeRecommendResponseDTO = require('../data/response_dto/perfume/PerfumeRecommendResponseDTO');
 const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
 
-const token = require('../../lib/token');
+const token = require('../../src/lib/token');
 const user1token = token.create({ userIdx: 1 });
 
 const mockPerfumeService = {};

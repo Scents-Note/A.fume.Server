@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const keywordDao = require('../../dao/KeywordDao');
+const keywordDao = require('../../src/dao/KeywordDao');
 const { expect } = require('chai');
 const { Sequelize } = require('../../models');
 const { Op } = Sequelize;

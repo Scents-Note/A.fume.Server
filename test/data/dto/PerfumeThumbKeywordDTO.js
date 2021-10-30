@@ -1,7 +1,7 @@
 'use strict';
 
 const { expect } = require('chai');
-const PerfumeThumbKeywordDTO = require('../../../data/dto/PerfumeThumbKeywordDTO');
+const PerfumeThumbKeywordDTO = require('../../../src/data/dto/PerfumeThumbKeywordDTO');
 
 PerfumeThumbKeywordDTO.validTest = function () {
     expect(this.perfumeIdx).to.be.ok;

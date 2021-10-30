@@ -1,7 +1,7 @@
 const {
     ExpiredTokenError,
     InvalidTokenError,
-} = require('../../utils/errors/errors');
+} = require('../../src/utils/errors/errors');
 
 module.exports.publish = () => {
     return {

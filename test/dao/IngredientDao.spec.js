@@ -3,13 +3,13 @@ dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;
-const ingredientDao = require('../../dao/IngredientDao.js');
+const ingredientDao = require('../../src/dao/IngredientDao.js');
 const {
     NotMatchedError,
     UnExpectedError,
-} = require('../../utils/errors/errors.js');
+} = require('../../src/utils/errors/errors.js');
 
-const { IngredientConditionDTO } = require('../../data/dto');
+const { IngredientConditionDTO } = require('../../src/data/dto');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 const IngredientDTO = require('../data/dto/IngredientDTO');
 

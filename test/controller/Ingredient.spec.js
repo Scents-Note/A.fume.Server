@@ -4,11 +4,11 @@ dotenv.config();
 const request = require('supertest');
 const chai = require('chai');
 const { expect } = chai;
-const app = require('../../index.js');
+const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';
 
-const Ingredient = require('../../controllers/Ingredient.js');
+const Ingredient = require('../../src/controllers/Ingredient.js');
 const IngredientDTO = require('../data/dto/IngredientDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 

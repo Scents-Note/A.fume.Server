@@ -1,5 +1,5 @@
 const { NotMatchedError } = require('../utils/errors/errors.js');
-const { SearchHistory } = require('../models');
+const { SearchHistory } = require('../../models');
 
 /**
  * 향수 조회 기록 조회

@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const CreatedResultDTO = require('../../../data/dto/CreatedResultDTO');
+const CreatedResultDTO = require('../../../src/data/dto/CreatedResultDTO');
 
 CreatedResultDTO.validTest = function (createdTest) {
     expect(this.idx).to.be.ok;

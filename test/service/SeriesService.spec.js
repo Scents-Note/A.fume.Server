@@ -9,7 +9,7 @@ const SeriesDTO = require('../data/dto/SeriesDTO');
 const IngredientDTO = require('../data/dto/IngredientDTO');
 const SeriesFilterDTO = require('../data/dto/SeriesFilterDTO');
 
-const seriesService = require('../../service/SeriesService');
+const seriesService = require('../../src/service/SeriesService.js');
 const mockSeriesDAO = {};
 seriesService.setSeriesDao(mockSeriesDAO);
 const mockIngredientDAO = {};

@@ -3,7 +3,7 @@ const {
     DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
 
-const { Brand } = require('../models');
+const { Brand } = require('../../models');
 const { BrandDTO, ListAndCountDTO } = require('../data/dto');
 
 /**

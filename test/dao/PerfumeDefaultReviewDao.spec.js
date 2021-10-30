@@ -3,7 +3,7 @@ dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;
-const perfumeDefaultReviewDao = require('../../dao/PerfumeDefaultReviewDao.js');
+const perfumeDefaultReviewDao = require('../../src/dao/PerfumeDefaultReviewDao.js');
 const PerfumeDefaultReviewDTO = require('../data/dto/PerfumeDefaultReviewDTO');
 
 describe('# perfumeDefaultReviewDao Test', () => {

@@ -3,7 +3,7 @@ const {
     DuplicatedEntryError,
     FailedToCreateError,
 } = require('../utils/errors/errors.js');
-const { sequelize, LikeReview, Review } = require('../models');
+const { sequelize, LikeReview, Review } = require('../../models');
 
 /**
  * 시향노트 좋아요 생성

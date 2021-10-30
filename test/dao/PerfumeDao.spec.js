@@ -4,16 +4,16 @@ dotenv.config();
 const chai = require('chai');
 const { expect } = chai;
 
-const perfumeDao = require('../../dao/PerfumeDao.js');
+const perfumeDao = require('../../src/dao/PerfumeDao.js');
 const { Perfume, Note, Sequelize } = require('../../models');
 const { Op } = Sequelize;
 
-const { GENDER_WOMAN } = require('../../utils/constantUtil');
+const { GENDER_WOMAN } = require('../../src/utils/constantUtil');
 const {
     NotMatchedError,
     DuplicatedEntryError,
     UnExpectedError,
-} = require('../../utils/errors/errors.js');
+} = require('../../src/utils/errors/errors.js');
 
 const allowFirstInitialArr = [
     'ㄱ',

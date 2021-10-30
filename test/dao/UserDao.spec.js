@@ -3,18 +3,18 @@ dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;
-const userDao = require('../../dao/UserDao.js');
+const userDao = require('../../src/dao/UserDao.js');
 const {
     NotMatchedError,
     DuplicatedEntryError,
     UnExpectedError,
-} = require('../../utils/errors/errors.js');
+} = require('../../src/utils/errors/errors.js');
 const { User } = require('../../models');
 
 const UserDTO = require('../data/dto/UserDTO');
 
 const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
-const { GENDER_MAN, GENDER_WOMAN } = require('../../utils/constantUtil');
+const { GENDER_MAN, GENDER_WOMAN } = require('../../src/utils/constantUtil');
 
 describe('# userDao Test', () => {
     before(async function () {

@@ -12,12 +12,12 @@ const {
     SearchHistory,
     sequelize,
     Sequelize,
-} = require('../models');
+} = require('../../models');
 const { Op } = Sequelize;
 
-const { ranking } = require('../mongoose_models');
+const { ranking } = require('../../mongoose_models');
 
-PERFUME_THUMB_COLUMNS = [
+const PERFUME_THUMB_COLUMNS = [
     'perfumeIdx',
     'name',
     'englishName',

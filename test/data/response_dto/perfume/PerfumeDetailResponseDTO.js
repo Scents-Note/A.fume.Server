@@ -9,7 +9,7 @@ const {
     PERFUME_NOTE_TYPE_NORMAL,
     MIN_SCORE,
     MAX_SCORE,
-} = require('../../../../utils/constantUtil');
+} = require('../../../../src/utils/constantUtil');
 
 PerfumeDetailResponseDTO.validTest = function () {
     expect.hasProperties.call(

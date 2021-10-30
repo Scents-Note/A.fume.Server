@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const BrandFilterResponseDTO = require('../../../../data/response_dto/brand/BrandFilterResponseDTO');
+const BrandFilterResponseDTO = require('../../../../src/data/response_dto/brand/BrandFilterResponseDTO');
 const BrandResponseDTO = require('./BrandResponseDTO');
 
 BrandFilterResponseDTO.validTest = function () {

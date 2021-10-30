@@ -3,7 +3,7 @@ dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;
-const Perfume = require('../../service/PerfumeService.js');
+const Perfume = require('../../src/service/PerfumeService.js');
 const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
 const PerfumeThumbDTO = require('../data/dto/PerfumeThumbDTO');
 const PerfumeThumbKeywordDTO = require('../data/dto/PerfumeThumbKeywordDTO');
@@ -11,15 +11,15 @@ const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 const {
     PagingRequestDTO,
     PerfumeSearchRequestDTO,
-} = require('../../data/request_dto');
-const { NotMatchedError } = require('../../utils/errors/errors.js');
+} = require('../../src/data/request_dto');
+const { NotMatchedError } = require('../../src/utils/errors/errors.js');
 const {
     GENDER_MAN,
     GENDER_WOMAN,
     DEFAULT_REVIEW_THRESHOLD,
-} = require('../../utils/constantUtil.js');
-const PerfumeDefaultReviewDTO = require('../../data/dto/PerfumeDefaultReviewDTO.js');
-const PerfumeSummaryDTO = require('../../data/dto/PerfumeSummaryDTO.js');
+} = require('../../src/utils/constantUtil.js');
+const PerfumeDefaultReviewDTO = require('../../src/data/dto/PerfumeDefaultReviewDTO.js');
+const PerfumeSummaryDTO = require('../../src/data/dto/PerfumeSummaryDTO.js');
 
 const mockS3FileDao = {};
 Perfume.setS3FileDao(mockS3FileDao);

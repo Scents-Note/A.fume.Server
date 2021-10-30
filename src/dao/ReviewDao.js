@@ -10,7 +10,7 @@ const {
     JoinReviewKeyword,
     JoinPerfumeKeyword,
     Keyword,
-} = require('../models');
+} = require('../../models');
 const { Op } = Sequelize;
 
 /**
@@ -85,12 +85,14 @@ module.exports.read = async (reviewIdx) => {
         nest: true,
     });
 
-    reviewList.keywordList = keywordList ? keywordList.map((it) => {
-        return {
-            keywordIdx: it.Keyword.id,
-            keyword: it.Keyword.name,
-        };
-    }) : [];
+    reviewList.keywordList = keywordList
+        ? keywordList.map((it) => {
+              return {
+                  keywordIdx: it.Keyword.id,
+                  keyword: it.Keyword.name,
+              };
+          })
+        : [];
 
     return reviewList;
 };
@@ -132,7 +134,7 @@ module.exports.readAllOfUser = async (
  * @returns {Promise<Review[]>} reviewList
  */
 
-SQL_READ_ALL_OF_PERFUME = `
+const SQL_READ_ALL_OF_PERFUME = `
     SELECT 
     r.id as reviewIdx, 
     r.score as score, 

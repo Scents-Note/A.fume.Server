@@ -3,7 +3,7 @@ dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;
-const searchHistoryDao = require('../../dao/SearchHistoryDao.js');
+const searchHistoryDao = require('../../src/dao/SearchHistoryDao.js');
 const { SearchHistory } = require('../../models');
 
 describe('# searchHistoryDao Test', () => {

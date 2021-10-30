@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const SeriesDTO = require('../../../data/dto/SeriesDTO');
+const SeriesDTO = require('../../../src/data/dto/SeriesDTO');
 
 SeriesDTO.validTest = function () {
     expect(this.seriesIdx).to.be.ok;

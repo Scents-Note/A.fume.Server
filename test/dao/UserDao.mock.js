@@ -1,4 +1,4 @@
-const { UserDTO, CreatedResultDTO } = require('../../data/dto');
+const { UserDTO, CreatedResultDTO } = require('../../src/data/dto');
 
 module.exports.create = async ({
     nickname,

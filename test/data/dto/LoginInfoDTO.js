@@ -1,8 +1,8 @@
 const { expect } = require('chai');
 
-const LoginInfoDTO = require('../../../data/dto/LoginInfoDTO');
+const LoginInfoDTO = require('../../../src/data/dto/LoginInfoDTO');
 
-const { GENDER_WOMAN } = require('../../../utils/constantUtil');
+const { GENDER_WOMAN } = require('../../../src/utils/constantUtil');
 
 LoginInfoDTO.validTest = function () {
     expect(this.userIdx).to.be.ok;

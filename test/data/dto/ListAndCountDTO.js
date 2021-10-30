@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const ListAndCountDTO = require('../../../data/dto/ListAndCountDTO');
+const ListAndCountDTO = require('../../../src/data/dto/ListAndCountDTO');
 
 ListAndCountDTO.validTest = function (itemTest) {
     expect(this.count).to.be.ok;

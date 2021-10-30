@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const TokenGroupDTO = require('../../../data/dto/TokenGroupDTO');
+const TokenGroupDTO = require('../../../src/data/dto/TokenGroupDTO');
 
 TokenGroupDTO.validTest = function () {
     expect(this.userIdx).to.be.ok;

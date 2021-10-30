@@ -4,17 +4,17 @@ dotenv.config();
 const chai = require('chai');
 const { expect } = chai;
 
-const { UserAuthDTO } = require('../../data/dto');
+const { UserAuthDTO } = require('../../src/data/dto');
 
 const UserDTO = require('../data/dto/UserDTO');
 const LoginInfoDTO = require('../data/dto/LoginInfoDTO');
 const TokenGroupDTO = require('../data/dto/TokenGroupDTO');
 
-const userService = require('../../service/UserService');
+const userService = require('../../src/service/UserService');
 const {
     WrongPasswordError,
     PasswordPolicyError,
-} = require('../../utils/errors/errors');
+} = require('../../src/utils/errors/errors');
 const mockJWT = Object.assign({}, require('../lib/token.mock.js'));
 userService.setJwt(mockJWT);
 userService.setCrypto(require('../lib/crypto.mock.js'));

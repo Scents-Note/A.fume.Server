@@ -4,18 +4,18 @@ const request = require('supertest');
 
 const chai = require('chai');
 const { expect } = chai;
-const app = require('../../index.js');
+const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';
-const { ListAndCountDTO } = require('../../data/dto');
-const statusCode = require('../../utils/statusCode');
+const { ListAndCountDTO } = require('../../src/data/dto');
+const statusCode = require('../../src/utils/statusCode');
 const IngredientDTO = require('../data/dto/IngredientDTO');
 const SeriesDTO = require('../data/dto/SeriesDTO');
 const SeriesFilterDTO = require('../data/dto/SeriesFilterDTO');
 const SeriesResponseDTO = require('../data/response_dto/series/SeriesResponseDTO');
 const SeriesFilterResponseDTO = require('../data/response_dto/series/SeriesFilterResponseDTO');
 
-const Series = require('../../controllers/Series.js');
+const Series = require('../../src/controllers/Series.js');
 const mockSeriesService = {};
 Series.setSeriesService(mockSeriesService);
 

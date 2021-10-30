@@ -3,12 +3,12 @@ dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;
-const noteDao = require('../../dao/NoteDao.js');
+const noteDao = require('../../src/dao/NoteDao.js');
 const {
     DuplicatedEntryError,
     NotMatchedError,
     InvalidInputError,
-} = require('../../utils/errors/errors.js');
+} = require('../../src/utils/errors/errors.js');
 const { Note } = require('../../models');
 const NoteDTO = require('../data/dto/NoteDTO');
 
