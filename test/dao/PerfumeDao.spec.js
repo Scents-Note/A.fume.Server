@@ -5,7 +5,7 @@ const chai = require('chai');
 const { expect } = chai;
 
 const perfumeDao = require('../../src/dao/PerfumeDao.js');
-const { Perfume, Note, Sequelize } = require('../../models');
+const { Perfume, Note, Sequelize } = require('../../src/models');
 const { Op } = Sequelize;
 
 const { GENDER_WOMAN } = require('../../src/utils/constantUtil');

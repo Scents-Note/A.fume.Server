@@ -1,4 +1,4 @@
-const { sequelize } = require('../../../models');
+const { sequelize } = require('../../../src/models');
 
 if (process.env.NODE_ENV != 'test') {
     throw new Error('Only allow TEST ENV');

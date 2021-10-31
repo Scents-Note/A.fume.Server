@@ -9,7 +9,7 @@ const {
     NotMatchedError,
     UnExpectedError,
 } = require('../../src/utils/errors/errors.js');
-const { Series } = require('../../models/index.js');
+const { Series } = require('../../src/models/index.js');
 const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 const PagingDTO = require('../../src/data/dto/PagingDTO.js');

@@ -9,7 +9,7 @@ const {
     DuplicatedEntryError,
     UnExpectedError,
 } = require('../../src/utils/errors/errors.js');
-const { User } = require('../../models');
+const { User } = require('../../src/models');
 
 const UserDTO = require('../data/dto/UserDTO');
 

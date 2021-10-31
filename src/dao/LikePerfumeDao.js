@@ -2,7 +2,7 @@ const {
     NotMatchedError,
     DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
-const { LikePerfume, Sequelize, sequelize } = require('../../models');
+const { LikePerfume, Sequelize, sequelize } = require('../models');
 const { Op } = Sequelize;
 
 /**

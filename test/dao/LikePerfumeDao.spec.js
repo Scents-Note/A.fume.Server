@@ -9,7 +9,7 @@ const {
     NotMatchedError,
     UnExpectedError,
 } = require('../../src/utils/errors/errors.js');
-const { LikePerfume } = require('../../models');
+const { LikePerfume } = require('../../src/models');
 
 describe('# likePerfumeDao Test', () => {
     before(async function () {

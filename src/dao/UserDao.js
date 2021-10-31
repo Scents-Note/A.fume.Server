@@ -3,8 +3,8 @@ const {
     DuplicatedEntryError,
 } = require('../utils/errors/errors.js');
 
-const { sequelize, User } = require('../../models');
-const { user: MongooseUser } = require('../../mongoose_models');
+const { sequelize, User } = require('../models');
+const { user: MongooseUser } = require('../mongoose_models');
 
 const { UserDTO, CreatedResultDTO } = require('../data/dto');
 

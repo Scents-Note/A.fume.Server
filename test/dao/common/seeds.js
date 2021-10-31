@@ -14,7 +14,7 @@ const {
     JoinReviewKeyword,
     Review,
     PerfumeDefaultReview,
-} = require('../../../models');
+} = require('../../../src/models');
 const { GENDER_MAN, GENDER_WOMAN } = require('../../../src/utils/constantUtil');
 
 module.exports = () => {

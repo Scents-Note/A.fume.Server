@@ -4,7 +4,7 @@ dotenv.config();
 const chai = require('chai');
 const { expect } = chai;
 const searchHistoryDao = require('../../src/dao/SearchHistoryDao.js');
-const { SearchHistory } = require('../../models');
+const { SearchHistory } = require('../../src/models');
 
 describe('# searchHistoryDao Test', () => {
     before(async function () {

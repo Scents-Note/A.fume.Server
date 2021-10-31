@@ -1,6 +1,6 @@
 const { NotMatchedError } = require('../utils/errors/errors.js');
 
-const { Ingredient, Sequelize } = require('../../models');
+const { Ingredient, Sequelize } = require('../models');
 const { IngredientDTO, ListAndCountDTO } = require('../data/dto');
 const { Op } = Sequelize;
 

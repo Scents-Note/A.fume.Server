@@ -9,7 +9,7 @@ const {
     NotMatchedError,
     InvalidInputError,
 } = require('../../src/utils/errors/errors.js');
-const { Note, Ingredient } = require('../../models');
+const { Note, Ingredient } = require('../../src/models');
 const NoteDTO = require('../data/dto/NoteDTO');
 
 describe('# NoteDao Test', () => {

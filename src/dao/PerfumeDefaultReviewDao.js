@@ -1,6 +1,6 @@
 const { NotMatchedError } = require('../utils/errors/errors.js');
 
-const { PerfumeDefaultReview, Keyword } = require('../../models');
+const { PerfumeDefaultReview, Keyword } = require('../models');
 const PerfumeDefaultReviewDTO = require('../data/dto/PerfumeDefaultReviewDTO');
 
 /**

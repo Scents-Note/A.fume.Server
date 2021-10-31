@@ -18,7 +18,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 console.log(`ENV: ${process.env.NODE_ENV}`);
 
-const sequelize = require('../models').sequelize;
+const sequelize = require('./models').sequelize;
 sequelize.sync();
 
 app.use(cookieParser());
