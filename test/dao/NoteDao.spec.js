@@ -8,8 +8,8 @@ const {
     DuplicatedEntryError,
     NotMatchedError,
     InvalidInputError,
-} = require('../../src/utils/errors/errors.js');
-const { Note } = require('../../models');
+} = require('../../utils/errors/errors.js');
+const { Note, Ingredient } = require('../../models');
 const NoteDTO = require('../data/dto/NoteDTO');
 
 describe('# NoteDao Test', () => {
@@ -103,11 +103,17 @@ describe('# NoteDao Test', () => {
         it(' # readByPerfumeIdx test', (done) => {
             noteDao
                 .readByPerfumeIdx(1)
-                .then((result) => {
+                .then(async (result) => {
                     result.forEach((note) => {
                         expect(note).instanceOf(NoteDTO);
                         NoteDTO.validTest.call(note);
                     });
+                    for (const note of result) {
+                        const ingredient = await Ingredient.findByPk(
+                            note.ingredientIdx
+                        );
+                        expect(note.ingredientName).to.be.eq(ingredient.name);
+                    }
                     done();
                 })
                 .catch((err) => done(err));

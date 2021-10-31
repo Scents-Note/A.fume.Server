@@ -5,18 +5,21 @@ module.exports = (sequelize, DataTypes) => {
         static associate(models) {
             models.Ingredient.hasMany(this, {
                 foreignKey: 'ingredientIdx',
+                sourceKey: 'ingredientIdx',
                 as: 'Notes',
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
             models.Perfume.hasMany(this, {
                 foreignKey: 'perfumeIdx',
+                sourceKey: 'perfumeIdx',
                 as: 'Notes',
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
             this.hasOne(models.Ingredient, {
                 foreignKey: 'ingredientIdx',
+                sourceKey: 'ingredientIdx',
                 as: 'Ingredients',
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
