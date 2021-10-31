@@ -97,7 +97,6 @@ describe('# reissue Test', () => {
     });
     before(() => {
         const result = jwt.publish(payload);
-        token = result.token;
         refreshToken = result.refreshToken;
     });
     it('# success case', () => {
