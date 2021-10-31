@@ -8,7 +8,7 @@ const {
     DuplicatedEntryError,
     NotMatchedError,
     InvalidInputError,
-} = require('../../utils/errors/errors.js');
+} = require('../../src/utils/errors/errors.js');
 const { Note, Ingredient } = require('../../models');
 const NoteDTO = require('../data/dto/NoteDTO');
 
