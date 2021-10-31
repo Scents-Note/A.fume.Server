@@ -6,9 +6,9 @@ const { expect } = chai;
 const {
     InvalidTokenError,
     ExpiredTokenError,
-} = require('../../utils/errors/errors.js');
-const jwt = require('../../lib/token.js');
-const TokenPayloadDTO = require('../../data/dto/TokenPayloadDTO.js');
+} = require('../../src/utils/errors/errors.js');
+const jwt = require('../../src/lib/token.js');
+const TokenPayloadDTO = require('../../src/data/dto/TokenPayloadDTO.js');
 
 describe('# publish Test', () => {
     it(' # create case', () => {

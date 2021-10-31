@@ -32,7 +32,7 @@ module.exports.postReview = function postReview(req, res, next) {
             res.status(OK).json({
                 message: '시향노트 추가 성공',
                 data: {
-                    reviewIdx : response
+                    reviewIdx: response,
                 },
             });
         })
@@ -51,14 +51,10 @@ module.exports.getReviewByIdx = function getReviewByIdx(req, res, next) {
         .catch((err) => next(err));
 };
 
-module.exports.getPerfumeReview = function getPerfumeReview(
-    req,
-    res,
-    next
-) {
+module.exports.getPerfumeReview = function getPerfumeReview(req, res, next) {
     var perfumeIdx = req.swagger.params['perfumeIdx'].value;
     const userIdx = req.middlewareToken.loginUserIdx;
-    Review.getReviewOfPerfumeByLike({perfumeIdx, userIdx})
+    Review.getReviewOfPerfumeByLike({ perfumeIdx, userIdx })
         .then((response) => {
             res.status(OK).json({
                 message: '특정 향수의 시향노트 목록 인기순 조회 성공',
@@ -91,7 +87,7 @@ module.exports.putReview = (req, res, next) => {
         gender,
         access,
         content,
-        keywordList
+        keywordList,
     } = req.swagger.params['body'].value;
     Review.updateReview({
         reviewIdx,
@@ -104,7 +100,7 @@ module.exports.putReview = (req, res, next) => {
         access,
         content,
         userIdx,
-        keywordList
+        keywordList,
     })
         .then(() => {
             res.status(OK).json({

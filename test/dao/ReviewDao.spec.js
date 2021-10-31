@@ -3,11 +3,11 @@ dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;
-const reviewDao = require('../../dao/ReviewDao.js');
-const keywordDao = require('../../dao/KeywordDao');
-const { Review, JoinReviewKeyword } = require('../../models');
-const { read } = require('../../dao/NoteDao.js');
-const { NotMatchedError } = require('../../utils/errors/errors.js');
+const reviewDao = require('../../src/dao/ReviewDao.js');
+const keywordDao = require('../../src/dao/KeywordDao');
+const { Review, JoinReviewKeyword } = require('../../src/models');
+const { read } = require('../../src/dao/NoteDao.js');
+const { NotMatchedError } = require('../../src/utils/errors/errors.js');
 
 describe('# reviewDao Test', () => {
     before(async function () {

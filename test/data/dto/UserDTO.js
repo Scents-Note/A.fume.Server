@@ -1,13 +1,13 @@
 const { expect } = require('chai');
 
-const UserDTO = require('../../../data/dto/UserDTO');
+const UserDTO = require('../../../src/data/dto/UserDTO');
 const {
     GENDER_MAN,
     GENDER_WOMAN,
     GRADE_MANAGER,
     GRADE_USER,
     GRADE_SYSTEM_ADMIN,
-} = require('../../../utils/constantUtil');
+} = require('../../../src/utils/constantUtil');
 
 UserDTO.validTest = function () {
     expect(this.userIdx).to.be.gt(0);

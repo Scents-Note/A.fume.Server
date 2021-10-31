@@ -5,8 +5,8 @@ const {
     NOTE_TYPE_MIDDLE,
     NOTE_TYPE_BASE,
     NOTE_TYPE_SINGLE,
-} = require('../../../utils/constantUtil');
-const NoteDTO = require('../../../data/dto/NoteDTO');
+} = require('../../../src/utils/constantUtil');
+const NoteDTO = require('../../../src/data/dto/NoteDTO');
 
 NoteDTO.validTest = function () {
     expect(this.perfumeIdx).to.be.ok;

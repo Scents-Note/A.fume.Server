@@ -1,6 +1,6 @@
 'use strict';
 
-const LoginResponseDTO = require('../../../../data/response_dto/user/LoginResponseDTO');
+const LoginResponseDTO = require('../../../../src/data/response_dto/user/LoginResponseDTO');
 const expect = require('../../../utils/expect');
 
 LoginResponseDTO.validTest = function () {

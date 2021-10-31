@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const TokenPayloadDTO = require('../../../data/dto/TokenPayloadDTO');
+const TokenPayloadDTO = require('../../../src/data/dto/TokenPayloadDTO');
 
 TokenPayloadDTO.validTest = function () {
     expect(this.userIdx).to.be.ok;

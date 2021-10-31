@@ -1,7 +1,7 @@
 'use strict';
 const expect = require('../../utils/expect');
 
-const PerfumeDefaultReviewDTO = require('../../../data/dto/PerfumeDefaultReviewDTO');
+const PerfumeDefaultReviewDTO = require('../../../src/data/dto/PerfumeDefaultReviewDTO');
 
 function isNumber() {
     expect(this).to.be.a('number');

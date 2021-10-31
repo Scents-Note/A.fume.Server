@@ -4,17 +4,17 @@ dotenv.config();
 const request = require('supertest');
 const chai = require('chai');
 const { expect } = chai;
-const app = require('../../index.js');
+const app = require('../../src/index.js');
 const {
     InvalidTokenError,
     ExpiredTokenError,
-} = require('../../utils/errors/errors');
+} = require('../../src/utils/errors/errors');
 
 const basePath = '/A.fume/api/0.0.1';
 
-const statusCode = require('../../utils/statusCode');
+const statusCode = require('../../src/utils/statusCode');
 
-const User = require('../../controllers/User.js');
+const User = require('../../src/controllers/User.js');
 const mockUserService = {};
 User.setUserService(mockUserService);
 
@@ -22,12 +22,12 @@ const UserResponseDTO = require('../data/response_dto/user/UserResponseDTO');
 const UserRegisterResponseDTO = require('../data/response_dto/user/UserRegisterResponseDTO');
 const UserAuthResponseDTO = require('../data/response_dto/user/UserAuthResponseDTO');
 
-const token = require('../../lib/token');
+const token = require('../../src/lib/token');
 const LoginResponseDTO = require('../data/response_dto/user/LoginResponseDTO.js');
 const TokenGroupDTO = require('../data/dto/TokenGroupDTO');
 const LoginInfoDTO = require('../data/dto/LoginInfoDTO');
 const UserDTO = require('../data/dto/UserDTO');
-const { UserAuthDTO } = require('../../data/dto');
+const { UserAuthDTO } = require('../../src/data/dto');
 const user1token = token.create({ userIdx: 1 });
 const invalidToken =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWR4IjoyMDAsIm5pY2tuYW1lIjoi7L-87Lm066eoMiIsImdlbmRlciI6ImZlbWFsZSIsImVtYWlsIjoiaGVlLnlvdW4yQHNhbXN1bmcuY29tIiwiYmlydGgiOjE5OTUsImlhdCI6MTYyOTEwNzc3NSwiZXhwIjoxNjMwODM1Nzc1LCJpc3MiOiJhZnVtZS1qYWNrcG90In0.hWxF0OHzIWZoQhPhkkOyJs3HYB2tPdrpIaVqe0IZRKI';

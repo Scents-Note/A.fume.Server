@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 
-const BrandResponseDTO = require('../../../../data/response_dto/brand/BrandResponseDTO');
+const BrandResponseDTO = require('../../../../src/data/response_dto/brand/BrandResponseDTO');
 
 BrandResponseDTO.validTest = function () {
     expect.hasProperties.call(this, 'brandIdx', 'name');

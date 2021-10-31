@@ -14,8 +14,8 @@ const {
     JoinReviewKeyword,
     Review,
     PerfumeDefaultReview,
-} = require('../../../models');
-const { GENDER_MAN, GENDER_WOMAN } = require('../../../utils/constantUtil');
+} = require('../../../src/models');
+const { GENDER_MAN, GENDER_WOMAN } = require('../../../src/utils/constantUtil');
 
 module.exports = () => {
     const firstJob = [];

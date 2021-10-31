@@ -4,9 +4,12 @@ dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;
-const UserAuthDTO = require('../../../data/dto/UserAuthDTO.js');
+const UserAuthDTO = require('../../../src/data/dto/UserAuthDTO.js');
 
-const { GRADE_MANAGER, GRADE_USER } = require('../../../utils/constantUtil');
+const {
+    GRADE_MANAGER,
+    GRADE_USER,
+} = require('../../../src/utils/constantUtil');
 
 describe('# UserAuthDTO Test', () => {
     describe('# create Test', () => {

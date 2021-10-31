@@ -50,7 +50,7 @@ var options = {
 };
 
 // The Swagger document (require it, build it programmatically, fetch it from a URL, ...)
-let spec = fs.readFileSync(path.join(__dirname, 'api/swagger.yaml'), 'utf8');
+let spec = fs.readFileSync(path.join(__dirname, '../api/swagger.yaml'), 'utf8');
 spec = spec
     .replace('{SERVER_URL}', localIpAddress)
     .replace('{SERVER_PORT}', serverPort);

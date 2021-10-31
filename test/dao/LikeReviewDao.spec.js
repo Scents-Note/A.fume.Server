@@ -3,13 +3,13 @@ dotenv.config();
 
 const chai = require('chai');
 const { expect } = chai;
-const likeReviewDao = require('../../dao/LikeReviewDao.js');
+const likeReviewDao = require('../../src/dao/LikeReviewDao.js');
 const {
     DuplicatedEntryError,
     NotMatchedError,
     UnExpectedError,
-} = require('../../utils/errors/errors.js');
-const { LikeReview } = require('../../models');
+} = require('../../src/utils/errors/errors.js');
+const { LikeReview } = require('../../src/models');
 
 describe('# LikeReviewDao Test', () => {
     before(async function () {
