@@ -1,5 +1,7 @@
 #!/bin/sh
-npm install;
+npm install
+prebuild.sh
+
 npm audit fix;
 # npm test;
 pm2 restart ecosystem.json;
