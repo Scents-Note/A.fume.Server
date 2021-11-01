@@ -306,7 +306,7 @@ exports.recommendByUser = async ({ userIdx, pagingRequestDTO }) => {
     const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
     const { ageGroup, gender } = await getAgeGroupAndGender(userIdx);
 
-    const recommendedListPromise = this.recommendByGenderAgeAndGender(
+    const recommendedListPromise = recommendByGenderAgeAndGender(
         gender,
         ageGroup,
         pagingIndex,
@@ -349,11 +349,7 @@ exports.recommendByUser = async ({ userIdx, pagingRequestDTO }) => {
  * @param {number} pagingSize
  * @returns {Promise<Perfume[]>}
  **/
-exports.recommendByGenderAgeAndGender = (
-    gender,
-    ageGroup,
-    pagingRequestDTO
-) => {
+function recommendByGenderAgeAndGender(gender, ageGroup, pagingRequestDTO) {
     const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
     return perfumeDao.recommendPerfumeByAgeAndGender(
         gender,
@@ -361,7 +357,10 @@ exports.recommendByGenderAgeAndGender = (
         pagingIndex,
         pagingSize
     );
-};
+}
+
+exports.recommendByGenderAgeAndGender = (gender, ageGroup, pagingRequestDTO) =>
+    recommendByGenderAgeAndGender(gender, ageGroup, pagingRequestDTO);
 
 /**
  * 새로 추가된 향수 조회

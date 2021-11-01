@@ -26,6 +26,7 @@ jobs:
     - run: npm install -g mocha
     - run: npm install -g typescript
     - run: npm install
+    - run: npm link ts-node
     - run: npm audit fix
 #    - run: npm ci
 #    - run: npm run build --if-present
