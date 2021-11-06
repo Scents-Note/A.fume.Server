@@ -1,5 +1,4 @@
 import IngredientDTO from '../../../src/data/dto/IngredientDTO';
-
 import IngredientMockHelper from './IngredientMockHelper';
 
 const { expect } = require('chai');

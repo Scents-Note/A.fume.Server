@@ -27,7 +27,7 @@ class IngredientMockHelper {
                     createdAt: '2021-07-13T11:33:49.000Z',
                     updatedAt: '2021-08-07T09:20:29.000Z',
                 },
-                condition
+                JSON.parse(JSON.stringify(condition))
             )
         );
     }
