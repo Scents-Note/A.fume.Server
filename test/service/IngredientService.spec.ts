@@ -1,28 +1,33 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
 dotenv.config();
+
+import IngredientService from '../../src/service/IngredientService';
+import IngredientDTO from '../../src/data/dto/IngredientDTO';
+import IngredientMockHelper from '../data/dto/IngredientMockHelper';
+import IngredientConditionDTO from '../../src/data/dto/IngredientConditionDTO';
+import IngredientDao from '../../src/dao/IngredientDao';
 
 const chai = require('chai');
 const { expect } = chai;
 
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 
-const ingredientService = require('../../src/service/IngredientService.js');
-import IngredientDTO from '../../src/data/dto/IngredientDTO';
-import IngredientMockHelper from '../data/dto/IngredientMockHelper';
-const mockIngredientDAO = {};
+const ingredientService = new IngredientService();
+const mockIngredientDAO: any | IngredientDao = {};
 ingredientService.setIngredientDao(mockIngredientDAO);
 
 describe('# Ingredient Service Test', () => {
     describe('# read test', () => {
         describe('# findSIngredient Test', () => {
-            mockIngredientDAO.findIngredient = async (condition) => {
+            mockIngredientDAO.findIngredient = async (condition: any) => {
                 return IngredientMockHelper.create(condition);
             };
             it('# success Test', (done) => {
                 ingredientService
-                    .findIngredient({ name: '재료 이름' })
-                    .then((result) => {
-                        expect(result).instanceOf(IngredientDTO);
+                    .findIngredient(
+                        new IngredientConditionDTO(undefined, '재료 이름')
+                    )
+                    .then((result: IngredientDTO) => {
                         IngredientMockHelper.validTest.call(result);
                         done();
                     })
@@ -31,11 +36,11 @@ describe('# Ingredient Service Test', () => {
         });
 
         describe('# getIngredientAll Test', () => {
-            mockIngredientDAO.readAll = async (where = {}) => {
+            mockIngredientDAO.readAll = async (where: any = {}) => {
                 const seriesIdx = where.seriesIdx || 1;
                 return new ListAndCountDTO({
                     count: 5,
-                    rows: [1, 2, 3, 4, 5].map((idx) =>
+                    rows: [1, 2, 3, 4, 5].map((idx: number) =>
                         IngredientMockHelper.createWithIdx(idx, seriesIdx)
                     ),
                 });
@@ -56,11 +61,11 @@ describe('# Ingredient Service Test', () => {
         });
 
         describe('# getIngredientList Test', () => {
-            mockIngredientDAO.readAll = async (where = {}) => {
+            mockIngredientDAO.readAll = async (where: any = {}) => {
                 const seriesIdx = where.seriesIdx || 1;
                 return new ListAndCountDTO({
                     count: 5,
-                    rows: [1, 2, 3, 4, 5].map((idx) =>
+                    rows: [1, 2, 3, 4, 5].map((idx: number) =>
                         IngredientMockHelper.createWithIdx(idx, seriesIdx)
                     ),
                 });
@@ -74,7 +79,7 @@ describe('# Ingredient Service Test', () => {
                             result,
                             IngredientMockHelper.validTest
                         );
-                        result.rows.forEach((item) => {
+                        result.rows.forEach((item: any) => {
                             expect(item.seriesIdx).to.be.eq(1);
                         });
                         done();

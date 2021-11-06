@@ -1,7 +1,7 @@
-'use strict';
+import IngredientService from '../service/IngredientService';
 
 let Series = require('../service/SeriesService');
-let Ingredient = require('../service/IngredientService');
+let Ingredient = new IngredientService();
 
 const { OK } = require('../utils/statusCode.js');
 
