@@ -1,11 +1,9 @@
-'use strict';
+import IngredientResponseDTO from '../data/response_dto/ingredient/IngredientResponseDTO';
 
 let Ingredient = require('../service/IngredientService');
 const { OK } = require('../utils/statusCode.js');
 
 const { ListAndCountResponseDTO } = require('../data/response_dto/common');
-
-const { IngredientResponseDTO } = require('../data/response_dto/ingredient');
 
 module.exports.getIngredientAll = (req, res, next) => {
     Ingredient.getIngredientAll()

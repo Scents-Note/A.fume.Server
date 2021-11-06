@@ -1,5 +1,4 @@
-'use strict';
-const IngredientResponseDTO = require('../ingredient/IngredientResponseDTO');
+import IngredientResponseDTO from '../ingredient/IngredientResponseDTO';
 
 class SeriesFilterResponseDTO {
     constructor({ seriesIdx, name, ingredients }) {
@@ -13,7 +12,7 @@ class SeriesFilterResponseDTO {
             seriesIdx: seriesFilterDTO.seriesIdx,
             name: seriesFilterDTO.name,
             ingredients: seriesFilterDTO.ingredients.map(
-                (it) => new IngredientResponseDTO(it)
+                (it) => new IngredientResponseDTO(it.ingredientIdx, it.name)
             ),
         });
     }
