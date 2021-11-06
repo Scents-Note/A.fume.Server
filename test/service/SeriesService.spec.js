@@ -6,7 +6,9 @@ const { expect } = chai;
 
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 const SeriesDTO = require('../data/dto/SeriesDTO');
-const IngredientDTO = require('../data/dto/IngredientDTO');
+
+import IngredientMockHelper from '../data/dto/IngredientMockHelper';
+
 const SeriesFilterDTO = require('../data/dto/SeriesFilterDTO');
 
 const seriesService = require('../../src/service/SeriesService.js');
@@ -83,21 +85,21 @@ describe('# Series Service Test', () => {
                 const ret = [];
                 for (let i = 1; i <= 5; i++)
                     ret.push(
-                        IngredientDTO.createWithIdx({
+                        IngredientMockHelper.createWithIdx({
                             ingredientIdx: i,
                             seriesIdx: 1,
                         })
                     );
                 for (let i = 6; i <= 7; i++)
                     ret.push(
-                        IngredientDTO.createWithIdx({
+                        IngredientMockHelper.createWithIdx({
                             ingredientIdx: i,
                             seriesIdx: 2,
                         })
                     );
                 for (let i = 8; i <= 10; i++)
                     ret.push(
-                        IngredientDTO.createWithIdx({
+                        IngredientMockHelper.createWithIdx({
                             ingredientIdx: i,
                             seriesIdx: 3,
                         })

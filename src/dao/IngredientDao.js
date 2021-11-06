@@ -1,7 +1,8 @@
 import { NotMatchedError } from '../utils/errors/errors';
+import IngredientDTO from '../../src/data/dto/IngredientDTO';
 
 const { Ingredient, Sequelize } = require('../models');
-const { IngredientDTO, ListAndCountDTO } = require('../data/dto');
+const { ListAndCountDTO } = require('../data/dto');
 const { Op } = Sequelize;
 
 /**

@@ -9,7 +9,6 @@ const app = require('../../src/index.js');
 const basePath = '/A.fume/api/0.0.1';
 const { ListAndCountDTO } = require('../../src/data/dto');
 const statusCode = require('../../src/utils/statusCode');
-const IngredientDTO = require('../data/dto/IngredientDTO');
 const SeriesDTO = require('../data/dto/SeriesDTO');
 const SeriesFilterDTO = require('../data/dto/SeriesFilterDTO');
 const SeriesResponseDTO = require('../data/response_dto/series/SeriesResponseDTO');

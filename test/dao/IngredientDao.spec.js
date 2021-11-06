@@ -2,6 +2,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 import IngredientConditionDTO from '../../src/data/dto/IngredientConditionDTO';
+import IngredientDTO from '../../src/data/dto/IngredientDTO';
 
 import {
     NotMatchedError,
@@ -13,7 +14,6 @@ const { expect } = chai;
 const ingredientDao = require('../../src/dao/IngredientDao.js');
 
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
-const IngredientDTO = require('../data/dto/IngredientDTO');
 
 describe('# ingredientDao Test', () => {
     before(async function () {

@@ -4,10 +4,11 @@ dotenv.config();
 const chai = require('chai');
 const { expect } = chai;
 
-const IngredientDTO = require('../data/dto/IngredientDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 
 const ingredientService = require('../../src/service/IngredientService.js');
+import IngredientDTO from '../../src/data/dto/IngredientDTO';
+import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 const mockIngredientDAO = {};
 ingredientService.setIngredientDao(mockIngredientDAO);
 
@@ -15,14 +16,14 @@ describe('# Ingredient Service Test', () => {
     describe('# read test', () => {
         describe('# findSIngredient Test', () => {
             mockIngredientDAO.findIngredient = async (condition) => {
-                return IngredientDTO.create(condition);
+                return IngredientMockHelper.create(condition);
             };
             it('# success Test', (done) => {
                 ingredientService
                     .findIngredient({ name: '재료 이름' })
                     .then((result) => {
                         expect(result).instanceOf(IngredientDTO);
-                        IngredientDTO.validTest.call(result);
+                        IngredientMockHelper.validTest.call(result);
                         done();
                     })
                     .catch((err) => done(err));
@@ -35,10 +36,7 @@ describe('# Ingredient Service Test', () => {
                 return new ListAndCountDTO({
                     count: 5,
                     rows: [1, 2, 3, 4, 5].map((idx) =>
-                        IngredientDTO.createWithIdx({
-                            ingredientIdx: idx,
-                            seriesIdx,
-                        })
+                        IngredientMockHelper.createWithIdx(idx, seriesIdx)
                     ),
                 });
             };
@@ -49,7 +47,7 @@ describe('# Ingredient Service Test', () => {
                         expect(result).instanceOf(ListAndCountDTO);
                         ListAndCountDTO.validTest.call(
                             result,
-                            IngredientDTO.validTest
+                            IngredientMockHelper.validTest
                         );
                         done();
                     })
@@ -63,10 +61,7 @@ describe('# Ingredient Service Test', () => {
                 return new ListAndCountDTO({
                     count: 5,
                     rows: [1, 2, 3, 4, 5].map((idx) =>
-                        IngredientDTO.createWithIdx({
-                            ingredientIdx: idx,
-                            seriesIdx,
-                        })
+                        IngredientMockHelper.createWithIdx(idx, seriesIdx)
                     ),
                 });
             };
@@ -77,7 +72,7 @@ describe('# Ingredient Service Test', () => {
                         expect(result).instanceOf(ListAndCountDTO);
                         ListAndCountDTO.validTest.call(
                             result,
-                            IngredientDTO.validTest
+                            IngredientMockHelper.validTest
                         );
                         result.rows.forEach((item) => {
                             expect(item.seriesIdx).to.be.eq(1);
