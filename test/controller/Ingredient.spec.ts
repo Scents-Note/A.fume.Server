@@ -1,7 +1,7 @@
-import IngredientMockHelper from '../data/dto/IngredientMockHelper';
-
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
 dotenv.config();
+
+import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 
 const request = require('supertest');
 const chai = require('chai');
@@ -10,30 +10,27 @@ const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';
 
-const Ingredient = require('../../src/controllers/Ingredient.js');
+const Ingredient = require('../../src/controllers/Ingredient.ts');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 
-const mockIngredientService = {};
+const mockIngredientService: any = {};
 Ingredient.setIngredientService(mockIngredientService);
 
 describe('# Ingredient Controller Test', () => {
     describe('# getIngredientAll Test', () => {
         mockIngredientService.getIngredientAll = async () => {
-            const seriesIdx = 1;
+            const seriesIdx: number = 1;
             return new ListAndCountDTO({
                 count: 5,
-                rows: [1, 2, 3, 4, 5].map((idx) =>
-                    IngredientMockHelper.createWithIdx({
-                        ingredientIdx: idx,
-                        seriesIdx,
-                    })
+                rows: [1, 2, 3, 4, 5].map((idx: number) =>
+                    IngredientMockHelper.createWithIdx(idx, seriesIdx)
                 ),
             });
         };
         it('success case', (done) => {
             request(app)
                 .get(`${basePath}/ingredient`)
-                .expect((res) => {
+                .expect((res: any) => {
                     expect(res.status).to.be.eq(200);
                     const { message, data } = res.body;
 
@@ -46,7 +43,7 @@ describe('# Ingredient Controller Test', () => {
                     }
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 });

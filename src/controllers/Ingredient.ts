@@ -1,15 +1,17 @@
+import IngredientService from '../service/IngredientService';
 import IngredientResponseDTO from '../data/response_dto/ingredient/IngredientResponseDTO';
 
-let Ingredient = require('../service/IngredientService');
+let Ingredient = new IngredientService();
 const { OK } = require('../utils/statusCode.js');
 
 const { ListAndCountResponseDTO } = require('../data/response_dto/common');
 
-module.exports.getIngredientAll = (req, res, next) => {
+module.exports.getIngredientAll = (_: any, res: any, next: any) => {
     Ingredient.getIngredientAll()
         .then((result) => {
             result.rows = result.rows.map(
-                (it) => new IngredientResponseDTO(it)
+                (it: any) =>
+                    new IngredientResponseDTO(it.ingredientIdx, it.name)
             );
             return result;
         })
@@ -22,9 +24,11 @@ module.exports.getIngredientAll = (req, res, next) => {
                 })
             );
         })
-        .catch((err) => next(err));
+        .catch((err) => {
+            next(err);
+        });
 };
 
-module.exports.setIngredientService = (service) => {
+module.exports.setIngredientService = (service: any) => {
     Ingredient = service;
 };
