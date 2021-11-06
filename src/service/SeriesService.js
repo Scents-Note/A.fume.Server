@@ -1,7 +1,9 @@
 'use strict';
 
+import IngredientDao from '../dao/IngredientDao';
+
 let seriesDao = require('../dao/SeriesDao.js');
-let ingredientDao = require('../dao/IngredientDao');
+let ingredientDao = new IngredientDao();
 let noteDao = require('../dao/NoteDao.js');
 
 // TODO Service Class로 변경
