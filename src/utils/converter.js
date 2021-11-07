@@ -1,9 +1,10 @@
+import { InvalidValueError } from './errors/errors';
+
 const seasonalTypeArr = ['봄', '여름', '가을', '겨울'];
 const sillageTypeArr = ['가벼움', '보통', '무거움'];
 const longevityTypeArr = ['매우 약함', '약함', '보통', '강함', '매우 강함'];
 const genderTypeArr = ['남성', '중성', '여성'];
 
-const { InvalidValueError } = require('./errors/errors.js');
 const KeywordDao = require('../dao/KeywordDao');
 
 const INSTEAD_NULL_VALUE = -1;

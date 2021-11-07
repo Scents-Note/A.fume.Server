@@ -1,8 +1,8 @@
-const {
+import {
     NotMatchedError,
     DuplicatedEntryError,
     InvalidInputError,
-} = require('../utils/errors/errors.js');
+} from '../utils/errors/errors';
 
 const { Note, Ingredient, sequelize, Sequelize } = require('../models');
 const { Op } = Sequelize;

@@ -1,12 +1,14 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const chai = require('chai');
-const { expect } = chai;
-const {
+import {
     InvalidTokenError,
     ExpiredTokenError,
-} = require('../../src/utils/errors/errors.js');
+} from '../../src/utils/errors/errors';
+
+const chai = require('chai');
+const { expect } = chai;
+
 const jwt = require('../../src/lib/token.js');
 const TokenPayloadDTO = require('../../src/data/dto/TokenPayloadDTO.js');
 

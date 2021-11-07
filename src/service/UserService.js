@@ -1,14 +1,12 @@
-'use strict';
+import {
+    WrongPasswordError,
+    PasswordPolicyError,
+    NotMatchedError,
+} from '../utils/errors/errors';
 
 let jwt = require('../lib/token.js');
 let crypto = require('../lib/crypto.js');
 let userDao = require('../dao/UserDao.js');
-
-const {
-    WrongPasswordError,
-    PasswordPolicyError,
-    NotMatchedError,
-} = require('../utils/errors/errors.js');
 
 const {
     TokenGroupDTO,

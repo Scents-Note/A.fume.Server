@@ -1,4 +1,4 @@
-const { InvalidRequestError } = require('./errors/errors.js');
+import { InvalidRequestError } from './errors/errors';
 
 module.exports.validateType = (obj, key, type, next) => {
     if (obj[key] instanceof type) {

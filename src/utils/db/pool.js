@@ -1,3 +1,9 @@
+import {
+    DatabaseError,
+    NoReferencedRowError,
+    DuplicatedEntryError,
+} from '../errors/errors';
+
 const mysql = require('promise-mysql');
 
 const env = process.env.NODE_ENV || 'development';
@@ -12,8 +18,6 @@ const poolPromise = mysql.createPool({
     dateStrings: true,
 });
 
-const { DatabaseError, NoReferencedRowError, DuplicatedEntryError } = require('../errors/errors.js');
-
 module.exports = {
     queryParam_None: async (query) => {
         let result = null;
@@ -24,7 +28,7 @@ module.exports = {
                 result = await connection.query(query);
             } catch (queryError) {
                 connection.rollback(() => {});
-                switch(queryError.errno){
+                switch (queryError.errno) {
                     case 1453:
                         result = new NoReferencedRowError();
                         break;
@@ -39,10 +43,10 @@ module.exports = {
         } catch (connectionError) {
             throw connectionError;
         }
-        if(result instanceof Error) {
+        if (result instanceof Error) {
             throw result;
         }
-        if(!result) {
+        if (!result) {
             throw new DatabaseError();
         }
         return result;
@@ -56,10 +60,10 @@ module.exports = {
             const pool = await poolPromise;
             const connection = await pool.getConnection();
             try {
-                result = await connection.query(query, value) || null;
+                result = (await connection.query(query, value)) || null;
             } catch (queryError) {
                 connection.rollback(() => {});
-                switch(queryError.errno){
+                switch (queryError.errno) {
                     case 1453:
                         result = new NoReferencedRowError();
                         break;
@@ -74,10 +78,10 @@ module.exports = {
         } catch (connectionError) {
             throw connectionError;
         }
-        if(result instanceof Error) {
+        if (result instanceof Error) {
             throw result;
         }
-        if(!result) {
+        if (!result) {
             throw new DatabaseError();
         }
         return result;
@@ -86,14 +90,14 @@ module.exports = {
         let result = false;
         try {
             const pool = await poolPromise;
-            const connection = await pool.getConnection()
+            const connection = await pool.getConnection();
             try {
                 await connection.beginTransaction();
-                result = await Promise.all(args.map(it => it(connection)));
+                result = await Promise.all(args.map((it) => it(connection)));
                 await connection.commit();
             } catch (transactionError) {
                 await connection.rollback();
-                switch(transactionError.errno){
+                switch (transactionError.errno) {
                     case 1453:
                         transactionError = new NoReferencedRowError();
                         break;
@@ -108,12 +112,12 @@ module.exports = {
         } catch (connectionError) {
             throw connectionError;
         }
-        if(result instanceof Error) {
+        if (result instanceof Error) {
             throw result;
         }
-        if(!result) {
+        if (!result) {
             throw new DatabaseError();
         }
         return result;
-    }
-}
+    },
+};

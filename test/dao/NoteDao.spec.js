@@ -1,14 +1,16 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const chai = require('chai');
-const { expect } = chai;
-const noteDao = require('../../src/dao/NoteDao.js');
-const {
+import {
     DuplicatedEntryError,
     NotMatchedError,
     InvalidInputError,
-} = require('../../src/utils/errors/errors.js');
+} from '../../src/utils/errors/errors';
+
+const chai = require('chai');
+const { expect } = chai;
+const noteDao = require('../../src/dao/NoteDao.js');
+
 const { Note, Ingredient } = require('../../src/models');
 const NoteDTO = require('../data/dto/NoteDTO');
 

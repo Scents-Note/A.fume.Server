@@ -1,13 +1,15 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
+import {
+    NotMatchedError,
+    UnExpectedError,
+} from '../../src/utils/errors/errors';
+
 const chai = require('chai');
 const { expect } = chai;
 const brandDao = require('../../src/dao/BrandDao.js');
-const {
-    NotMatchedError,
-    UnExpectedError,
-} = require('../../src/utils/errors/errors.js');
+
 const PagingDTO = require('../../src/data/dto/PagingDTO');
 const BrandDTO = require('../data/dto/BrandDTO.js');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO.js');

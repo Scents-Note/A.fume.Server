@@ -1,4 +1,4 @@
-'use strict';
+import { NotMatchedError, FailedToCreateError } from '../utils/errors/errors';
 
 let perfumeDao = require('../dao/PerfumeDao.js');
 let reviewDao = require('../dao/ReviewDao.js');
@@ -26,11 +26,6 @@ const {
     PagingDTO,
     PerfumeSearchDTO,
 } = require('../data/dto');
-
-const {
-    NotMatchedError,
-    FailedToCreateError,
-} = require('../utils/errors/errors.js');
 
 const {
     updateRows,
