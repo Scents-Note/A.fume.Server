@@ -142,7 +142,7 @@ describe('# User Controller Test', () => {
                 .expect((res) => {
                     expect(res.status).to.be.eq(statusCode.UNAUTHORIZED);
                     const { message } = res.body;
-                    expect(message).to.be.eq('유효하지 않는 접근입니다.');
+                    expect(message).to.be.eq('권한이 없습니다.');
                     done();
                 })
                 .catch((err) => done(err));
