@@ -31,7 +31,7 @@ describe('# Ingredient Service Test', () => {
                         IngredientMockHelper.validTest.call(result);
                         done();
                     })
-                    .catch((err) => done(err));
+                    .catch((err: any) => done(err));
             });
         });
 
@@ -56,7 +56,7 @@ describe('# Ingredient Service Test', () => {
                         );
                         done();
                     })
-                    .catch((err) => done(err));
+                    .catch((err: any) => done(err));
             });
         });
 
