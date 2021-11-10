@@ -2,6 +2,8 @@
 
 let Brand = new (require('../service/BrandService'))();
 
+import BrandResponseDTO from '../data/response_dto/brand/BrandResponseDTO';
+
 module.exports.setBrandService = (brandService) => {
     Brand = brandService;
 };
@@ -12,17 +14,16 @@ const {
     ListAndCountResponseDTO,
 } = require('../data/response_dto/common');
 
-const {
-    BrandResponseDTO,
-    BrandFilterResponseDTO,
-} = require('../data/response_dto/brand');
+const BrandFilterResponseDTO = require('../data/response_dto/brand/BrandFilterResponseDTO');
 
 module.exports.getBrandAll = (req, res, next) => {
     Brand.getBrandAll()
         .then((result) => {
             return {
                 count: result.count,
-                rows: result.rows.map((it) => new BrandResponseDTO(it)),
+                rows: result.rows.map(
+                    (it) => new BrandResponseDTO(it.brandIdx, it.name)
+                ),
             };
         })
         .then(({ count, rows }) => {

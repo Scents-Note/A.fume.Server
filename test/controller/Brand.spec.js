@@ -1,5 +1,6 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
 dotenv.config();
+import BrandResponseHelper from '../data/response_dto/brand/BrandResponseHelper';
 
 const request = require('supertest');
 const app = require('../../src/index.js');
@@ -10,7 +11,6 @@ const { ListAndCountDTO } = require('../../src/data/dto');
 const BrandDTO = require('../data/dto/BrandDTO');
 const BrandFilterDTO = require('../../src/data/dto/BrandFilterDTO');
 const BrandFilterResponseDTO = require('../data/response_dto/brand/BrandFilterResponseDTO');
-const BrandResponseDTO = require('../data/response_dto/brand/BrandResponseDTO');
 const statusCode = require('../../src/utils/statusCode');
 
 const Brand = require('../../src/controllers/Brand.js');
@@ -35,7 +35,7 @@ describe('# Brand Controller Test', () => {
                     expect(message).to.be.eq('브랜드 조회 성공');
                     expect(data.count).to.be.gt(0);
                     data.rows.forEach((brand) => {
-                        BrandResponseDTO.validTest.call(brand);
+                        BrandResponseHelper.validTest.call(brand);
                     });
                     done();
                 })

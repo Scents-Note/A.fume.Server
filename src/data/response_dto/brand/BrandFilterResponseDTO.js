@@ -1,5 +1,4 @@
-'use strict';
-const BrandResponseDTO = require('./BrandResponseDTO');
+import BrandResponseDTO from './BrandResponseDTO';
 
 class BrandFilterResponseDTO {
     constructor({ firstInitial, brands }) {
@@ -10,7 +9,9 @@ class BrandFilterResponseDTO {
     static create(brandFilterDTO) {
         return new BrandFilterResponseDTO({
             firstInitial: brandFilterDTO.firstInitial,
-            brands: brandFilterDTO.brands.map((it) => new BrandResponseDTO(it)),
+            brands: brandFilterDTO.brands.map(
+                (it) => new BrandResponseDTO(it.brandIdx, it.name)
+            ),
         });
     }
 }
