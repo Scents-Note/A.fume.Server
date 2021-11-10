@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import BrandResponseHelper from '../data/response_dto/brand/BrandResponseHelper';
+import BrandFilterResponseHelper from '../data/response_dto/brand/BrandFilterResponseHelper';
 
 const request = require('supertest');
 const app = require('../../src/index.js');
@@ -10,7 +11,6 @@ const basePath = '/A.fume/api/0.0.1';
 const { ListAndCountDTO } = require('../../src/data/dto');
 const BrandDTO = require('../data/dto/BrandDTO');
 const BrandFilterDTO = require('../../src/data/dto/BrandFilterDTO');
-const BrandFilterResponseDTO = require('../data/response_dto/brand/BrandFilterResponseDTO');
 const statusCode = require('../../src/utils/statusCode');
 
 const Brand = require('../../src/controllers/Brand.js');
@@ -66,7 +66,7 @@ describe('# Brand Controller Test', () => {
                     const { message, data } = res.body;
                     expect(message).to.be.eq('브랜드 필터 조회 성공');
                     for (const item of data) {
-                        BrandFilterResponseDTO.validTest.call(item);
+                        BrandFilterResponseHelper.validTest.call(item);
                     }
                     done();
                 })

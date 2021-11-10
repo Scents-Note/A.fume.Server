@@ -3,6 +3,7 @@
 let Brand = new (require('../service/BrandService'))();
 
 import BrandResponseDTO from '../data/response_dto/brand/BrandResponseDTO';
+import BrandFilterResponseDTO from '../data/response_dto/brand/BrandFilterResponseDTO';
 
 module.exports.setBrandService = (brandService) => {
     Brand = brandService;
@@ -13,8 +14,6 @@ const {
     ResponseDTO,
     ListAndCountResponseDTO,
 } = require('../data/response_dto/common');
-
-const BrandFilterResponseDTO = require('../data/response_dto/brand/BrandFilterResponseDTO');
 
 module.exports.getBrandAll = (req, res, next) => {
     Brand.getBrandAll()
