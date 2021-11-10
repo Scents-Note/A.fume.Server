@@ -1,36 +1,33 @@
-const dotenv = require('dotenv');
-dotenv.config();
+import dotenv from 'dotenv';
+import chai from 'chai';
 
-const chai = require('chai');
+import BrandDTO from '../../src/data/dto/BrandDTO';
+import BrandHelper from '../data/dto/BrandHelper';
+import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
+import BrandFilterHelper from '../data/dto/BrandFilterHelper';
+
+dotenv.config();
 const { expect } = chai;
 
 const { PagingRequestDTO } = require('../../src/data/request_dto');
 
-const BrandDTO = require('../data/dto/BrandDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
-const BrandFilterDTO = require('../data/dto/BrandFilterDTO');
-
-const mockBrandDTO = new BrandDTO({
-    brandIdx: 1,
-    name: '브랜드1',
-    englishName: 'BRAND1',
-    firstInitial: 'ㅂ',
-    imageUrl: 'http://',
-    description: '이것은 브랜드',
-    createdAt: '2021-07-24T03:38:52.000Z',
-    updatedAt: '2021-07-24T03:38:52.000Z',
-});
 
 const mockListAndCountDTO = new ListAndCountDTO({
     count: 1,
-    rows: [mockBrandDTO, mockBrandDTO, mockBrandDTO],
+    rows: [
+        BrandHelper.createWithIdx(1),
+        BrandHelper.createWithIdx(2),
+        BrandHelper.createWithIdx(3),
+    ],
 });
-const Brand = new (require('../../src/service/BrandService'))({
-    read: async (brandIdx) => mockBrandDTO,
+const mockBrandDAO = {
+    read: async (brandIdx) => BrandHelper.createWithIdx(1),
     search: async (pagingDTO) => mockListAndCountDTO,
     readAll: async () => mockListAndCountDTO,
-    findBrand: async (condition) => mockBrandDTO,
-});
+    findBrand: async (condition) => BrandHelper.createWithIdx(1),
+};
+const Brand = new (require('../../src/service/BrandService'))(mockBrandDAO);
 
 describe('# Brand Service Test', () => {
     describe('# searchBrand Test', () => {
@@ -38,7 +35,7 @@ describe('# Brand Service Test', () => {
             Brand.searchBrand(new PagingRequestDTO({}))
                 .then((res) => {
                     expect(res).instanceOf(ListAndCountDTO);
-                    ListAndCountDTO.validTest.call(res, BrandDTO.validTest);
+                    ListAndCountDTO.validTest.call(res, BrandHelper.validTest);
                     done();
                 })
                 .catch((err) => done(err));
@@ -50,7 +47,7 @@ describe('# Brand Service Test', () => {
             Brand.getBrandAll(1)
                 .then((res) => {
                     expect(res).instanceOf(ListAndCountDTO);
-                    ListAndCountDTO.validTest.call(res, BrandDTO.validTest);
+                    ListAndCountDTO.validTest.call(res, BrandHelper.validTest);
                     done();
                 })
                 .catch((err) => done(err));
@@ -62,7 +59,7 @@ describe('# Brand Service Test', () => {
             Brand.getBrandByIdx(1)
                 .then((brandDTO) => {
                     expect(brandDTO).to.be.instanceOf(BrandDTO);
-                    BrandDTO.validTest.call(brandDTO);
+                    BrandHelper.validTest.call(brandDTO);
                     done();
                 })
                 .catch((err) => done(err));
@@ -75,7 +72,7 @@ describe('# Brand Service Test', () => {
                 .then((result) => {
                     for (const item of result) {
                         expect(item).to.be.instanceOf(BrandFilterDTO);
-                        BrandFilterDTO.validTest.call(item);
+                        BrandFilterHelper.validTest.call(item);
                     }
                     done();
                 })

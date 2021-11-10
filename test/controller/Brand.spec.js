@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 import BrandResponseHelper from '../data/response_dto/brand/BrandResponseHelper';
 import BrandFilterResponseHelper from '../data/response_dto/brand/BrandFilterResponseHelper';
+import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
+import BrandHelper from '../data/dto/BrandHelper';
 
 const request = require('supertest');
 const app = require('../../src/index.js');
@@ -9,8 +11,6 @@ const expect = require('../utils/expect');
 
 const basePath = '/A.fume/api/0.0.1';
 const { ListAndCountDTO } = require('../../src/data/dto');
-const BrandDTO = require('../data/dto/BrandDTO');
-const BrandFilterDTO = require('../../src/data/dto/BrandFilterDTO');
 const statusCode = require('../../src/utils/statusCode');
 
 const Brand = require('../../src/controllers/Brand.js');
@@ -23,7 +23,11 @@ describe('# Brand Controller Test', () => {
         mockBrandService.getBrandAll = async () =>
             new ListAndCountDTO({
                 count: 1,
-                rows: [BrandDTO.create(), BrandDTO.create(), BrandDTO.create()],
+                rows: [
+                    BrandHelper.create(),
+                    BrandHelper.create(),
+                    BrandHelper.create(),
+                ],
             });
         it('success case', (done) => {
             request(app)
@@ -45,18 +49,12 @@ describe('# Brand Controller Test', () => {
 
     describe('# getFilterBrand Test', () => {
         mockBrandService.getFilterBrand = async (condition) => [
-            new BrandFilterDTO({
-                firstInitial: 'ㄱ',
-                brands: [],
-            }),
-            new BrandFilterDTO({
-                firstInitial: 'ㅂ',
-                brands: [
-                    BrandDTO.create(),
-                    BrandDTO.create(),
-                    BrandDTO.create(),
-                ],
-            }),
+            new BrandFilterDTO('ㄱ', []),
+            new BrandFilterDTO('ㅂ', [
+                BrandHelper.create(),
+                BrandHelper.create(),
+                BrandHelper.create(),
+            ]),
         ];
         it('success case', (done) => {
             request(app)

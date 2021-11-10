@@ -1,4 +1,5 @@
 import BrandResponseDTO from './BrandResponseDTO';
+import BrandFilterDTO from '../../dto/BrandFilterDTO';
 
 class BrandFilterResponseDTO {
     firstInitial: string;
@@ -8,7 +9,7 @@ class BrandFilterResponseDTO {
         this.brands = brands;
     }
 
-    static create(brandFilterDTO: any) {
+    static create(brandFilterDTO: BrandFilterDTO) {
         const firstInitial = brandFilterDTO.firstInitial;
         const brands = brandFilterDTO.brands.map(
             (it: any) => new BrandResponseDTO(it.brandIdx, it.name)

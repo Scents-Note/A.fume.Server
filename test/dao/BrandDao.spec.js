@@ -1,4 +1,4 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
 dotenv.config();
 
 import {
@@ -6,12 +6,14 @@ import {
     UnExpectedError,
 } from '../../src/utils/errors/errors';
 
+import BrandDTO from '../../src/data/dto/BrandDTO';
+import BrandHelper from '../data/dto/BrandHelper';
+
 const chai = require('chai');
 const { expect } = chai;
 const brandDao = require('../../src/dao/BrandDao.js');
 
 const PagingDTO = require('../../src/data/dto/PagingDTO');
-const BrandDTO = require('../data/dto/BrandDTO.js');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO.js');
 
 describe('# brandDao Test', () => {
@@ -27,7 +29,7 @@ describe('# brandDao Test', () => {
                     expect(result.brandIdx).to.be.eq(2);
                     expect(result.name).to.be.eq('브랜드2');
                     expect(result.firstInitial).to.be.eq('ㅂ');
-                    BrandDTO.validTest.call(result);
+                    BrandHelper.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
@@ -42,7 +44,7 @@ describe('# brandDao Test', () => {
                     expect(result.brandIdx).to.be.eq(1);
                     expect(result.name).to.be.eq('브랜드1');
                     expect(result.firstInitial).to.be.eq('ㅂ');
-                    BrandDTO.validTest.call(result);
+                    BrandHelper.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
@@ -78,7 +80,7 @@ describe('# brandDao Test', () => {
                     expect(result.rows.length).gte(5);
                     for (const brand of result.rows) {
                         expect(brand).to.be.instanceOf(BrandDTO);
-                        BrandDTO.validTest.call(brand);
+                        BrandHelper.validTest.call(brand);
                     }
                     done();
                 })
@@ -92,7 +94,10 @@ describe('# brandDao Test', () => {
                 .readAll()
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    ListAndCountDTO.validTest.call(result, BrandDTO.validTest);
+                    ListAndCountDTO.validTest.call(
+                        result,
+                        BrandHelper.validTest
+                    );
                     done();
                 })
                 .catch((err) => done(err));

@@ -1,6 +1,7 @@
 'use strict';
 
-const { BrandFilterDTO, PagingDTO } = require('../data/dto');
+import BrandFilterDTO from '../data/dto/BrandFilterDTO';
+const { PagingDTO } = require('../data/dto');
 
 class BrandService {
     constructor(brandDao) {
@@ -38,7 +39,7 @@ class BrandService {
     /**
      * 브랜드 필터 조회
      *
-     * @returns {Promise<BrandFilterVO[]>} brandFilterVO[]
+     * @returns {Promise<BrandFilterDTO[]>} brandFilterDTO[]
      */
     getFilterBrand() {
         return this.brandDao.readAll().then((result) => {
@@ -50,10 +51,7 @@ class BrandService {
                 return prev;
             }, {});
             return Object.keys(firstInitialMap).map((key) => {
-                return new BrandFilterDTO({
-                    firstInitial: key,
-                    brands: firstInitialMap[key],
-                });
+                return new BrandFilterDTO(key, firstInitialMap[key]);
             });
         });
     }

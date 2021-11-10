@@ -1,7 +1,8 @@
 import { NotMatchedError, DuplicatedEntryError } from '../utils/errors/errors';
+import BrandDTO from '../data/dto/BrandDTO';
 
 const { Brand } = require('../models');
-const { BrandDTO, ListAndCountDTO } = require('../data/dto');
+const { ListAndCountDTO } = require('../data/dto');
 
 /**
  * 브랜드 세부 조회
@@ -17,7 +18,7 @@ module.exports.read = async (brandIdx) => {
     if (!result) {
         throw new NotMatchedError();
     }
-    return new BrandDTO(result);
+    return BrandDTO.createByJson(result);
 };
 
 /**
@@ -34,7 +35,7 @@ module.exports.search = ({ pagingSize, pagingIndex, order }) => {
         raw: true,
         nest: true,
     }).then((it) => {
-        it.rows = it.rows.map((it) => new BrandDTO(it));
+        it.rows = it.rows.map((it) => BrandDTO.createByJson(it));
         return new ListAndCountDTO(it);
     });
 };
@@ -51,7 +52,7 @@ module.exports.readAll = async () => {
     }).then((result) => {
         return new ListAndCountDTO({
             count: result.count,
-            rows: result.rows.map((it) => new BrandDTO(it)),
+            rows: result.rows.map((it) => BrandDTO.createByJson(it)),
         });
     });
 };
@@ -71,6 +72,6 @@ module.exports.findBrand = (condition) => {
         if (!it) {
             throw new NotMatchedError();
         }
-        return new BrandDTO(it);
+        return BrandDTO.createByJson(it);
     });
 };
