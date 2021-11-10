@@ -1,6 +1,12 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
+import {
+    NotMatchedError,
+    DuplicatedEntryError,
+    UnExpectedError,
+} from '../../src/utils/errors/errors';
+
 const chai = require('chai');
 const { expect } = chai;
 
@@ -9,11 +15,6 @@ const { Perfume, Note, Sequelize } = require('../../src/models');
 const { Op } = Sequelize;
 
 const { GENDER_WOMAN } = require('../../src/utils/constantUtil');
-const {
-    NotMatchedError,
-    DuplicatedEntryError,
-    UnExpectedError,
-} = require('../../src/utils/errors/errors.js');
 
 const allowFirstInitialArr = [
     'ㄱ',

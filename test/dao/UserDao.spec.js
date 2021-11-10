@@ -1,14 +1,15 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-const chai = require('chai');
-const { expect } = chai;
-const userDao = require('../../src/dao/UserDao.js');
-const {
+import {
     NotMatchedError,
     DuplicatedEntryError,
     UnExpectedError,
-} = require('../../src/utils/errors/errors.js');
+} from '../../src/utils/errors/errors';
+
+const chai = require('chai');
+const { expect } = chai;
+const userDao = require('../../src/dao/UserDao.js');
 const { User } = require('../../src/models');
 
 const UserDTO = require('../data/dto/UserDTO');

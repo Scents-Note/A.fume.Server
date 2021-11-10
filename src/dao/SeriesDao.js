@@ -1,7 +1,4 @@
-const {
-    NotMatchedError,
-    DuplicatedEntryError,
-} = require('../utils/errors/errors.js');
+import { NotMatchedError, DuplicatedEntryError } from '../utils/errors/errors';
 const { Series } = require('../models');
 
 const { SeriesDTO, ListAndCountDTO, CreatedResultDTO } = require('../data/dto');

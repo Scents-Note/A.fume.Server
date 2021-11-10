@@ -1,6 +1,8 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
+import { NotMatchedError } from '../../src/utils/errors/errors';
+
 const chai = require('chai');
 const { expect } = chai;
 const Perfume = require('../../src/service/PerfumeService.js');
@@ -12,7 +14,7 @@ const {
     PagingRequestDTO,
     PerfumeSearchRequestDTO,
 } = require('../../src/data/request_dto');
-const { NotMatchedError } = require('../../src/utils/errors/errors.js');
+
 const {
     GENDER_MAN,
     GENDER_WOMAN,

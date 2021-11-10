@@ -1,7 +1,4 @@
-const {
-    NotMatchedError,
-    DuplicatedEntryError,
-} = require('../utils/errors/errors.js');
+import { NotMatchedError, DuplicatedEntryError } from '../utils/errors/errors';
 const { LikePerfume, Sequelize, sequelize } = require('../models');
 const { Op } = Sequelize;
 

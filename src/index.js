@@ -1,4 +1,5 @@
-'use strict';
+import { HttpError } from './utils/errors/errors';
+import { INTERNAL_SERVER_ERROR } from './utils/statusCode';
 
 const fs = require('fs'),
     path = require('path'),
@@ -79,18 +80,20 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 
     // error handler
     app.use(function (err, req, res, next) {
-        if (!err.status || err.status >= 500) {
-            process.env.NODE_ENV === 'development' && console.log(err);
-            process.env.NODE_ENV === 'production' &&
-                (() => {
-                    err = new Error('Internal Server Error');
-                })();
+        let status;
+        let message;
+        if (err instanceof HttpError) {
+            process.env.NODE_ENV === 'development' && console.log(err.stack);
+            status = err.status;
+            message = err.message;
+        } else {
+            status = INTERNAL_SERVER_ERROR;
+            message = 'Internal Server Error';
         }
-
-        res.writeHead(err.status || 500, {
+        res.writeHead(status, {
             'Content-Type': 'application/json',
         });
-        const payload = JSON.stringify({ message: err.message }, null, 2);
+        const payload = JSON.stringify({ message }, null, 2);
         res.write(payload);
         res.end();
     });

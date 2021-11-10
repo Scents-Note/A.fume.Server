@@ -78,7 +78,7 @@ module.exports.updateUser = (req, res, next) => {
     const userIdx = req.swagger.params['userIdx'].value;
     const tokenUserIdx = req.middlewareToken.loginUserIdx;
     if (userIdx != tokenUserIdx) {
-        next(new UnAuthorizedError('유효하지 않는 접근입니다.'));
+        next(new UnAuthorizedError());
         return;
     }
     const body = req.swagger.params['body'].value;

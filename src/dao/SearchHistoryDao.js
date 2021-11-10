@@ -1,4 +1,4 @@
-const { NotMatchedError } = require('../utils/errors/errors.js');
+import { NotMatchedError } from '../utils/errors/errors';
 const { SearchHistory } = require('../models');
 
 /**

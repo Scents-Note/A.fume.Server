@@ -1,13 +1,14 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
+import { NotMatchedError } from '../../src/utils/errors/errors';
+
 const chai = require('chai');
 const { expect } = chai;
 const reviewDao = require('../../src/dao/ReviewDao.js');
 const keywordDao = require('../../src/dao/KeywordDao');
 const { Review, JoinReviewKeyword } = require('../../src/models');
 const { read } = require('../../src/dao/NoteDao.js');
-const { NotMatchedError } = require('../../src/utils/errors/errors.js');
 
 describe('# reviewDao Test', () => {
     before(async function () {
