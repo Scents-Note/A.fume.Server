@@ -1,6 +1,5 @@
 import IngredientDTO from '../data/dto/IngredientDTO';
-
-const { NotMatchedError } = require('../utils/errors/errors.js');
+import { NotMatchedError } from '../utils/errors/errors';
 
 const { Ingredient, Sequelize } = require('../models');
 const { ListAndCountDTO } = require('../data/dto');

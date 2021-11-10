@@ -1,6 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+import {
+    NotMatchedError,
+    UnExpectedError,
+} from '../../src/utils/errors/errors';
+
 import IngredientConditionDTO from '../../src/data/dto/IngredientConditionDTO';
 import IngredientDao from '../../src/dao/IngredientDao';
 import IngredientDTO from '../../src/data/dto/IngredientDTO';
@@ -10,10 +15,6 @@ import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 const chai = require('chai');
 const { expect } = chai;
 const ingredientDao = new IngredientDao();
-const {
-    NotMatchedError,
-    UnExpectedError,
-} = require('../../src/utils/errors/errors.js');
 
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 
