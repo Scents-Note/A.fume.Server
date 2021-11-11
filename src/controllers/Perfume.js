@@ -1,14 +1,11 @@
 'use strict';
-
+import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
 let Perfume = require('../service/PerfumeService');
 let SearchHistory = require('../service/SearchHistoryService');
 
 const { OK, FORBIDDEN } = require('../utils/statusCode.js');
 
-const {
-    PagingRequestDTO,
-    PerfumeSearchRequestDTO,
-} = require('../data/request_dto');
+const { PerfumeSearchRequestDTO } = require('../data/request_dto');
 const {
     PerfumeDetailResponseDTO,
     PerfumeResponseDTO,
@@ -44,7 +41,7 @@ module.exports.searchPerfume = (req, res, next) => {
     const perfumeSearchRequestDTO = new PerfumeSearchRequestDTO(
         Object.assign({ userIdx: loginUserIdx }, req.body)
     );
-    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    const pagingRequestDTO = PagingRequestDTO.createByJson(req.query);
     Perfume.searchPerfume({
         perfumeSearchRequestDTO,
         pagingRequestDTO,
@@ -83,7 +80,7 @@ module.exports.likePerfume = (req, res, next) => {
 
 module.exports.getRecentPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    const pagingRequestDTO = PagingRequestDTO.createByJson(req.query);
     Perfume.recentSearch({ userIdx: loginUserIdx, pagingRequestDTO })
         .then(({ count, rows }) => {
             return {
@@ -104,7 +101,7 @@ module.exports.getRecentPerfume = (req, res, next) => {
 
 module.exports.recommendPersonalPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    const pagingRequestDTO = PagingRequestDTO.createByJson(req.query);
     Perfume.recommendByUser({ userIdx: loginUserIdx, pagingRequestDTO })
         .then(({ count, rows }) => {
             return {
@@ -125,7 +122,7 @@ module.exports.recommendPersonalPerfume = (req, res, next) => {
 
 module.exports.recommendCommonPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    const pagingRequestDTO = PagingRequestDTO.createByJson(req.query);
     Perfume.recommendByUser({ loginUserIdx, pagingRequestDTO })
         .then(({ count, rows }) => {
             return {
@@ -166,7 +163,7 @@ module.exports.getSurveyPerfume = (req, res, next) => {
 
 module.exports.getNewPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    const pagingRequestDTO = PagingRequestDTO.createByJson(req.query);
     Perfume.getNewPerfume({ userIdx: loginUserIdx, pagingRequestDTO })
         .then(({ count, rows }) => {
             return {
@@ -188,7 +185,7 @@ module.exports.getNewPerfume = (req, res, next) => {
 module.exports.getLikedPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
     const userIdx = req.swagger.params['userIdx'].value;
-    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    const pagingRequestDTO = PagingRequestDTO.createByJson(req.query);
     if (loginUserIdx != userIdx) {
         res.status(FORBIDDEN).json(
             new ResponseDTO({

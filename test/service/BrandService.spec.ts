@@ -33,7 +33,7 @@ const Brand = new BrandService(mockBrandDAO);
 describe('# Brand Service Test', () => {
     describe('# searchBrand Test', () => {
         it('# success Test', (done) => {
-            Brand.searchBrand(new PagingRequestDTO({}))
+            Brand.searchBrand(PagingRequestDTO.createByJson({}))
                 .then((res: any) => {
                     expect(res).instanceOf(ListAndCountDTO);
                     ListAndCountDTO.validTest.call(res, BrandHelper.validTest);

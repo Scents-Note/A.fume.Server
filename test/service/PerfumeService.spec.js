@@ -2,6 +2,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 import { NotMatchedError } from '../../src/utils/errors/errors';
+import PagingRequestDTO from '../../src/data/request_dto/PagingRequestDTO';
 
 const chai = require('chai');
 const { expect } = chai;
@@ -10,10 +11,7 @@ const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
 const PerfumeThumbDTO = require('../data/dto/PerfumeThumbDTO');
 const PerfumeThumbKeywordDTO = require('../data/dto/PerfumeThumbKeywordDTO');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
-const {
-    PagingRequestDTO,
-    PerfumeSearchRequestDTO,
-} = require('../../src/data/request_dto');
+const { PerfumeSearchRequestDTO } = require('../../src/data/request_dto');
 
 const {
     GENDER_MAN,
@@ -337,7 +335,7 @@ describe('# Perfume Service Test', () => {
                 searchText: '',
                 userIdx: 1,
             });
-            const pagingRequestDTO = new PagingRequestDTO({
+            const pagingRequestDTO = PagingRequestDTO.createByJson({
                 pagingSize: 100,
                 pagingIndex: 1,
                 order: null,
@@ -371,7 +369,7 @@ describe('# Perfume Service Test', () => {
         });
 
         it('# recentSearch Test', (done) => {
-            const pagingRequestDTO = new PagingRequestDTO({
+            const pagingRequestDTO = PagingRequestDTO.createByJson({
                 pagingSize: 100,
                 pagingIndex: 1,
                 order: null,
@@ -427,7 +425,7 @@ describe('# Perfume Service Test', () => {
                     },
                 ];
             };
-            const pagingRequestDTO = new PagingRequestDTO({
+            const pagingRequestDTO = PagingRequestDTO.createByJson({
                 pagingSize: 100,
                 pagingIndex: 1,
                 order: null,
@@ -468,7 +466,7 @@ describe('# Perfume Service Test', () => {
         });
 
         it('# getNewPerfume Test', (done) => {
-            const pagingRequestDTO = new PagingRequestDTO({
+            const pagingRequestDTO = PagingRequestDTO.createByJson({
                 pagingSize: 100,
                 pagingIndex: 1,
                 order: null,
@@ -492,7 +490,7 @@ describe('# Perfume Service Test', () => {
         });
 
         it('# getLikedPerfume Test', (done) => {
-            const pagingRequestDTO = new PagingRequestDTO({
+            const pagingRequestDTO = PagingRequestDTO.createByJson({
                 pagingSize: 100,
                 pagingIndex: 1,
                 order: null,

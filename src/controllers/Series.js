@@ -1,11 +1,10 @@
 import IngredientService from '../service/IngredientService';
+import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
 
 let Series = require('../service/SeriesService');
 let Ingredient = new IngredientService();
 
 const { OK } = require('../utils/statusCode.js');
-
-const { PagingRequestDTO } = require('../data/request_dto');
 
 const {
     ResponseDTO,
@@ -18,7 +17,7 @@ const {
 } = require('../data/response_dto/series');
 
 module.exports.getSeriesAll = (req, res, next) => {
-    Series.getSeriesAll(new PagingRequestDTO(req.query))
+    Series.getSeriesAll(PagingRequestDTO.createByJson(req.query))
         .then((result) => {
             return {
                 count: result.count,
@@ -52,7 +51,7 @@ module.exports.getIngredients = (req, res, next) => {
 };
 
 module.exports.getFilterSeries = (req, res, next) => {
-    Series.getFilterSeries(new PagingRequestDTO(req.query))
+    Series.getFilterSeries(PagingRequestDTO.createByJson(req.query))
         .then(({ count, rows }) => {
             return {
                 count,
