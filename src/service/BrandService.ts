@@ -1,5 +1,6 @@
 import BrandFilterDTO from '../data/dto/BrandFilterDTO';
 import BrandDao from '../dao/BrandDao';
+import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
 
 const { PagingDTO } = require('../data/dto');
 
@@ -14,7 +15,7 @@ class BrandService {
      * @param {PagingRequestDTO} pagingRequestDTO
      * @returns {Promise<ListAndCountDTO<BrandDTO>>} listAndCountDTO
      **/
-    searchBrand(pagingRequestDTO: any) {
+    searchBrand(pagingRequestDTO: PagingRequestDTO) {
         const pagingDTO = PagingDTO.create(pagingRequestDTO);
         return this.brandDao.search(pagingDTO);
     }

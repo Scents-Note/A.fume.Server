@@ -1,4 +1,5 @@
 import { NotMatchedError, FailedToCreateError } from '../utils/errors/errors';
+import PagingDTO from '../data/dto/PagingDTO';
 
 let perfumeDao = require('../dao/PerfumeDao.js');
 let reviewDao = require('../dao/ReviewDao.js');
@@ -23,7 +24,6 @@ const {
     PerfumeThumbKeywordDTO,
     PerfumeIntegralDTO,
     ListAndCountDTO,
-    PagingDTO,
     PerfumeSearchDTO,
 } = require('../data/dto');
 

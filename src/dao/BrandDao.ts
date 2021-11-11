@@ -1,5 +1,6 @@
 import { NotMatchedError } from '../utils/errors/errors';
 import BrandDTO from '../data/dto/BrandDTO';
+import PagingDTO from '../data/dto/PagingDTO';
 
 const { Brand } = require('../models');
 const { ListAndCountDTO } = require('../data/dto');
@@ -28,7 +29,7 @@ class BrandDao {
      * @param {PagingDTO} pagingDTO
      * @returns {Promise<ListAndCountDTO<BrandDTO>>}
      */
-    async search(pagingDTO: any) {
+    async search(pagingDTO: PagingDTO) {
         const pagingSize: number = pagingDTO.pagingSize;
         const pagingIndex: number = pagingDTO.pagingIndex;
         const order: any = pagingDTO.order;

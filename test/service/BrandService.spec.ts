@@ -7,6 +7,7 @@ import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
 import BrandFilterHelper from '../data/dto/BrandFilterHelper';
 import BrandService from '../../src/service/BrandService';
 import BrandDao from '../../src/dao/BrandDao';
+import PagingDTO from '../../src/data/dto/PagingDTO';
 
 dotenv.config();
 
@@ -23,10 +24,10 @@ const mockListAndCountDTO = new ListAndCountDTO({
     ],
 });
 const mockBrandDAO: BrandDao | any = {
-    read: async (brandIdx) => BrandHelper.createWithIdx(1),
-    search: async (pagingDTO) => mockListAndCountDTO,
+    read: async (brandIdx: number) => BrandHelper.createWithIdx(1),
+    search: async (pagingDTO: PagingDTO) => mockListAndCountDTO,
     readAll: async () => mockListAndCountDTO,
-    findBrand: async (condition) => BrandHelper.createWithIdx(1),
+    findBrand: async (condition: any) => BrandHelper.createWithIdx(1),
 };
 const Brand = new BrandService(mockBrandDAO);
 

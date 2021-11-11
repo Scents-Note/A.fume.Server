@@ -25,7 +25,9 @@ module.exports.getBrandAll = (_: any, res: any, next: any) => {
                 ),
             };
         })
-        .then(({ count, rows }) => {
+        .then((result: any) => {
+            const count: number = result.count;
+            const rows: BrandResponseDTO[] = result.rows;
             res.status(OK).json(
                 new ListAndCountResponseDTO({
                     message: '브랜드 조회 성공',

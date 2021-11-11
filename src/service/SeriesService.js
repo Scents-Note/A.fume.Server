@@ -1,6 +1,7 @@
 'use strict';
 
 import IngredientDao from '../dao/IngredientDao';
+import PagingDTO from '../data/dto/PagingDTO';
 
 let seriesDao = require('../dao/SeriesDao.js');
 let ingredientDao = new IngredientDao();
@@ -19,7 +20,7 @@ module.exports.setNoteDao = (dao) => {
 
 const { PagingRequestDTO } = require('../data/request_dto');
 
-const { ListAndCountDTO, SeriesFilterDTO, PagingDTO } = require('../data/dto');
+const { ListAndCountDTO, SeriesFilterDTO } = require('../data/dto');
 
 /**
  * 특정 계열 조회

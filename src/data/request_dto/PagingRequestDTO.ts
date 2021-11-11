@@ -16,4 +16,4 @@ class PagingRequestDTO {
     }
 }
 
-module.exports = PagingRequestDTO;
+export default PagingRequestDTO;
