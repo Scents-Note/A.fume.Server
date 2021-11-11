@@ -1,9 +1,9 @@
 'use strict';
-
-let Brand = new (require('../service/BrandService'))();
-
+import BrandService from '../service/BrandService';
 import BrandResponseDTO from '../data/response_dto/brand/BrandResponseDTO';
 import BrandFilterResponseDTO from '../data/response_dto/brand/BrandFilterResponseDTO';
+
+let Brand = new BrandService();
 
 module.exports.setBrandService = (brandService) => {
     Brand = brandService;

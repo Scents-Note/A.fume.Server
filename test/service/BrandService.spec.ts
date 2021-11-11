@@ -5,6 +5,8 @@ import BrandDTO from '../../src/data/dto/BrandDTO';
 import BrandHelper from '../data/dto/BrandHelper';
 import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
 import BrandFilterHelper from '../data/dto/BrandFilterHelper';
+import BrandService from '../../src/service/BrandService';
+import BrandDao from '../../src/dao/BrandDao';
 
 dotenv.config();
 const { expect } = chai;
@@ -21,13 +23,13 @@ const mockListAndCountDTO = new ListAndCountDTO({
         BrandHelper.createWithIdx(3),
     ],
 });
-const mockBrandDAO = {
+const mockBrandDAO: BrandDao | any = {
     read: async (brandIdx) => BrandHelper.createWithIdx(1),
     search: async (pagingDTO) => mockListAndCountDTO,
     readAll: async () => mockListAndCountDTO,
     findBrand: async (condition) => BrandHelper.createWithIdx(1),
 };
-const Brand = new (require('../../src/service/BrandService'))(mockBrandDAO);
+const Brand = new BrandService(mockBrandDAO);
 
 describe('# Brand Service Test', () => {
     describe('# searchBrand Test', () => {
