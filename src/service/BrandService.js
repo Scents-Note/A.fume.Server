@@ -1,11 +1,13 @@
 'use strict';
 
 import BrandFilterDTO from '../data/dto/BrandFilterDTO';
+import BrandDao from '../dao/BrandDao';
+
 const { PagingDTO } = require('../data/dto');
 
 class BrandService {
     constructor(brandDao) {
-        this.brandDao = brandDao || require('../dao/BrandDao.js');
+        this.brandDao = brandDao || new BrandDao();
     }
     /**
      * 브랜드 검색
