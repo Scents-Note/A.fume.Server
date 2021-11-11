@@ -13,7 +13,7 @@ class BrandHelper {
         expect(this.createdAt).to.be.ok;
         expect(this.updatedAt).to.be.ok;
     };
-    static create(condition: any) {
+    static create(condition?: any) {
         return BrandDTO.createByJson(
             Object.assign(
                 {

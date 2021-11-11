@@ -4,6 +4,7 @@ import BrandResponseHelper from '../data/response_dto/brand/BrandResponseHelper'
 import BrandFilterResponseHelper from '../data/response_dto/brand/BrandFilterResponseHelper';
 import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
 import BrandHelper from '../data/dto/BrandHelper';
+import BrandService from '../../src/service/BrandService';
 
 const request = require('supertest');
 const app = require('../../src/index.js');
@@ -15,7 +16,7 @@ const statusCode = require('../../src/utils/statusCode');
 
 const Brand = require('../../src/controllers/Brand.js');
 
-const mockBrandService = {};
+const mockBrandService: BrandService | any = {};
 Brand.setBrandService(mockBrandService);
 
 describe('# Brand Controller Test', () => {

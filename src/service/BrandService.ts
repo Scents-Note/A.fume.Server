@@ -5,7 +5,7 @@ const { PagingDTO } = require('../data/dto');
 
 class BrandService {
     brandDao: BrandDao;
-    constructor(brandDao: BrandDao) {
+    constructor(brandDao?: BrandDao) {
         this.brandDao = brandDao || new BrandDao();
     }
     /**

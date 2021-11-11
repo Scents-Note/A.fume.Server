@@ -1,13 +1,13 @@
-'use strict';
 import BrandService from '../service/BrandService';
 import BrandResponseDTO from '../data/response_dto/brand/BrandResponseDTO';
 import BrandFilterResponseDTO from '../data/response_dto/brand/BrandFilterResponseDTO';
 
-let Brand = new BrandService();
+let Brand: BrandService = new BrandService();
 
-module.exports.setBrandService = (brandService) => {
+module.exports.setBrandService = (brandService: BrandService) => {
     Brand = brandService;
 };
+
 const { OK } = require('../utils/statusCode.js');
 
 const {
@@ -15,13 +15,13 @@ const {
     ListAndCountResponseDTO,
 } = require('../data/response_dto/common');
 
-module.exports.getBrandAll = (req, res, next) => {
+module.exports.getBrandAll = (_: any, res: any, next: any) => {
     Brand.getBrandAll()
-        .then((result) => {
+        .then((result: any) => {
             return {
                 count: result.count,
                 rows: result.rows.map(
-                    (it) => new BrandResponseDTO(it.brandIdx, it.name)
+                    (it: any) => new BrandResponseDTO(it.brandIdx, it.name)
                 ),
             };
         })
@@ -34,15 +34,15 @@ module.exports.getBrandAll = (req, res, next) => {
                 })
             );
         })
-        .catch((err) => next(err));
+        .catch((err: any) => next(err));
 };
 
-module.exports.getFilterBrand = (req, res, next) => {
+module.exports.getFilterBrand = (_: any, res: any, next: any) => {
     Brand.getFilterBrand()
-        .then((result) => {
-            return result.map((it) => BrandFilterResponseDTO.create(it));
+        .then((result: any) => {
+            return result.map((it: any) => BrandFilterResponseDTO.create(it));
         })
-        .then((response) => {
+        .then((response: any) => {
             res.status(OK).json(
                 new ResponseDTO({
                     message: '브랜드 필터 조회 성공',
@@ -50,5 +50,5 @@ module.exports.getFilterBrand = (req, res, next) => {
                 })
             );
         })
-        .catch((err) => next(err));
+        .catch((err: any) => next(err));
 };
