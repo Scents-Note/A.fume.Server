@@ -5,7 +5,6 @@ import { expect } from 'chai';
 import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 
 dotenv.config();
-
 const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';
@@ -33,6 +32,7 @@ describe('# Ingredient Controller Test', () => {
                 .get(`${basePath}/ingredient`)
                 .expect((res: any) => {
                     expect(res.status).to.be.eq(statusCode.OK);
+
                     const { message, data } = res.body;
 
                     expect(message).to.be.eq('재료 검색 성공');

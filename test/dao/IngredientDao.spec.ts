@@ -13,7 +13,6 @@ import IngredientDTO from '../../src/data/dto/IngredientDTO';
 import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 
 dotenv.config();
-
 const ingredientDao = new IngredientDao();
 
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
