@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import request from 'supertest';
-import BrandFilterResponseHelper from '../data/response_dto/brand/BrandFilterResponseHelper';
 import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
+import BrandResponseDTO from '../../src/data/response_dto/brand/BrandResponseDTO';
 import BrandHelper from '../data/dto/BrandHelper';
 import BrandService from '../../src/service/BrandService';
 
@@ -40,7 +40,7 @@ describe('# Brand Controller Test', () => {
                     expect(message).to.be.eq('브랜드 조회 성공');
                     expect(data.count).to.be.gt(0);
                     data.rows.forEach((brand) => {
-                        BrandResponseHelper.validTest.call(brand);
+                        expect.hasProperties.call(brand, 'brandIdx', 'name');
                     });
                     done();
                 })
@@ -65,7 +65,13 @@ describe('# Brand Controller Test', () => {
                     const { message, data } = res.body;
                     expect(message).to.be.eq('브랜드 필터 조회 성공');
                     for (const item of data) {
-                        BrandFilterResponseHelper.validTest.call(item);
+                        item.brands.forEach((brand: BrandResponseDTO) => {
+                            expect.hasProperties.call(
+                                brand,
+                                'brandIdx',
+                                'name'
+                            );
+                        });
                     }
                     done();
                 })
