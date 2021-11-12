@@ -40,45 +40,45 @@ describe('# Brand Service Test', () => {
                     ListAndCountDTO.validTest.call(res, BrandHelper.validTest);
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
     describe('# getBrandAll Test', () => {
         it('# success Test', (done) => {
-            Brand.getBrandAll(1)
+            Brand.getBrandAll()
                 .then((res) => {
                     expect(res).instanceOf(ListAndCountDTO);
                     ListAndCountDTO.validTest.call(res, BrandHelper.validTest);
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
     describe('# getBrandByIdx Test', () => {
         it('# success Test', (done) => {
             Brand.getBrandByIdx(1)
-                .then((brandDTO) => {
+                .then((brandDTO: BrandDTO) => {
                     expect(brandDTO).to.be.instanceOf(BrandDTO);
                     BrandHelper.validTest.call(brandDTO);
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
     describe('# getFilterBrand Test', () => {
         it('# success Test', (done) => {
             Brand.getFilterBrand()
-                .then((result) => {
+                .then((result: BrandFilterDTO[]) => {
                     for (const item of result) {
                         expect(item).to.be.instanceOf(BrandFilterDTO);
                         BrandFilterHelper.validTest.call(item);
                     }
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 });

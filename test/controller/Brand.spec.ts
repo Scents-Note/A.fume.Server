@@ -44,7 +44,7 @@ describe('# Brand Controller Test', () => {
                     });
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
@@ -69,7 +69,7 @@ describe('# Brand Controller Test', () => {
                     }
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 });

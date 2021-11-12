@@ -32,7 +32,7 @@ describe('# ingredientDao Test', () => {
                     IngredientMockHelper.validTest.call(result);
                     done();
                 })
-                .catch((err: any) => done(err));
+                .catch((err: Error) => done(err));
         });
         it(' # success case (By Name)', (done) => {
             ingredientDao
@@ -42,7 +42,7 @@ describe('# ingredientDao Test', () => {
                     IngredientMockHelper.validTest.call(result);
                     done();
                 })
-                .catch((err: any) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 

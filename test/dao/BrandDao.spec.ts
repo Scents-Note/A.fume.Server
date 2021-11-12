@@ -34,7 +34,7 @@ describe('# brandDao Test', () => {
                     BrandHelper.validTest.call(result);
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
 
         it('# findBrand success case', (done) => {
@@ -49,7 +49,7 @@ describe('# brandDao Test', () => {
                     BrandHelper.validTest.call(result);
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
         it('# findBrand not found case', (done) => {
             brandDao
@@ -63,7 +63,7 @@ describe('# brandDao Test', () => {
                     expect(err).instanceOf(NotMatchedError);
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
@@ -86,7 +86,7 @@ describe('# brandDao Test', () => {
                     }
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
@@ -102,7 +102,7 @@ describe('# brandDao Test', () => {
                     );
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 });
