@@ -1,12 +1,12 @@
 import dotenv from 'dotenv';
-dotenv.config();
-import BrandResponseHelper from '../data/response_dto/brand/BrandResponseHelper';
+import request from 'supertest';
 import BrandFilterResponseHelper from '../data/response_dto/brand/BrandFilterResponseHelper';
 import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
 import BrandHelper from '../data/dto/BrandHelper';
 import BrandService from '../../src/service/BrandService';
 
-const request = require('supertest');
+dotenv.config();
+
 const app = require('../../src/index.js');
 const expect = require('../utils/expect');
 

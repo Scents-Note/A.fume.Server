@@ -1,11 +1,11 @@
 import dotenv from 'dotenv';
-dotenv.config();
+import request from 'supertest';
+import { expect } from 'chai';
 
 import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 
-const request = require('supertest');
-const chai = require('chai');
-const { expect } = chai;
+dotenv.config();
+
 const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';

@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import chai from 'chai';
+import { expect } from 'chai';
 
 import BrandDTO from '../../src/data/dto/BrandDTO';
 import BrandHelper from '../data/dto/BrandHelper';
@@ -9,7 +9,6 @@ import BrandService from '../../src/service/BrandService';
 import BrandDao from '../../src/dao/BrandDao';
 
 dotenv.config();
-const { expect } = chai;
 
 const { PagingRequestDTO } = require('../../src/data/request_dto');
 
@@ -35,7 +34,7 @@ describe('# Brand Service Test', () => {
     describe('# searchBrand Test', () => {
         it('# success Test', (done) => {
             Brand.searchBrand(new PagingRequestDTO({}))
-                .then((res) => {
+                .then((res: any) => {
                     expect(res).instanceOf(ListAndCountDTO);
                     ListAndCountDTO.validTest.call(res, BrandHelper.validTest);
                     done();
@@ -47,7 +46,7 @@ describe('# Brand Service Test', () => {
     describe('# getBrandAll Test', () => {
         it('# success Test', (done) => {
             Brand.getBrandAll()
-                .then((res) => {
+                .then((res: any) => {
                     expect(res).instanceOf(ListAndCountDTO);
                     ListAndCountDTO.validTest.call(res, BrandHelper.validTest);
                     done();
@@ -60,7 +59,6 @@ describe('# Brand Service Test', () => {
         it('# success Test', (done) => {
             Brand.getBrandByIdx(1)
                 .then((brandDTO: BrandDTO) => {
-                    expect(brandDTO).to.be.instanceOf(BrandDTO);
                     BrandHelper.validTest.call(brandDTO);
                     done();
                 })
@@ -73,7 +71,6 @@ describe('# Brand Service Test', () => {
             Brand.getFilterBrand()
                 .then((result: BrandFilterDTO[]) => {
                     for (const item of result) {
-                        expect(item).to.be.instanceOf(BrandFilterDTO);
                         BrandFilterHelper.validTest.call(item);
                     }
                     done();

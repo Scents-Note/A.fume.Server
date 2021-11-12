@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import chai from 'chai';
+import { expect } from 'chai';
 
 import {
     NotMatchedError,
@@ -11,7 +11,6 @@ import BrandDTO from '../../src/data/dto/BrandDTO';
 import BrandHelper from '../data/dto/BrandHelper';
 
 dotenv.config();
-const { expect } = chai;
 
 const brandDao = new BrandDao();
 
@@ -27,7 +26,7 @@ describe('# brandDao Test', () => {
         it('# success case', (done) => {
             brandDao
                 .read(2)
-                .then((result) => {
+                .then((result: BrandDTO) => {
                     expect(result.brandIdx).to.be.eq(2);
                     expect(result.name).to.be.eq('브랜드2');
                     expect(result.firstInitial).to.be.eq('ㅂ');
@@ -42,7 +41,7 @@ describe('# brandDao Test', () => {
                 .findBrand({
                     name: '브랜드1',
                 })
-                .then((result) => {
+                .then((result: BrandDTO) => {
                     expect(result.brandIdx).to.be.eq(1);
                     expect(result.name).to.be.eq('브랜드1');
                     expect(result.firstInitial).to.be.eq('ㅂ');
@@ -59,7 +58,7 @@ describe('# brandDao Test', () => {
                 .then(() => {
                     done(new UnExpectedError(NotMatchedError));
                 })
-                .catch((err) => {
+                .catch((err: Error) => {
                     expect(err).instanceOf(NotMatchedError);
                     done();
                 })
@@ -77,7 +76,7 @@ describe('# brandDao Test', () => {
                         order: [['createdAt', 'desc']],
                     })
                 )
-                .then((result) => {
+                .then((result: any) => {
                     expect(result.count).gte(5);
                     expect(result.rows.length).gte(5);
                     for (const brand of result.rows) {
@@ -94,7 +93,7 @@ describe('# brandDao Test', () => {
         it('# success case', (done) => {
             brandDao
                 .readAll()
-                .then((result) => {
+                .then((result: any) => {
                     expect(result).instanceOf(ListAndCountDTO);
                     ListAndCountDTO.validTest.call(
                         result,

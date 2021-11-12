@@ -1,5 +1,4 @@
 import dotenv from 'dotenv';
-dotenv.config();
 
 import IngredientService from '../../src/service/IngredientService';
 import IngredientDTO from '../../src/data/dto/IngredientDTO';
@@ -9,6 +8,7 @@ import IngredientDao from '../../src/dao/IngredientDao';
 
 const chai = require('chai');
 const { expect } = chai;
+dotenv.config();
 
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 
@@ -48,7 +48,7 @@ describe('# Ingredient Service Test', () => {
             it('# success Test', (done) => {
                 ingredientService
                     .getIngredientAll()
-                    .then((result) => {
+                    .then((result: any) => {
                         expect(result).instanceOf(ListAndCountDTO);
                         ListAndCountDTO.validTest.call(
                             result,
@@ -73,13 +73,13 @@ describe('# Ingredient Service Test', () => {
             it('# success Test', (done) => {
                 ingredientService
                     .getIngredientList(1)
-                    .then((result) => {
+                    .then((result: any) => {
                         expect(result).instanceOf(ListAndCountDTO);
                         ListAndCountDTO.validTest.call(
                             result,
                             IngredientMockHelper.validTest
                         );
-                        result.rows.forEach((item: any) => {
+                        result.rows.forEach((item: IngredientDTO) => {
                             expect(item.seriesIdx).to.be.eq(1);
                         });
                         done();
