@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 import request from 'supertest';
 import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
+import BrandDTO from '../../src/data/dto/BrandDTO';
+import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import BrandResponseDTO from '../../src/data/response_dto/brand/BrandResponseDTO';
 import BrandHelper from '../data/dto/BrandHelper';
 import BrandService from '../../src/service/BrandService';
@@ -11,7 +13,6 @@ const app = require('../../src/index.js');
 const expect = require('../utils/expect');
 
 const basePath = '/A.fume/api/0.0.1';
-const { ListAndCountDTO } = require('../../src/data/dto');
 const statusCode = require('../../src/utils/statusCode');
 
 const Brand = require('../../src/controllers/Brand.js');
@@ -22,14 +23,11 @@ Brand.setBrandService(mockBrandService);
 describe('# Brand Controller Test', () => {
     describe('# getBrandAll Test', () => {
         mockBrandService.getBrandAll = async () =>
-            new ListAndCountDTO({
-                count: 1,
-                rows: [
-                    BrandHelper.create(),
-                    BrandHelper.create(),
-                    BrandHelper.create(),
-                ],
-            });
+            new ListAndCountDTO<BrandDTO>(1, [
+                BrandHelper.create(),
+                BrandHelper.create(),
+                BrandHelper.create(),
+            ]);
         it('success case', (done) => {
             request(app)
                 .get(`${basePath}/brand`)

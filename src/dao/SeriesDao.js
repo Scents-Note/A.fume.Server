@@ -1,7 +1,8 @@
-import { NotMatchedError, DuplicatedEntryError } from '../utils/errors/errors';
+import { NotMatchedError } from '../utils/errors/errors';
+import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 const { Series } = require('../models');
 
-const { SeriesDTO, ListAndCountDTO } = require('../data/dto');
+const { SeriesDTO } = require('../data/dto');
 
 /**
  * 계열 조회
@@ -49,10 +50,12 @@ module.exports.readAll = ({ pagingIndex, pagingSize, order }) => {
         raw: true,
         nest: true,
     }).then((it) => {
-        return new ListAndCountDTO({
-            count: it.count,
-            rows: it.rows.map((it) => new SeriesDTO(it)),
-        });
+        /* TODO */
+        // return new ListAndCountDTO<SeriesDTO>(
+        return new ListAndCountDTO(
+            it.count,
+            it.rows.map((it) => new SeriesDTO(it))
+        );
     });
 };
 
@@ -70,10 +73,12 @@ module.exports.search = ({ pagingIndex, pagingSize, order }) => {
         raw: true,
         nest: true,
     }).then((it) => {
-        return new ListAndCountDTO({
-            count: it.count,
-            rows: it.rows.map((it) => new SeriesDTO(it)),
-        });
+        /* TODO */
+        // return new ListAndCountDTO<SeriesDTO>(
+        return new ListAndCountDTO(
+            it.count,
+            it.rows.map((it) => new SeriesDTO(it))
+        );
     });
 };
 

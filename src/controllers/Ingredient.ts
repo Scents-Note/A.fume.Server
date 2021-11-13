@@ -1,5 +1,7 @@
 import IngredientService from '../service/IngredientService';
 import IngredientResponseDTO from '../data/response_dto/ingredient/IngredientResponseDTO';
+import IngredientDTO from '../data/dto/IngredientDTO';
+import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 
 let Ingredient = new IngredientService();
 const { OK } = require('../utils/statusCode.js');
@@ -8,12 +10,14 @@ const { ListAndCountResponseDTO } = require('../data/response_dto/common');
 
 module.exports.getIngredientAll = (_: any, res: any, next: any) => {
     Ingredient.getIngredientAll()
-        .then((result) => {
-            result.rows = result.rows.map(
-                (it: any) =>
-                    new IngredientResponseDTO(it.ingredientIdx, it.name)
-            );
-            return result;
+        .then((result: ListAndCountDTO<IngredientDTO>) => {
+            return {
+                count: result.count,
+                rows: result.rows.map(
+                    (it: any) =>
+                        new IngredientResponseDTO(it.ingredientIdx, it.name)
+                ),
+            };
         })
         .then(({ count, rows }) => {
             res.status(OK).json(

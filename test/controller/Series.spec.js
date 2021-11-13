@@ -1,13 +1,14 @@
-const dotenv = require('dotenv');
-dotenv.config();
-const request = require('supertest');
+import dotenv from 'dotenv';
+import request from 'supertest';
+import { expect } from 'chai';
 
-const chai = require('chai');
-const { expect } = chai;
+import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
+
+dotenv.config();
+
 const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';
-const { ListAndCountDTO } = require('../../src/data/dto');
 const statusCode = require('../../src/utils/statusCode');
 const SeriesDTO = require('../data/dto/SeriesDTO');
 const SeriesFilterDTO = require('../data/dto/SeriesFilterDTO');
@@ -21,14 +22,13 @@ Series.setSeriesService(mockSeriesService);
 describe('# Series Controller Test', () => {
     describe('# getSeriesAll Test', () => {
         mockSeriesService.getSeriesAll = async () =>
-            new ListAndCountDTO({
-                count: 1,
-                rows: [
-                    SeriesDTO.create(),
-                    SeriesDTO.create(),
-                    SeriesDTO.create(),
-                ],
-            });
+            /* TODO */
+            // new ListAndCountDTO<SeriesDTO>(
+            new ListAndCountDTO(1, [
+                SeriesDTO.create(),
+                SeriesDTO.create(),
+                SeriesDTO.create(),
+            ]);
         it('success case', (done) => {
             request(app)
                 .get(`${basePath}/series`)
@@ -55,23 +55,22 @@ describe('# Series Controller Test', () => {
 
     describe('# getFilterSeries Test', () => {
         mockSeriesService.getFilterSeries = async () =>
-            new ListAndCountDTO({
-                count: 1,
-                rows: [
-                    SeriesFilterDTO.createWithIdx({
-                        seriesIdx: 1,
-                        ingredientIdxList: [1, 3, 5],
-                    }),
-                    SeriesFilterDTO.createWithIdx({
-                        seriesIdx: 2,
-                        ingredientIdxList: [7],
-                    }),
-                    SeriesFilterDTO.createWithIdx({
-                        seriesIdx: 3,
-                        ingredientIdxList: [9],
-                    }),
-                ],
-            });
+            /* TODO */
+            // new ListAndCountDTO<SeriesFilterDTO>(
+            new ListAndCountDTO(1, [
+                SeriesFilterDTO.createWithIdx({
+                    seriesIdx: 1,
+                    ingredientIdxList: [1, 3, 5],
+                }),
+                SeriesFilterDTO.createWithIdx({
+                    seriesIdx: 2,
+                    ingredientIdxList: [7],
+                }),
+                SeriesFilterDTO.createWithIdx({
+                    seriesIdx: 3,
+                    ingredientIdxList: [9],
+                }),
+            ]);
         it('success case', (done) => {
             request(app)
                 .get(`${basePath}/filter/series`)
