@@ -1,15 +1,11 @@
 import IngredientService from '../service/IngredientService';
 import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
+import ResponseDTO from '../data/response_dto/common/ResponseDTO';
 
 let Series = require('../service/SeriesService');
 let Ingredient = new IngredientService();
 
 const { OK } = require('../utils/statusCode.js');
-
-const {
-    ResponseDTO,
-    ListAndCountResponseDTO,
-} = require('../data/response_dto/common');
 
 const {
     SeriesResponseDTO,
@@ -24,13 +20,11 @@ module.exports.getSeriesAll = (req, res, next) => {
                 rows: result.rows.map((it) => new SeriesResponseDTO(it)),
             };
         })
-        .then(({ count, rows }) => {
+        /* TODO */
+        // .then((result: ListAndCountDTO<SeriesResponseDTO>) => {
+        .then((result) => {
             res.status(OK).json(
-                new ListAndCountResponseDTO({
-                    count,
-                    rows,
-                    message: 'series 전체 조회 성공',
-                })
+                new ResponseDTO('series 전체 조회 성공', result)
             );
         })
         .catch((err) => next(err));
@@ -41,10 +35,10 @@ module.exports.getIngredients = (req, res, next) => {
     Ingredient.getIngredientList(seriesIdx)
         .then((result) => {
             res.status(OK).json(
-                new ResponseDTO({
-                    message: 'Series에 해당하는 Ingredient 조회 성공',
-                    data: result,
-                })
+                new ResponseDTO(
+                    'Series에 해당하는 Ingredient 조회 성공',
+                    result
+                )
             );
         })
         .catch((err) => next(err));
@@ -58,14 +52,10 @@ module.exports.getFilterSeries = (req, res, next) => {
                 rows: rows.map((it) => SeriesFilterResponseDTO.create(it)),
             };
         })
-        .then(({ count, rows }) => {
-            res.status(OK).json(
-                new ListAndCountResponseDTO({
-                    message: '계열 검색 성공',
-                    count,
-                    rows,
-                })
-            );
+        /* TODO */
+        // .then((result: ListAndCountDTO<SeriesFIlterResponseDTO>) => {
+        .then((result) => {
+            res.status(OK).json(new ResponseDTO('계열 검색 성공', result));
         })
         .catch((err) => next(err));
 };

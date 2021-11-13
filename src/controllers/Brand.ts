@@ -1,6 +1,8 @@
 import BrandService from '../service/BrandService';
 import BrandResponseDTO from '../data/response_dto/brand/BrandResponseDTO';
 import BrandFilterResponseDTO from '../data/response_dto/brand/BrandFilterResponseDTO';
+import ResponseDTO from '../data/response_dto/common/ResponseDTO';
+import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 
 let Brand: BrandService = new BrandService();
 
@@ -10,30 +12,23 @@ module.exports.setBrandService = (brandService: BrandService) => {
 
 const { OK } = require('../utils/statusCode.js');
 
-const {
-    ResponseDTO,
-    ListAndCountResponseDTO,
-} = require('../data/response_dto/common');
-
 module.exports.getBrandAll = (_: any, res: any, next: any) => {
     Brand.getBrandAll()
         .then((result: any) => {
-            return {
-                count: result.count,
-                rows: result.rows.map(
+            /* TODO: Change BrandResponseDTO to interface */
+            return new ListAndCountDTO<BrandResponseDTO>(
+                result.count,
+                result.rows.map(
                     (it: any) => new BrandResponseDTO(it.brandIdx, it.name)
-                ),
-            };
+                )
+            );
         })
-        .then((result: any) => {
-            const count: number = result.count;
-            const rows: BrandResponseDTO[] = result.rows;
+        .then((result: ListAndCountDTO<BrandResponseDTO>) => {
             res.status(OK).json(
-                new ListAndCountResponseDTO({
-                    message: '브랜드 조회 성공',
-                    count,
-                    rows,
-                })
+                new ResponseDTO<ListAndCountDTO<BrandResponseDTO>>(
+                    '브랜드 조회 성공',
+                    result
+                )
             );
         })
         .catch((err: any) => next(err));
@@ -46,10 +41,7 @@ module.exports.getFilterBrand = (_: any, res: any, next: any) => {
         })
         .then((response: any) => {
             res.status(OK).json(
-                new ResponseDTO({
-                    message: '브랜드 필터 조회 성공',
-                    data: response,
-                })
+                new ResponseDTO('브랜드 필터 조회 성공', response)
             );
         })
         .catch((err: any) => next(err));
