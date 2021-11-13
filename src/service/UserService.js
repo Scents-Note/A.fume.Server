@@ -3,9 +3,9 @@ import {
     PasswordPolicyError,
     NotMatchedError,
 } from '../utils/errors/errors';
+import crypto from '../lib/crypto';
 
 let jwt = require('../lib/token.js');
-let crypto = require('../lib/crypto.js');
 let userDao = require('../dao/UserDao.js');
 
 const {
