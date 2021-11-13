@@ -1,17 +1,17 @@
 import dotenv from 'dotenv';
-dotenv.config();
+import request from 'supertest';
+import { expect } from 'chai';
 
 import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 
-const request = require('supertest');
-const chai = require('chai');
-const { expect } = chai;
+dotenv.config();
 const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';
 
 const Ingredient = require('../../src/controllers/Ingredient.ts');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
+const statusCode = require('../../src/utils/statusCode');
 
 const mockIngredientService: any = {};
 Ingredient.setIngredientService(mockIngredientService);
@@ -31,7 +31,8 @@ describe('# Ingredient Controller Test', () => {
             request(app)
                 .get(`${basePath}/ingredient`)
                 .expect((res: any) => {
-                    expect(res.status).to.be.eq(200);
+                    expect(res.status).to.be.eq(statusCode.OK);
+
                     const { message, data } = res.body;
 
                     expect(message).to.be.eq('재료 검색 성공');

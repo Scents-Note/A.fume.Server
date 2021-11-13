@@ -1,17 +1,20 @@
-const dotenv = require('dotenv');
-dotenv.config();
+import dotenv from 'dotenv';
+import { expect } from 'chai';
 
 import {
     NotMatchedError,
     UnExpectedError,
 } from '../../src/utils/errors/errors';
 
-const chai = require('chai');
-const { expect } = chai;
-const brandDao = require('../../src/dao/BrandDao.js');
+import BrandDao from '../../src/dao/BrandDao';
+import BrandDTO from '../../src/data/dto/BrandDTO';
+import BrandHelper from '../data/dto/BrandHelper';
+
+dotenv.config();
+
+const brandDao = new BrandDao();
 
 const PagingDTO = require('../../src/data/dto/PagingDTO');
-const BrandDTO = require('../data/dto/BrandDTO.js');
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO.js');
 
 describe('# brandDao Test', () => {
@@ -23,14 +26,14 @@ describe('# brandDao Test', () => {
         it('# success case', (done) => {
             brandDao
                 .read(2)
-                .then((result) => {
+                .then((result: BrandDTO) => {
                     expect(result.brandIdx).to.be.eq(2);
                     expect(result.name).to.be.eq('브랜드2');
                     expect(result.firstInitial).to.be.eq('ㅂ');
-                    BrandDTO.validTest.call(result);
+                    BrandHelper.validTest.call(result);
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
 
         it('# findBrand success case', (done) => {
@@ -38,14 +41,14 @@ describe('# brandDao Test', () => {
                 .findBrand({
                     name: '브랜드1',
                 })
-                .then((result) => {
+                .then((result: BrandDTO) => {
                     expect(result.brandIdx).to.be.eq(1);
                     expect(result.name).to.be.eq('브랜드1');
                     expect(result.firstInitial).to.be.eq('ㅂ');
-                    BrandDTO.validTest.call(result);
+                    BrandHelper.validTest.call(result);
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
         it('# findBrand not found case', (done) => {
             brandDao
@@ -55,11 +58,11 @@ describe('# brandDao Test', () => {
                 .then(() => {
                     done(new UnExpectedError(NotMatchedError));
                 })
-                .catch((err) => {
+                .catch((err: Error) => {
                     expect(err).instanceOf(NotMatchedError);
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
@@ -73,16 +76,16 @@ describe('# brandDao Test', () => {
                         order: [['createdAt', 'desc']],
                     })
                 )
-                .then((result) => {
+                .then((result: any) => {
                     expect(result.count).gte(5);
                     expect(result.rows.length).gte(5);
                     for (const brand of result.rows) {
                         expect(brand).to.be.instanceOf(BrandDTO);
-                        BrandDTO.validTest.call(brand);
+                        BrandHelper.validTest.call(brand);
                     }
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
@@ -90,12 +93,15 @@ describe('# brandDao Test', () => {
         it('# success case', (done) => {
             brandDao
                 .readAll()
-                .then((result) => {
+                .then((result: any) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    ListAndCountDTO.validTest.call(result, BrandDTO.validTest);
+                    ListAndCountDTO.validTest.call(
+                        result,
+                        BrandHelper.validTest
+                    );
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 });

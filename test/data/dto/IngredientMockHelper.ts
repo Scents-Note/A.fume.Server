@@ -1,4 +1,4 @@
-const { expect } = require('chai');
+import { expect } from 'chai';
 
 import IngredientDTO from '../../../src/data/dto/IngredientDTO';
 

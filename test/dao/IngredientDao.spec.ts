@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-dotenv.config();
+import { expect } from 'chai';
 
 import {
     NotMatchedError,
@@ -12,8 +12,7 @@ import IngredientDTO from '../../src/data/dto/IngredientDTO';
 
 import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 
-const chai = require('chai');
-const { expect } = chai;
+dotenv.config();
 const ingredientDao = new IngredientDao();
 
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
@@ -27,22 +26,20 @@ describe('# ingredientDao Test', () => {
         it(' # success case (By PrimaryKey)', (done) => {
             ingredientDao
                 .readByIdx(1)
-                .then((result: any) => {
-                    expect(result).instanceOf(IngredientDTO);
+                .then((result: IngredientDTO) => {
                     IngredientMockHelper.validTest.call(result);
                     done();
                 })
-                .catch((err: any) => done(err));
+                .catch((err: Error) => done(err));
         });
         it(' # success case (By Name)', (done) => {
             ingredientDao
                 .readByName('재료2')
-                .then((result: any) => {
-                    expect(result).instanceOf(IngredientDTO);
+                .then((result: IngredientDTO) => {
                     IngredientMockHelper.validTest.call(result);
                     done();
                 })
-                .catch((err: any) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
@@ -59,7 +56,7 @@ describe('# ingredientDao Test', () => {
                     );
                     done();
                 })
-                .catch((err: any) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
@@ -75,15 +72,14 @@ describe('# ingredientDao Test', () => {
                     );
                     done();
                 })
-                .catch((err: any) => done(err));
+                .catch((err: Error) => done(err));
         });
         it('# success case', (done) => {
             ingredientDao
                 .readBySeriesIdxList([1, 2, 3, 4, 5])
-                .then((result: any) => {
+                .then((result: IngredientDTO[]) => {
                     expect(result.length).gte(5);
                     for (const ingredient of result) {
-                        expect(ingredient).instanceOf(IngredientDTO);
                         IngredientMockHelper.validTest.call(ingredient);
                         expect(ingredient.seriesIdx).to.be.oneOf([
                             1, 2, 3, 4, 5,
@@ -91,7 +87,7 @@ describe('# ingredientDao Test', () => {
                     }
                     done();
                 })
-                .catch((err: any) => done(err));
+                .catch((err: Error) => done(err));
         });
 
         it('# findIngredient success case', (done) => {
@@ -106,14 +102,13 @@ describe('# ingredientDao Test', () => {
                         undefined
                     )
                 )
-                .then((result: any) => {
-                    expect(result).instanceOf(IngredientDTO);
+                .then((result: IngredientDTO) => {
                     IngredientMockHelper.validTest.call(result);
                     expect(result.name).eq('재료2');
                     expect(result.ingredientIdx).eq(2);
                     done();
                 })
-                .catch((err: any) => done(err));
+                .catch((err: Error) => done(err));
         });
 
         it('# findIngredient success case', (done) => {
@@ -121,14 +116,13 @@ describe('# ingredientDao Test', () => {
                 .findIngredient({
                     englishName: 'ingredient english-name',
                 })
-                .then((result: any) => {
-                    expect(result).instanceOf(IngredientDTO);
+                .then((result: IngredientDTO) => {
                     IngredientMockHelper.validTest.call(result);
                     expect(result.name).eq('재료1');
                     expect(result.ingredientIdx).eq(1);
                     done();
                 })
-                .catch((err: any) => done(err));
+                .catch((err: Error) => done(err));
         });
 
         it('# findIngredient not found case', (done) => {
@@ -139,11 +133,11 @@ describe('# ingredientDao Test', () => {
                 .then(() => {
                     done(new UnExpectedError(NotMatchedError));
                 })
-                .catch((err: any) => {
+                .catch((err: Error) => {
                     expect(err).instanceOf(NotMatchedError);
                     done();
                 })
-                .catch((err: any) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 });
