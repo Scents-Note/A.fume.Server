@@ -1,14 +1,12 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
+import request from 'supertest';
+import { expect } from 'chai';
 dotenv.config();
 
-const request = require('supertest');
-const chai = require('chai');
-const { expect } = chai;
+import JwtController from '../../src/lib/JwtController';
+import TokenPayloadDTO from '../../src/data/dto/TokenPayloadDTO';
+
 const app = require('../../src/index.js');
-const {
-    InvalidTokenError,
-    ExpiredTokenError,
-} = require('../../src/utils/errors/errors');
 
 const basePath = '/A.fume/api/0.0.1';
 
@@ -22,13 +20,14 @@ const UserResponseDTO = require('../data/response_dto/user/UserResponseDTO');
 const UserRegisterResponseDTO = require('../data/response_dto/user/UserRegisterResponseDTO');
 const UserAuthResponseDTO = require('../data/response_dto/user/UserAuthResponseDTO');
 
-const token = require('../../src/lib/token');
 const LoginResponseDTO = require('../data/response_dto/user/LoginResponseDTO.js');
 const TokenGroupDTO = require('../data/dto/TokenGroupDTO');
 const LoginInfoDTO = require('../data/dto/LoginInfoDTO');
 const UserDTO = require('../data/dto/UserDTO');
 const { UserAuthDTO } = require('../../src/data/dto');
-const user1token = token.create({ userIdx: 1 });
+const user1tokenUser = JwtController.create(
+    new TokenPayloadDTO(1, 'nickname', 'MAN', 'email', 1995)
+);
 const invalidToken =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWR4IjoyMDAsIm5pY2tuYW1lIjoi7L-87Lm066eoMiIsImdlbmRlciI6ImZlbWFsZSIsImVtYWlsIjoiaGVlLnlvdW4yQHNhbXN1bmcuY29tIiwiYmlydGgiOjE5OTUsImlhdCI6MTYyOTEwNzc3NSwiZXhwIjoxNjMwODM1Nzc1LCJpc3MiOiJhZnVtZS1qYWNrcG90In0.hWxF0OHzIWZoQhPhkkOyJs3HYB2tPdrpIaVqe0IZRKI';
 
@@ -103,7 +102,7 @@ describe('# User Controller Test', () => {
         it('success case', (done) => {
             request(app)
                 .put(`${basePath}/user/1`)
-                .set('x-access-token', 'Bearer ' + user1token)
+                .set('x-access-token', 'Bearer ' + user1tokenUser)
                 .send({
                     email: 'hee.youn@samsung.com',
                     nickname: '쿼카맨',
@@ -137,7 +136,7 @@ describe('# User Controller Test', () => {
         it('Wrong userIdx between path and jwt case', (done) => {
             request(app)
                 .put(`${basePath}/user/2`)
-                .set('x-access-token', 'Bearer ' + user1token)
+                .set('x-access-token', 'Bearer ' + user1tokenUser)
                 .send({})
                 .expect((res) => {
                     expect(res.status).to.be.eq(statusCode.UNAUTHORIZED);
@@ -157,7 +156,7 @@ describe('# User Controller Test', () => {
         it('success case', (done) => {
             request(app)
                 .put(`${basePath}/user/changePassword`)
-                .set('x-access-token', 'Bearer ' + user1token)
+                .set('x-access-token', 'Bearer ' + user1tokenUser)
                 .send({
                     prevPassword: 'test',
                     newPassword: 'change',
@@ -192,7 +191,7 @@ describe('# User Controller Test', () => {
         it('success case', (done) => {
             request(app)
                 .post(`${basePath}/user/auth`)
-                .set('x-access-token', 'Bearer ' + user1token)
+                .set('x-access-token', 'Bearer ' + user1tokenUser)
                 .expect((res) => {
                     expect(res.status).to.be.eq(statusCode.OK);
                     const { message, data } = res.body;

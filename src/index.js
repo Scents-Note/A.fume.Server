@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 import { HttpError } from './utils/errors/errors';
 import { INTERNAL_SERVER_ERROR } from './utils/statusCode';
 
@@ -15,8 +18,6 @@ const serverPort = process.env.PORT || 8080;
 
 const app = express();
 
-const dotenv = require('dotenv');
-dotenv.config();
 console.log(`ENV: ${process.env.NODE_ENV}`);
 
 const sequelize = require('./models').sequelize;
@@ -87,6 +88,7 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
             status = err.status;
             message = err.message;
         } else {
+            console.log(err);
             status = INTERNAL_SERVER_ERROR;
             message = 'Internal Server Error';
         }

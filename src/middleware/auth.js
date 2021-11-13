@@ -1,8 +1,5 @@
-const jwt = require('../lib/token');
-const {
-    InvalidTokenError,
-    UnAuthorizedError,
-} = require('../utils/errors/errors');
+import JwtController from '../lib/JwtController';
+import { InvalidTokenError, UnAuthorizedError } from '../utils/errors/errors';
 
 /**
  * 로그인 토큰을 읽어서 userIdx를 req.middlewareToken에 추가
@@ -30,7 +27,7 @@ module.exports.verifyTokenMiddleware = (req, authOrSecDef, token, callback) => {
         throw new InvalidTokenError();
     }
     const tokenString = token.split(' ')[1];
-    const { userIdx } = jwt.verify(tokenString);
+    const { userIdx } = JwtController.verify(tokenString);
     req.middlewareToken.loginUserIdx = userIdx;
     return callback(null);
 };

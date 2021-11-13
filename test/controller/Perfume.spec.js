@@ -1,9 +1,12 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
+import request from 'supertest';
+import { expect } from 'chai';
+
 dotenv.config();
 
-const request = require('supertest');
-const chai = require('chai');
-const { expect } = chai;
+import JwtController from '../../src/lib/JwtController';
+import TokenPayloadDTO from '../../src/data/dto/TokenPayloadDTO';
+
 const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';
@@ -18,8 +21,9 @@ const PerfumeResponseDTO = require('../data/response_dto/perfume/PerfumeResponse
 const PerfumeRecommendResponseDTO = require('../data/response_dto/perfume/PerfumeRecommendResponseDTO');
 const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
 
-const token = require('../../src/lib/token');
-const user1token = token.create({ userIdx: 1 });
+const user1tokenPerfume = JwtController.create(
+    new TokenPayloadDTO(1, 'nickname', 'MAN', 'email', 1995)
+);
 
 const mockPerfumeService = {};
 const mockSearchHistoryService = {};
@@ -102,7 +106,7 @@ describe('# Perfume Controller Test', () => {
                 mockPerfumeService.likePerfume = async () => true;
                 request(app)
                     .post(`${basePath}/perfume/1/like`)
-                    .set('x-access-token', 'Bearer ' + user1token)
+                    .set('x-access-token', 'Bearer ' + user1tokenPerfume)
                     .expect((res) => {
                         expect(res.status).to.be.eq(statusCode.OK);
                         const { message, data } = res.body;
@@ -127,7 +131,7 @@ describe('# Perfume Controller Test', () => {
 
                 request(app)
                     .get(`${basePath}/user/1/perfume/liked`)
-                    .set('x-access-token', 'Bearer ' + user1token)
+                    .set('x-access-token', 'Bearer ' + user1tokenPerfume)
                     .expect((res) => {
                         expect(res.status).to.be.eq(statusCode.OK);
                         const { message, data } = res.body;
@@ -145,7 +149,7 @@ describe('# Perfume Controller Test', () => {
             it('# Fail: 유저 id 불일치', (done) => {
                 request(app)
                     .get(`${basePath}/user/2/perfume/liked`)
-                    .set('x-access-token', 'Bearer ' + user1token)
+                    .set('x-access-token', 'Bearer ' + user1tokenPerfume)
                     .expect((res) => {
                         expect(res.status).to.be.eq(statusCode.FORBIDDEN);
                         const { message } = res.body;
@@ -167,7 +171,7 @@ describe('# Perfume Controller Test', () => {
 
                 request(app)
                     .get(`${basePath}/perfume/recent`)
-                    .set('x-access-token', 'Bearer ' + user1token)
+                    .set('x-access-token', 'Bearer ' + user1tokenPerfume)
                     .expect((res) => {
                         expect(res.status).to.be.eq(statusCode.OK);
                         const { message, data } = res.body;
@@ -206,7 +210,7 @@ describe('# Perfume Controller Test', () => {
 
                 request(app)
                     .get(`${basePath}/perfume/recommend/personal`)
-                    .set('x-access-token', 'Bearer ' + user1token)
+                    .set('x-access-token', 'Bearer ' + user1tokenPerfume)
                     .expect((res) => {
                         expect(res.status).to.be.eq(statusCode.OK);
                         const { message, data } = res.body;
@@ -273,7 +277,7 @@ describe('# Perfume Controller Test', () => {
 
                 request(app)
                     .get(`${basePath}/perfume/survey`)
-                    .set('x-access-token', 'Bearer ' + user1token)
+                    .set('x-access-token', 'Bearer ' + user1tokenPerfume)
                     .expect((res) => {
                         expect(res.status).to.be.eq(statusCode.OK);
                         const { message, data } = res.body;

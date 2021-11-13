@@ -20,6 +20,7 @@
   "private": true,
   "dependencies": {
     "@types/chai": "^4.2.22",
+    "@types/jsonwebtoken": "^8.5.5",
     "aws-sdk": "^2.987.0",
     "chai": "^4.3.4",
     "connect": "^3.7.0",

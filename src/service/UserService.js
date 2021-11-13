@@ -4,15 +4,20 @@ import {
     NotMatchedError,
 } from '../utils/errors/errors';
 import crypto from '../lib/crypto';
+import JwtController from '../lib/JwtController';
+import TokenPayloadDTO from '../data/dto/TokenPayloadDTO';
 
-let jwt = require('../lib/token.js');
 let userDao = require('../dao/UserDao.js');
+let jwt = {
+    create: JwtController.create,
+    publish: JwtController.publish,
+    verify: JwtController.verify,
+};
 
 const {
     TokenGroupDTO,
     UserAuthDTO,
     LoginInfoDTO,
-    TokenPayloadDTO,
     UserDTO,
 } = require('../data/dto');
 
@@ -109,7 +114,9 @@ exports.loginUser = async (email, password) => {
         throw new WrongPasswordError();
     }
     userDao.updateAccessTime(user.userIdx);
-    const { token, refreshToken } = jwt.publish(new TokenPayloadDTO(user));
+    const { token, refreshToken } = jwt.publish(
+        TokenPayloadDTO.createByJson(user)
+    );
     return new LoginInfoDTO(
         Object.assign({}, user, {
             token,
