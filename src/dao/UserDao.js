@@ -1,9 +1,10 @@
 import { NotMatchedError, DuplicatedEntryError } from '../utils/errors/errors';
+import CreatedResultDTO from '../../src/data/dto/CreatedResultDTO';
 
 const { sequelize, User } = require('../models');
 const { user: MongooseUser } = require('../mongoose_models');
 
-const { UserDTO, CreatedResultDTO } = require('../data/dto');
+const { UserDTO } = require('../data/dto');
 
 /**
  * 유저 생성
@@ -31,10 +32,9 @@ module.exports.create = ({
         accessTime,
     })
         .then((it) => {
-            return new CreatedResultDTO({
-                idx: it.userIdx,
-                created: new UserDTO(it),
-            });
+            /* TODO Change after apply ts */
+            // new CreatedResultDTO<UserDTO></UserDTO>(it.userIdx, new UserDTO(it))
+            return new CreatedResultDTO(it.userIdx, new UserDTO(it));
         })
         .catch((err) => {
             if (

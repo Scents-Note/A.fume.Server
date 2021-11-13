@@ -1,5 +1,5 @@
-const dotenv = require('dotenv');
-dotenv.config();
+import { expect } from 'chai';
+import dotenv from 'dotenv';
 
 import {
     NotMatchedError,
@@ -7,14 +7,15 @@ import {
     UnExpectedError,
 } from '../../src/utils/errors/errors';
 
-const chai = require('chai');
-const { expect } = chai;
+import CreatedResultDTO from '../../src/data/dto/CreatedResultDTO';
+
+dotenv.config();
+
 const userDao = require('../../src/dao/UserDao.js');
 const { User } = require('../../src/models');
 
 const UserDTO = require('../data/dto/UserDTO');
 
-const CreatedResultDTO = require('../data/dto/CreatedResultDTO');
 const { GENDER_MAN, GENDER_WOMAN } = require('../../src/utils/constantUtil');
 
 describe('# userDao Test', () => {
@@ -26,18 +27,22 @@ describe('# userDao Test', () => {
             await User.destroy({ where: { email: 'createTest@afume.com' } });
         });
         it('# success case', (done) => {
+            const expected = {
+                nickname: '생성 테스트',
+                password: 'hashed',
+                gender: 1,
+                email: 'createTest@afume.com',
+                birth: '1995',
+                grade: 1,
+            };
             userDao
-                .create({
-                    nickname: '생성 테스트',
-                    password: 'hashed',
-                    gender: 1,
-                    email: 'createTest@afume.com',
-                    birth: '1995',
-                    grade: 1,
-                })
+                .create(expected)
                 .then((result) => {
                     expect(result).instanceOf(CreatedResultDTO);
-                    CreatedResultDTO.validTest.call(result, UserDTO.validTest);
+                    for (const key in expected) {
+                        const value = expected[key];
+                        expect(result.created[key]).to.be.eq(value);
+                    }
                     done();
                 })
                 .catch((err) => done(err));

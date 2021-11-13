@@ -1,37 +1,7 @@
 import { NotMatchedError, DuplicatedEntryError } from '../utils/errors/errors';
 const { Series } = require('../models');
 
-const { SeriesDTO, ListAndCountDTO, CreatedResultDTO } = require('../data/dto');
-
-/**
- * 계열 생성
- *
- * @param {SeriesInputDTO} seriesInputDTO
- * @return {CreatedResultDTO<SeriesDTO>} createdResultDTO
- */
-module.exports.create = ({ name, englishName, description, imageUrl }) => {
-    return Series.create({
-        name,
-        englishName,
-        description,
-        imageUrl,
-    })
-        .then((series) => {
-            return new CreatedResultDTO({
-                idx: series.seriesIdx,
-                created: new SeriesDTO(series),
-            });
-        })
-        .catch((err) => {
-            if (
-                err.parent.errno === 1062 ||
-                err.parent.code === 'ER_DUP_ENTRY'
-            ) {
-                throw new DuplicatedEntryError();
-            }
-            throw err;
-        });
-};
+const { SeriesDTO, ListAndCountDTO } = require('../data/dto');
 
 /**
  * 계열 조회
@@ -105,38 +75,6 @@ module.exports.search = ({ pagingIndex, pagingSize, order }) => {
             rows: it.rows.map((it) => new SeriesDTO(it)),
         });
     });
-};
-
-/**
- * 계열 수정
- *
- * @param {SeriesInputDTO} seriesInputDTO
- * @return {Promise<number>} affectedRows
- */
-module.exports.update = async ({
-    seriesIdx,
-    name,
-    englishName,
-    description,
-}) => {
-    const [affectedRows] = await Series.update(
-        { name, englishName, description },
-        { where: { seriesIdx } }
-    );
-    if (affectedRows == 0) {
-        throw new NotMatchedError();
-    }
-    return affectedRows;
-};
-
-/**
- * 계열 삭제
- *
- * @param {number} seriesIdx
- * @returns {Promise<number>} affectedRow
- */
-module.exports.delete = (seriesIdx) => {
-    return Series.destroy({ where: { seriesIdx } });
 };
 
 /**
