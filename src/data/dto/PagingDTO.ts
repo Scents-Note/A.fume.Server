@@ -1,5 +1,7 @@
 import PagingRequestDto from '../request_dto/PagingRequestDTO';
 
+type Ascending = 'DESC' | 'ASC';
+
 class PagingDTO {
     pagingSize: number;
     pagingIndex: number;
@@ -19,16 +21,15 @@ class PagingDTO {
         return new PagingDTO(
             pagingSize,
             pagingIndex,
-            this.parseSortToOrder(sort)
+            sort ? this.parseSortToOrder(sort) : undefined
         );
     }
 
-    private static parseSortToOrder(sort: string): string[][] | undefined {
-        if (!sort) return undefined;
+    private static parseSortToOrder(sort: string): string[][] {
         const order = [];
-        let [key, ascending] = sort.split('_');
-        ascending = ascending || 'desc';
-        switch (ascending) {
+        const [key, _ascending] = sort.split('_');
+        let ascending: Ascending = 'ASC';
+        switch (_ascending) {
             case 'desc':
             case 'dsc':
                 ascending = 'DESC';
