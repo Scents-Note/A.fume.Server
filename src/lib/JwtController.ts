@@ -3,7 +3,13 @@ import jwt, { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
 import { ExpiredTokenError, InvalidTokenError } from '../utils/errors/errors';
 import TokenPayloadDTO from '../data/dto/TokenPayloadDTO';
 
-const jwtSecret: jwt.Secret = process.env.JWT_SECRET || 'secretKey';
+function throwExpression(errorMessage: string): never {
+    throw new Error(errorMessage);
+}
+
+const jwtSecret: jwt.Secret =
+    process.env.JWT_SECRET ??
+    throwExpression("Can't not found ENV Property [JWT_SECRET]");
 
 const options: jwt.SignOptions = {
     expiresIn: '20d',
