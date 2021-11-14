@@ -1,9 +1,16 @@
 import crypto from 'crypto';
 
-const algorithm: string = 'aes-256-cbc';
+function throwExpression(errorMessage: string): never {
+    throw new Error(errorMessage);
+}
+
+const algorithm: string =
+    process.env.ENCRYPT_ALGORITHM ??
+    throwExpression("Can't not found ENV Property [ENCRYPT_ALGORITHM]");
 
 const ENCRYPTION_KEY: string =
-    process.env.ENCRYPTION_KEY || 'abcdefghijklmnop'.repeat(2);
+    process.env.ENCRYPTION_KEY ??
+    throwExpression("Can't not found ENV Property [ENCRYPTION_KEY]");
 const IV_LENGTH: number = 16; // For AES, this is always 16
 
 /**
