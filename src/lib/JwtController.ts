@@ -1,4 +1,5 @@
-import jwt from 'jsonwebtoken';
+import jwt, { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
+
 import { ExpiredTokenError, InvalidTokenError } from '../utils/errors/errors';
 import TokenPayloadDTO from '../data/dto/TokenPayloadDTO';
 
@@ -64,10 +65,10 @@ class JwtController {
         try {
             return TokenPayloadDTO.createByJson(jwt.verify(token, jwtSecret));
         } catch (err: Error | any) {
-            if (err && err.message === 'jwt expired') {
+            if (err instanceof TokenExpiredError) {
                 throw new ExpiredTokenError();
             }
-            if (err && err.message === 'invalid signature') {
+            if (err instanceof JsonWebTokenError) {
                 throw new InvalidTokenError();
             }
             throw err;
