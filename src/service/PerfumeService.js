@@ -2,6 +2,8 @@ import { NotMatchedError, FailedToCreateError } from '../utils/errors/errors';
 import PagingDTO from '../data/dto/PagingDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 
+import { updateRows, removeKeyJob, extractJob, flatJob } from '../utils/func';
+
 let perfumeDao = require('../dao/PerfumeDao.js');
 let reviewDao = require('../dao/ReviewDao.js');
 let noteDao = require('../dao/NoteDao');
@@ -26,13 +28,6 @@ const {
     PerfumeIntegralDTO,
     PerfumeSearchDTO,
 } = require('../data/dto');
-
-const {
-    updateRows,
-    removeKeyJob,
-    extractJob,
-    flatJob,
-} = require('../utils/func.js');
 
 function isLikeJob(likePerfumeList) {
     const likeMap = likePerfumeList.reduce((prev, cur) => {
