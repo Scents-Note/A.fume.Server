@@ -3,9 +3,11 @@ import {
     PasswordPolicyError,
     NotMatchedError,
 } from '../utils/errors/errors';
-import crypto from '../lib/crypto';
+import { encrypt, decrypt } from '../lib/crypto';
 import JwtController from '../lib/JwtController';
 import TokenPayloadDTO from '../data/dto/TokenPayloadDTO';
+
+let crypto = { encrypt, decrypt };
 
 let userDao = require('../dao/UserDao.js');
 let jwt = {
