@@ -1,15 +1,14 @@
 import dotenv from 'dotenv';
+dotenv.config();
 import request from 'supertest';
 import { expect } from 'chai';
 
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-
-dotenv.config();
+import StatusCode from '../../src/utils/statusCode';
 
 const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';
-const statusCode = require('../../src/utils/statusCode');
 const SeriesDTO = require('../data/dto/SeriesDTO');
 const SeriesFilterDTO = require('../data/dto/SeriesFilterDTO');
 const SeriesResponseDTO = require('../data/response_dto/series/SeriesResponseDTO');
@@ -33,7 +32,7 @@ describe('# Series Controller Test', () => {
             request(app)
                 .get(`${basePath}/series`)
                 .expect((res) => {
-                    expect(res.status).to.be.eq(statusCode.OK);
+                    expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('series 전체 조회 성공');
                     expect(data.count).to.be.eq(1);
@@ -76,7 +75,7 @@ describe('# Series Controller Test', () => {
                 .get(`${basePath}/filter/series`)
                 .send({})
                 .expect((res) => {
-                    expect(res.status).to.be.eq(statusCode.OK);
+                    expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('계열 검색 성공');
                     expect(data.count).to.be.eq(1);

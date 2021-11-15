@@ -3,9 +3,9 @@ import IngredientResponseDTO from '../data/response_dto/ingredient/IngredientRes
 import IngredientDTO from '../data/dto/IngredientDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import ResponseDTO from '../data/response_dto/common/ResponseDTO';
+import StatusCode from '../utils/statusCode';
 
 let Ingredient = new IngredientService();
-const { OK } = require('../utils/statusCode.js');
 
 module.exports.getIngredientAll = (_: any, res: any, next: any) => {
     Ingredient.getIngredientAll()
@@ -20,7 +20,9 @@ module.exports.getIngredientAll = (_: any, res: any, next: any) => {
             );
         })
         .then((result: ListAndCountDTO<IngredientResponseDTO>) => {
-            res.status(OK).json(new ResponseDTO('재료 검색 성공', result));
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('재료 검색 성공', result)
+            );
         })
         .catch((err) => {
             next(err);

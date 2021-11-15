@@ -1,5 +1,6 @@
 'use strict';
 import ResponseDTO from '../data/response_dto/common/ResponseDTO';
+import StatusCode from '../utils/statusCode';
 let User = require('../service/UserService');
 
 module.exports.setUserService = (userService) => {
@@ -7,7 +8,6 @@ module.exports.setUserService = (userService) => {
 };
 
 const { UnAuthorizedError } = require('../utils/errors/errors');
-const { OK, CONFLICT } = require('../utils/statusCode.js');
 
 const {
     UserResponseDTO,
@@ -32,7 +32,9 @@ module.exports.registerUser = (req, res, next) => {
             return new UserRegisterResponseDTO(result);
         })
         .then((response) => {
-            res.status(OK).json(new ResponseDTO('회원가입 성공', response));
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('회원가입 성공', response)
+            );
         })
         .catch((err) => next(err));
 };
@@ -41,7 +43,9 @@ module.exports.deleteUser = (req, res, next) => {
     const userIdx = req.swagger.params['userIdx'].value;
     User.deleteUser(userIdx)
         .then((response) => {
-            res.status(OK).json(new ResponseDTO('유저 삭제 성공', response));
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('유저 삭제 성공', response)
+            );
         })
         .catch((err) => next(err));
 };
@@ -53,7 +57,9 @@ module.exports.loginUser = (req, res, next) => {
             return new LoginResponseDTO(result);
         })
         .then((response) => {
-            res.status(OK).json(new ResponseDTO('로그인 성공', response));
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('로그인 성공', response)
+            );
         })
         .catch((err) => next(err));
 };
@@ -74,7 +80,9 @@ module.exports.updateUser = (req, res, next) => {
             return new UserResponseDTO(result);
         })
         .then((response) => {
-            res.status(OK).json(new ResponseDTO('유저 수정 성공', response));
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('유저 수정 성공', response)
+            );
         })
         .catch((err) => next(err));
 };
@@ -84,7 +92,9 @@ module.exports.changePassword = (req, res, next) => {
     const { prevPassword, newPassword } = req.swagger.params['body'].value;
     User.changePassword({ userIdx, prevPassword, newPassword })
         .then((response) => {
-            res.status(OK).json(new ResponseDTO('비밀번호 변경 성공'));
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('비밀번호 변경 성공')
+            );
         })
         .catch((err) => next(err));
 };
@@ -96,7 +106,9 @@ module.exports.authUser = (req, res, next) => {
             return new UserAuthResponseDTO(result);
         })
         .then((response) => {
-            res.status(OK).json(new ResponseDTO('권한 조회', response));
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('권한 조회', response)
+            );
         })
         .catch((err) => next(err));
 };
@@ -106,11 +118,11 @@ module.exports.validateEmail = (req, res, next) => {
     User.validateEmail(email)
         .then((response) => {
             if (response) {
-                res.status(OK).json(
+                res.status(StatusCode.OK).json(
                     new ResponseDTO('Email 중복 체크: 사용 가능', response)
                 );
             } else {
-                res.status(CONFLICT).json(
+                res.status(StatusCode.CONFLICT).json(
                     new ResponseDTO('Email 중복 체크: 사용 불가능', response)
                 );
             }
@@ -123,11 +135,11 @@ module.exports.validateName = (req, res, next) => {
     User.validateName(nickname)
         .then((response) => {
             if (response) {
-                res.status(OK).json(
+                res.status(StatusCode.OK).json(
                     new ResponseDTO('Name 중복 체크: 사용 가능', response)
                 );
             } else {
-                res.status(CONFLICT).json(
+                res.status(StatusCode.CONFLICT).json(
                     new ResponseDTO('Name 중복 체크: 사용 불가능', response)
                 );
             }
@@ -140,7 +152,7 @@ module.exports.postSurvey = (req, res, next) => {
     const { keywordList, perfumeList, seriesList } = req.body;
     User.addSurvey(userIdx, keywordList, perfumeList, seriesList)
         .then((response) => {
-            res.status(OK).json(new ResponseDTO('Survey 등록 성공'));
+            res.status(StatusCode.OK).json(new ResponseDTO('Survey 등록 성공'));
         })
         .catch((err) => next(err));
 };

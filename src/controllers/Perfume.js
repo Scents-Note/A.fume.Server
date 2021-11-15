@@ -1,11 +1,10 @@
 'use strict';
 import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
 import ResponseDTO from '../data/response_dto/common/ResponseDTO';
+import StatusCode from '../utils/statusCode';
 
 let Perfume = require('../service/PerfumeService');
 let SearchHistory = require('../service/SearchHistoryService');
-
-const { OK, FORBIDDEN } = require('../utils/statusCode.js');
 
 const { PerfumeSearchRequestDTO } = require('../data/request_dto');
 const {
@@ -27,7 +26,9 @@ module.exports.getPerfume = (req, res, next) => {
             return new PerfumeDetailResponseDTO(result);
         })
         .then((data) => {
-            res.status(OK).json(new ResponseDTO('향수 조회 성공', data));
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('향수 조회 성공', data)
+            );
         })
         .catch((err) => next(err));
 };
@@ -49,7 +50,9 @@ module.exports.searchPerfume = (req, res, next) => {
             };
         })
         .then((data) => {
-            res.status(OK).json(new ResponseDTO('향수 검색 성공', data));
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('향수 검색 성공', data)
+            );
         })
         .catch((err) => next(err));
 };
@@ -59,7 +62,7 @@ module.exports.likePerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
     Perfume.likePerfume(loginUserIdx, perfumeIdx)
         .then((result) => {
-            res.status(OK).json(
+            res.status(StatusCode.OK).json(
                 new ResponseDTO(`향수 좋아요${result ? '' : ' 취소'}`, result)
             );
         })
@@ -77,7 +80,9 @@ module.exports.getRecentPerfume = (req, res, next) => {
             };
         })
         .then((data) => {
-            res.status(OK).json(new ResponseDTO('최근 검색한 향수 조회', data));
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('최근 검색한 향수 조회', data)
+            );
         })
         .catch((err) => next(err));
 };
@@ -93,7 +98,9 @@ module.exports.recommendPersonalPerfume = (req, res, next) => {
             };
         })
         .then((data) => {
-            res.status(OK).json(new ResponseDTO('향수 개인 맞춤 추천', data));
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('향수 개인 맞춤 추천', data)
+            );
         })
         .catch((err) => next(err));
 };
@@ -109,7 +116,7 @@ module.exports.recommendCommonPerfume = (req, res, next) => {
             };
         })
         .then((data) => {
-            res.status(OK).json(
+            res.status(StatusCode.OK).json(
                 new ResponseDTO('향수 일반 추천 (성별, 나이 반영)', data)
             );
         })
@@ -126,7 +133,9 @@ module.exports.getSurveyPerfume = (req, res, next) => {
             };
         })
         .then((data) => {
-            res.status(OK).json(new ResponseDTO('서베이 향수 조회 성공', data));
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('서베이 향수 조회 성공', data)
+            );
         })
         .catch((err) => next(err));
 };
@@ -142,7 +151,7 @@ module.exports.getNewPerfume = (req, res, next) => {
             };
         })
         .then((data) => {
-            res.status(OK).json(
+            res.status(StatusCode.OK).json(
                 new ResponseDTO('새로 등록된 향수 조회 성공', data)
             );
         })
@@ -154,7 +163,9 @@ module.exports.getLikedPerfume = (req, res, next) => {
     const userIdx = req.swagger.params['userIdx'].value;
     const pagingRequestDTO = PagingRequestDTO.createByJson(req.query);
     if (loginUserIdx != userIdx) {
-        res.status(FORBIDDEN).json(new ResponseDTO('비정상적인 접근입니다.'));
+        res.status(StatusCode.FORBIDDEN).json(
+            new ResponseDTO('비정상적인 접근입니다.')
+        );
         return;
     }
     Perfume.getLikedPerfume({ userIdx, pagingRequestDTO })
@@ -165,7 +176,7 @@ module.exports.getLikedPerfume = (req, res, next) => {
             };
         })
         .then((data) => {
-            res.status(OK).json(
+            res.status(StatusCode.OK).json(
                 new ResponseDTO('유저가 좋아요한 향수 조회', data)
             );
         })
