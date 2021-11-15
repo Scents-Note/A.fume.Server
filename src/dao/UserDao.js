@@ -1,5 +1,5 @@
 import { NotMatchedError, DuplicatedEntryError } from '../utils/errors/errors';
-import CreatedResultDTO from '../../src/data/dto/CreatedResultDTO';
+import CreatedResultDTO from '../data/dto/CreatedResultDTO';
 
 const { sequelize, User } = require('../models');
 const { user: MongooseUser } = require('../mongoose_models');
