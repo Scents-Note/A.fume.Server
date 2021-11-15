@@ -5,7 +5,7 @@ import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import ResponseDTO from '../data/response_dto/common/ResponseDTO';
 import StatusCode from '../utils/statusCode';
 
-let Ingredient = new IngredientService();
+let Ingredient: IngredientService = new IngredientService();
 
 module.exports.getIngredientAll = (_: any, res: any, next: any) => {
     Ingredient.getIngredientAll()
@@ -14,7 +14,7 @@ module.exports.getIngredientAll = (_: any, res: any, next: any) => {
             return new ListAndCountDTO<IngredientResponseDTO>(
                 result.count,
                 result.rows.map(
-                    (it: any) =>
+                    (it: IngredientDTO) =>
                         new IngredientResponseDTO(it.ingredientIdx, it.name)
                 )
             );
@@ -24,7 +24,7 @@ module.exports.getIngredientAll = (_: any, res: any, next: any) => {
                 new ResponseDTO('재료 검색 성공', result)
             );
         })
-        .catch((err) => {
+        .catch((err: Error) => {
             next(err);
         });
 };
