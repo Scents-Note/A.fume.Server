@@ -1,6 +1,6 @@
 #!/bin/sh
 npm install
-./prebuild.sh
+./script/prebuild.sh
 
 npm audit fix;
 # npm test;
