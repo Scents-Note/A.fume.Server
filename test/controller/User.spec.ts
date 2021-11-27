@@ -7,6 +7,7 @@ import JwtController from '../../src/lib/JwtController';
 import TokenPayloadDTO from '../../src/data/dto/TokenPayloadDTO';
 import UserAuthDTO from '../../src/data/dto/UserAuthDTO';
 import StatusCode from '../../src/utils/statusCode';
+import UserDTO from '../../src/data/dto/UserDTO';
 
 import LoginInfoMockHelper from '../data/dto/LoginInfoMockHelper';
 import TokenGroupMockHelper from '../data/dto/TokenGroupMockHelper';
@@ -58,7 +59,7 @@ describe('# User Controller Test', () => {
                     );
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
@@ -70,18 +71,18 @@ describe('# User Controller Test', () => {
         it('success case', (done: Done) => {
             request(app)
                 .delete(`${basePath}/user/1`)
-                .expect((res) => {
+                .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message } = res.body;
                     expect(message).to.be.eq('유저 삭제 성공');
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
     describe('# loginUser Test', () => {
-        mockUserService.loginUser = async (email, password) => {
+        mockUserService.loginUser = async (email: string, _: string) => {
             return LoginInfoMockHelper.createMock({ email });
         };
         it('success case', (done: Done) => {
@@ -243,7 +244,9 @@ describe('# User Controller Test', () => {
     });
 
     describe('# validateEmail Test', () => {
-        mockUserService.validateEmail = async (email) => {
+        mockUserService.validateEmail = async (
+            email: string
+        ): Promise<Boolean> => {
             if (email && email != 'duplicate') return true;
             else return false;
         };

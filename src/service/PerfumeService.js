@@ -1,4 +1,5 @@
 import { NotMatchedError, FailedToCreateError } from '../utils/errors/errors';
+import UserDao from '../dao/UserDao';
 import PagingDTO from '../data/dto/PagingDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 
@@ -9,9 +10,9 @@ let reviewDao = require('../dao/ReviewDao.js');
 let noteDao = require('../dao/NoteDao');
 let likePerfumeDao = require('../dao/LikePerfumeDao.js');
 let keywordDao = require('../dao/KeywordDao.js');
-let userDao = require('../dao/UserDao.js');
 let defaultReviewDao = require('../dao/PerfumeDefaultReviewDao.js');
 let s3FileDao = require('../dao/S3FileDao.js');
+let userDao = new UserDao();
 
 const {
     GENDER_WOMAN,

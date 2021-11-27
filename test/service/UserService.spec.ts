@@ -24,7 +24,7 @@ const mockCrypt = {
     encrypt: () => 'encrypted',
     decrypt: () => 'decrypted',
 };
-const userService = new UserService(mockUserDao, mockJWT, mockCrypt);
+const userService = new UserService(mockUserDao, mockCrypt, mockJWT);
 
 describe('# User Service Test', () => {
     describe('# createUser Test', () => {
@@ -70,7 +70,7 @@ describe('# User Service Test', () => {
         it('# wrong password', (done: Done) => {
             userService
                 .loginUser('', 'password')
-                .then((it) => {
+                .then(() => {
                     done(new UnExpectedError(WrongPasswordError));
                 })
                 .catch((err) => {
