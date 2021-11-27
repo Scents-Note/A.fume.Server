@@ -7,6 +7,7 @@ import TokenPayloadDTO from '../../src/data/dto/TokenPayloadDTO';
 import StatusCode from '../../src/utils/statusCode';
 
 import LoginInfoMockHelper from '../data/dto/LoginInfoMockHelper';
+import TokenGroupMockHelper from '../data/dto/TokenGroupMockHelper';
 
 const expect = require('../utils/expect');
 
@@ -18,7 +19,6 @@ const User = require('../../src/controllers/User.js');
 const mockUserService = {};
 User.setUserService(mockUserService);
 
-const TokenGroupDTO = require('../data/dto/TokenGroupDTO');
 const UserDTO = require('../data/dto/UserDTO');
 const { UserAuthDTO } = require('../../src/data/dto');
 const user1tokenUser = JwtController.create(
@@ -29,7 +29,8 @@ const invalidToken =
 
 describe('# User Controller Test', () => {
     describe('# registerUser Test', () => {
-        mockUserService.createUser = async () => TokenGroupDTO.createMock();
+        mockUserService.createUser = async () =>
+            TokenGroupMockHelper.createMock();
         it('success case', (done) => {
             request(app)
                 .post(`${basePath}/user/register`)

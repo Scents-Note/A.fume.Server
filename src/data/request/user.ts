@@ -1,4 +1,5 @@
 import { GradeKey, GenderKey } from '../../utils/enumType';
+const { GRADE_USER } = require('../../utils/constantUtil');
 
 class UserEditRequest {
     userIdx: number;
@@ -67,7 +68,7 @@ class UserRegisterRequest {
             json.gender,
             json.email,
             json.birth,
-            json.grade
+            json.grade | GRADE_USER
         );
     }
 }

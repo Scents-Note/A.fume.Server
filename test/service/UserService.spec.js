@@ -3,11 +3,11 @@ import { expect } from 'chai';
 dotenv.config();
 
 import LoginInfoMockHelper from '../data/dto/LoginInfoMockHelper';
+import TokenGroupMockHelper from '../data/dto/TokenGroupMockHelper';
 
 const { UserAuthDTO } = require('../../src/data/dto');
 
 const UserDTO = require('../data/dto/UserDTO');
-const TokenGroupDTO = require('../data/dto/TokenGroupDTO');
 
 const userService = require('../../src/service/UserService');
 const {
@@ -28,8 +28,7 @@ describe('# User Service Test', () => {
             userService
                 .createUser({})
                 .then((result) => {
-                    expect(result).to.be.instanceOf(TokenGroupDTO);
-                    TokenGroupDTO.validTest.call(result);
+                    TokenGroupMockHelper.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));

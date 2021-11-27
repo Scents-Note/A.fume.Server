@@ -8,6 +8,7 @@ import JwtController from '../lib/JwtController';
 import TokenPayloadDTO from '../data/dto/TokenPayloadDTO';
 import { GenderMap } from '../utils/enumType';
 import LoginInfoDTO from '../data/dto/LoginInfoDTO';
+import TokenGroupDTO from '../data/dto/TokenGroupDTO';
 
 let crypto = { encrypt, decrypt };
 
@@ -18,7 +19,7 @@ let jwt = {
     verify: JwtController.verify,
 };
 
-const { TokenGroupDTO, UserAuthDTO, UserDTO } = require('../data/dto');
+const { UserAuthDTO, UserDTO } = require('../data/dto');
 
 /**
  * 유저 회원 가입
@@ -45,7 +46,7 @@ exports.createUser = ({ nickname, password, gender, email, birth, grade }) => {
             const payload = Object.assign({}, user);
             const { userIdx } = user;
             const { token, refreshToken } = jwt.publish(payload);
-            return new TokenGroupDTO({ userIdx, token, refreshToken });
+            return TokenGroupDTO.createByJSON({ userIdx, token, refreshToken });
         });
 };
 
