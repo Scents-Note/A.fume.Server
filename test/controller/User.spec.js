@@ -1,11 +1,12 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import request from 'supertest';
-import { expect } from 'chai';
 
 import JwtController from '../../src/lib/JwtController';
 import TokenPayloadDTO from '../../src/data/dto/TokenPayloadDTO';
 import StatusCode from '../../src/utils/statusCode';
+
+const expect = require('../utils/expect');
 
 const app = require('../../src/index.js');
 
@@ -15,11 +16,6 @@ const User = require('../../src/controllers/User.js');
 const mockUserService = {};
 User.setUserService(mockUserService);
 
-const UserResponseDTO = require('../data/response_dto/user/UserResponseDTO');
-const UserRegisterResponseDTO = require('../data/response_dto/user/UserRegisterResponseDTO');
-const UserAuthResponseDTO = require('../data/response_dto/user/UserAuthResponseDTO');
-
-const LoginResponseDTO = require('../data/response_dto/user/LoginResponseDTO.js');
 const TokenGroupDTO = require('../data/dto/TokenGroupDTO');
 const LoginInfoDTO = require('../data/dto/LoginInfoDTO');
 const UserDTO = require('../data/dto/UserDTO');
@@ -47,7 +43,12 @@ describe('# User Controller Test', () => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('회원가입 성공');
-                    UserRegisterResponseDTO.validTest.call(data);
+                    expect.hasProperties.call(
+                        data,
+                        'userIdx',
+                        'token',
+                        'refreshToken'
+                    );
                     done();
                 })
                 .catch((err) => done(err));
@@ -87,7 +88,16 @@ describe('# User Controller Test', () => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('로그인 성공');
-                    LoginResponseDTO.validTest.call(data);
+                    expect.hasProperties.call(
+                        data,
+                        'userIdx',
+                        'nickname',
+                        'gender',
+                        'email',
+                        'birth',
+                        'token',
+                        'refreshToken'
+                    );
                     done();
                 })
                 .catch((err) => done(err));
@@ -112,7 +122,14 @@ describe('# User Controller Test', () => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('유저 수정 성공');
-                    UserResponseDTO.validTest.call(data);
+                    expect.hasProperties.call(
+                        data,
+                        'userIdx',
+                        'nickname',
+                        'gender',
+                        'email',
+                        'birth'
+                    );
                     done();
                 })
                 .catch((err) => done(err));
@@ -195,7 +212,7 @@ describe('# User Controller Test', () => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('권한 조회');
-                    UserAuthResponseDTO.validTest.call(data);
+                    expect.hasProperties.call(data, 'isAuth', 'isAdmin');
                     done();
                 })
                 .catch((err) => done(err));
@@ -209,7 +226,7 @@ describe('# User Controller Test', () => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('권한 조회');
-                    UserAuthResponseDTO.validTest.call(data);
+                    expect.hasProperties.call(data, 'isAuth', 'isAdmin');
                     expect(data.isAuth).to.be.false;
                     expect(data.isAdmin).to.be.false;
                     done();

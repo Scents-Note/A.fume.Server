@@ -1,6 +1,14 @@
 'use strict';
 import ResponseDTO from '../data/response_dto/common/ResponseDTO';
 import StatusCode from '../utils/statusCode';
+
+import {
+    UserResponse,
+    UserRegisterResponse,
+    UserAuthResponse,
+    LoginResponse,
+} from '../data/response/user';
+
 let User = require('../service/UserService');
 
 module.exports.setUserService = (userService) => {
@@ -8,13 +16,6 @@ module.exports.setUserService = (userService) => {
 };
 
 const { UnAuthorizedError } = require('../utils/errors/errors');
-
-const {
-    UserResponseDTO,
-    UserRegisterResponseDTO,
-    UserAuthResponseDTO,
-    LoginResponseDTO,
-} = require('../data/response_dto/user');
 
 const { GRADE_USER } = require('../utils/constantUtil');
 const UserRegisterRequestDTO = require('../data/request_dto/UserRegisterRequestDTO');
@@ -29,7 +30,7 @@ module.exports.registerUser = (req, res, next) => {
     }
     User.createUser(userRegisterRequestDTO)
         .then((result) => {
-            return new UserRegisterResponseDTO(result);
+            return UserRegisterResponse.createByJson(result);
         })
         .then((response) => {
             res.status(StatusCode.OK).json(
@@ -54,7 +55,7 @@ module.exports.loginUser = (req, res, next) => {
     const { email, password } = req.body;
     User.loginUser(email, password)
         .then((result) => {
-            return new LoginResponseDTO(result);
+            return LoginResponse.createByJson(result);
         })
         .then((response) => {
             res.status(StatusCode.OK).json(
@@ -77,7 +78,7 @@ module.exports.updateUser = (req, res, next) => {
     );
     User.updateUser(userEditRequestDTO)
         .then((result) => {
-            return new UserResponseDTO(result);
+            return UserResponse.createByJson(result);
         })
         .then((response) => {
             res.status(StatusCode.OK).json(
@@ -103,7 +104,7 @@ module.exports.authUser = (req, res, next) => {
     const { token } = req.body;
     User.authUser(token)
         .then((result) => {
-            return new UserAuthResponseDTO(result);
+            return UserAuthResponse.createByJson(result);
         })
         .then((response) => {
             res.status(StatusCode.OK).json(
