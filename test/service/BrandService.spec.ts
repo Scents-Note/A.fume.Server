@@ -11,8 +11,7 @@ import BrandService from '../../src/service/BrandService';
 import BrandDao from '../../src/dao/BrandDao';
 import PagingDTO from '../../src/data/dto/PagingDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-
-const { PagingRequestDTO } = require('../../src/data/request_dto');
+import PagingRequestDTO from '../../src/data/request_dto/PagingRequestDTO';
 
 const mockListAndCountDTO: ListAndCountDTO<BrandDTO> =
     new ListAndCountDTO<BrandDTO>(1, [
@@ -22,12 +21,12 @@ const mockListAndCountDTO: ListAndCountDTO<BrandDTO> =
     ]);
 
 const mockBrandDAO: BrandDao | any = {
-    read: async (brandIdx: number) => BrandHelper.createWithIdx(1),
-    search: async (pagingDTO: PagingDTO) => mockListAndCountDTO,
+    read: async (_: number) => BrandHelper.createWithIdx(1),
+    search: async (_: PagingDTO) => mockListAndCountDTO,
     readAll: async () => mockListAndCountDTO,
-    findBrand: async (condition: any) => BrandHelper.createWithIdx(1),
+    findBrand: async (_: any) => BrandHelper.createWithIdx(1),
 };
-const Brand = new BrandService(mockBrandDAO);
+const Brand: BrandService = new BrandService(mockBrandDAO);
 
 describe('# Brand Service Test', () => {
     describe('# searchBrand Test', () => {

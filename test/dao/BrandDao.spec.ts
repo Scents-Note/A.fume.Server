@@ -12,11 +12,11 @@ import {
 import BrandDao from '../../src/dao/BrandDao';
 import BrandDTO from '../../src/data/dto/BrandDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
+import PagingDTO from '../../src/data/dto/PagingDTO';
+
 import BrandHelper from '../data/dto/BrandHelper';
 
-const brandDao = new BrandDao();
-
-const PagingDTO = require('../../src/data/dto/PagingDTO');
+const brandDao: BrandDao = new BrandDao();
 
 describe('# brandDao Test', () => {
     before(async function () {
@@ -70,13 +70,7 @@ describe('# brandDao Test', () => {
     describe('# search Test', () => {
         it('# success case', (done: Done) => {
             brandDao
-                .search(
-                    new PagingDTO({
-                        pagingIndex: 1,
-                        pagingSize: 10,
-                        order: [['createdAt', 'desc']],
-                    })
-                )
+                .search(new PagingDTO(1, 10, [['createdAt', 'desc']]))
                 .then((result: ListAndCountDTO<BrandDTO>) => {
                     expect(result.count).gte(5);
                     expect(result.rows.length).gte(5);

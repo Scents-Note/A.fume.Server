@@ -78,8 +78,11 @@ describe('# Series Service Test', () => {
 
     describe('# getFilterSeries Test', () => {
         it('# success Test', (done: Done) => {
-            const isNoteCountOver10 = (ingredientIdx) => ingredientIdx % 2 == 1;
-            mockIngredientDAO.readBySeriesIdxList = async (_: number[]) => {
+            const isNoteCountOver10 = (ingredientIdx: number): boolean =>
+                ingredientIdx % 2 == 1;
+            mockIngredientDAO.readBySeriesIdxList = async (
+                _: number[]
+            ): Promise<IngredientDTO[]> => {
                 const ret = [];
                 for (let i = 1; i <= 5; i++)
                     ret.push(IngredientMockHelper.createWithIdx(i, 1));
