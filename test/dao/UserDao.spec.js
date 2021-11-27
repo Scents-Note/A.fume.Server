@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import dotenv from 'dotenv';
+dotenv.config();
 
 import {
     NotMatchedError,
@@ -8,13 +9,10 @@ import {
 } from '../../src/utils/errors/errors';
 
 import CreatedResultDTO from '../../src/data/dto/CreatedResultDTO';
-
-dotenv.config();
+import UserMockHelper from '../data/dto/UserMockHelper';
 
 const userDao = require('../../src/dao/UserDao.js');
 const { User } = require('../../src/models');
-
-const UserDTO = require('../data/dto/UserDTO');
 
 const { GENDER_MAN, GENDER_WOMAN } = require('../../src/utils/constantUtil');
 
@@ -77,8 +75,7 @@ describe('# userDao Test', () => {
                 userDao
                     .read({ email: 'email1@afume.com' })
                     .then((result) => {
-                        expect(result).instanceOf(UserDTO);
-                        UserDTO.validTest.call(result);
+                        UserMockHelper.validTest.call(result);
                         done();
                     })
                     .catch((err) => done(err));
@@ -101,8 +98,7 @@ describe('# userDao Test', () => {
                 userDao
                     .readByIdx(1)
                     .then((result) => {
-                        expect(result).to.be.instanceOf(UserDTO);
-                        UserDTO.validTest.call(result);
+                        UserMockHelper.validTest.call(result);
                         expect(result.userIdx).to.be.eq(1);
                         done();
                     })
@@ -153,8 +149,7 @@ describe('# userDao Test', () => {
                     return userDao.readByIdx(userIdx);
                 })
                 .then((result) => {
-                    expect(result).to.be.instanceOf(UserDTO);
-                    UserDTO.validTest.call(result);
+                    UserMockHelper.validTest.call(result);
                     expect(result.userIdx).to.be.eq(userIdx);
                     expect(result.nickname).to.be.eq('수정 테스트(完)');
                     expect(result.email).to.be.eq('updateTest@afume.com');

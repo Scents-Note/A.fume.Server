@@ -4,10 +4,9 @@ dotenv.config();
 
 import LoginInfoMockHelper from '../data/dto/LoginInfoMockHelper';
 import TokenGroupMockHelper from '../data/dto/TokenGroupMockHelper';
+import UserAuthDTO from '../../src/data/dto/UserAuthDTO';
 
-const { UserAuthDTO } = require('../../src/data/dto');
-
-const UserDTO = require('../data/dto/UserDTO');
+import UserMockHelper from '../data/dto/UserMockHelper';
 
 const userService = require('../../src/service/UserService');
 const {
@@ -54,7 +53,6 @@ describe('# User Service Test', () => {
             userService
                 .authUser('token')
                 .then((result) => {
-                    expect(result).to.be.instanceOf(UserAuthDTO);
                     expect(result.isAuth).to.be.false;
                     expect(result.isAdmin).to.be.false;
                     done();
@@ -92,8 +90,7 @@ describe('# User Service Test', () => {
             userService
                 .updateUser({ userIdx: 1 })
                 .then((it) => {
-                    expect(it).to.be.instanceOf(UserDTO);
-                    UserDTO.validTest.call(it);
+                    UserMockHelper.validTest.call(it);
                     done();
                 })
                 .catch((err) => done(err));

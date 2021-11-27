@@ -4,10 +4,13 @@ dotenv.config();
 
 import JwtController from '../../src/lib/JwtController';
 import TokenPayloadDTO from '../../src/data/dto/TokenPayloadDTO';
+import UserAuthDTO from '../../src/data/dto/UserAuthDTO';
 import StatusCode from '../../src/utils/statusCode';
 
 import LoginInfoMockHelper from '../data/dto/LoginInfoMockHelper';
 import TokenGroupMockHelper from '../data/dto/TokenGroupMockHelper';
+
+import UserMockHelper from '../data/dto/UserMockHelper';
 
 const expect = require('../utils/expect');
 
@@ -19,8 +22,6 @@ const User = require('../../src/controllers/User.js');
 const mockUserService = {};
 User.setUserService(mockUserService);
 
-const UserDTO = require('../data/dto/UserDTO');
-const { UserAuthDTO } = require('../../src/data/dto');
 const user1tokenUser = JwtController.create(
     new TokenPayloadDTO(1, 'nickname', 'MAN', 'email', 1995)
 );
@@ -108,7 +109,7 @@ describe('# User Controller Test', () => {
 
     describe('# updateUser Test', () => {
         mockUserService.updateUser = async () => {
-            return UserDTO.createMock();
+            return UserMockHelper.createMock();
         };
         it('success case', (done) => {
             request(app)
@@ -204,7 +205,7 @@ describe('# User Controller Test', () => {
 
     describe('# authUser Test', () => {
         mockUserService.authUser = async () => {
-            return new UserAuthDTO({ isAuth: false, isAdmin: false });
+            return new UserAuthDTO(false, false);
         };
         it('success case', (done) => {
             request(app)

@@ -1,5 +1,5 @@
 import CreatedResultDTO from '../../src/data/dto/CreatedResultDTO';
-const { UserDTO } = require('../../src/data/dto');
+import UserDTO from '../../src/data/dto/UserDTO';
 
 module.exports.create = async ({
     nickname,
@@ -12,7 +12,7 @@ module.exports.create = async ({
 }) => {
     return new CreatedResultDTO(
         94,
-        new UserDTO({
+        UserDTO.createByJson({
             userIdx: 1,
             nickname,
             password,
@@ -28,7 +28,7 @@ module.exports.create = async ({
 };
 
 module.exports.read = async (where) => {
-    return new UserDTO({
+    return UserDTO.createByJson({
         userIdx: 1,
         nickname: 'user1',
         password: 'test',
@@ -43,7 +43,7 @@ module.exports.read = async (where) => {
 };
 
 module.exports.readByIdx = async (userIdx) => {
-    return new UserDTO({
+    return UserDTO.createByJson({
         userIdx,
         nickname: 'user1',
         password: 'test',

@@ -1,6 +1,6 @@
 'use strict';
 
-class UserDTO {
+class SurveyDTO {
     constructor({
         userIdx,
         surveyKeywordList,
@@ -14,4 +14,4 @@ class UserDTO {
     }
 }
 
-module.exports = UserDTO;
+module.exports = SurveyDTO;

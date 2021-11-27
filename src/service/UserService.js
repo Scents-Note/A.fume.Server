@@ -9,6 +9,8 @@ import TokenPayloadDTO from '../data/dto/TokenPayloadDTO';
 import { GenderMap } from '../utils/enumType';
 import LoginInfoDTO from '../data/dto/LoginInfoDTO';
 import TokenGroupDTO from '../data/dto/TokenGroupDTO';
+import UserAuthDTO from '../data/dto/UserAuthDTO';
+import UserDTO from '../data/dto/UserDTO';
 
 let crypto = { encrypt, decrypt };
 
@@ -18,8 +20,6 @@ let jwt = {
     publish: JwtController.publish,
     verify: JwtController.verify,
 };
-
-const { UserAuthDTO, UserDTO } = require('../data/dto');
 
 /**
  * 유저 회원 가입
@@ -87,10 +87,10 @@ exports.authUser = (token) => {
                     resolve(UserAuthDTO.create(user));
                 })
                 .catch((err) => {
-                    resolve(new UserAuthDTO({ isAuth: false, isAdmin: false }));
+                    resolve(new UserAuthDTO(false, false));
                 });
         } catch (err) {
-            resolve(new UserAuthDTO({ isAuth: false, isAdmin: false }));
+            resolve(new UserAuthDTO(false, false));
         }
     });
 };
@@ -158,7 +158,7 @@ exports.updateUser = async ({
         grade,
     });
     const user = await userDao.readByIdx(userIdx);
-    return new UserDTO(user);
+    return UserDTO.createByJson(user);
 };
 
 /**
