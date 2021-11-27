@@ -1,4 +1,8 @@
 import dotenv from 'dotenv';
+import { expect } from 'chai';
+import { Done } from 'mocha';
+
+dotenv.config();
 
 import IngredientService from '../../src/service/IngredientService';
 import IngredientDTO from '../../src/data/dto/IngredientDTO';
@@ -6,10 +10,6 @@ import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 import IngredientConditionDTO from '../../src/data/dto/IngredientConditionDTO';
 import IngredientDao from '../../src/dao/IngredientDao';
-
-const chai = require('chai');
-const { expect } = chai;
-dotenv.config();
 
 const ingredientService = new IngredientService();
 const mockIngredientDAO: any | IngredientDao = {};
@@ -21,7 +21,7 @@ describe('# Ingredient Service Test', () => {
             mockIngredientDAO.findIngredient = async (condition: any) => {
                 return IngredientMockHelper.create(condition);
             };
-            it('# success Test', (done) => {
+            it('# success Test', (done: Done) => {
                 ingredientService
                     .findIngredient(
                         new IngredientConditionDTO(undefined, '재료 이름')
@@ -44,7 +44,7 @@ describe('# Ingredient Service Test', () => {
                     )
                 );
             };
-            it('# success Test', (done) => {
+            it('# success Test', (done: Done) => {
                 ingredientService
                     .getIngredientAll()
                     .then((res: ListAndCountDTO<IngredientDTO>) => {
@@ -66,7 +66,7 @@ describe('# Ingredient Service Test', () => {
                     )
                 );
             };
-            it('# success Test', (done) => {
+            it('# success Test', (done: Done) => {
                 ingredientService
                     .getIngredientList(1)
                     .then((res: ListAndCountDTO<IngredientDTO>) => {

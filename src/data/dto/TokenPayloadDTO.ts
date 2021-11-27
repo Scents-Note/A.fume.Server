@@ -17,7 +17,7 @@ class TokenPayloadDTO {
         this.email = email;
         this.birth = birth;
     }
-    static createByJson(json: any) {
+    static createByJson(json: any): TokenPayloadDTO {
         const userIdx: number = json.userIdx;
         const nickname: string = json.nickname;
         const gender: string = json.gender;

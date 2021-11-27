@@ -1,7 +1,8 @@
 import dotenv from 'dotenv';
-dotenv.config();
-import request from 'supertest';
 import { expect } from 'chai';
+import { Done } from 'mocha';
+import request from 'supertest';
+dotenv.config();
 
 import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 import StatusCode from '../../src/utils/statusCode';
@@ -27,7 +28,7 @@ describe('# Ingredient Controller Test', () => {
                 ),
             });
         };
-        it('success case', (done) => {
+        it('success case', (done: Done) => {
             request(app)
                 .get(`${basePath}/ingredient`)
                 .expect((res: any) => {

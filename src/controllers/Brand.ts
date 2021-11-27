@@ -1,3 +1,5 @@
+import { Request, Response, NextFunction, RequestHandler } from 'express';
+
 import BrandService from '../service/BrandService';
 import BrandResponseDTO from '../data/response_dto/brand/BrandResponseDTO';
 import BrandFilterResponseDTO from '../data/response_dto/brand/BrandFilterResponseDTO';
@@ -13,15 +15,16 @@ module.exports.setBrandService = (brandService: BrandService) => {
     Brand = brandService;
 };
 
-module.exports.getBrandAll = (_: any, res: any, next: any) => {
+const getBrandAll: RequestHandler = (
+    _: Request,
+    res: Response,
+    next: NextFunction
+) => {
     Brand.getBrandAll()
         .then((result: ListAndCountDTO<BrandDTO>) => {
-            /* TODO: Change BrandResponseDTO to interface */
             return new ListAndCountDTO<BrandResponseDTO>(
                 result.count,
-                result.rows.map(
-                    (it: any) => new BrandResponseDTO(it.brandIdx, it.name)
-                )
+                result.rows.map(BrandResponseDTO.create)
             );
         })
         .then((result: ListAndCountDTO<BrandResponseDTO>) => {
@@ -35,10 +38,14 @@ module.exports.getBrandAll = (_: any, res: any, next: any) => {
         .catch((err: Error) => next(err));
 };
 
-module.exports.getFilterBrand = (_: any, res: any, next: any) => {
+const getFilterBrand: RequestHandler = (
+    _: Request,
+    res: Response,
+    next: NextFunction
+) => {
     Brand.getFilterBrand()
         .then((result: BrandFilterDTO[]) => {
-            return result.map((it: any) => BrandFilterResponseDTO.create(it));
+            return result.map(BrandFilterResponseDTO.create);
         })
         .then((response: BrandFilterResponseDTO[]) => {
             res.status(StatusCode.OK).json(
@@ -47,3 +54,6 @@ module.exports.getFilterBrand = (_: any, res: any, next: any) => {
         })
         .catch((err: Error) => next(err));
 };
+
+module.exports.getBrandAll = getBrandAll;
+module.exports.getFilterBrand = getFilterBrand;

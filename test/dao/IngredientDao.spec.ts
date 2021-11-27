@@ -1,5 +1,7 @@
 import dotenv from 'dotenv';
 import { expect } from 'chai';
+import { Done } from 'mocha';
+dotenv.config();
 
 import {
     NotMatchedError,
@@ -11,8 +13,8 @@ import IngredientDao from '../../src/dao/IngredientDao';
 import IngredientDTO from '../../src/data/dto/IngredientDTO';
 
 import IngredientMockHelper from '../data/dto/IngredientMockHelper';
+import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 
-dotenv.config();
 const ingredientDao = new IngredientDao();
 
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
@@ -23,7 +25,7 @@ describe('# ingredientDao Test', () => {
     });
 
     describe(' # read test', () => {
-        it(' # success case (By PrimaryKey)', (done) => {
+        it(' # success case (By PrimaryKey)', (done: Done) => {
             ingredientDao
                 .readByIdx(1)
                 .then((result: IngredientDTO) => {
@@ -44,10 +46,10 @@ describe('# ingredientDao Test', () => {
     });
 
     describe(' # readAll Test', () => {
-        it(' # success case', (done) => {
+        it(' # success case', (done: Done) => {
             ingredientDao
                 .readAll({})
-                .then((result: any) => {
+                .then((result: ListAndCountDTO<IngredientDTO>) => {
                     expect(result.count).greaterThan(4);
                     expect(result).instanceOf(ListAndCountDTO);
                     ListAndCountDTO.validTest.call(
@@ -61,10 +63,10 @@ describe('# ingredientDao Test', () => {
     });
 
     describe('# read By seriesIdx Test', () => {
-        it('# success case', (done) => {
+        it('# success case', (done: Done) => {
             ingredientDao
                 .readAll({ seriesIdx: 1 })
-                .then((result: any) => {
+                .then((result: ListAndCountDTO<IngredientDTO>) => {
                     expect(result).instanceOf(ListAndCountDTO);
                     ListAndCountDTO.validTest.call(
                         result,
@@ -74,7 +76,7 @@ describe('# ingredientDao Test', () => {
                 })
                 .catch((err: Error) => done(err));
         });
-        it('# success case', (done) => {
+        it('# success case', (done: Done) => {
             ingredientDao
                 .readBySeriesIdxList([1, 2, 3, 4, 5])
                 .then((result: IngredientDTO[]) => {
@@ -90,7 +92,7 @@ describe('# ingredientDao Test', () => {
                 .catch((err: Error) => done(err));
         });
 
-        it('# findIngredient success case', (done) => {
+        it('# findIngredient success case', (done: Done) => {
             ingredientDao
                 .findIngredient(
                     new IngredientConditionDTO(
@@ -111,7 +113,7 @@ describe('# ingredientDao Test', () => {
                 .catch((err: Error) => done(err));
         });
 
-        it('# findIngredient success case', (done) => {
+        it('# findIngredient success case', (done: Done) => {
             ingredientDao
                 .findIngredient({
                     englishName: 'ingredient english-name',
@@ -125,7 +127,7 @@ describe('# ingredientDao Test', () => {
                 .catch((err: Error) => done(err));
         });
 
-        it('# findIngredient not found case', (done) => {
+        it('# findIngredient not found case', (done: Done) => {
             ingredientDao
                 .findIngredient({
                     name: '재료10',

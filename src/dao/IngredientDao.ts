@@ -13,7 +13,7 @@ class IngredientDao {
      * @return {Promise<IngredientDTO>} ingredientDTO
      * @throws {NotMatchedError}
      */
-    async readByIdx(ingredientIdx: number) {
+    async readByIdx(ingredientIdx: number): Promise<IngredientDTO> {
         const result: any = await Ingredient.findByPk(ingredientIdx, {
             nest: true,
             raw: true,
@@ -31,7 +31,7 @@ class IngredientDao {
      * @return {Promise<IngredientDTO>} ingredientDTO
      * @throws {NotMatchedError}
      */
-    async readByName(ingredientName: string) {
+    async readByName(ingredientName: string): Promise<IngredientDTO> {
         const result = await Ingredient.findOne({
             where: { name: ingredientName },
         });
@@ -48,7 +48,7 @@ class IngredientDao {
      * @return {Promise<ListAndCountDTO>} listAndCountDTO
      * @throws {NotMatchedError}
      */
-    async readAll(where: any) {
+    async readAll(where: any): Promise<ListAndCountDTO<IngredientDTO>> {
         const result = await Ingredient.findAndCountAll({
             where,
             nest: true,
@@ -68,9 +68,13 @@ class IngredientDao {
      * @param {number} pagingIndex
      * @param {number} pagingSize
      * @param {array} order
-     * @returns {Promise<ListAndCountDTO<IngredientDTO>} listAndCountDTO<IngredientDTO>
+     * @returns {Promise<ListAndCountDTO<IngredientDTO>>} listAndCountDTO<IngredientDTO>
      */
-    async search(pagingIndex: number, pagingSize: number, order: string[]) {
+    async search(
+        pagingIndex: number,
+        pagingSize: number,
+        order: string[]
+    ): Promise<ListAndCountDTO<IngredientDTO>> {
         return Ingredient.findAndCountAll({
             offset: (pagingIndex - 1) * pagingSize,
             limit: pagingSize,
@@ -92,7 +96,9 @@ class IngredientDao {
      * @param {number[]} seriesIdxList
      * @return {Promise<IngredientDTO[]>} IngredientDTO[]
      */
-    async readBySeriesIdxList(seriesIdxList: number[]) {
+    async readBySeriesIdxList(
+        seriesIdxList: number[]
+    ): Promise<IngredientDTO[]> {
         return Ingredient.findAll({
             where: {
                 seriesIdx: {
@@ -112,7 +118,7 @@ class IngredientDao {
      * @returns {Promise<IngredientDTO>} ingredientDTO
      * @throws {NotMatchedError}
      */
-    async findIngredient(condition: any) {
+    async findIngredient(condition: any): Promise<IngredientDTO> {
         // reason for converting json is remove key that has undefined value
         condition = JSON.parse(JSON.stringify(condition));
         return Ingredient.findOne({

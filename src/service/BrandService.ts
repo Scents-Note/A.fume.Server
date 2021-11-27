@@ -1,8 +1,9 @@
 import BrandFilterDTO from '../data/dto/BrandFilterDTO';
 import BrandDao from '../dao/BrandDao';
 import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
-
-const { PagingDTO } = require('../data/dto');
+import ListAndCountDTO from '../data/dto/ListAndCountDTO';
+import BrandDTO from '../data/dto/BrandDTO';
+import PagingDTO from '../data/dto/PagingDTO';
 
 class BrandService {
     brandDao: BrandDao;
@@ -15,7 +16,9 @@ class BrandService {
      * @param {PagingRequestDTO} pagingRequestDTO
      * @returns {Promise<ListAndCountDTO<BrandDTO>>} listAndCountDTO
      **/
-    searchBrand(pagingRequestDTO: PagingRequestDTO) {
+    searchBrand(
+        pagingRequestDTO: PagingRequestDTO
+    ): Promise<ListAndCountDTO<BrandDTO>> {
         const pagingDTO = PagingDTO.create(pagingRequestDTO);
         return this.brandDao.search(pagingDTO);
     }
@@ -24,7 +27,7 @@ class BrandService {
      *
      * @returns {Promise<ListAndCountDTO<BrandDTO>>} listAndCountDTO
      **/
-    getBrandAll() {
+    getBrandAll(): Promise<ListAndCountDTO<BrandDTO>> {
         return this.brandDao.readAll();
     }
 
@@ -34,7 +37,7 @@ class BrandService {
      * @param {number} brandIdx
      * @returns {Promise<BrandDTO>} brandDTO
      **/
-    getBrandByIdx(brandIdx: number) {
+    getBrandByIdx(brandIdx: number): Promise<BrandDTO> {
         return this.brandDao.read(brandIdx);
     }
 
@@ -43,20 +46,20 @@ class BrandService {
      *
      * @returns {Promise<BrandFilterDTO[]>} brandFilterDTO[]
      */
-    getFilterBrand() {
+    getFilterBrand(): Promise<BrandFilterDTO[]> {
         return this.brandDao.readAll().then((result) => {
             const firstInitialMap = result.rows.reduce(
-                (prev: any, cur: any) => {
-                    if (!prev[cur.firstInitial]) {
-                        prev[cur.firstInitial] = [];
+                (prev: Map<string, BrandDTO[]>, cur: BrandDTO) => {
+                    if (!prev.has(cur.firstInitial)) {
+                        prev.set(cur.firstInitial, []);
                     }
-                    prev[cur.firstInitial].push(cur);
+                    prev.get(cur.firstInitial)!!.push(cur);
                     return prev;
                 },
-                {}
+                new Map<string, BrandDTO[]>()
             );
             return Object.keys(firstInitialMap).map((key: string) => {
-                return new BrandFilterDTO(key, firstInitialMap[key]);
+                return new BrandFilterDTO(key, firstInitialMap.get(key) || []);
             });
         });
     }

@@ -8,7 +8,7 @@ class PagingRequestDTO {
         this.sort = sort;
     }
 
-    static createByJson(json: any) {
+    static createByJson(json: any): PagingRequestDTO {
         const pagingSize: number = json.pagingSize || 10;
         const pagingIndex: number = json.pagingIndex || 1;
         const sort: string = json.sort || 'createdAt_ds';
