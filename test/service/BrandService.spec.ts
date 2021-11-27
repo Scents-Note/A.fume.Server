@@ -7,36 +7,35 @@ import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
 import BrandFilterHelper from '../data/dto/BrandFilterHelper';
 import BrandService from '../../src/service/BrandService';
 import BrandDao from '../../src/dao/BrandDao';
+import PagingDTO from '../../src/data/dto/PagingDTO';
+import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 
 dotenv.config();
 
 const { PagingRequestDTO } = require('../../src/data/request_dto');
 
-const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
-
-const mockListAndCountDTO = new ListAndCountDTO({
-    count: 1,
-    rows: [
+const mockListAndCountDTO: ListAndCountDTO<BrandDTO> =
+    new ListAndCountDTO<BrandDTO>(1, [
         BrandHelper.createWithIdx(1),
         BrandHelper.createWithIdx(2),
         BrandHelper.createWithIdx(3),
-    ],
-});
+    ]);
+
 const mockBrandDAO: BrandDao | any = {
-    read: async (brandIdx) => BrandHelper.createWithIdx(1),
-    search: async (pagingDTO) => mockListAndCountDTO,
+    read: async (brandIdx: number) => BrandHelper.createWithIdx(1),
+    search: async (pagingDTO: PagingDTO) => mockListAndCountDTO,
     readAll: async () => mockListAndCountDTO,
-    findBrand: async (condition) => BrandHelper.createWithIdx(1),
+    findBrand: async (condition: any) => BrandHelper.createWithIdx(1),
 };
 const Brand = new BrandService(mockBrandDAO);
 
 describe('# Brand Service Test', () => {
     describe('# searchBrand Test', () => {
         it('# success Test', (done) => {
-            Brand.searchBrand(new PagingRequestDTO({}))
-                .then((res: any) => {
-                    expect(res).instanceOf(ListAndCountDTO);
-                    ListAndCountDTO.validTest.call(res, BrandHelper.validTest);
+            Brand.searchBrand(PagingRequestDTO.createByJson({}))
+                .then((res: ListAndCountDTO<BrandDTO>) => {
+                    expect(res.count).to.be.gt(0);
+                    expect(res.rows.length).to.be.gt(0);
                     done();
                 })
                 .catch((err: Error) => done(err));
@@ -46,9 +45,9 @@ describe('# Brand Service Test', () => {
     describe('# getBrandAll Test', () => {
         it('# success Test', (done) => {
             Brand.getBrandAll()
-                .then((res: any) => {
-                    expect(res).instanceOf(ListAndCountDTO);
-                    ListAndCountDTO.validTest.call(res, BrandHelper.validTest);
+                .then((res: ListAndCountDTO<BrandDTO>) => {
+                    expect(res.count).to.be.gt(0);
+                    expect(res.rows.length).to.be.gt(0);
                     done();
                 })
                 .catch((err: Error) => done(err));

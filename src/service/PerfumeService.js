@@ -1,4 +1,8 @@
 import { NotMatchedError, FailedToCreateError } from '../utils/errors/errors';
+import PagingDTO from '../data/dto/PagingDTO';
+import ListAndCountDTO from '../data/dto/ListAndCountDTO';
+
+import { updateRows, removeKeyJob, extractJob, flatJob } from '../utils/func';
 
 let perfumeDao = require('../dao/PerfumeDao.js');
 let reviewDao = require('../dao/ReviewDao.js');
@@ -22,17 +26,8 @@ const {
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
     PerfumeIntegralDTO,
-    ListAndCountDTO,
-    PagingDTO,
     PerfumeSearchDTO,
 } = require('../data/dto');
-
-const {
-    updateRows,
-    removeKeyJob,
-    extractJob,
-    flatJob,
-} = require('../utils/func.js');
 
 function isLikeJob(likePerfumeList) {
     const likeMap = likePerfumeList.reduce((prev, cur) => {
@@ -199,10 +194,12 @@ exports.searchPerfume = ({ perfumeSearchRequestDTO, pagingRequestDTO }) => {
                 perfumeIdxList
             );
             updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
-            return new ListAndCountDTO({
-                count: result.count,
-                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
-            });
+            /* TODO */
+            // return new ListAndCountDTO<PerfumeThumbDTO>(
+            return new ListAndCountDTO(
+                result.count,
+                result.rows.map((it) => new PerfumeThumbDTO(it))
+            );
         });
 };
 
@@ -225,10 +222,12 @@ exports.getSurveyPerfume = (userIdx) => {
                 perfumeIdxList
             );
             updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
-            return new ListAndCountDTO({
-                count: result.count,
-                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
-            });
+            /* TODO */
+            // return new ListAndCountDTO<PerfumeThumbDTO>(
+            return new ListAndCountDTO(
+                result.count,
+                result.rows.map((it) => new PerfumeThumbDTO(it))
+            );
         });
 };
 
@@ -283,10 +282,12 @@ exports.recentSearch = ({ userIdx, pagingRequestDTO }) => {
                 perfumeIdxList
             );
             updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
-            return new ListAndCountDTO({
-                count: result.count,
-                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
-            });
+            /* TODO */
+            // return new ListAndCountDTO<PerfumeThumbDTO>(
+            return new ListAndCountDTO(
+                result.count,
+                result.rows.map((it) => new PerfumeThumbDTO(it))
+            );
         });
 };
 
@@ -328,10 +329,12 @@ exports.recommendByUser = async ({ userIdx, pagingRequestDTO }) => {
             isLikeJob(likePerfumeList),
             addKeyword(joinKeywordList)
         );
-        return new ListAndCountDTO({
-            count: result.count,
-            rows: result.rows.map((it) => new PerfumeThumbKeywordDTO(it)),
-        });
+        /* TODO */
+        // return new ListAndCountDTO<PerfumeThumbKeywordDTO>(
+        return new ListAndCountDTO(
+            result.count,
+            result.rows.map((it) => new PerfumeThumbKeywordDTO(it))
+        );
     });
 };
 
@@ -377,10 +380,13 @@ exports.getNewPerfume = ({ userIdx, pagingRequestDTO }) => {
                 perfumeIdxList
             );
             updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
-            return new ListAndCountDTO({
-                count: result.count,
-                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
-            });
+
+            /* TODO */
+            // return new ListAndCountDTO<PerfumeThumbDTO>(
+            return new ListAndCountDTO(
+                result.count,
+                result.rows.map((it) => new PerfumeThumbDTO(it))
+            );
         });
 };
 
@@ -402,10 +408,12 @@ exports.getLikedPerfume = ({ userIdx, pagingRequestDTO }) => {
                 perfumeIdxList
             );
             updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
-            return new ListAndCountDTO({
-                count: result.count,
-                rows: result.rows.map((it) => new PerfumeThumbDTO(it)),
-            });
+            /* TODO */
+            // return new ListAndCountDTO<PerfumeThumbDTO>(
+            return new ListAndCountDTO(
+                result.count,
+                result.rows.map((it) => new PerfumeThumbDTO(it))
+            );
         });
 };
 

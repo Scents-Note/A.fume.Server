@@ -1,7 +1,7 @@
-const {
+import {
     ExpiredTokenError,
     InvalidTokenError,
-} = require('../../src/utils/errors/errors');
+} from '../../src/utils/errors/errors';
 
 module.exports.publish = () => {
     return {

@@ -17,7 +17,10 @@ const {
 } = require('../../src/utils/errors/errors');
 const mockJWT = Object.assign({}, require('../lib/token.mock.js'));
 userService.setJwt(mockJWT);
-userService.setCrypto(require('../lib/crypto.mock.js'));
+userService.setCrypto({
+    encrypt: () => 'encrypted',
+    decrypt: () => 'decrypted',
+});
 userService.setUserDao(require('../dao/UserDao.mock.js'));
 
 describe('# User Service Test', () => {

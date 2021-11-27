@@ -1,8 +1,9 @@
 import { NotMatchedError } from '../utils/errors/errors';
 import BrandDTO from '../data/dto/BrandDTO';
+import PagingDTO from '../data/dto/PagingDTO';
+import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 
 const { Brand } = require('../models');
-const { ListAndCountDTO } = require('../data/dto');
 
 class BrandDao {
     /**
@@ -28,7 +29,7 @@ class BrandDao {
      * @param {PagingDTO} pagingDTO
      * @returns {Promise<ListAndCountDTO<BrandDTO>>}
      */
-    async search(pagingDTO: any) {
+    async search(pagingDTO: PagingDTO) {
         const pagingSize: number = pagingDTO.pagingSize;
         const pagingIndex: number = pagingDTO.pagingIndex;
         const order: any = pagingDTO.order;
@@ -40,7 +41,7 @@ class BrandDao {
             nest: true,
         }).then((it: any) => {
             it.rows = it.rows.map((it: any) => BrandDTO.createByJson(it));
-            return new ListAndCountDTO(it);
+            return new ListAndCountDTO<BrandDTO>(it.count, it.rows);
         });
     }
 
@@ -54,10 +55,10 @@ class BrandDao {
             raw: true,
             nest: true,
         }).then((result: any) => {
-            return new ListAndCountDTO({
-                count: result.count,
-                rows: result.rows.map((it: any) => BrandDTO.createByJson(it)),
-            });
+            return new ListAndCountDTO<BrandDTO>(
+                result.count,
+                result.rows.map((it: any) => BrandDTO.createByJson(it))
+            );
         });
     }
 

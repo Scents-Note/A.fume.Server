@@ -1,13 +1,12 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
+import { expect } from 'chai';
+
+import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
+import IngredientMockHelper from '../data/dto/IngredientMockHelper';
+
 dotenv.config();
 
-const chai = require('chai');
-const { expect } = chai;
-
-const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
 const SeriesDTO = require('../data/dto/SeriesDTO');
-
-import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 
 const SeriesFilterDTO = require('../data/dto/SeriesFilterDTO');
 
@@ -37,19 +36,19 @@ describe('# Series Service Test', () => {
     describe('# getSeriesAll Test', () => {
         it('# success Test', (done) => {
             mockSeriesDAO.readAll = async () =>
-                new ListAndCountDTO({
-                    count: 3,
-                    rows: [
-                        SeriesDTO.createWithIdx(1),
-                        SeriesDTO.createWithIdx(2),
-                        SeriesDTO.createWithIdx(3),
-                    ],
-                });
+                /* TODO */
+                // new ListAndCountDTO<SeriesDTO>(3, [
+                new ListAndCountDTO(3, [
+                    SeriesDTO.createWithIdx(1),
+                    SeriesDTO.createWithIdx(2),
+                    SeriesDTO.createWithIdx(3),
+                ]);
             seriesService
                 .getSeriesAll({})
+                /* TODO */
+                // .then((result: ListAndCountDTO<SeriesDTO>) => {
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    ListAndCountDTO.validTest.call(result, SeriesDTO.validTest);
                     done();
                 })
                 .catch((err) => done(err));
@@ -59,19 +58,19 @@ describe('# Series Service Test', () => {
     describe('# searchSeries Test', () => {
         it('# success Test', (done) => {
             mockSeriesDAO.search = async () =>
-                new ListAndCountDTO({
-                    count: 3,
-                    rows: [
-                        SeriesDTO.createWithIdx(1),
-                        SeriesDTO.createWithIdx(2),
-                        SeriesDTO.createWithIdx(3),
-                    ],
-                });
+                /* TODO */
+                // new ListAndCountDTO<SeriesDTO>(3, [
+                new ListAndCountDTO(3, [
+                    SeriesDTO.createWithIdx(1),
+                    SeriesDTO.createWithIdx(2),
+                    SeriesDTO.createWithIdx(3),
+                ]);
             seriesService
                 .searchSeries({})
+                /* TODO */
+                // .then((result: ListAndCountDTO<SeriesDTO>) => {
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    ListAndCountDTO.validTest.call(result, SeriesDTO.validTest);
                     done();
                 })
                 .catch((err) => done(err));
@@ -114,16 +113,17 @@ describe('# Series Service Test', () => {
 
             seriesService
                 .getFilterSeries({})
+                /* TODO */
+                // .then((result: ListAndCountDTO<SeriesFilterDTO>) => {
                 .then((result) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    ListAndCountDTO.validTest.call(result, function () {
-                        SeriesFilterDTO.validTest.call(this);
-                        for (const ingredientDTO of this.ingredients) {
+                    for (const seriesFilterDTO of result.rows) {
+                        for (const ingredientDTO of seriesFilterDTO.ingredients) {
                             expect(
                                 isNoteCountOver10(ingredientDTO.ingredientIdx)
                             ).to.be.eq(true);
                         }
-                    });
+                    }
                     expect(result.rows.length).to.be.eq(3);
                     done();
                 })

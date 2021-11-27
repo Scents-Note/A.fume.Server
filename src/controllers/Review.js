@@ -1,7 +1,7 @@
 'use strict';
 
 var Review = require('../service/ReviewService');
-const { OK } = require('../utils/statusCode.js');
+import StatusCode from '../utils/statusCode';
 
 module.exports.postReview = function postReview(req, res, next) {
     const perfumeIdx = req.swagger.params['perfumeIdx'].value;
@@ -29,7 +29,7 @@ module.exports.postReview = function postReview(req, res, next) {
         keywordList,
     })
         .then((response) => {
-            res.status(OK).json({
+            res.status(StatusCode.OK).json({
                 message: '시향노트 추가 성공',
                 data: {
                     reviewIdx: response,
@@ -43,7 +43,7 @@ module.exports.getReviewByIdx = function getReviewByIdx(req, res, next) {
     var reviewIdx = req.swagger.params['reviewIdx'].value;
     Review.getReviewByIdx(reviewIdx)
         .then((response) => {
-            res.status(OK).json({
+            res.status(StatusCode.OK).json({
                 message: '시향노트 조회 성공',
                 data: response,
             });
@@ -56,7 +56,7 @@ module.exports.getPerfumeReview = function getPerfumeReview(req, res, next) {
     const userIdx = req.middlewareToken.loginUserIdx;
     Review.getReviewOfPerfumeByLike({ perfumeIdx, userIdx })
         .then((response) => {
-            res.status(OK).json({
+            res.status(StatusCode.OK).json({
                 message: '특정 향수의 시향노트 목록 인기순 조회 성공',
                 data: response,
             });
@@ -68,7 +68,7 @@ module.exports.getReviewOfUser = function getReviewOfUser(req, res, next) {
     const userIdx = req.middlewareToken.loginUserIdx;
     Review.getReviewOfUser(userIdx)
         .then((response) => {
-            res.status(OK).json({
+            res.status(StatusCode.OK).json({
                 message: '마이퍼퓸 조회 성공',
                 data: response,
             });
@@ -103,7 +103,7 @@ module.exports.putReview = (req, res, next) => {
         keywordList,
     })
         .then(() => {
-            res.status(OK).json({
+            res.status(StatusCode.OK).json({
                 message: '시향노트 수정 성공',
             });
         })
@@ -115,7 +115,7 @@ module.exports.deleteReview = (req, res, next) => {
     const userIdx = req.middlewareToken.loginUserIdx;
     Review.deleteReview({ reviewIdx, userIdx })
         .then(() => {
-            res.status(OK).json({
+            res.status(StatusCode.OK).json({
                 message: '시향노트 삭제 성공',
             });
         })
@@ -127,7 +127,7 @@ module.exports.likeReview = (req, res, next) => {
     const userIdx = req.middlewareToken.loginUserIdx;
     Review.likeReview(reviewIdx, userIdx)
         .then((result) => {
-            res.status(OK).json({
+            res.status(StatusCode.OK).json({
                 message: '시향노트 좋아요 상태 변경 성공',
                 data: result,
             });

@@ -8,6 +8,7 @@ import {
 
 import BrandDao from '../../src/dao/BrandDao';
 import BrandDTO from '../../src/data/dto/BrandDTO';
+import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import BrandHelper from '../data/dto/BrandHelper';
 
 dotenv.config();
@@ -15,7 +16,6 @@ dotenv.config();
 const brandDao = new BrandDao();
 
 const PagingDTO = require('../../src/data/dto/PagingDTO');
-const ListAndCountDTO = require('../data/dto/ListAndCountDTO.js');
 
 describe('# brandDao Test', () => {
     before(async function () {
@@ -93,12 +93,9 @@ describe('# brandDao Test', () => {
         it('# success case', (done) => {
             brandDao
                 .readAll()
-                .then((result: any) => {
-                    expect(result).instanceOf(ListAndCountDTO);
-                    ListAndCountDTO.validTest.call(
-                        result,
-                        BrandHelper.validTest
-                    );
+                .then((result: ListAndCountDTO<BrandDTO>) => {
+                    expect(result.count).to.be.eq(0);
+                    expect(result.rows.length).to.be.eq(0);
                     done();
                 })
                 .catch((err: Error) => done(err));

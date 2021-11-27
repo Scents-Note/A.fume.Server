@@ -1,20 +1,17 @@
 'use strict';
+import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
+import ResponseDTO from '../data/response_dto/common/ResponseDTO';
+import StatusCode from '../utils/statusCode';
 
 let Perfume = require('../service/PerfumeService');
 let SearchHistory = require('../service/SearchHistoryService');
 
-const { OK, FORBIDDEN } = require('../utils/statusCode.js');
-
-const {
-    PagingRequestDTO,
-    PerfumeSearchRequestDTO,
-} = require('../data/request_dto');
+const { PerfumeSearchRequestDTO } = require('../data/request_dto');
 const {
     PerfumeDetailResponseDTO,
     PerfumeResponseDTO,
     PerfumeRecommendResponseDTO,
 } = require('../data/response_dto/perfume');
-const { ResponseDTO } = require('../data/response_dto/common');
 
 module.exports.getPerfume = (req, res, next) => {
     const perfumeIdx = req.swagger.params['perfumeIdx'].value;
@@ -29,11 +26,8 @@ module.exports.getPerfume = (req, res, next) => {
             return new PerfumeDetailResponseDTO(result);
         })
         .then((data) => {
-            res.status(OK).json(
-                new ResponseDTO({
-                    message: '향수 조회 성공',
-                    data,
-                })
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('향수 조회 성공', data)
             );
         })
         .catch((err) => next(err));
@@ -44,7 +38,7 @@ module.exports.searchPerfume = (req, res, next) => {
     const perfumeSearchRequestDTO = new PerfumeSearchRequestDTO(
         Object.assign({ userIdx: loginUserIdx }, req.body)
     );
-    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    const pagingRequestDTO = PagingRequestDTO.createByJson(req.query);
     Perfume.searchPerfume({
         perfumeSearchRequestDTO,
         pagingRequestDTO,
@@ -56,11 +50,8 @@ module.exports.searchPerfume = (req, res, next) => {
             };
         })
         .then((data) => {
-            res.status(OK).json(
-                new ResponseDTO({
-                    message: '향수 검색 성공',
-                    data,
-                })
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('향수 검색 성공', data)
             );
         })
         .catch((err) => next(err));
@@ -71,11 +62,8 @@ module.exports.likePerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
     Perfume.likePerfume(loginUserIdx, perfumeIdx)
         .then((result) => {
-            res.status(OK).json(
-                new ResponseDTO({
-                    message: `향수 좋아요${result ? '' : ' 취소'}`,
-                    data: result,
-                })
+            res.status(StatusCode.OK).json(
+                new ResponseDTO(`향수 좋아요${result ? '' : ' 취소'}`, result)
             );
         })
         .catch((err) => next(err));
@@ -83,7 +71,7 @@ module.exports.likePerfume = (req, res, next) => {
 
 module.exports.getRecentPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    const pagingRequestDTO = PagingRequestDTO.createByJson(req.query);
     Perfume.recentSearch({ userIdx: loginUserIdx, pagingRequestDTO })
         .then(({ count, rows }) => {
             return {
@@ -92,11 +80,8 @@ module.exports.getRecentPerfume = (req, res, next) => {
             };
         })
         .then((data) => {
-            res.status(OK).json(
-                new ResponseDTO({
-                    message: '최근 검색한 향수 조회',
-                    data,
-                })
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('최근 검색한 향수 조회', data)
             );
         })
         .catch((err) => next(err));
@@ -104,7 +89,7 @@ module.exports.getRecentPerfume = (req, res, next) => {
 
 module.exports.recommendPersonalPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    const pagingRequestDTO = PagingRequestDTO.createByJson(req.query);
     Perfume.recommendByUser({ userIdx: loginUserIdx, pagingRequestDTO })
         .then(({ count, rows }) => {
             return {
@@ -113,11 +98,8 @@ module.exports.recommendPersonalPerfume = (req, res, next) => {
             };
         })
         .then((data) => {
-            res.status(OK).json(
-                new ResponseDTO({
-                    message: '향수 개인 맞춤 추천',
-                    data,
-                })
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('향수 개인 맞춤 추천', data)
             );
         })
         .catch((err) => next(err));
@@ -125,7 +107,7 @@ module.exports.recommendPersonalPerfume = (req, res, next) => {
 
 module.exports.recommendCommonPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    const pagingRequestDTO = PagingRequestDTO.createByJson(req.query);
     Perfume.recommendByUser({ loginUserIdx, pagingRequestDTO })
         .then(({ count, rows }) => {
             return {
@@ -134,11 +116,8 @@ module.exports.recommendCommonPerfume = (req, res, next) => {
             };
         })
         .then((data) => {
-            res.status(OK).json(
-                new ResponseDTO({
-                    message: '향수 일반 추천 (성별, 나이 반영)',
-                    data,
-                })
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('향수 일반 추천 (성별, 나이 반영)', data)
             );
         })
         .catch((err) => next(err));
@@ -154,11 +133,8 @@ module.exports.getSurveyPerfume = (req, res, next) => {
             };
         })
         .then((data) => {
-            res.status(OK).json(
-                new ResponseDTO({
-                    message: '서베이 향수 조회 성공',
-                    data,
-                })
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('서베이 향수 조회 성공', data)
             );
         })
         .catch((err) => next(err));
@@ -166,7 +142,7 @@ module.exports.getSurveyPerfume = (req, res, next) => {
 
 module.exports.getNewPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
-    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    const pagingRequestDTO = PagingRequestDTO.createByJson(req.query);
     Perfume.getNewPerfume({ userIdx: loginUserIdx, pagingRequestDTO })
         .then(({ count, rows }) => {
             return {
@@ -175,11 +151,8 @@ module.exports.getNewPerfume = (req, res, next) => {
             };
         })
         .then((data) => {
-            res.status(OK).json(
-                new ResponseDTO({
-                    message: '새로 등록된 향수 조회 성공',
-                    data,
-                })
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('새로 등록된 향수 조회 성공', data)
             );
         })
         .catch((err) => next(err));
@@ -188,12 +161,10 @@ module.exports.getNewPerfume = (req, res, next) => {
 module.exports.getLikedPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx;
     const userIdx = req.swagger.params['userIdx'].value;
-    const pagingRequestDTO = new PagingRequestDTO(req.query);
+    const pagingRequestDTO = PagingRequestDTO.createByJson(req.query);
     if (loginUserIdx != userIdx) {
-        res.status(FORBIDDEN).json(
-            new ResponseDTO({
-                message: '비정상적인 접근입니다.',
-            })
+        res.status(StatusCode.FORBIDDEN).json(
+            new ResponseDTO('비정상적인 접근입니다.')
         );
         return;
     }
@@ -205,11 +176,8 @@ module.exports.getLikedPerfume = (req, res, next) => {
             };
         })
         .then((data) => {
-            res.status(OK).json(
-                new ResponseDTO({
-                    message: '유저가 좋아요한 향수 조회',
-                    data,
-                })
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('유저가 좋아요한 향수 조회', data)
             );
         })
         .catch((err) => {

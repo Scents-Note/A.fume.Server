@@ -1,6 +1,11 @@
 import BrandService from '../service/BrandService';
 import BrandResponseDTO from '../data/response_dto/brand/BrandResponseDTO';
 import BrandFilterResponseDTO from '../data/response_dto/brand/BrandFilterResponseDTO';
+import ResponseDTO from '../data/response_dto/common/ResponseDTO';
+import ListAndCountDTO from '../data/dto/ListAndCountDTO';
+import BrandDTO from '../data/dto/BrandDTO';
+import StatusCode from '../utils/statusCode';
+import BrandFilterDTO from '../data/dto/BrandFilterDTO';
 
 let Brand: BrandService = new BrandService();
 
@@ -8,47 +13,37 @@ module.exports.setBrandService = (brandService: BrandService) => {
     Brand = brandService;
 };
 
-const { OK } = require('../utils/statusCode.js');
-
-const {
-    ResponseDTO,
-    ListAndCountResponseDTO,
-} = require('../data/response_dto/common');
-
 module.exports.getBrandAll = (_: any, res: any, next: any) => {
     Brand.getBrandAll()
-        .then((result: any) => {
-            return {
-                count: result.count,
-                rows: result.rows.map(
+        .then((result: ListAndCountDTO<BrandDTO>) => {
+            /* TODO: Change BrandResponseDTO to interface */
+            return new ListAndCountDTO<BrandResponseDTO>(
+                result.count,
+                result.rows.map(
                     (it: any) => new BrandResponseDTO(it.brandIdx, it.name)
-                ),
-            };
-        })
-        .then(({ count, rows }) => {
-            res.status(OK).json(
-                new ListAndCountResponseDTO({
-                    message: '브랜드 조회 성공',
-                    count,
-                    rows,
-                })
+                )
             );
         })
-        .catch((err: any) => next(err));
+        .then((result: ListAndCountDTO<BrandResponseDTO>) => {
+            res.status(StatusCode.OK).json(
+                new ResponseDTO<ListAndCountDTO<BrandResponseDTO>>(
+                    '브랜드 조회 성공',
+                    result
+                )
+            );
+        })
+        .catch((err: Error) => next(err));
 };
 
 module.exports.getFilterBrand = (_: any, res: any, next: any) => {
     Brand.getFilterBrand()
-        .then((result: any) => {
+        .then((result: BrandFilterDTO[]) => {
             return result.map((it: any) => BrandFilterResponseDTO.create(it));
         })
-        .then((response: any) => {
-            res.status(OK).json(
-                new ResponseDTO({
-                    message: '브랜드 필터 조회 성공',
-                    data: response,
-                })
+        .then((response: BrandFilterResponseDTO[]) => {
+            res.status(StatusCode.OK).json(
+                new ResponseDTO('브랜드 필터 조회 성공', response)
             );
         })
-        .catch((err: any) => next(err));
+        .catch((err: Error) => next(err));
 };

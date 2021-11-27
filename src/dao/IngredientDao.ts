@@ -1,8 +1,8 @@
 import IngredientDTO from '../data/dto/IngredientDTO';
 import { NotMatchedError } from '../utils/errors/errors';
+import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 
 const { Ingredient, Sequelize } = require('../models');
-const { ListAndCountDTO } = require('../data/dto');
 const { Op } = Sequelize;
 
 class IngredientDao {
@@ -57,10 +57,10 @@ class IngredientDao {
         if (!result) {
             throw new NotMatchedError();
         }
-        return new ListAndCountDTO({
-            count: result.count,
-            rows: result.rows.map((it: any) => IngredientDTO.createByJson(it)),
-        });
+        return new ListAndCountDTO<IngredientDTO>(
+            result.count,
+            result.rows.map((it: any) => IngredientDTO.createByJson(it))
+        );
     }
     /**
      * 재료 검색
@@ -79,10 +79,10 @@ class IngredientDao {
             nest: true,
         }).then((result: any) => {
             const { count, rows } = result;
-            return new ListAndCountDTO({
+            return new ListAndCountDTO<IngredientDTO>(
                 count,
-                rows: rows.map((it: any) => IngredientDTO.createByJson(it)),
-            });
+                rows.map((it: any) => IngredientDTO.createByJson(it))
+            );
         });
     }
 
