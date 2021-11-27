@@ -1,7 +1,9 @@
+import { GenderInvMap, GenderKey } from '../../utils/enumType';
+
 class LoginResponse {
     userIdx: number;
     nickname: string;
-    gender: string;
+    gender: GenderKey;
     email: string;
     birth: number;
     token: string;
@@ -9,7 +11,7 @@ class LoginResponse {
     constructor(
         userIdx: number,
         nickname: string,
-        gender: string,
+        gender: GenderKey,
         email: string,
         birth: number,
         token: string,
@@ -70,13 +72,13 @@ class UserRegisterResponse {
 class UserResponse {
     userIdx: number;
     nickname: string;
-    gender: string;
+    gender: GenderKey;
     email: string;
     birth: number;
     constructor(
         userIdx: number,
         nickname: string,
-        gender: string,
+        gender: GenderKey,
         email: string,
         birth: number
     ) {

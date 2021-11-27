@@ -9,6 +9,8 @@ import {
     LoginResponse,
 } from '../data/response/user';
 
+import { UserRegisterRequest, UserEditRequest } from '../data/request/user';
+
 let User = require('../service/UserService');
 
 module.exports.setUserService = (userService) => {
@@ -18,17 +20,14 @@ module.exports.setUserService = (userService) => {
 const { UnAuthorizedError } = require('../utils/errors/errors');
 
 const { GRADE_USER } = require('../utils/constantUtil');
-const UserRegisterRequestDTO = require('../data/request_dto/UserRegisterRequestDTO');
-const UserEditRequestDTO = require('../data/request_dto/UserEditRequestDTO');
 
 module.exports.registerUser = (req, res, next) => {
-    const body = req.swagger.params['body'].value;
-    const userRegisterRequestDTO = new UserRegisterRequestDTO(body);
-    if (userRegisterRequestDTO.grade > GRADE_USER) {
+    const userRegisterRequest = UserRegisterRequest.createByJson(req.body);
+    if (userRegisterRequest.grade > GRADE_USER) {
         next(new UnAuthorizedError());
         return;
     }
-    User.createUser(userRegisterRequestDTO)
+    User.createUser(userRegisterRequest)
         .then((result) => {
             return UserRegisterResponse.createByJson(result);
         })
@@ -72,9 +71,8 @@ module.exports.updateUser = (req, res, next) => {
         next(new UnAuthorizedError());
         return;
     }
-    const body = req.swagger.params['body'].value;
-    const userEditRequestDTO = new UserEditRequestDTO(
-        Object.assign({ userIdx }, body)
+    const userEditRequestDTO = UserEditRequest.createByJson(
+        Object.assign({ userIdx }, req.body)
     );
     User.updateUser(userEditRequestDTO)
         .then((result) => {
@@ -90,7 +88,7 @@ module.exports.updateUser = (req, res, next) => {
 
 module.exports.changePassword = (req, res, next) => {
     const userIdx = req.middlewareToken.loginUserIdx;
-    const { prevPassword, newPassword } = req.swagger.params['body'].value;
+    const { prevPassword, newPassword } = req.body;
     User.changePassword({ userIdx, prevPassword, newPassword })
         .then((response) => {
             res.status(StatusCode.OK).json(
