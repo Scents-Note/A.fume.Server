@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import { expect } from 'chai';
 import { Done } from 'mocha';
+dotenv.config();
 
 import BrandDTO from '../../src/data/dto/BrandDTO';
 import BrandHelper from '../data/dto/BrandHelper';
@@ -10,8 +11,6 @@ import BrandService from '../../src/service/BrandService';
 import BrandDao from '../../src/dao/BrandDao';
 import PagingDTO from '../../src/data/dto/PagingDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-
-dotenv.config();
 
 const { PagingRequestDTO } = require('../../src/data/request_dto');
 

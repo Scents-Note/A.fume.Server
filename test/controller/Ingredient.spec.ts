@@ -1,8 +1,8 @@
 import dotenv from 'dotenv';
-dotenv.config();
+import { expect } from 'chai';
 import { Done } from 'mocha';
 import request from 'supertest';
-import { expect } from 'chai';
+dotenv.config();
 
 import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 import StatusCode from '../../src/utils/statusCode';

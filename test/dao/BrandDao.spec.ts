@@ -2,6 +2,8 @@ import dotenv from 'dotenv';
 import { expect } from 'chai';
 import { Done } from 'mocha';
 
+dotenv.config();
+
 import {
     NotMatchedError,
     UnExpectedError,
@@ -11,8 +13,6 @@ import BrandDao from '../../src/dao/BrandDao';
 import BrandDTO from '../../src/data/dto/BrandDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import BrandHelper from '../data/dto/BrandHelper';
-
-dotenv.config();
 
 const brandDao = new BrandDao();
 
@@ -77,7 +77,7 @@ describe('# brandDao Test', () => {
                         order: [['createdAt', 'desc']],
                     })
                 )
-                .then((result: any) => {
+                .then((result: ListAndCountDTO<BrandDTO>) => {
                     expect(result.count).gte(5);
                     expect(result.rows.length).gte(5);
                     for (const brand of result.rows) {

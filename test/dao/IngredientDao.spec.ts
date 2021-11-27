@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import { expect } from 'chai';
 import { Done } from 'mocha';
+dotenv.config();
 
 import {
     NotMatchedError,
@@ -12,8 +13,8 @@ import IngredientDao from '../../src/dao/IngredientDao';
 import IngredientDTO from '../../src/data/dto/IngredientDTO';
 
 import IngredientMockHelper from '../data/dto/IngredientMockHelper';
+import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 
-dotenv.config();
 const ingredientDao = new IngredientDao();
 
 const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
@@ -65,7 +66,7 @@ describe('# ingredientDao Test', () => {
         it('# success case', (done: Done) => {
             ingredientDao
                 .readAll({ seriesIdx: 1 })
-                .then((result: any) => {
+                .then((result: ListAndCountDTO<IngredientDTO>) => {
                     expect(result).instanceOf(ListAndCountDTO);
                     ListAndCountDTO.validTest.call(
                         result,

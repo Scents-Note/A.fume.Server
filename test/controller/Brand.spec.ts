@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
-dotenv.config();
+import { Done } from 'mocha';
 import request from 'supertest';
+dotenv.config();
 
 import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
 import BrandDTO from '../../src/data/dto/BrandDTO';
@@ -47,7 +48,7 @@ describe('# Brand Controller Test', () => {
     });
 
     describe('# getFilterBrand Test', () => {
-        mockBrandService.getFilterBrand = async (condition) => [
+        mockBrandService.getFilterBrand = async (_: any) => [
             new BrandFilterDTO('ㄱ', []),
             new BrandFilterDTO('ㅂ', [
                 BrandHelper.create(),

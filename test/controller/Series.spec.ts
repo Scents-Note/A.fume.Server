@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
-dotenv.config();
 import request from 'supertest';
 import { Done } from 'mocha';
+dotenv.config();
 
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import StatusCode from '../../src/utils/statusCode';

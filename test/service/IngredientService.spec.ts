@@ -1,5 +1,8 @@
 import dotenv from 'dotenv';
+import { expect } from 'chai';
 import { Done } from 'mocha';
+
+dotenv.config();
 
 import IngredientService from '../../src/service/IngredientService';
 import IngredientDTO from '../../src/data/dto/IngredientDTO';
@@ -7,10 +10,6 @@ import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 import IngredientConditionDTO from '../../src/data/dto/IngredientConditionDTO';
 import IngredientDao from '../../src/dao/IngredientDao';
-
-const chai = require('chai');
-const { expect } = chai;
-dotenv.config();
 
 const ingredientService = new IngredientService();
 const mockIngredientDAO: any | IngredientDao = {};
