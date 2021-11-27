@@ -2,21 +2,20 @@ import IngredientService from '../service/IngredientService';
 import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
 import ResponseDTO from '../data/response_dto/common/ResponseDTO';
 import StatusCode from '../utils/statusCode';
+import {
+    SeriesResponseDTO,
+    SeriesFilterResponseDTO,
+} from '../data/response/series';
 
 let Series = require('../service/SeriesService');
 let Ingredient = new IngredientService();
-
-const {
-    SeriesResponseDTO,
-    SeriesFilterResponseDTO,
-} = require('../data/response_dto/series');
 
 module.exports.getSeriesAll = (req, res, next) => {
     Series.getSeriesAll(PagingRequestDTO.createByJson(req.query))
         .then((result) => {
             return {
                 count: result.count,
-                rows: result.rows.map((it) => new SeriesResponseDTO(it)),
+                rows: result.rows.map(SeriesResponseDTO.create),
             };
         })
         /* TODO */
@@ -48,7 +47,7 @@ module.exports.getFilterSeries = (req, res, next) => {
         .then(({ count, rows }) => {
             return {
                 count,
-                rows: rows.map((it) => SeriesFilterResponseDTO.create(it)),
+                rows: rows.map(SeriesFilterResponseDTO.create),
             };
         })
         /* TODO */

@@ -11,8 +11,6 @@ const app = require('../../src/index.js');
 const basePath = '/A.fume/api/0.0.1';
 const SeriesDTO = require('../data/dto/SeriesDTO');
 const SeriesFilterDTO = require('../data/dto/SeriesFilterDTO');
-const SeriesResponseDTO = require('../data/response_dto/series/SeriesResponseDTO');
-const SeriesFilterResponseDTO = require('../data/response_dto/series/SeriesFilterResponseDTO');
 
 const Series = require('../../src/controllers/Series.js');
 const mockSeriesService = {};
@@ -37,7 +35,7 @@ describe('# Series Controller Test', () => {
                     expect(message).to.be.eq('series 전체 조회 성공');
                     expect(data.count).to.be.eq(1);
                     data.rows.forEach((item) => {
-                        SeriesResponseDTO.validTest.call(item);
+                        expect.hasProperties.call(item, 'seriesIdx', 'name');
                     });
                     done();
                 })
@@ -80,7 +78,12 @@ describe('# Series Controller Test', () => {
                     expect(message).to.be.eq('계열 검색 성공');
                     expect(data.count).to.be.eq(1);
                     data.rows.forEach((item) => {
-                        SeriesFilterResponseDTO.validTest.call(item);
+                        expect.hasProperties.call(
+                            item,
+                            'seriesIdx',
+                            'name',
+                            'ingredients'
+                        );
                     });
                     done();
                 })
