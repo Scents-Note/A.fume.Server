@@ -1,4 +1,6 @@
 import IngredientDao from '../dao/IngredientDao';
+import SeriesDao from '../dao/SeriesDao';
+
 import PagingDTO from '../data/dto/PagingDTO';
 import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
 import IngredientDTO from '../data/dto/IngredientDTO';
@@ -13,7 +15,7 @@ class SeriesService {
     ingredientDao: any;
     noteDao: any;
     constructor(seriesDao?: any, ingredientDao?: any, noteDao?: any) {
-        this.seriesDao = seriesDao ?? require('../dao/SeriesDao.js');
+        this.seriesDao = seriesDao ?? new SeriesDao();
         this.ingredientDao = ingredientDao ?? new IngredientDao();
         this.noteDao = noteDao ?? require('../dao/NoteDao.js');
     }
@@ -106,6 +108,7 @@ class SeriesService {
     findSeriesByEnglishName(englishName: string): Promise<SeriesDTO> {
         return this.seriesDao.findSeries({ englishName });
     }
+
     private async filterByUsedCount(
         ingredientList: IngredientDTO[]
     ): Promise<IngredientDTO[]> {
