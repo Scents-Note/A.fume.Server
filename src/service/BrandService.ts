@@ -58,7 +58,7 @@ class BrandService {
                 },
                 new Map<string, BrandDTO[]>()
             );
-            return Object.keys(firstInitialMap).map((key: string) => {
+            return Array.from(firstInitialMap.keys()).map((key: string) => {
                 return new BrandFilterDTO(key, firstInitialMap.get(key) || []);
             });
         });
