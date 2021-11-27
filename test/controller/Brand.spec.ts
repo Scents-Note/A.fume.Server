@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import request from 'supertest';
+
 import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
 import BrandDTO from '../../src/data/dto/BrandDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
@@ -27,7 +28,7 @@ describe('# Brand Controller Test', () => {
                 BrandHelper.create(),
                 BrandHelper.create(),
             ]);
-        it('success case', (done) => {
+        it('success case', (done: Done) => {
             request(app)
                 .get(`${basePath}/brand`)
                 .expect((res) => {
@@ -54,7 +55,7 @@ describe('# Brand Controller Test', () => {
                 BrandHelper.create(),
             ]),
         ];
-        it('success case', (done) => {
+        it('success case', (done: Done) => {
             request(app)
                 .get(`${basePath}/filter/brand`)
                 .expect((res) => {

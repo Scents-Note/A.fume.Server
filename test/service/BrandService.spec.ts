@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { expect } from 'chai';
+import { Done } from 'mocha';
 
 import BrandDTO from '../../src/data/dto/BrandDTO';
 import BrandHelper from '../data/dto/BrandHelper';
@@ -31,7 +32,7 @@ const Brand = new BrandService(mockBrandDAO);
 
 describe('# Brand Service Test', () => {
     describe('# searchBrand Test', () => {
-        it('# success Test', (done) => {
+        it('# success Test', (done: Done) => {
             Brand.searchBrand(PagingRequestDTO.createByJson({}))
                 .then((res: ListAndCountDTO<BrandDTO>) => {
                     expect(res.count).to.be.gt(0);
@@ -43,7 +44,7 @@ describe('# Brand Service Test', () => {
     });
 
     describe('# getBrandAll Test', () => {
-        it('# success Test', (done) => {
+        it('# success Test', (done: Done) => {
             Brand.getBrandAll()
                 .then((res: ListAndCountDTO<BrandDTO>) => {
                     expect(res.count).to.be.gt(0);
@@ -55,7 +56,7 @@ describe('# Brand Service Test', () => {
     });
 
     describe('# getBrandByIdx Test', () => {
-        it('# success Test', (done) => {
+        it('# success Test', (done: Done) => {
             Brand.getBrandByIdx(1)
                 .then((brandDTO: BrandDTO) => {
                     BrandHelper.validTest.call(brandDTO);
@@ -66,7 +67,7 @@ describe('# Brand Service Test', () => {
     });
 
     describe('# getFilterBrand Test', () => {
-        it('# success Test', (done) => {
+        it('# success Test', (done: Done) => {
             Brand.getFilterBrand()
                 .then((result: BrandFilterDTO[]) => {
                     for (const item of result) {

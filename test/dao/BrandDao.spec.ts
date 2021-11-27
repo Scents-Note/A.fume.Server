@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import { expect } from 'chai';
+import { Done } from 'mocha';
 
 import {
     NotMatchedError,
@@ -23,7 +24,7 @@ describe('# brandDao Test', () => {
     });
 
     describe('# read Test', () => {
-        it('# success case', (done) => {
+        it('# success case', (done: Done) => {
             brandDao
                 .read(2)
                 .then((result: BrandDTO) => {
@@ -36,7 +37,7 @@ describe('# brandDao Test', () => {
                 .catch((err: Error) => done(err));
         });
 
-        it('# findBrand success case', (done) => {
+        it('# findBrand success case', (done: Done) => {
             brandDao
                 .findBrand({
                     name: '브랜드1',
@@ -50,7 +51,7 @@ describe('# brandDao Test', () => {
                 })
                 .catch((err: Error) => done(err));
         });
-        it('# findBrand not found case', (done) => {
+        it('# findBrand not found case', (done: Done) => {
             brandDao
                 .findBrand({
                     name: '브랜드10',
@@ -67,7 +68,7 @@ describe('# brandDao Test', () => {
     });
 
     describe('# search Test', () => {
-        it('# success case', (done) => {
+        it('# success case', (done: Done) => {
             brandDao
                 .search(
                     new PagingDTO({
@@ -90,7 +91,7 @@ describe('# brandDao Test', () => {
     });
 
     describe('# readAll Test', () => {
-        it('# success case', (done) => {
+        it('# success case', (done: Done) => {
             brandDao
                 .readAll()
                 .then((result: ListAndCountDTO<BrandDTO>) => {

@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config();
+import { Done } from 'mocha';
 import request from 'supertest';
 import { expect } from 'chai';
 
@@ -27,7 +28,7 @@ describe('# Ingredient Controller Test', () => {
                 ),
             });
         };
-        it('success case', (done) => {
+        it('success case', (done: Done) => {
             request(app)
                 .get(`${basePath}/ingredient`)
                 .expect((res: any) => {

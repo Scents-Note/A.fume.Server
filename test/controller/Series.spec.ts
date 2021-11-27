@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import request from 'supertest';
+import { Done } from 'mocha';
 
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import StatusCode from '../../src/utils/statusCode';
@@ -27,7 +28,7 @@ describe('# Series Controller Test', () => {
                 SeriesMockHelper.create({}),
                 SeriesMockHelper.create({}),
             ]);
-        it('success case', (done) => {
+        it('success case', (done: Done) => {
             request(app)
                 .get(`${basePath}/series`)
                 .expect((res) => {
@@ -46,7 +47,7 @@ describe('# Series Controller Test', () => {
 
     // TODO getIngredients Test
     describe('# getIngredients', () => {
-        it('success case', (done) => {
+        it('success case', (done: Done) => {
             done();
         });
     });
@@ -58,7 +59,7 @@ describe('# Series Controller Test', () => {
                 SeriesFilterMockHelper.createWithIdx(2, [7]),
                 SeriesFilterMockHelper.createWithIdx(3, [9]),
             ]);
-        it('success case', (done) => {
+        it('success case', (done: Done) => {
             request(app)
                 .get(`${basePath}/filter/series`)
                 .send({})

@@ -1,4 +1,5 @@
 import dotenv from 'dotenv';
+import { Done } from 'mocha';
 
 import IngredientService from '../../src/service/IngredientService';
 import IngredientDTO from '../../src/data/dto/IngredientDTO';
@@ -21,7 +22,7 @@ describe('# Ingredient Service Test', () => {
             mockIngredientDAO.findIngredient = async (condition: any) => {
                 return IngredientMockHelper.create(condition);
             };
-            it('# success Test', (done) => {
+            it('# success Test', (done: Done) => {
                 ingredientService
                     .findIngredient(
                         new IngredientConditionDTO(undefined, '재료 이름')
@@ -44,7 +45,7 @@ describe('# Ingredient Service Test', () => {
                     )
                 );
             };
-            it('# success Test', (done) => {
+            it('# success Test', (done: Done) => {
                 ingredientService
                     .getIngredientAll()
                     .then((res: ListAndCountDTO<IngredientDTO>) => {
@@ -66,7 +67,7 @@ describe('# Ingredient Service Test', () => {
                     )
                 );
             };
-            it('# success Test', (done) => {
+            it('# success Test', (done: Done) => {
                 ingredientService
                     .getIngredientList(1)
                     .then((res: ListAndCountDTO<IngredientDTO>) => {
