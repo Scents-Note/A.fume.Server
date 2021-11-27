@@ -1,6 +1,7 @@
-'use strict';
 import IngredientDao from '../dao/IngredientDao';
 import ingredientConditionDTO from '../data/dto/IngredientConditionDTO';
+import ListAndCountDTO from '../data/dto/ListAndCountDTO';
+import IngredientDTO from '../data/dto/IngredientDTO';
 
 class IngredientService {
     ingredientDao: IngredientDao;
@@ -14,7 +15,7 @@ class IngredientService {
      *
      * @returns {Promise<ListAndCountDTO<IngredientDTO>>} ListAndCountDTO<IngredientDTO>
      **/
-    getIngredientAll() {
+    getIngredientAll(): Promise<ListAndCountDTO<IngredientDTO>> {
         return this.ingredientDao.readAll({});
     }
 
@@ -24,7 +25,9 @@ class IngredientService {
      * @param {IngredientConditionDTO} ingredientConditionDTO
      * @returns {Promise<IngredientDTO>} ingredientDTO
      **/
-    findIngredient(ingredientConditionDTO: ingredientConditionDTO) {
+    findIngredient(
+        ingredientConditionDTO: ingredientConditionDTO
+    ): Promise<IngredientDTO> {
         return this.ingredientDao.findIngredient(ingredientConditionDTO);
     }
 
@@ -34,7 +37,9 @@ class IngredientService {
      * @param {number} seriesIdx
      * @returns {Promise<ListAndCountDTO<IngredientDTO>>} ListAndCountDTO<IngredientDTO>
      */
-    getIngredientList(seriesIdx: number) {
+    getIngredientList(
+        seriesIdx: number
+    ): Promise<ListAndCountDTO<IngredientDTO>> {
         return this.ingredientDao.readAll({ seriesIdx });
     }
 
