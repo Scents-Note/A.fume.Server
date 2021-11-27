@@ -3,6 +3,7 @@
 import IngredientDao from '../dao/IngredientDao';
 import PagingDTO from '../data/dto/PagingDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
+import SeriesFilterDTO from '../data/dto/SeriesFilterDTO';
 
 let seriesDao = require('../dao/SeriesDao.js');
 let ingredientDao = new IngredientDao();
@@ -20,8 +21,6 @@ module.exports.setNoteDao = (dao) => {
 };
 
 const { PagingRequestDTO } = require('../data/request_dto');
-
-const { SeriesFilterDTO } = require('../data/dto');
 
 /**
  * 특정 계열 조회
@@ -93,10 +92,11 @@ exports.getFilterSeries = async (pagingDTO) => {
     return new ListAndCountDTO(
         result.count,
         result.rows.map((it) => {
-            return new SeriesFilterDTO({
-                series: it,
-                ingredients: ingredientMap[it.seriesIdx] || [],
-            });
+            return SeriesFilterDTO.createByJson(
+                Object.assign({}, it, {
+                    ingredients: ingredientMap[it.seriesIdx] || [],
+                })
+            );
         })
     );
 };

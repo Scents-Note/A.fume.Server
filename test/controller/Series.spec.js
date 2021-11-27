@@ -1,16 +1,17 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import request from 'supertest';
-import { expect } from 'chai';
+import expect from '../utils/expect';
 
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import StatusCode from '../../src/utils/statusCode';
 
+import SeriesMockHelper from '../data/dto/SeriesMockHelper';
+import SeriesFilterMockHelper from '../data/dto/SeriesFilterMockHelper';
+
 const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';
-const SeriesDTO = require('../data/dto/SeriesDTO');
-const SeriesFilterDTO = require('../data/dto/SeriesFilterDTO');
 
 const Series = require('../../src/controllers/Series.js');
 const mockSeriesService = {};
@@ -22,9 +23,9 @@ describe('# Series Controller Test', () => {
             /* TODO */
             // new ListAndCountDTO<SeriesDTO>(
             new ListAndCountDTO(1, [
-                SeriesDTO.create(),
-                SeriesDTO.create(),
-                SeriesDTO.create(),
+                SeriesMockHelper.create(),
+                SeriesMockHelper.create(),
+                SeriesMockHelper.create(),
             ]);
         it('success case', (done) => {
             request(app)
@@ -55,18 +56,9 @@ describe('# Series Controller Test', () => {
             /* TODO */
             // new ListAndCountDTO<SeriesFilterDTO>(
             new ListAndCountDTO(1, [
-                SeriesFilterDTO.createWithIdx({
-                    seriesIdx: 1,
-                    ingredientIdxList: [1, 3, 5],
-                }),
-                SeriesFilterDTO.createWithIdx({
-                    seriesIdx: 2,
-                    ingredientIdxList: [7],
-                }),
-                SeriesFilterDTO.createWithIdx({
-                    seriesIdx: 3,
-                    ingredientIdxList: [9],
-                }),
+                SeriesFilterMockHelper.createWithIdx(1, [1, 3, 5]),
+                SeriesFilterMockHelper.createWithIdx(2, [7]),
+                SeriesFilterMockHelper.createWithIdx(3, [9]),
             ]);
         it('success case', (done) => {
             request(app)

@@ -1,4 +1,4 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
 dotenv.config();
 
 import {
@@ -8,13 +8,14 @@ import {
 import PagingDTO from '../../src/data/dto/PagingDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 
+import SeriesDTO from '../../src/data/dto/SeriesDTO';
+import SeriesMockHelper from '../data/dto/SeriesMockHelper';
+
 const chai = require('chai');
 const { expect } = chai;
 const seriesDao = require('../../src/dao/SeriesDao.js');
 
 const { Series } = require('../../src/models/index.js');
-
-const SeriesDTO = require('../data/dto/SeriesDTO.js');
 
 describe('# seriesDao Test', () => {
     before(async function () {
@@ -38,7 +39,7 @@ describe('# seriesDao Test', () => {
                 .readByIdx(seriesIdx)
                 .then((result) => {
                     expect(result).instanceOf(SeriesDTO);
-                    SeriesDTO.validTest.call(result);
+                    SeriesMockHelper.validTest.call(result);
                     expect(result.seriesIdx).to.be.eq(seriesIdx);
                     expect(result.name).to.be.eq('읽기 데이터');
                     expect(result.englishName).to.be.eq('Test Data');
@@ -51,7 +52,7 @@ describe('# seriesDao Test', () => {
                 .readByName('읽기 데이터')
                 .then((result) => {
                     expect(result).instanceOf(SeriesDTO);
-                    SeriesDTO.validTest.call(result);
+                    SeriesMockHelper.validTest.call(result);
                     expect(result.name).to.be.eq('읽기 데이터');
                     expect(result.englishName).to.be.eq('Test Data');
                     done();
@@ -104,7 +105,7 @@ describe('# seriesDao Test', () => {
                 .then((result) => {
                     expect(result.seriesIdx).to.be.eq(1);
                     expect(result.name).to.be.eq('계열1');
-                    SeriesDTO.validTest.call(result);
+                    SeriesMockHelper.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));

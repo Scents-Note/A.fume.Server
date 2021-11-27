@@ -1,8 +1,8 @@
 import { NotMatchedError } from '../utils/errors/errors';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
-const { Series } = require('../models');
+import SeriesDTO from '../data/dto/SeriesDTO';
 
-const { SeriesDTO } = require('../data/dto');
+const { Series } = require('../models');
 
 /**
  * 계열 조회
@@ -15,7 +15,7 @@ module.exports.readByIdx = async (seriesIdx) => {
     if (!result) {
         throw new NotMatchedError();
     }
-    return new SeriesDTO(result.dataValues);
+    return SeriesDTO.createByJson(result.dataValues);
 };
 
 /**
@@ -33,7 +33,7 @@ module.exports.readByName = async (seriesName) => {
     if (!result) {
         throw new NotMatchedError();
     }
-    return new SeriesDTO(result);
+    return SeriesDTO.createByJson(result);
 };
 
 /**
@@ -54,7 +54,7 @@ module.exports.readAll = ({ pagingIndex, pagingSize, order }) => {
         // return new ListAndCountDTO<SeriesDTO>(
         return new ListAndCountDTO(
             it.count,
-            it.rows.map((it) => new SeriesDTO(it))
+            it.rows.map((it) => SeriesDTO.createByJson(it))
         );
     });
 };
@@ -77,7 +77,7 @@ module.exports.search = ({ pagingIndex, pagingSize, order }) => {
         // return new ListAndCountDTO<SeriesDTO>(
         return new ListAndCountDTO(
             it.count,
-            it.rows.map((it) => new SeriesDTO(it))
+            it.rows.map((it) => SeriesDTO.createByJson(it))
         );
     });
 };
@@ -94,7 +94,7 @@ module.exports.findSeries = (condition) => {
             if (!it) {
                 throw new NotMatchedError();
             }
-            return new SeriesDTO(it);
+            return SeriesDTO.createByJson(it);
         }
     );
 };
