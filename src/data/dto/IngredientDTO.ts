@@ -26,7 +26,7 @@ class IngredientDTO {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-    static createByJson(json: any) {
+    static createByJson(json: any): IngredientDTO {
         const ingredientIdx: number = json.ingredientIdx;
         const name: string = json.name;
         const englishName: string = json.englishName;

@@ -11,10 +11,14 @@ import SeriesFilterDTO from '../data/dto/SeriesFilterDTO';
 const FILTER_INGREDIENT_LIMIT_USED_COUNT: number = 10;
 
 class SeriesService {
-    seriesDao: any;
-    ingredientDao: any;
+    seriesDao: SeriesDao;
+    ingredientDao: IngredientDao;
     noteDao: any;
-    constructor(seriesDao?: any, ingredientDao?: any, noteDao?: any) {
+    constructor(
+        seriesDao?: SeriesDao,
+        ingredientDao?: IngredientDao,
+        noteDao?: any
+    ) {
         this.seriesDao = seriesDao ?? new SeriesDao();
         this.ingredientDao = ingredientDao ?? new IngredientDao();
         this.noteDao = noteDao ?? require('../dao/NoteDao.js');

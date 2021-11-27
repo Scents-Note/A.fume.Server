@@ -23,7 +23,7 @@ class SeriesDTO {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-    static createByJson(json: any) {
+    static createByJson(json: any): SeriesDTO {
         const seriesIdx: number = json.seriesIdx;
         const name: string = json.name;
         const englishName: string = json.englishName;

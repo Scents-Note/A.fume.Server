@@ -26,7 +26,7 @@ class BrandDTO {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
-    static createByJson(json: any) {
+    static createByJson(json: any): BrandDTO {
         const brandIdx: number = json.brandIdx;
         const name: string = json.name;
         const englishName: string = json.englishName;

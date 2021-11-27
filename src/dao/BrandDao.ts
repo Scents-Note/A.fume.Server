@@ -12,7 +12,7 @@ class BrandDao {
      * @param {number} brandIdx
      * @returns {Promise<BrandDTO>}
      */
-    async read(brandIdx: number) {
+    async read(brandIdx: number): Promise<BrandDTO> {
         const result = await Brand.findByPk(brandIdx, {
             nest: true,
             raw: true,
@@ -29,7 +29,7 @@ class BrandDao {
      * @param {PagingDTO} pagingDTO
      * @returns {Promise<ListAndCountDTO<BrandDTO>>}
      */
-    async search(pagingDTO: PagingDTO) {
+    async search(pagingDTO: PagingDTO): Promise<ListAndCountDTO<BrandDTO>> {
         const pagingSize: number = pagingDTO.pagingSize;
         const pagingIndex: number = pagingDTO.pagingIndex;
         const order: any = pagingDTO.order;
@@ -50,7 +50,7 @@ class BrandDao {
      *
      * @returns {Promise<ListAndCountDTO<BrandDTO>>}
      */
-    async readAll() {
+    async readAll(): Promise<ListAndCountDTO<BrandDTO>> {
         return Brand.findAndCountAll({
             raw: true,
             nest: true,
@@ -66,9 +66,9 @@ class BrandDao {
      * 브랜드 검색
      *
      * @param {Object} condition
-     * @returns {Promise<Brand>}
+     * @returns {Promise<BrandDTO>}
      */
-    async findBrand(condition: any) {
+    async findBrand(condition: any): Promise<BrandDTO> {
         return Brand.findOne({
             where: { ...condition },
             nest: true,

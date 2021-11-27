@@ -57,7 +57,7 @@ class JwtController {
      * @param {TokenPayloadDTO} payload
      * @returns {string} token
      */
-    static create(payload: TokenPayloadDTO) {
+    static create(payload: TokenPayloadDTO): string {
         return jwt.sign({ ...payload }, jwtSecret, options);
     }
 
@@ -67,7 +67,7 @@ class JwtController {
      * @param {string} token
      * @returns {TokenPayloadDTO} payload
      */
-    static verify(token: string) {
+    static verify(token: string): TokenPayloadDTO {
         try {
             return TokenPayloadDTO.createByJson(jwt.verify(token, jwtSecret));
         } catch (err: Error | any) {
@@ -87,7 +87,7 @@ class JwtController {
      * @param {string} refreshToken
      * @returns {string} token
      */
-    static reissue(refreshToken: string) {
+    static reissue(refreshToken: string): string {
         const result: any = jwt.verify(refreshToken, jwtSecret);
         return jwt.sign(result.refreshToken, jwtSecret, options);
     }
