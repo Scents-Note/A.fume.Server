@@ -1,4 +1,5 @@
 import IngredientResponseDTO from '../response_dto/ingredient/IngredientResponseDTO';
+import IngredientDTO from '../dto/IngredientDTO';
 import SeriesFilterDTO from '../dto/SeriesFilterDTO';
 import SeriesDTO from '../dto/SeriesDTO';
 
@@ -33,7 +34,7 @@ class SeriesFilterResponseDTO {
             seriesFilterDTO.seriesIdx,
             seriesFilterDTO.name,
             seriesFilterDTO.ingredients.map(
-                (it: IngredientResponseDTO) =>
+                (it: IngredientDTO) =>
                     new IngredientResponseDTO(it.ingredientIdx, it.name)
             )
         );

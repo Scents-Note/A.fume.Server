@@ -1,14 +1,13 @@
 import dotenv from 'dotenv';
 import { expect } from 'chai';
+dotenv.config();
 
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 
-dotenv.config();
-
-const SeriesDTO = require('../data/dto/SeriesDTO');
-
-const SeriesFilterDTO = require('../data/dto/SeriesFilterDTO');
+import SeriesHelper from '../data/dto/SeriesMockHelper';
+import SeriesFilterDTO from '../data/dto/SeriesFilterDTO';
+import SeriesDTO from '../../src/data/dto/SeriesDTO';
 
 const seriesService = require('../../src/service/SeriesService.js');
 const mockSeriesDAO = {};
@@ -22,11 +21,11 @@ seriesService.setNoteDao(mockNoteDAO);
 describe('# Series Service Test', () => {
     describe('# getSeriesByIdx Test', () => {
         it('# success Test', (done) => {
-            mockSeriesDAO.readByIdx = async () => SeriesDTO.createWithIdx(1);
+            mockSeriesDAO.readByIdx = async () => SeriesHelper.createWithIdx(1);
             seriesService
                 .getSeriesByIdx(1)
                 .then((seriesDTO) => {
-                    SeriesDTO.validTest.call(seriesDTO);
+                    SeriesHelper.validTest.call(seriesDTO);
                     done();
                 })
                 .catch((err) => done(err));
@@ -39,9 +38,9 @@ describe('# Series Service Test', () => {
                 /* TODO */
                 // new ListAndCountDTO<SeriesDTO>(3, [
                 new ListAndCountDTO(3, [
-                    SeriesDTO.createWithIdx(1),
-                    SeriesDTO.createWithIdx(2),
-                    SeriesDTO.createWithIdx(3),
+                    SeriesHelper.createWithIdx(1),
+                    SeriesHelper.createWithIdx(2),
+                    SeriesHelper.createWithIdx(3),
                 ]);
             seriesService
                 .getSeriesAll({})
@@ -61,9 +60,9 @@ describe('# Series Service Test', () => {
                 /* TODO */
                 // new ListAndCountDTO<SeriesDTO>(3, [
                 new ListAndCountDTO(3, [
-                    SeriesDTO.createWithIdx(1),
-                    SeriesDTO.createWithIdx(2),
-                    SeriesDTO.createWithIdx(3),
+                    SeriesHelper.createWithIdx(1),
+                    SeriesHelper.createWithIdx(2),
+                    SeriesHelper.createWithIdx(3),
                 ]);
             seriesService
                 .searchSeries({})
@@ -83,19 +82,9 @@ describe('# Series Service Test', () => {
             mockIngredientDAO.readBySeriesIdxList = async (seriesIdxList) => {
                 const ret = [];
                 for (let i = 1; i <= 5; i++)
-                    ret.push(
-                        IngredientMockHelper.createWithIdx({
-                            ingredientIdx: i,
-                            seriesIdx: 1,
-                        })
-                    );
+                    ret.push(IngredientMockHelper.createWithIdx(i, 1));
                 for (let i = 6; i <= 7; i++)
-                    ret.push(
-                        IngredientMockHelper.createWithIdx({
-                            ingredientIdx: i,
-                            seriesIdx: 2,
-                        })
-                    );
+                    ret.push(IngredientMockHelper.createWithIdx(i, 2));
                 for (let i = 8; i <= 10; i++)
                     ret.push(
                         IngredientMockHelper.createWithIdx({
@@ -134,12 +123,12 @@ describe('# Series Service Test', () => {
     describe('# findSeriesByEnglishName Test', () => {
         it('# success Test', (done) => {
             mockSeriesDAO.findSeries = async () =>
-                SeriesDTO.create({ name: 'test' });
+                SeriesHelper.create({ name: 'test' });
             seriesService
                 .findSeriesByEnglishName('test')
                 .then((result) => {
                     expect(result).instanceOf(SeriesDTO);
-                    SeriesDTO.validTest.call(result);
+                    SeriesHelper.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
