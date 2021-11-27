@@ -13,8 +13,9 @@ import SeriesFilterDTO from '../data/dto/SeriesFilterDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import IngredientDTO from '../data/dto/IngredientDTO';
 import IngredientResponseDTO from '../data/response_dto/ingredient/IngredientResponseDTO';
+import SeriesService from '../service/SeriesService';
 
-let Series = require('../service/SeriesService');
+let Series = new SeriesService();
 let Ingredient = new IngredientService();
 
 const getSeriesAll: RequestHandler = (
