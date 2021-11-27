@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import request from 'supertest';
+import { Done } from 'mocha';
 dotenv.config();
 
 import JwtController from '../../src/lib/JwtController';
@@ -11,15 +12,18 @@ import LoginInfoMockHelper from '../data/dto/LoginInfoMockHelper';
 import TokenGroupMockHelper from '../data/dto/TokenGroupMockHelper';
 
 import UserMockHelper from '../data/dto/UserMockHelper';
+import TokenGroupDTO from '../../src/data/dto/TokenGroupDTO';
+import { Error } from 'mongoose';
 
 const expect = require('../utils/expect');
+
+const User = require('../../src/controllers/User');
 
 const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';
 
-const User = require('../../src/controllers/User.js');
-const mockUserService = {};
+const mockUserService: any = {};
 User.setUserService(mockUserService);
 
 const user1tokenUser = JwtController.create(
@@ -30,9 +34,9 @@ const invalidToken =
 
 describe('# User Controller Test', () => {
     describe('# registerUser Test', () => {
-        mockUserService.createUser = async () =>
-            TokenGroupMockHelper.createMock();
-        it('success case', (done) => {
+        mockUserService.createUser = async (): Promise<TokenGroupDTO> =>
+            TokenGroupMockHelper.createMock({});
+        it('success case', (done: Done) => {
             request(app)
                 .post(`${basePath}/user/register`)
                 .send({
@@ -42,7 +46,7 @@ describe('# User Controller Test', () => {
                     birth: 1995,
                     password: 'test',
                 })
-                .expect((res) => {
+                .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('회원가입 성공');
@@ -63,7 +67,7 @@ describe('# User Controller Test', () => {
             const affectedRows = 1;
             return affectedRows;
         };
-        it('success case', (done) => {
+        it('success case', (done: Done) => {
             request(app)
                 .delete(`${basePath}/user/1`)
                 .expect((res) => {
@@ -80,14 +84,14 @@ describe('# User Controller Test', () => {
         mockUserService.loginUser = async (email, password) => {
             return LoginInfoMockHelper.createMock({ email });
         };
-        it('success case', (done) => {
+        it('success case', (done: Done) => {
             request(app)
                 .post(`${basePath}/user/login`)
                 .send({
                     email: 'hee.youn@samsung.com',
                     password: 'test',
                 })
-                .expect((res) => {
+                .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('로그인 성공');
@@ -103,15 +107,15 @@ describe('# User Controller Test', () => {
                     );
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
     describe('# updateUser Test', () => {
-        mockUserService.updateUser = async () => {
-            return UserMockHelper.createMock();
+        mockUserService.updateUser = async (): Promise<UserDTO> => {
+            return UserMockHelper.createMock({});
         };
-        it('success case', (done) => {
+        it('success case', (done: Done) => {
             request(app)
                 .put(`${basePath}/user/1`)
                 .set('x-access-token', 'Bearer ' + user1tokenUser)
@@ -135,10 +139,10 @@ describe('# User Controller Test', () => {
                     );
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
 
-        it('No permission case', (done) => {
+        it('No permission case', (done: Done) => {
             request(app)
                 .put(`${basePath}/user/1`)
                 .set('x-access-token', 'Bearer ' + invalidToken)
@@ -149,10 +153,10 @@ describe('# User Controller Test', () => {
                     expect(message).to.be.eq('유효하지 않는 토큰입니다.');
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
 
-        it('Wrong userIdx between path and jwt case', (done) => {
+        it('Wrong userIdx between path and jwt case', (done: Done) => {
             request(app)
                 .put(`${basePath}/user/2`)
                 .set('x-access-token', 'Bearer ' + user1tokenUser)
@@ -163,16 +167,16 @@ describe('# User Controller Test', () => {
                     expect(message).to.be.eq('권한이 없습니다.');
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
     describe('# changePassword Test', () => {
-        mockUserService.changePassword = async ({}) => {
+        mockUserService.changePassword = async ({}): Promise<number> => {
             const affectedRows = 1;
             return affectedRows;
         };
-        it('success case', (done) => {
+        it('success case', (done: Done) => {
             request(app)
                 .put(`${basePath}/user/changePassword`)
                 .set('x-access-token', 'Bearer ' + user1tokenUser)
@@ -186,10 +190,10 @@ describe('# User Controller Test', () => {
                     expect(message).to.be.eq('비밀번호 변경 성공');
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
 
-        it('No permission case', (done) => {
+        it('No permission case', (done: Done) => {
             request(app)
                 .put(`${basePath}/user/changePassword`)
                 .send({})
@@ -199,15 +203,15 @@ describe('# User Controller Test', () => {
                     expect(message).to.be.eq('유효하지 않는 토큰입니다.');
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
     describe('# authUser Test', () => {
-        mockUserService.authUser = async () => {
+        mockUserService.authUser = async (): Promise<UserAuthDTO> => {
             return new UserAuthDTO(false, false);
         };
-        it('success case', (done) => {
+        it('success case', (done: Done) => {
             request(app)
                 .post(`${basePath}/user/auth`)
                 .set('x-access-token', 'Bearer ' + user1tokenUser)
@@ -218,10 +222,10 @@ describe('# User Controller Test', () => {
                     expect.hasProperties.call(data, 'isAuth', 'isAdmin');
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
 
-        it('No permission case', (done) => {
+        it('No permission case', (done: Done) => {
             request(app)
                 .post(`${basePath}/user/auth`)
                 .send({})
@@ -234,7 +238,7 @@ describe('# User Controller Test', () => {
                     expect(data.isAdmin).to.be.false;
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
@@ -243,7 +247,7 @@ describe('# User Controller Test', () => {
             if (email && email != 'duplicate') return true;
             else return false;
         };
-        it('success case', (done) => {
+        it('success case', (done: Done) => {
             request(app)
                 .get(`${basePath}/user/validate/email?email=test`)
                 .expect((res) => {
@@ -253,10 +257,10 @@ describe('# User Controller Test', () => {
                     expect(data).to.be.true;
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
 
-        it('duplicate case', (done) => {
+        it('duplicate case', (done: Done) => {
             request(app)
                 .get(`${basePath}/user/validate/email?email=duplicate`)
                 .expect((res) => {
@@ -266,12 +270,14 @@ describe('# User Controller Test', () => {
                     expect(data).to.be.false;
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 
     describe('# validateName Test', () => {
-        mockUserService.validateName = async (nickname) => {
+        mockUserService.validateName = async (
+            nickname: string
+        ): Promise<Boolean> => {
             if (nickname && nickname != 'duplicate') return true;
             else return false;
         };
@@ -285,10 +291,10 @@ describe('# User Controller Test', () => {
                     expect(data).to.be.true;
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
 
-        it('duplicate case', (done) => {
+        it('duplicate case', (done: Done) => {
             request(app)
                 .get(`${basePath}/user/validate/name?nickname=duplicate`)
                 .expect((res) => {
@@ -298,7 +304,7 @@ describe('# User Controller Test', () => {
                     expect(data).to.be.false;
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 });
