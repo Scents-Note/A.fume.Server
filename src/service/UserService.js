@@ -7,6 +7,7 @@ import { encrypt, decrypt } from '../lib/crypto';
 import JwtController from '../lib/JwtController';
 import TokenPayloadDTO from '../data/dto/TokenPayloadDTO';
 import { GenderMap } from '../utils/enumType';
+import LoginInfoDTO from '../data/dto/LoginInfoDTO';
 
 let crypto = { encrypt, decrypt };
 
@@ -17,12 +18,7 @@ let jwt = {
     verify: JwtController.verify,
 };
 
-const {
-    TokenGroupDTO,
-    UserAuthDTO,
-    LoginInfoDTO,
-    UserDTO,
-} = require('../data/dto');
+const { TokenGroupDTO, UserAuthDTO, UserDTO } = require('../data/dto');
 
 /**
  * 유저 회원 가입
@@ -120,7 +116,7 @@ exports.loginUser = async (email, password) => {
     const { token, refreshToken } = jwt.publish(
         TokenPayloadDTO.createByJson(user)
     );
-    return new LoginInfoDTO(
+    return LoginInfoDTO.createByJson(
         Object.assign({}, user, {
             token,
             refreshToken,
@@ -141,7 +137,7 @@ exports.logoutUser = () => {
  * 유저 정보 수정
  *
  * @param {Object} User
- * @returns {LoginInfoDTO} loginInfoDTO
+ * @returns {UserDTO} UserDTO
  **/
 exports.updateUser = async ({
     userIdx,

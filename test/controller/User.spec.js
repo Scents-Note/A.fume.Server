@@ -1,10 +1,12 @@
 import dotenv from 'dotenv';
-dotenv.config();
 import request from 'supertest';
+dotenv.config();
 
 import JwtController from '../../src/lib/JwtController';
 import TokenPayloadDTO from '../../src/data/dto/TokenPayloadDTO';
 import StatusCode from '../../src/utils/statusCode';
+
+import LoginInfoMockHelper from '../data/dto/LoginInfoMockHelper';
 
 const expect = require('../utils/expect');
 
@@ -17,7 +19,6 @@ const mockUserService = {};
 User.setUserService(mockUserService);
 
 const TokenGroupDTO = require('../data/dto/TokenGroupDTO');
-const LoginInfoDTO = require('../data/dto/LoginInfoDTO');
 const UserDTO = require('../data/dto/UserDTO');
 const { UserAuthDTO } = require('../../src/data/dto');
 const user1tokenUser = JwtController.create(
@@ -75,7 +76,7 @@ describe('# User Controller Test', () => {
 
     describe('# loginUser Test', () => {
         mockUserService.loginUser = async (email, password) => {
-            return LoginInfoDTO.createMock({ email });
+            return LoginInfoMockHelper.createMock({ email });
         };
         it('success case', (done) => {
             request(app)

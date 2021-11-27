@@ -1,13 +1,12 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
+import { expect } from 'chai';
 dotenv.config();
 
-const chai = require('chai');
-const { expect } = chai;
+import LoginInfoMockHelper from '../data/dto/LoginInfoMockHelper';
 
 const { UserAuthDTO } = require('../../src/data/dto');
 
 const UserDTO = require('../data/dto/UserDTO');
-const LoginInfoDTO = require('../data/dto/LoginInfoDTO');
 const TokenGroupDTO = require('../data/dto/TokenGroupDTO');
 
 const userService = require('../../src/service/UserService');
@@ -82,8 +81,7 @@ describe('# User Service Test', () => {
             userService
                 .loginUser('', 'decrypted')
                 .then((result) => {
-                    expect(result).to.be.instanceOf(LoginInfoDTO);
-                    LoginInfoDTO.validTest.call(result);
+                    LoginInfoMockHelper.validTest.call(result);
                     done();
                 })
                 .catch((err) => done(err));
