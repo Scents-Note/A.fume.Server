@@ -6,6 +6,7 @@ import {
 import { encrypt, decrypt } from '../lib/crypto';
 import JwtController from '../lib/JwtController';
 import TokenPayloadDTO from '../data/dto/TokenPayloadDTO';
+import { GenderMap } from '../utils/enumType';
 
 let crypto = { encrypt, decrypt };
 
@@ -150,6 +151,7 @@ exports.updateUser = async ({
     birth,
     grade,
 }) => {
+    gender = GenderMap[gender];
     await userDao.update({
         userIdx,
         nickname,

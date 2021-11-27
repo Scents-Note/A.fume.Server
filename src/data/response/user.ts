@@ -25,11 +25,12 @@ class LoginResponse {
         this.token = token;
         this.refreshToken = refreshToken;
     }
+
     static createByJson(json: any): LoginResponse {
         return new LoginResponse(
             json.userIdx,
             json.nickname,
-            json.gender,
+            GenderInvMap[json.gender],
             json.email,
             json.birth,
             json.token,
@@ -93,7 +94,7 @@ class UserResponse {
         return new UserResponse(
             json.userIdx,
             json.nickname,
-            json.gender,
+            GenderInvMap[json.gender],
             json.email,
             json.birth
         );
