@@ -6,12 +6,11 @@ import {
 import { encrypt, decrypt } from '../lib/crypto';
 import JwtController from '../lib/JwtController';
 import TokenPayloadDTO from '../data/dto/TokenPayloadDTO';
-import { GenderMap } from '../utils/enumType';
 import LoginInfoDTO from '../data/dto/LoginInfoDTO';
 import TokenGroupDTO from '../data/dto/TokenGroupDTO';
 import UserAuthDTO from '../data/dto/UserAuthDTO';
 import UserDTO from '../data/dto/UserDTO';
-import { UserEditRequest, UserRegisterRequest } from '../data/request/user';
+import UserInputDTO from '../data/dto/UserInputDTO';
 
 class UserService {
     userDao: any;
@@ -30,22 +29,15 @@ class UserService {
     /**
      * 유저 회원 가입
      *
-     * @param {UserRegisterRequest} UserRegisterRequest
+     * @param {UserInputDTO} UserInputDTO
      * @returns {Promise}
      **/
-    async createUser(userRegisterRequest: UserRegisterRequest) {
-        const password = this.crypto.encrypt(userRegisterRequest.password);
+    async createUser(userInputDTO: UserInputDTO) {
+        userInputDTO.password = this.crypto.encrypt(userInputDTO.password);
         return this.userDao
-            .create(
-                userRegisterRequest.nickname,
-                password,
-                userRegisterRequest.gender,
-                userRegisterRequest.email,
-                userRegisterRequest.birth,
-                userRegisterRequest.grade
-            )
+            .create(userInputDTO)
             .then(() => {
-                return this.userDao.read({ email: userRegisterRequest.email });
+                return this.userDao.read({ email: userInputDTO.email });
             })
             .then((user: UserDTO | any) => {
                 delete user.password;
@@ -146,14 +138,13 @@ class UserService {
     /**
      * 유저 정보 수정
      *
-     * @param {UserEditRequest} User
+     * @param {UserInputDTO} UserInputDTO
      * @returns {UserDTO} UserDTO
      **/
-    async updateUser(userEditRequest: UserEditRequest): Promise<UserDTO> {
-        userEditRequest.gender = GenderMap[userEditRequest.gender!!];
-        await this.userDao.update(userEditRequest);
+    async updateUser(userInputDTO: UserInputDTO): Promise<UserDTO> {
+        await this.userDao.update(userInputDTO);
         const user: UserDTO = await this.userDao.readByIdx(
-            userEditRequest.userIdx
+            userInputDTO.userIdx
         );
         return UserDTO.createByJson(user);
     }

@@ -284,10 +284,10 @@ describe('# User Controller Test', () => {
             if (nickname && nickname != 'duplicate') return true;
             else return false;
         };
-        it('success case', (done) => {
+        it('success case', (done: Done) => {
             request(app)
                 .get(`${basePath}/user/validate/name?nickname=test`)
-                .expect((res) => {
+                .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq('Name 중복 체크: 사용 가능');

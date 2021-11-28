@@ -14,6 +14,7 @@ import { UserRegisterRequest, UserEditRequest } from '../data/request/user';
 import UserDTO from '../data/dto/UserDTO';
 import UserAuthDTO from '../data/dto/UserAuthDTO';
 import { UnAuthorizedError } from '../utils/errors/errors';
+import { GenderMap } from '../utils/enumType';
 
 const { GRADE_USER } = require('../utils/constantUtil');
 
@@ -91,10 +92,13 @@ const updateUser: RequestHandler = (
         next(new UnAuthorizedError());
         return;
     }
-    const userEditRequestDTO = UserEditRequest.createByJson(
+    const userEditRequest = UserEditRequest.createByJson(
         Object.assign({ userIdx }, req.body)
     );
-    User.updateUser(userEditRequestDTO)
+    if (userEditRequest.gender) {
+        userEditRequest.gender = GenderMap[userEditRequest.gender];
+    }
+    User.updateUser(userEditRequest)
         .then((result: UserResponse) => {
             return UserResponse.createByJson(result);
         })
@@ -166,13 +170,13 @@ const validateName: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    if (req.query.nickname) {
+    if (!req.query.nickname) {
         res.status(StatusCode.CONFLICT).json(
             new ResponseDTO('Name 중복 체크: 사용 불가능', false)
         );
         return;
     }
-    const nickname: string = decodeURIComponent(req.query.nickname!!);
+    const nickname: string = decodeURIComponent(req.query.nickname + '');
     User.validateName(nickname)
         .then((response: boolean) => {
             if (response) {

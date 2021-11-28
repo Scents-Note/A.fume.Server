@@ -5,7 +5,10 @@ dotenv.config();
 import UserAuthDTO from '../../../src/data/dto/UserAuthDTO';
 import UserMockHelper from './UserMockHelper';
 
-const { GRADE_MANAGER } = require('../../../src/utils/constantUtil');
+const {
+    GRADE_MANAGER,
+    GRADE_USER,
+} = require('../../../src/utils/constantUtil');
 
 describe('# UserAuthDTO Test', () => {
     describe('# create Test', () => {
@@ -21,7 +24,7 @@ describe('# UserAuthDTO Test', () => {
         it('# not admin case', () => {
             const userAuthDTO: UserAuthDTO = UserAuthDTO.create(
                 UserMockHelper.createMock({
-                    grade: GRADE_MANAGER,
+                    grade: GRADE_USER,
                 })
             );
             expect(userAuthDTO.isAuth).to.be.true;
