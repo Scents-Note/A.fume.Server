@@ -25,7 +25,7 @@ describe('# seriesDao Test', () => {
     });
 
     describe('# read Test', () => {
-        let seriesIdx;
+        let seriesIdx: number = 0;
         before(async () => {
             seriesIdx = (
                 await Series.upsert({
@@ -86,7 +86,7 @@ describe('# seriesDao Test', () => {
                         .toString();
                     const sortedString: string = result.rows
                         .sort((a: SeriesDTO, b: SeriesDTO) =>
-                            a.createdAt > b.createdAt ? 1 : -1
+                            a.createdAt > b.createdAt ? -1 : 1
                         )
                         .map((it) => it.seriesIdx)
                         .toString();

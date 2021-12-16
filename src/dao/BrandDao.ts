@@ -57,7 +57,7 @@ class BrandDao {
         }).then((result: any) => {
             return new ListAndCountDTO<BrandDTO>(
                 result.count,
-                result.rows.map((it: any) => BrandDTO.createByJson(it))
+                result.rows.map(BrandDTO.createByJson)
             );
         });
     }

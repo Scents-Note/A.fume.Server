@@ -17,8 +17,6 @@ import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 
 const ingredientDao = new IngredientDao();
 
-const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
-
 describe('# ingredientDao Test', () => {
     before(async function () {
         await require('./common/presets.js')(this);
@@ -52,10 +50,6 @@ describe('# ingredientDao Test', () => {
                 .then((result: ListAndCountDTO<IngredientDTO>) => {
                     expect(result.count).greaterThan(4);
                     expect(result).instanceOf(ListAndCountDTO);
-                    ListAndCountDTO.validTest.call(
-                        result,
-                        IngredientMockHelper.validTest
-                    );
                     done();
                 })
                 .catch((err: Error) => done(err));
@@ -68,10 +62,6 @@ describe('# ingredientDao Test', () => {
                 .readAll({ seriesIdx: 1 })
                 .then((result: ListAndCountDTO<IngredientDTO>) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    ListAndCountDTO.validTest.call(
-                        result,
-                        IngredientMockHelper.validTest
-                    );
                     done();
                 })
                 .catch((err: Error) => done(err));

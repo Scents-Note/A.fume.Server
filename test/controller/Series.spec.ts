@@ -36,7 +36,7 @@ describe('# Series Controller Test', () => {
                     const { message, data } = res.body;
                     expect(message).to.be.eq('series 전체 조회 성공');
                     expect(data.count).to.be.eq(1);
-                    data.rows.forEach((item) => {
+                    data.rows.forEach((item: SeriesDTO) => {
                         expect.hasProperties.call(item, 'seriesIdx', 'name');
                     });
                     done();

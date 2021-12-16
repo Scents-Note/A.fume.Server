@@ -1,5 +1,7 @@
 import { expect } from 'chai';
 import dotenv from 'dotenv';
+import { Done } from 'mocha';
+dotenv.config();
 
 import {
     NotMatchedError,
@@ -7,14 +9,14 @@ import {
     UnExpectedError,
 } from '../../src/utils/errors/errors';
 
+import UserDao from '../../src/dao/UserDao';
+
 import CreatedResultDTO from '../../src/data/dto/CreatedResultDTO';
+import UserMockHelper from '../data/dto/UserMockHelper';
+import UserDTO from '../../src/data/dto/UserDTO';
 
-dotenv.config();
-
-const userDao = require('../../src/dao/UserDao.js');
+const userDao = new UserDao();
 const { User } = require('../../src/models');
-
-const UserDTO = require('../data/dto/UserDTO');
 
 const { GENDER_MAN, GENDER_WOMAN } = require('../../src/utils/constantUtil');
 
@@ -26,8 +28,8 @@ describe('# userDao Test', () => {
         before(async () => {
             await User.destroy({ where: { email: 'createTest@afume.com' } });
         });
-        it('# success case', (done) => {
-            const expected = {
+        it('# success case', (done: Done) => {
+            const expected: { [index: string]: string | number } = {
                 nickname: '생성 테스트',
                 password: 'hashed',
                 gender: 1,
@@ -37,7 +39,7 @@ describe('# userDao Test', () => {
             };
             userDao
                 .create(expected)
-                .then((result) => {
+                .then((result: CreatedResultDTO<any>) => {
                     expect(result).instanceOf(CreatedResultDTO);
                     for (const key in expected) {
                         const value = expected[key];
@@ -45,26 +47,26 @@ describe('# userDao Test', () => {
                     }
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
-        it('# DuplicatedEntryError case', (done) => {
+        it('# DuplicatedEntryError case', (done: Done) => {
             userDao
                 .create({
                     nickname: '생성 테스트',
                     password: 'hashed',
                     gender: GENDER_MAN,
                     email: 'createTest@afume.com',
-                    birth: '1995',
+                    birth: 1995,
                     grade: 1,
                 })
                 .then(() => {
                     done(new UnExpectedError(DuplicatedEntryError));
                 })
-                .catch((err) => {
+                .catch((err: Error) => {
                     expect(err).instanceOf(DuplicatedEntryError);
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
         after(async () => {
             await User.destroy({ where: { email: 'createTest@afume.com' } });
@@ -73,58 +75,56 @@ describe('# userDao Test', () => {
 
     describe(' # read Test', () => {
         describe('# readByEmail Test', () => {
-            it('# success case', (done) => {
+            it('# success case', (done: Done) => {
                 userDao
                     .read({ email: 'email1@afume.com' })
-                    .then((result) => {
-                        expect(result).instanceOf(UserDTO);
-                        UserDTO.validTest.call(result);
+                    .then((result: UserDTO) => {
+                        UserMockHelper.validTest.call(result);
                         done();
                     })
-                    .catch((err) => done(err));
+                    .catch((err: Error) => done(err));
             });
-            it('# Not Matched case', (done) => {
+            it('# Not Matched case', (done: Done) => {
                 userDao
                     .read({ email: '존재하지 않는 아이디' })
                     .then(() => {
                         throw new UnExpectedError(NotMatchedError);
                     })
-                    .catch((err) => {
+                    .catch((err: Error) => {
                         expect(err).instanceOf(NotMatchedError);
                         done();
                     })
-                    .catch((err) => done(err));
+                    .catch((err: Error) => done(err));
             });
         });
         describe('# readByIdx Test', () => {
-            it('# success case', (done) => {
+            it('# success case', (done: Done) => {
                 userDao
                     .readByIdx(1)
-                    .then((result) => {
-                        expect(result).to.be.instanceOf(UserDTO);
-                        UserDTO.validTest.call(result);
+                    .then((result: UserDTO) => {
+                        UserMockHelper.validTest.call(result);
                         expect(result.userIdx).to.be.eq(1);
                         done();
                     })
-                    .catch((err) => done(err));
+                    .catch((err: Error) => done(err));
             });
-            it('# Not Matched case', (done) => {
+            it('# Not Matched case', (done: Done) => {
                 userDao
                     .readByIdx(0)
                     .then(() => {
                         throw new UnExpectedError(NotMatchedError);
                     })
-                    .catch((err) => {
+                    .catch((err: Error) => {
                         expect(err).instanceOf(NotMatchedError);
                         done();
                     })
-                    .catch((err) => done(err));
+                    .catch((err: Error) => done(err));
             });
         });
     });
 
     describe('# update Test', () => {
-        let userIdx;
+        let userIdx: number = 0;
         before(async () => {
             userIdx = (
                 await userDao.create({
@@ -132,12 +132,12 @@ describe('# userDao Test', () => {
                     password: 'hashed',
                     gender: GENDER_MAN,
                     email: 'updateTest@afume.com',
-                    birth: '1995',
+                    birth: 1995,
                     grade: 1,
                 })
             ).idx;
         });
-        it('# success case', (done) => {
+        it('# success case', (done: Done) => {
             userDao
                 .update({
                     userIdx,
@@ -145,16 +145,15 @@ describe('# userDao Test', () => {
                     password: '변경',
                     gender: GENDER_WOMAN,
                     email: 'updateTest@afume.com',
-                    birth: '1995',
+                    birth: 1995,
                     grade: 0,
                 })
-                .then((result) => {
+                .then((result: number) => {
                     expect(result).eq(1);
                     return userDao.readByIdx(userIdx);
                 })
-                .then((result) => {
-                    expect(result).to.be.instanceOf(UserDTO);
-                    UserDTO.validTest.call(result);
+                .then((result: UserDTO) => {
+                    UserMockHelper.validTest.call(result);
                     expect(result.userIdx).to.be.eq(userIdx);
                     expect(result.nickname).to.be.eq('수정 테스트(完)');
                     expect(result.email).to.be.eq('updateTest@afume.com');
@@ -164,17 +163,17 @@ describe('# userDao Test', () => {
                     expect(result.grade).to.be.eq(0);
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
-        it('# updateAccessTime success case', (done) => {
+        it('# updateAccessTime success case', (done: Done) => {
             setTimeout(() => {
                 userDao
                     .updateAccessTime(userIdx)
-                    .then((result) => {
+                    .then((result: number) => {
                         expect(result).eq(1);
                         done();
                     })
-                    .catch((err) => done(err));
+                    .catch((err: Error) => done(err));
             }, 1000);
         });
         after(async () => {
@@ -183,7 +182,7 @@ describe('# userDao Test', () => {
     });
 
     describe('# delete Test', () => {
-        let userIdx;
+        let userIdx: number = 0;
         before(async () => {
             userIdx = (
                 await userDao.create({
@@ -191,20 +190,20 @@ describe('# userDao Test', () => {
                     password: 'hashed',
                     gender: GENDER_MAN,
                     email: 'deleteTest@afume.com',
-                    birth: '1995',
+                    birth: 1995,
                     grade: 0,
                 })
             ).idx;
         });
         describe('# delete Test', () => {
-            it('# success case', (done) => {
+            it('# success case', (done: Done) => {
                 userDao
                     .delete(userIdx)
-                    .then((result) => {
+                    .then((result: number) => {
                         expect(result).eq(1);
                         done();
                     })
-                    .catch((err) => done(err));
+                    .catch((err: Error) => done(err));
             });
         });
         after(async () => {
@@ -213,7 +212,7 @@ describe('# userDao Test', () => {
     });
 
     describe('# postSurvey Test', () => {
-        it('# success case', (done) => {
+        it('# success case', (done: Done) => {
             // TODO set mongoDB test
             done();
         });

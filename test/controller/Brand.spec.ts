@@ -16,7 +16,7 @@ const expect = require('../utils/expect');
 
 const basePath = '/A.fume/api/0.0.1';
 
-const Brand = require('../../src/controllers/Brand.js');
+const Brand = require('../../src/controllers/Brand');
 
 const mockBrandService: BrandService | any = {};
 Brand.setBrandService(mockBrandService);
@@ -32,13 +32,13 @@ describe('# Brand Controller Test', () => {
         it('success case', (done: Done) => {
             request(app)
                 .get(`${basePath}/brand`)
-                .expect((res) => {
+                .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
 
                     expect(message).to.be.eq('브랜드 조회 성공');
                     expect(data.count).to.be.gt(0);
-                    data.rows.forEach((brand) => {
+                    data.rows.forEach((brand: BrandDTO) => {
                         expect.hasProperties.call(brand, 'brandIdx', 'name');
                     });
                     done();

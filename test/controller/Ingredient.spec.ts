@@ -6,13 +6,14 @@ dotenv.config();
 
 import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 import StatusCode from '../../src/utils/statusCode';
+import IngredientDTO from '../../src/data/dto/IngredientDTO';
+import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 
 const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';
 
-const Ingredient = require('../../src/controllers/Ingredient.ts');
-const ListAndCountDTO = require('../data/dto/ListAndCountDTO');
+const Ingredient = require('../../src/controllers/Ingredient');
 
 const mockIngredientService: any = {};
 Ingredient.setIngredientService(mockIngredientService);
@@ -21,12 +22,12 @@ describe('# Ingredient Controller Test', () => {
     describe('# getIngredientAll Test', () => {
         mockIngredientService.getIngredientAll = async () => {
             const seriesIdx: number = 1;
-            return new ListAndCountDTO({
-                count: 5,
-                rows: [1, 2, 3, 4, 5].map((idx: number) =>
+            return new ListAndCountDTO<IngredientDTO>(
+                5,
+                [1, 2, 3, 4, 5].map((idx: number) =>
                     IngredientMockHelper.createWithIdx(idx, seriesIdx)
-                ),
-            });
+                )
+            );
         };
         it('success case', (done: Done) => {
             request(app)
