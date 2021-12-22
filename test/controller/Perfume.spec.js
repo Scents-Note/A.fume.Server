@@ -13,7 +13,7 @@ const basePath = '/A.fume/api/0.0.1';
 
 const Perfume = require('../../src/controllers/Perfume.js');
 import PerfumeThumbMockHelper from '../data/dto/PerfumeThumbMockHelper';
-const PerfumeThumbKeywordDTO = require('../data/dto/PerfumeThumbKeywordDTO');
+import PerfumeThumbKeywordMockHelper from '../data/dto/PerfumeThumbKeywordMockHelper';
 const PerfumeDetailResponseDTO = require('../data/response_dto/perfume/PerfumeDetailResponseDTO');
 const PerfumeResponseDTO = require('../data/response_dto/perfume/PerfumeResponseDTO');
 const PerfumeRecommendResponseDTO = require('../data/response_dto/perfume/PerfumeRecommendResponseDTO');
@@ -38,12 +38,16 @@ const mockPerfumeList = [
     PerfumeThumbMockHelper.createWithIdx(2466),
 ];
 const mockPerfumeKeywordList = [
-    PerfumeThumbKeywordDTO.createWithIdx(1, ['키워드 1', '키워드2']),
-    PerfumeThumbKeywordDTO.createWithIdx(2, ['키워드']),
-    PerfumeThumbKeywordDTO.createWithIdx(3, ['키워드 1', '키워드2', '키워드3']),
-    PerfumeThumbKeywordDTO.createWithIdx(4, []),
-    PerfumeThumbKeywordDTO.createWithIdx(6, ['키워드 1', '키워드2']),
-    PerfumeThumbKeywordDTO.createWithIdx(8, ['키워드']),
+    PerfumeThumbKeywordMockHelper.createWithIdx(1, ['키워드 1', '키워드2']),
+    PerfumeThumbKeywordMockHelper.createWithIdx(2, ['키워드']),
+    PerfumeThumbKeywordMockHelper.createWithIdx(3, [
+        '키워드 1',
+        '키워드2',
+        '키워드3',
+    ]),
+    PerfumeThumbKeywordMockHelper.createWithIdx(4, []),
+    PerfumeThumbKeywordMockHelper.createWithIdx(6, ['키워드 1', '키워드2']),
+    PerfumeThumbKeywordMockHelper.createWithIdx(8, ['키워드']),
 ];
 Perfume.setPerfumeService(mockPerfumeService);
 Perfume.setSearchHistoryService(mockSearchHistoryService);

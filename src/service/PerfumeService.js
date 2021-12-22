@@ -3,6 +3,7 @@ import UserDao from '../dao/UserDao';
 import PagingDTO from '../data/dto/PagingDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import PerfumeThumbDTO from '../data/dto/PerfumeThumbDTO';
+import PerfumeThumbKeywordDTO from '../data/dto/PerfumeThumbKeywordDTO';
 
 import { updateRows, removeKeyJob, extractJob, flatJob } from '../utils/func';
 
@@ -25,7 +26,6 @@ const {
 const {
     NoteDictDTO,
     PerfumeSummaryDTO,
-    PerfumeThumbKeywordDTO,
     PerfumeIntegralDTO,
     PerfumeSearchDTO,
 } = require('../data/dto');
@@ -334,7 +334,7 @@ exports.recommendByUser = async ({ userIdx, pagingRequestDTO }) => {
         // return new ListAndCountDTO<PerfumeThumbKeywordDTO>(
         return new ListAndCountDTO(
             result.count,
-            result.rows.map((it) => new PerfumeThumbKeywordDTO(it))
+            result.rows.map(PerfumeThumbKeywordDTO.createByJson)
         );
     });
 };

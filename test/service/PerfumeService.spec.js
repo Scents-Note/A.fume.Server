@@ -1,16 +1,16 @@
 import dotenv from 'dotenv';
 import { expect } from 'chai';
 
+dotenv.config();
+
 import { NotMatchedError } from '../../src/utils/errors/errors';
 import PagingRequestDTO from '../../src/data/request_dto/PagingRequestDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import PerfumeThumbDTO from '../../src/data/dto/PerfumeThumbDTO';
-
-dotenv.config();
+import PerfumeThumbKeywordMockHelper from '../data/dto/PerfumeThumbKeywordMockHelper';
 
 const Perfume = require('../../src/service/PerfumeService.js');
 const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
-const PerfumeThumbKeywordDTO = require('../data/dto/PerfumeThumbKeywordDTO');
 const { PerfumeSearchRequestDTO } = require('../../src/data/request_dto');
 
 const {
