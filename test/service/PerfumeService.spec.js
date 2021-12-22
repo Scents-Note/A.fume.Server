@@ -7,6 +7,7 @@ import { NotMatchedError } from '../../src/utils/errors/errors';
 import PagingRequestDTO from '../../src/data/request_dto/PagingRequestDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import PerfumeThumbDTO from '../../src/data/dto/PerfumeThumbDTO';
+import PerfumeSummaryDTO from '../../src/data/dto/PerfumeSummaryDTO';
 import PerfumeThumbKeywordMockHelper from '../data/dto/PerfumeThumbKeywordMockHelper';
 
 const Perfume = require('../../src/service/PerfumeService.js');
@@ -19,7 +20,6 @@ const {
     DEFAULT_REVIEW_THRESHOLD,
 } = require('../../src/utils/constantUtil.js');
 const PerfumeDefaultReviewDTO = require('../../src/data/dto/PerfumeDefaultReviewDTO.js');
-const PerfumeSummaryDTO = require('../../src/data/dto/PerfumeSummaryDTO.js');
 
 const mockS3FileDao = {};
 Perfume.setS3FileDao(mockS3FileDao);

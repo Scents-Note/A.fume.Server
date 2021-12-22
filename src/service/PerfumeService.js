@@ -4,6 +4,7 @@ import PagingDTO from '../data/dto/PagingDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import PerfumeThumbDTO from '../data/dto/PerfumeThumbDTO';
 import PerfumeThumbKeywordDTO from '../data/dto/PerfumeThumbKeywordDTO';
+import PerfumeSummaryDTO from '../data/dto/PerfumeSummaryDTO';
 
 import { updateRows, removeKeyJob, extractJob, flatJob } from '../utils/func';
 
@@ -25,7 +26,6 @@ const {
 
 const {
     NoteDictDTO,
-    PerfumeSummaryDTO,
     PerfumeIntegralDTO,
     PerfumeSearchDTO,
 } = require('../data/dto');
