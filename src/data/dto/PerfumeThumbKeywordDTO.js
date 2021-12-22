@@ -1,6 +1,6 @@
 'use strict';
 
-const PerfumeThumbDTO = require('./PerfumeThumbDTO');
+import PerfumeThumbDTO from './PerfumeThumbDTO';
 
 class PerfumeThumbKeywordDTO extends PerfumeThumbDTO {
     constructor({
@@ -11,7 +11,7 @@ class PerfumeThumbKeywordDTO extends PerfumeThumbDTO {
         imageUrl,
         keywordList,
     }) {
-        super({ perfumeIdx, name, brandName, isLiked, imageUrl });
+        super(perfumeIdx, name, brandName, isLiked, imageUrl);
         this.keywordList = keywordList;
     }
 }

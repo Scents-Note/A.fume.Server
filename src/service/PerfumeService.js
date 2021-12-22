@@ -2,6 +2,7 @@ import { NotMatchedError, FailedToCreateError } from '../utils/errors/errors';
 import UserDao from '../dao/UserDao';
 import PagingDTO from '../data/dto/PagingDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
+import PerfumeThumbDTO from '../data/dto/PerfumeThumbDTO';
 
 import { updateRows, removeKeyJob, extractJob, flatJob } from '../utils/func';
 
@@ -24,7 +25,6 @@ const {
 const {
     NoteDictDTO,
     PerfumeSummaryDTO,
-    PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
     PerfumeIntegralDTO,
     PerfumeSearchDTO,
@@ -199,7 +199,7 @@ exports.searchPerfume = ({ perfumeSearchRequestDTO, pagingRequestDTO }) => {
             // return new ListAndCountDTO<PerfumeThumbDTO>(
             return new ListAndCountDTO(
                 result.count,
-                result.rows.map((it) => new PerfumeThumbDTO(it))
+                result.rows.map(PerfumeThumbDTO.createByJson)
             );
         });
 };
@@ -227,7 +227,7 @@ exports.getSurveyPerfume = (userIdx) => {
             // return new ListAndCountDTO<PerfumeThumbDTO>(
             return new ListAndCountDTO(
                 result.count,
-                result.rows.map((it) => new PerfumeThumbDTO(it))
+                result.rows.map(PerfumeThumbDTO.createByJson)
             );
         });
 };
@@ -287,7 +287,7 @@ exports.recentSearch = ({ userIdx, pagingRequestDTO }) => {
             // return new ListAndCountDTO<PerfumeThumbDTO>(
             return new ListAndCountDTO(
                 result.count,
-                result.rows.map((it) => new PerfumeThumbDTO(it))
+                result.rows.map(PerfumeThumbDTO.createByJson)
             );
         });
 };
@@ -386,7 +386,7 @@ exports.getNewPerfume = ({ userIdx, pagingRequestDTO }) => {
             // return new ListAndCountDTO<PerfumeThumbDTO>(
             return new ListAndCountDTO(
                 result.count,
-                result.rows.map((it) => new PerfumeThumbDTO(it))
+                result.rows.map(PerfumeThumbDTO.createByJson)
             );
         });
 };
@@ -413,7 +413,7 @@ exports.getLikedPerfume = ({ userIdx, pagingRequestDTO }) => {
             // return new ListAndCountDTO<PerfumeThumbDTO>(
             return new ListAndCountDTO(
                 result.count,
-                result.rows.map((it) => new PerfumeThumbDTO(it))
+                result.rows.map(PerfumeThumbDTO.createByJson)
             );
         });
 };

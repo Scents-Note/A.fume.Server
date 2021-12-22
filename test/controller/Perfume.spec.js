@@ -12,7 +12,7 @@ const app = require('../../src/index.js');
 const basePath = '/A.fume/api/0.0.1';
 
 const Perfume = require('../../src/controllers/Perfume.js');
-const PerfumeThumbDTO = require('../data/dto/PerfumeThumbDTO');
+import PerfumeThumbMockHelper from '../data/dto/PerfumeThumbMockHelper';
 const PerfumeThumbKeywordDTO = require('../data/dto/PerfumeThumbKeywordDTO');
 const PerfumeDetailResponseDTO = require('../data/response_dto/perfume/PerfumeDetailResponseDTO');
 const PerfumeResponseDTO = require('../data/response_dto/perfume/PerfumeResponseDTO');
@@ -26,16 +26,16 @@ const user1tokenPerfume = JwtController.create(
 const mockPerfumeService = {};
 const mockSearchHistoryService = {};
 const mockPerfumeList = [
-    PerfumeThumbDTO.createWithIdx(2775),
-    PerfumeThumbDTO.createWithIdx(2774),
-    PerfumeThumbDTO.createWithIdx(2773),
-    PerfumeThumbDTO.createWithIdx(2772),
-    PerfumeThumbDTO.createWithIdx(2471),
-    PerfumeThumbDTO.createWithIdx(2470),
-    PerfumeThumbDTO.createWithIdx(2469),
-    PerfumeThumbDTO.createWithIdx(2468),
-    PerfumeThumbDTO.createWithIdx(2467),
-    PerfumeThumbDTO.createWithIdx(2466),
+    PerfumeThumbMockHelper.createWithIdx(2775),
+    PerfumeThumbMockHelper.createWithIdx(2774),
+    PerfumeThumbMockHelper.createWithIdx(2773),
+    PerfumeThumbMockHelper.createWithIdx(2772),
+    PerfumeThumbMockHelper.createWithIdx(2471),
+    PerfumeThumbMockHelper.createWithIdx(2470),
+    PerfumeThumbMockHelper.createWithIdx(2469),
+    PerfumeThumbMockHelper.createWithIdx(2468),
+    PerfumeThumbMockHelper.createWithIdx(2467),
+    PerfumeThumbMockHelper.createWithIdx(2466),
 ];
 const mockPerfumeKeywordList = [
     PerfumeThumbKeywordDTO.createWithIdx(1, ['키워드 1', '키워드2']),

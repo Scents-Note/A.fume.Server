@@ -4,12 +4,12 @@ import { expect } from 'chai';
 import { NotMatchedError } from '../../src/utils/errors/errors';
 import PagingRequestDTO from '../../src/data/request_dto/PagingRequestDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
+import PerfumeThumbDTO from '../../src/data/dto/PerfumeThumbDTO';
 
 dotenv.config();
 
 const Perfume = require('../../src/service/PerfumeService.js');
 const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
-const PerfumeThumbDTO = require('../data/dto/PerfumeThumbDTO');
 const PerfumeThumbKeywordDTO = require('../data/dto/PerfumeThumbKeywordDTO');
 const { PerfumeSearchRequestDTO } = require('../../src/data/request_dto');
 
@@ -496,7 +496,7 @@ describe('# Perfume Service Test', () => {
             };
             Perfume.getLikedPerfume({ userIdx: 1, pagingRequestDTO })
                 /* TODO */
-                // .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
+                // .then((result: ListAndCountDTO<>) => {
                 .then((result) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     result.rows.forEach((item) => {
