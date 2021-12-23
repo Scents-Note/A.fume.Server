@@ -8,11 +8,11 @@ import PagingRequestDTO from '../../src/data/request_dto/PagingRequestDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import PerfumeThumbDTO from '../../src/data/dto/PerfumeThumbDTO';
 import PerfumeSummaryDTO from '../../src/data/dto/PerfumeSummaryDTO';
+import { PerfumeSearchRequestDTO } from '../../src/data/request/Perfume';
 import PerfumeThumbKeywordMockHelper from '../data/dto/PerfumeThumbKeywordMockHelper';
 
 const Perfume = require('../../src/service/PerfumeService.js');
 const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
-const { PerfumeSearchRequestDTO } = require('../../src/data/request_dto');
 
 const {
     GENDER_MAN,
@@ -328,13 +328,13 @@ describe('# Perfume Service Test', () => {
             ) => {
                 return [{ userIdx, perfumeIdx: 2 }];
             };
-            const perfumeSearchRequestDTO = new PerfumeSearchRequestDTO({
-                keywordList: [],
-                brandList: [],
-                ingredientList: [],
-                searchText: '',
-                userIdx: 1,
-            });
+            const perfumeSearchRequestDTO = new PerfumeSearchRequestDTO(
+                [],
+                [],
+                [],
+                '',
+                1
+            );
             const pagingRequestDTO = PagingRequestDTO.createByJson({
                 pagingSize: 100,
                 pagingIndex: 1,

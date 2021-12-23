@@ -1,12 +1,12 @@
 'use strict';
 import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
 import ResponseDTO from '../data/response_dto/common/ResponseDTO';
+import { PerfumeSearchRequestDTO } from '../data/request/Perfume';
 import StatusCode from '../utils/statusCode';
 
 let Perfume = require('../service/PerfumeService');
 let SearchHistory = require('../service/SearchHistoryService');
 
-const { PerfumeSearchRequestDTO } = require('../data/request_dto');
 const {
     PerfumeDetailResponseDTO,
     PerfumeResponseDTO,
@@ -35,7 +35,7 @@ module.exports.getPerfume = (req, res, next) => {
 
 module.exports.searchPerfume = (req, res, next) => {
     const loginUserIdx = req.middlewareToken.loginUserIdx || -1;
-    const perfumeSearchRequestDTO = new PerfumeSearchRequestDTO(
+    const perfumeSearchRequestDTO = PerfumeSearchRequestDTO.createByJson(
         Object.assign({ userIdx: loginUserIdx }, req.body)
     );
     const pagingRequestDTO = PagingRequestDTO.createByJson(req.query);
