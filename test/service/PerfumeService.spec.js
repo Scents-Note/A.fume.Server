@@ -10,9 +10,9 @@ import PerfumeThumbDTO from '../../src/data/dto/PerfumeThumbDTO';
 import PerfumeSummaryDTO from '../../src/data/dto/PerfumeSummaryDTO';
 import { PerfumeSearchRequestDTO } from '../../src/data/request/Perfume';
 import PerfumeThumbKeywordMockHelper from '../data/dto/PerfumeThumbKeywordMockHelper';
+import PerfumeIntegralMockHelper from '../data/dto/PerfumeIntegralMockHelper';
 
 const Perfume = require('../../src/service/PerfumeService.js');
-const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
 
 const {
     GENDER_MAN,
@@ -121,7 +121,7 @@ describe('# Perfume Service Test', () => {
                 };
                 Perfume.getPerfumeById(1, 1)
                     .then((it) => {
-                        PerfumeIntegralDTO.validTest.call(it);
+                        PerfumeIntegralMockHelper.validTest.call(it);
                         expect(it.imageUrls).to.be.deep.eq([
                             'http://perfume-image/1',
                             'imageUrl1',
@@ -213,7 +213,7 @@ describe('# Perfume Service Test', () => {
                 };
                 Perfume.getPerfumeById(1, 1)
                     .then((it) => {
-                        PerfumeIntegralDTO.validTest.call(it);
+                        PerfumeIntegralMockHelper.validTest.call(it);
 
                         expect(it.keywordList).to.be.deep.eq([
                             '키워드1',
@@ -310,7 +310,7 @@ describe('# Perfume Service Test', () => {
                 };
                 Perfume.getPerfumeById(1, 1)
                     .then((it) => {
-                        PerfumeIntegralDTO.validTest.call(it);
+                        PerfumeIntegralMockHelper.validTest.call(it);
                         expect(it.keywordList).to.be.deep.eq([
                             '키워드1',
                             '키워드2',

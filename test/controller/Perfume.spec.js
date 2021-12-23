@@ -17,7 +17,7 @@ import PerfumeThumbKeywordMockHelper from '../data/dto/PerfumeThumbKeywordMockHe
 const PerfumeDetailResponseDTO = require('../data/response_dto/perfume/PerfumeDetailResponseDTO');
 const PerfumeResponseDTO = require('../data/response_dto/perfume/PerfumeResponseDTO');
 const PerfumeRecommendResponseDTO = require('../data/response_dto/perfume/PerfumeRecommendResponseDTO');
-const PerfumeIntegralDTO = require('../data/dto/PerfumeIntegralDTO');
+import PerfumeIntegralMockHelper from '../data/dto/PerfumeIntegralMockHelper';
 
 const user1tokenPerfume = JwtController.create(
     new TokenPayloadDTO(1, 'nickname', 'MAN', 'email', 1995)
@@ -56,7 +56,7 @@ describe('# Perfume Controller Test', () => {
     describe('# getPerfume Test', () => {
         it('success case', (done) => {
             mockPerfumeService.getPerfumeById = async () => {
-                return PerfumeIntegralDTO.createMock();
+                return PerfumeIntegralMockHelper.createMock();
             };
             mockSearchHistoryService.incrementCount = async () => {};
 

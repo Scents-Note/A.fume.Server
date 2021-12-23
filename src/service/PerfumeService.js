@@ -6,6 +6,7 @@ import PerfumeThumbDTO from '../data/dto/PerfumeThumbDTO';
 import PerfumeThumbKeywordDTO from '../data/dto/PerfumeThumbKeywordDTO';
 import PerfumeSummaryDTO from '../data/dto/PerfumeSummaryDTO';
 import PerfumeSearchDTO from '../data/dto/PerfumeSearchDTO';
+import PerfumeIntegralDTO from '../data/dto/PerfumeIntegralDTO';
 
 import { updateRows, removeKeyJob, extractJob, flatJob } from '../utils/func';
 
@@ -25,7 +26,7 @@ const {
     DEFAULT_REVIEW_THRESHOLD,
 } = require('../utils/constantUtil.js');
 
-const { NoteDictDTO, PerfumeIntegralDTO } = require('../data/dto');
+const { NoteDictDTO } = require('../data/dto');
 
 function isLikeJob(likePerfumeList) {
     const likeMap = likePerfumeList.reduce((prev, cur) => {
@@ -147,15 +148,15 @@ exports.getPerfumeById = async (perfumeIdx, userIdx) => {
         .findOne({ userIdx, perfumeIdx })
         .then((it) => it.id || 0)
         .catch((_) => 0);
-    return PerfumeIntegralDTO.create({
-        perfumeDTO: perfume,
-        keywordList,
+    return PerfumeIntegralDTO.create(
+        perfume,
         perfumeSummaryDTO,
+        keywordList,
         noteDictDTO,
         noteType,
         imageUrls,
-        reviewIdx,
-    });
+        reviewIdx
+    );
 };
 
 /**
