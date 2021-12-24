@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import PerfumeThumbDTO from '../../../src/data/dto/PerfumeThumbDTO';
+import BrandHelper from './BrandHelper';
 
 class PerfumeThumbMockHelper {
     static validTest(this: PerfumeThumbDTO) {
@@ -8,6 +9,8 @@ class PerfumeThumbMockHelper {
         expect(this.brandName).to.be.ok;
         expect(this.imageUrl).to.be.ok;
         expect(this.isLiked).to.be.oneOf([true, false]);
+        expect(this.createdAt).to.be.ok;
+        expect(this.updatedAt).to.be.ok;
     }
     static createMock(condition: any): PerfumeThumbDTO {
         return PerfumeThumbDTO.createByJson(
@@ -17,8 +20,8 @@ class PerfumeThumbMockHelper {
                     name: 'White Patchouli Tom Ford for women',
                     imageUrl:
                         'https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2475/1.jpg',
-                    brandName: '톰 포드',
                     isLiked: false,
+                    Brand: BrandHelper.create({ name: '톰 포드' }),
                 },
                 condition
             )
@@ -30,8 +33,8 @@ class PerfumeThumbMockHelper {
             perfumeIdx: idx,
             name: `perfume${idx}`,
             imageUrl: `https://afume.s3.ap-northeast-2.amazonaws.com/perfume/2475/${idx}.jpg`,
-            brandName: `브랜드 ${idx}`,
             isLiked: false,
+            Brand: BrandHelper.createWithIdx(idx),
         });
     }
 }

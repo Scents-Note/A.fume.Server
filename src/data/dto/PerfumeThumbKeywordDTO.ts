@@ -1,6 +1,9 @@
-import PerfumeThumbDTO from './PerfumeThumbDTO';
-
-class PerfumeThumbKeywordDTO extends PerfumeThumbDTO {
+class PerfumeThumbKeywordDTO {
+    perfumeIdx: number;
+    name: string;
+    brandName: string;
+    isLiked: boolean;
+    imageUrl: string;
     keywordList: string[];
     constructor(
         perfumeIdx: number,
@@ -10,7 +13,11 @@ class PerfumeThumbKeywordDTO extends PerfumeThumbDTO {
         imageUrl: string,
         keywordList: string[]
     ) {
-        super(perfumeIdx, name, brandName, isLiked, imageUrl);
+        this.perfumeIdx = perfumeIdx;
+        this.name = name;
+        this.brandName = brandName;
+        this.isLiked = isLiked;
+        this.imageUrl = imageUrl;
         this.keywordList = keywordList;
     }
     static createByJson(json: any): PerfumeThumbKeywordDTO {

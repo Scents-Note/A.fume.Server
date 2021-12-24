@@ -1,5 +1,6 @@
 import { NotMatchedError, FailedToCreateError } from '../utils/errors/errors';
 import UserDao from '../dao/UserDao';
+import PerfumeDao from '../dao/PerfumeDao';
 import PagingDTO from '../data/dto/PagingDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import PerfumeThumbDTO from '../data/dto/PerfumeThumbDTO';
@@ -10,7 +11,7 @@ import PerfumeIntegralDTO from '../data/dto/PerfumeIntegralDTO';
 
 import { updateRows, removeKeyJob, extractJob, flatJob } from '../utils/func';
 
-let perfumeDao = require('../dao/PerfumeDao.js');
+let perfumeDao = new PerfumeDao();
 let reviewDao = require('../dao/ReviewDao.js');
 let noteDao = require('../dao/NoteDao');
 let likePerfumeDao = require('../dao/LikePerfumeDao.js');
@@ -55,7 +56,6 @@ function addKeyword(joinKeywordList) {
 }
 
 const commonJob = [
-    extractJob('Brand', ['name', 'brandName']),
     removeKeyJob(
         'perfume_idx',
         'englishName',
@@ -195,10 +195,7 @@ exports.searchPerfume = ({ perfumeSearchRequestDTO, pagingRequestDTO }) => {
             updateRows(result, ...commonJob, isLikeJob(likePerfumeList));
             /* TODO */
             // return new ListAndCountDTO<PerfumeThumbDTO>(
-            return new ListAndCountDTO(
-                result.count,
-                result.rows.map(PerfumeThumbDTO.createByJson)
-            );
+            return new ListAndCountDTO(result.count, result.rows);
         });
 };
 
