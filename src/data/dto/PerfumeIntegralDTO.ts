@@ -1,23 +1,51 @@
 const { ABUNDANCE_RATE_LIST } = require('../../utils/constantUtil.js');
 
+type VolumeAndPrice = { volume: string; price: string }[];
+
+type Seasonal = {
+    spring: number;
+    summer: number;
+    fall: number;
+    winter: number;
+};
+
+type Sillage = { light: number; medium: number; heavy: number };
+
+type Longevity = {
+    veryWeak: number;
+    weak: number;
+    normal: number;
+    strong: number;
+    veryStrong: number;
+};
+
+type Gender = { male: number; neutral: number; female: number };
+
+type NoteDict = {
+    top: string;
+    middle: string;
+    base: string;
+    single: string;
+};
+
 class PerfumeIntegralDTO {
     perfumeIdx: number;
     name: string;
     brandName: string;
     story: string;
     abundanceRate: number;
-    volumeAndPrice: { [key: string]: number }[];
+    volumeAndPrice: VolumeAndPrice;
     imageUrls: string[];
     score: number;
-    seasonal: { [key: string]: number };
-    sillage: { [key: string]: number };
-    longevity: { [key: string]: number };
-    gender: { [key: string]: number };
+    seasonal: Seasonal;
+    sillage: Sillage;
+    longevity: Longevity;
+    gender: Gender;
     isLiked: boolean;
     keywordList: string[];
     /* TODO change Value to Enum */
     noteType: number;
-    noteDict: { [key: string]: string };
+    noteDict: NoteDict;
     reviewIdx: number;
     constructor(
         perfumeIdx: number,
@@ -25,17 +53,17 @@ class PerfumeIntegralDTO {
         brandName: string,
         story: string,
         abundanceRate: number,
-        volumeAndPrice: { [key: string]: number }[],
+        volumeAndPrice: VolumeAndPrice,
         imageUrls: string[],
         score: number,
-        seasonal: { [key: string]: number },
-        sillage: { [key: string]: number },
-        longevity: { [key: string]: number },
-        gender: { [key: string]: number },
+        seasonal: Seasonal,
+        sillage: Sillage,
+        longevity: Longevity,
+        gender: Gender,
         isLiked: boolean,
         keywordList: string[],
         noteType: number,
-        noteDict: { [key: string]: string },
+        noteDict: NoteDict,
         reviewIdx: number
     ) {
         this.perfumeIdx = perfumeIdx;
@@ -61,7 +89,12 @@ class PerfumeIntegralDTO {
         perfumeDTO: any,
         perfumeSummaryDTO: any,
         keywordList: string[],
-        noteDictDTO: { [key: string]: number },
+        noteDictDTO: {
+            top: string;
+            middle: string;
+            base: string;
+            single: string;
+        },
         noteType: number,
         imageUrls: string[],
         reviewIdx: number

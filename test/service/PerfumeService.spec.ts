@@ -1,42 +1,43 @@
 import dotenv from 'dotenv';
 import { expect } from 'chai';
+import { Done } from 'mocha';
 
 dotenv.config();
 
-import { NotMatchedError } from '../../src/utils/errors/errors';
+import PerfumeService from '../../src/service/PerfumeService';
+
 import PagingRequestDTO from '../../src/data/request_dto/PagingRequestDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-import PerfumeThumbDTO from '../../src/data/dto/PerfumeThumbDTO';
 import PerfumeSummaryDTO from '../../src/data/dto/PerfumeSummaryDTO';
 import { PerfumeSearchRequestDTO } from '../../src/data/request/Perfume';
-import PerfumeThumbKeywordMockHelper from '../data/dto/PerfumeThumbKeywordMockHelper';
 import PerfumeIntegralMockHelper from '../data/dto/PerfumeIntegralMockHelper';
+import { NotMatchedError } from '../../src/utils/errors/errors';
+import PerfumeIntegralDTO from '../../src/data/dto/PerfumeIntegralDTO';
+import PerfumeSearchResultDTO from '../../src/data/dto/PerfumeSearchResultDTO';
+import PerfumeThumbDTO from '../../src/data/dto/PerfumeThumbDTO';
+import PerfumeThumbKeywordDTO from '../../src/data/dto/PerfumeThumbKeywordDTO';
 
-const Perfume = require('../../src/service/PerfumeService.js');
+const Perfume: PerfumeService = new PerfumeService();
 
-const {
-    GENDER_MAN,
-    GENDER_WOMAN,
-    DEFAULT_REVIEW_THRESHOLD,
-} = require('../../src/utils/constantUtil.js');
-const PerfumeDefaultReviewDTO = require('../../src/data/dto/PerfumeDefaultReviewDTO.js');
+const { GENDER_WOMAN } = require('../../src/utils/constantUtil.js');
+const PerfumeDefaultReviewDTO: any = require('../../src/data/dto/PerfumeDefaultReviewDTO.js');
 
-const mockS3FileDao = {};
+const mockS3FileDao: any = {};
 Perfume.setS3FileDao(mockS3FileDao);
 
-const mockLikePerfumeDao = {};
+const mockLikePerfumeDao: any = {};
 Perfume.setLikePerfumeDao(mockLikePerfumeDao);
 
-const mockUserDao = {};
+const mockUserDao: any = {};
 Perfume.setUserDao(mockUserDao);
 
-const mockKeywordDao = {};
+const mockKeywordDao: any = {};
 Perfume.setKeywordDao(mockKeywordDao);
 
-const mockReviewDao = {};
+const mockReviewDao: any = {};
 Perfume.setReviewDao(mockReviewDao);
 
-const mockDefaultReviewDao = {};
+const mockDefaultReviewDao: any = {};
 Perfume.setDefaultReviewDao(mockDefaultReviewDao);
 
 describe('# Perfume Service Test', () => {
@@ -45,17 +46,17 @@ describe('# Perfume Service Test', () => {
     });
     describe('# read Test', () => {
         describe('# read detail Test', () => {
-            it('# success Test', (done) => {
+            it('# success Test', (done: Done) => {
                 mockS3FileDao.getS3ImageList = async () => {
                     return ['imageUrl1', 'imageUrl2'];
                 };
-                mockLikePerfumeDao.read = async (userIdx, perfumeIdx) => {
+                mockLikePerfumeDao.read = async (_: number, __: number) => {
                     return false;
                 };
-                mockKeywordDao.readAllOfPerfume = async (perfumeIdx) => {
+                mockKeywordDao.readAllOfPerfume = async (_: number) => {
                     return [{ name: '키워드1' }, { name: '키워드2' }];
                 };
-                const expectedReviewIdx = 4;
+                const expectedReviewIdx: number = 4;
                 mockReviewDao.findOne = async () => {
                     return { id: expectedReviewIdx };
                 };
@@ -120,7 +121,7 @@ describe('# Perfume Service Test', () => {
                     ];
                 };
                 Perfume.getPerfumeById(1, 1)
-                    .then((it) => {
+                    .then((it: PerfumeIntegralDTO) => {
                         PerfumeIntegralMockHelper.validTest.call(it);
                         expect(it.imageUrls).to.be.deep.eq([
                             'http://perfume-image/1',
@@ -136,20 +137,21 @@ describe('# Perfume Service Test', () => {
                         expect(it.reviewIdx).to.be.eq(expectedReviewIdx);
                         done();
                     })
-                    .catch((err) => done(err));
+                    .catch((err: Error) => done(err));
             });
 
-            it('# with defaultReview Test', (done) => {
+            it('# with defaultReview Test', (done: Done) => {
                 mockS3FileDao.getS3ImageList = async () => [];
-                mockLikePerfumeDao.read = async (userIdx, perfumeIdx) => false;
-                mockKeywordDao.readAllOfPerfume = async (perfumeIdx) => {
+                mockLikePerfumeDao.read = async (_: number, __: number) =>
+                    false;
+                mockKeywordDao.readAllOfPerfume = async (_: number) => {
                     return [{ name: '키워드1' }, { name: '키워드2' }];
                 };
-                const expectedReviewIdx = 4;
+                const expectedReviewIdx: number = 4;
                 mockReviewDao.findOne = async () => {
                     return { id: expectedReviewIdx };
                 };
-                const mockDefaultReview = new PerfumeDefaultReviewDTO({
+                const mockDefaultReview: any = new PerfumeDefaultReviewDTO({
                     perfumeIdx: 1,
                     rating: 5,
                     seasonal: {
@@ -184,7 +186,7 @@ describe('# Perfume Service Test', () => {
                 mockDefaultReviewDao.readByPerfumeIdx = async () => {
                     return mockDefaultReview;
                 };
-                const mockReviewList = [
+                const mockReviewList: any[] = [
                     {
                         reviewIdx: 1,
                         score: 1,
@@ -212,7 +214,7 @@ describe('# Perfume Service Test', () => {
                     return mockReviewList;
                 };
                 Perfume.getPerfumeById(1, 1)
-                    .then((it) => {
+                    .then((it: PerfumeIntegralDTO) => {
                         PerfumeIntegralMockHelper.validTest.call(it);
 
                         expect(it.keywordList).to.be.deep.eq([
@@ -222,18 +224,17 @@ describe('# Perfume Service Test', () => {
                             '키워드4',
                         ]);
                         expect(it.reviewIdx).to.be.eq(expectedReviewIdx);
-                        const defaultReviewRate = Perfume.getDefaultReviewRate(
-                            mockReviewList.length
-                        );
-                        const defaultSummary =
+                        const defaultReviewRate: number =
+                            Perfume.getDefaultReviewRate(mockReviewList.length);
+                        const defaultSummary: PerfumeSummaryDTO =
                             PerfumeSummaryDTO.createByDefault(
                                 mockDefaultReview
                             );
-                        const userSummary =
+                        const userSummary: PerfumeSummaryDTO =
                             PerfumeSummaryDTO.createByReviewList(
                                 mockReviewList
                             );
-                        const expectedScore =
+                        const expectedScore: number =
                             defaultSummary.score * defaultReviewRate +
                             userSummary.score * (1 - defaultReviewRate);
                         expect(it.score).to.be.eq(expectedScore);
@@ -262,25 +263,25 @@ describe('# Perfume Service Test', () => {
                         });
                         done();
                     })
-                    .catch((err) => done(err));
+                    .catch((err: Error) => done(err));
             });
 
-            it('# without defaultReview Test', (done) => {
+            it('# without defaultReview Test', (done: Done) => {
                 mockS3FileDao.getS3ImageList = async () => {
                     return ['imageUrl1', 'imageUrl2'];
                 };
-                mockLikePerfumeDao.read = async (userIdx, perfumeIdx) => {
+                mockLikePerfumeDao.read = async (_: number, __: number) => {
                     return false;
                 };
-                mockKeywordDao.readAllOfPerfume = async (perfumeIdx) => {
+                mockKeywordDao.readAllOfPerfume = async (_: number) => {
                     return [{ name: '키워드1' }, { name: '키워드2' }];
                 };
-                const expectedReviewIdx = 4;
+                const expectedReviewIdx: number = 4;
                 mockReviewDao.findOne = async () => {
                     return { id: expectedReviewIdx };
                 };
                 mockDefaultReviewDao.readByPerfumeIdx = async () => {
-                    throw NotMatchedError();
+                    throw new NotMatchedError();
                 };
                 mockReviewDao.readAllOfPerfume = async () => {
                     return [
@@ -309,7 +310,7 @@ describe('# Perfume Service Test', () => {
                     ];
                 };
                 Perfume.getPerfumeById(1, 1)
-                    .then((it) => {
+                    .then((it: PerfumeIntegralDTO) => {
                         PerfumeIntegralMockHelper.validTest.call(it);
                         expect(it.keywordList).to.be.deep.eq([
                             '키워드1',
@@ -317,70 +318,61 @@ describe('# Perfume Service Test', () => {
                         ]);
                         done();
                     })
-                    .catch((err) => done(err));
+                    .catch((err: Error) => done(err));
             });
         });
 
-        it('# search Test', (done) => {
+        it('# search Test', (done: Done) => {
             mockLikePerfumeDao.readLikeInfo = async (
-                userIdx,
-                perfumeIdxList
+                userIdx: number,
+                __: any
             ) => {
                 return [{ userIdx, perfumeIdx: 2 }];
             };
-            const perfumeSearchRequestDTO = new PerfumeSearchRequestDTO(
-                [],
-                [],
-                [],
-                '',
-                1
-            );
-            const pagingRequestDTO = PagingRequestDTO.createByJson({
-                pagingSize: 100,
-                pagingIndex: 1,
-                order: null,
-            });
-            Perfume.searchPerfume({ perfumeSearchRequestDTO, pagingRequestDTO })
-                /* TODO */
-                // .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-                .then((result) => {
+            const perfumeSearchRequestDTO: PerfumeSearchRequestDTO =
+                new PerfumeSearchRequestDTO([], [], [], '', 1);
+            const pagingRequestDTO: PagingRequestDTO =
+                PagingRequestDTO.createByJson({
+                    pagingSize: 100,
+                    pagingIndex: 1,
+                    order: null,
+                });
+            Perfume.searchPerfume(perfumeSearchRequestDTO, pagingRequestDTO)
+                .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
 
-        it('# getSurveyPerfume Test', (done) => {
+        it('# getSurveyPerfume Test', (done: Done) => {
             mockUserDao.readByIdx = async () => ({
                 gender: GENDER_WOMAN,
             });
             Perfume.getSurveyPerfume(1)
-                /* TODO */
-                // .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-                .then((result) => {
+                .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
 
-        it('# recentSearch Test', (done) => {
-            const pagingRequestDTO = PagingRequestDTO.createByJson({
-                pagingSize: 100,
-                pagingIndex: 1,
-                order: null,
-            });
-            Perfume.recentSearch({ userIdx: 1, pagingRequestDTO })
-                /* TODO */
-                // .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-                .then((result) => {
+        it('# recentSearch Test', (done: Done) => {
+            const pagingRequestDTO: PagingRequestDTO =
+                PagingRequestDTO.createByJson({
+                    pagingSize: 100,
+                    pagingIndex: 1,
+                    order: null,
+                });
+            Perfume.recentSearch(1, pagingRequestDTO)
+                .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
 
-        it('# recommendByUser Test', (done) => {
+        it('# recommendByUser Test', (done: Done) => {
             mockUserDao.readByIdx = async () => {
                 return {
                     gender: GENDER_WOMAN,
@@ -388,8 +380,8 @@ describe('# Perfume Service Test', () => {
                 };
             };
             mockLikePerfumeDao.readLikeInfo = async (
-                userIdx,
-                perfumeIdxList
+                userIdx: number,
+                _: number[]
             ) => {
                 return [
                     { userIdx, perfumeIdx: 1 },
@@ -399,7 +391,7 @@ describe('# Perfume Service Test', () => {
                     { userIdx, perfumeIdx: 5 },
                 ];
             };
-            mockKeywordDao.readAllOfPerfumeIdxList = async (perfumeIdxList) => {
+            mockKeywordDao.readAllOfPerfumeIdxList = async (_: number[]) => {
                 return [
                     {
                         perfumeIdx: 1,
@@ -419,15 +411,14 @@ describe('# Perfume Service Test', () => {
                     },
                 ];
             };
-            const pagingRequestDTO = PagingRequestDTO.createByJson({
-                pagingSize: 100,
-                pagingIndex: 1,
-                order: null,
-            });
-            Perfume.recommendByUser({ userIdx: 1, pagingRequestDTO })
-                /* TODO */
-                // .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-                .then((result) => {
+            const pagingRequestDTO: PagingRequestDTO =
+                PagingRequestDTO.createByJson({
+                    pagingSize: 100,
+                    pagingIndex: 1,
+                    order: null,
+                });
+            Perfume.recommendByUser(1, pagingRequestDTO)
+                .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     for (const item of result.rows) {
                         switch (item.perfumeIdx) {
@@ -454,94 +445,92 @@ describe('# Perfume Service Test', () => {
                     }
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
 
-        it('# getNewPerfume Test', (done) => {
-            const pagingRequestDTO = PagingRequestDTO.createByJson({
-                pagingSize: 100,
-                pagingIndex: 1,
-                order: null,
-            });
+        it('# getNewPerfume Test', (done: Done) => {
+            const pagingRequestDTO: PagingRequestDTO =
+                PagingRequestDTO.createByJson({
+                    pagingSize: 100,
+                    pagingIndex: 1,
+                    order: null,
+                });
             mockLikePerfumeDao.readLikeInfo = async (
-                userIdx,
-                perfumeIdxList
+                userIdx: number,
+                _: number[]
             ) => {
                 return [{ userIdx, perfumeIdx: 2 }];
             };
-            Perfume.getNewPerfume({ userIdx: 1, pagingRequestDTO })
-                /* TODO */
-                // .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-                .then((result) => {
+            Perfume.getNewPerfume(1, pagingRequestDTO)
+                .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
 
-        it('# getLikedPerfume Test', (done) => {
-            const pagingRequestDTO = PagingRequestDTO.createByJson({
-                pagingSize: 100,
-                pagingIndex: 1,
-                order: null,
-            });
+        it('# getLikedPerfume Test', (done: Done) => {
+            const pagingRequestDTO: PagingRequestDTO =
+                PagingRequestDTO.createByJson({
+                    pagingSize: 100,
+                    pagingIndex: 1,
+                    order: null,
+                });
             mockLikePerfumeDao.readLikeInfo = async (
-                userIdx,
-                perfumeIdxList
+                userIdx: number,
+                perfumeIdxList: number[]
             ) => {
-                return perfumeIdxList.map((perfumeIdx) => ({
+                return perfumeIdxList.map((perfumeIdx: number) => ({
                     userIdx,
                     perfumeIdx,
                 }));
             };
-            Perfume.getLikedPerfume({ userIdx: 1, pagingRequestDTO })
-                /* TODO */
-                // .then((result: ListAndCountDTO<>) => {
-                .then((result) => {
+            Perfume.getLikedPerfume(1, pagingRequestDTO)
+                .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     result.rows.forEach((item) => {
                         expect(item.isLiked).to.be.true;
                     });
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
     describe('# like Test', () => {
-        it('# likePerfume Test (좋아요)', (done) => {
-            mockLikePerfumeDao.read = async (userIdx, perfumeIdx) => {
+        it('# likePerfume Test (좋아요)', (done: Done) => {
+            mockLikePerfumeDao.read = async (_: number, __: number) => {
                 throw new NotMatchedError();
             };
-            mockLikePerfumeDao.delete = async (userIdx, perfumeIdx) => {
+            mockLikePerfumeDao.delete = async (_: number, __: number) => {
                 return;
             };
-            mockLikePerfumeDao.create = async (userIdx, perfumeIdx) => {
+            mockLikePerfumeDao.create = async (_: number, __: number) => {
                 return;
             };
             Perfume.likePerfume(1, 1)
-                .then((result) => {
+                .then((result: boolean) => {
                     expect(result).to.be.true;
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
 
-        it('# likePerfume Test (좋아요 취소)', (done) => {
-            mockLikePerfumeDao.read = async (userIdx, perfumeIdx) => {
+        it('# likePerfume Test (좋아요 취소)', (done: Done) => {
+            mockLikePerfumeDao.read = async (_: number, __: number) => {
                 return true;
             };
-            mockLikePerfumeDao.delete = async (userIdx, perfumeIdx) => {
+            mockLikePerfumeDao.delete = async (_: number, __: number) => {
                 return;
             };
-            mockLikePerfumeDao.create = async (userIdx, perfumeIdx) => {
+            mockLikePerfumeDao.create = async (_: number, __: number) => {
                 return;
             };
             Perfume.likePerfume(1, 1)
-                .then((result) => {
+                .then((result: boolean) => {
                     expect(result).to.be.false;
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
     });
 });
