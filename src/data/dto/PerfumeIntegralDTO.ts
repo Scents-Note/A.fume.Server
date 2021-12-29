@@ -1,6 +1,6 @@
 const { ABUNDANCE_RATE_LIST } = require('../../utils/constantUtil.js');
 
-type VolumeAndPrice = { volume: string; price: string }[];
+type VolumeAndPrice = { volume: string; price: number }[];
 
 type Seasonal = {
     spring: number;
@@ -99,11 +99,6 @@ class PerfumeIntegralDTO {
         imageUrls: string[],
         reviewIdx: number
     ) {
-        perfumeDTO.volumeAndPrice = perfumeDTO.volumeAndPrice.map(
-            (it: { [key: string]: number }) => {
-                return `${numberWithCommas(it.price)}/${it.volume}ml`;
-            }
-        );
         perfumeDTO.abundanceRate =
             ABUNDANCE_RATE_LIST[perfumeDTO.abundanceRate];
         const perfume: { [key: string]: any } = Object.assign(
@@ -155,11 +150,6 @@ function emptyCheck(x: any) {
         return '정보 없음';
     }
     return x;
-}
-
-const shouldBeAddedCommasRegex = /\B(?=(\d{3})+(?!\d))/g;
-function numberWithCommas(x: number) {
-    return x.toString().replace(shouldBeAddedCommasRegex, ',');
 }
 
 export default PerfumeIntegralDTO;
