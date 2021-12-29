@@ -11,7 +11,7 @@ import {
 } from '../data/response/perfume';
 
 import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
-import ResponseDTO from '../data/response_dto/common/ResponseDTO';
+import { ResponseDTO, SimpleResponseDTO } from '../data/response/common';
 import PerfumeIntegralDTO from '../data/dto/PerfumeIntegralDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import PerfumeSearchResultDTO from '../data/dto/PerfumeSearchResultDTO';
@@ -240,7 +240,7 @@ const getLikedPerfume: RequestHandler = (
     );
     if (loginUserIdx != userIdx) {
         res.status(StatusCode.FORBIDDEN).json(
-            new ResponseDTO('비정상적인 접근입니다.')
+            new SimpleResponseDTO('비정상적인 접근입니다.')
         );
         return;
     }
