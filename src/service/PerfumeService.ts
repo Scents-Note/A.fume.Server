@@ -13,7 +13,7 @@ import { updateRows, removeKeyJob, flatJob } from '../utils/func';
 import PerfumeDTO from '../data/dto/PerfumeDTO';
 import PerfumeSearchResultDTO from '../data/dto/PerfumeSearchResultDTO';
 import UserDTO from '../data/dto/UserDTO';
-import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
+import { PagingRequestDTO } from '../data/request/common';
 import { PerfumeSearchRequestDTO } from '../data/request/Perfume';
 
 let perfumeDao = new PerfumeDao();

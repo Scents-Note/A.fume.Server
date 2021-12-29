@@ -10,7 +10,7 @@ import {
     PerfumeRecommendResponseDTO,
 } from '../data/response/perfume';
 
-import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
+import { PagingRequestDTO } from '../data/request/common';
 import { ResponseDTO, SimpleResponseDTO } from '../data/response/common';
 import PerfumeIntegralDTO from '../data/dto/PerfumeIntegralDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';

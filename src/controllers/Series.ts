@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
 import IngredientService from '../service/IngredientService';
-import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
+import { PagingRequestDTO } from '../data/request/common';
 import { ResponseDTO } from '../data/response/common';
 import StatusCode from '../utils/statusCode';
 import {

@@ -2,7 +2,7 @@ import IngredientDao from '../dao/IngredientDao';
 import SeriesDao from '../dao/SeriesDao';
 
 import PagingDTO from '../data/dto/PagingDTO';
-import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
+import { PagingRequestDTO } from '../data/request/common';
 import IngredientDTO from '../data/dto/IngredientDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import SeriesDTO from '../data/dto/SeriesDTO';

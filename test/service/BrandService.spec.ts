@@ -11,7 +11,7 @@ import BrandService from '../../src/service/BrandService';
 import BrandDao from '../../src/dao/BrandDao';
 import PagingDTO from '../../src/data/dto/PagingDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-import PagingRequestDTO from '../../src/data/request_dto/PagingRequestDTO';
+import { PagingRequestDTO } from '../../src/data/request/common';
 
 const mockListAndCountDTO: ListAndCountDTO<BrandDTO> =
     new ListAndCountDTO<BrandDTO>(1, [

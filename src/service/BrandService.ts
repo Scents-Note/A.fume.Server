@@ -1,6 +1,6 @@
 import BrandFilterDTO from '../data/dto/BrandFilterDTO';
 import BrandDao from '../dao/BrandDao';
-import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
+import { PagingRequestDTO } from '../data/request/common';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import BrandDTO from '../data/dto/BrandDTO';
 import PagingDTO from '../data/dto/PagingDTO';

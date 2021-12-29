@@ -1,4 +1,4 @@
-import PagingRequestDto from '../request_dto/PagingRequestDTO';
+import { PagingRequestDTO } from '../request/common';
 
 type Ascending = 'DESC' | 'ASC';
 
@@ -16,7 +16,7 @@ class PagingDTO {
         this.order = order;
     }
 
-    static create(pagingRequestDTO: PagingRequestDto) {
+    static create(pagingRequestDTO: PagingRequestDTO): PagingDTO {
         const { pagingSize, pagingIndex, sort } = pagingRequestDTO;
         return new PagingDTO(
             pagingSize,
