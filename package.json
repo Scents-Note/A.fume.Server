@@ -19,8 +19,6 @@
   "license": "Unlicense",
   "private": true,
   "dependencies": {
-    "@types/chai": "^4.2.22",
-    "@types/jsonwebtoken": "^8.5.5",
     "aws-sdk": "^2.987.0",
     "chai": "^4.3.4",
     "connect": "^3.7.0",
@@ -37,7 +35,7 @@
     "node-cron": "^3.0.0",
     "promise-mysql": "^5.0.3",
     "sequelize": "^6.6.5",
-    "swagger-tools": "^0.8.6"
+    "swagger-tools": "^0.10.4"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.8",
@@ -55,6 +53,8 @@
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^4.28.4",
     "@typescript-eslint/parser": "^4.28.4",
+    "@types/chai": "^4.2.22",
+    "@types/jsonwebtoken": "^8.5.5",
     "eslint": "^7.31.0",
     "supertest": "^6.1.6"
   }
