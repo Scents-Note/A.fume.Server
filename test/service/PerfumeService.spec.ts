@@ -9,7 +9,7 @@ import PerfumeService from '../../src/service/PerfumeService';
 import { PagingRequestDTO } from '../../src/data/request/common';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import PerfumeSummaryDTO from '../../src/data/dto/PerfumeSummaryDTO';
-import { PerfumeSearchRequestDTO } from '../../src/data/request/Perfume';
+import { PerfumeSearchRequestDTO } from '../../src/data/request/perfume';
 import PerfumeIntegralMockHelper from '../data/dto/PerfumeIntegralMockHelper';
 import { NotMatchedError } from '../../src/utils/errors/errors';
 import PerfumeIntegralDTO from '../../src/data/dto/PerfumeIntegralDTO';

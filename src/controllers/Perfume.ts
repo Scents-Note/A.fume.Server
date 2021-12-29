@@ -3,7 +3,7 @@ import { Request, Response, NextFunction, RequestHandler } from 'express';
 import StatusCode from '../utils/statusCode';
 import PerfumeService from '../service/PerfumeService';
 
-import { PerfumeSearchRequestDTO } from '../data/request/Perfume';
+import { PerfumeSearchRequestDTO } from '../data/request/perfume';
 import {
     PerfumeDetailResponseDTO,
     PerfumeResponseDTO,

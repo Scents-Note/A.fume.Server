@@ -25,8 +25,8 @@ class PagingDTO {
         );
     }
 
-    private static parseSortToOrder(sort: string): string[][] {
-        const order = [];
+    private static parseSortToOrder(sort: string): [string, string][] {
+        const order: [string, string][] = [];
         const [key, _ascending] = sort.split('_');
         let ascending: Ascending = 'ASC';
         switch (_ascending) {

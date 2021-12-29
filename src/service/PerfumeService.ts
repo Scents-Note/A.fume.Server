@@ -14,7 +14,7 @@ import PerfumeDTO from '../data/dto/PerfumeDTO';
 import PerfumeSearchResultDTO from '../data/dto/PerfumeSearchResultDTO';
 import UserDTO from '../data/dto/UserDTO';
 import { PagingRequestDTO } from '../data/request/common';
-import { PerfumeSearchRequestDTO } from '../data/request/Perfume';
+import { PerfumeSearchRequestDTO } from '../data/request/perfume';
 
 let perfumeDao = new PerfumeDao();
 let reviewDao = require('../dao/ReviewDao.js');

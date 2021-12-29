@@ -74,7 +74,7 @@ describe('# Perfume Controller Test', () => {
                     expect(result.message).to.be.eq('향수 조회 성공');
                     done();
                 })
-                .catch((err) => done(err));
+                .catch((err: Error) => done(err));
         });
         describe('# searchPerfume Test', () => {
             it('success case', (done: Done) => {
@@ -102,7 +102,7 @@ describe('# Perfume Controller Test', () => {
                         expect(result.data!!.count).to.be.gte(0);
                         done();
                     })
-                    .catch((err) => done(err));
+                    .catch((err: Error) => done(err));
             });
         });
 
