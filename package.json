@@ -37,7 +37,7 @@
     "node-cron": "^3.0.0",
     "promise-mysql": "^5.0.3",
     "sequelize": "^6.6.5",
-    "swagger-tools": "^0.10.4"
+    "swagger-tools": "^0.8.6"
   },
   "devDependencies": {
     "@babel/cli": "^7.14.8",
