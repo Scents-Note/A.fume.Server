@@ -3,7 +3,7 @@ import { Request, Response, NextFunction, RequestHandler } from 'express';
 import BrandService from '../service/BrandService';
 import BrandResponseDTO from '../data/response_dto/brand/BrandResponseDTO';
 import BrandFilterResponseDTO from '../data/response_dto/brand/BrandFilterResponseDTO';
-import ResponseDTO from '../data/response_dto/common/ResponseDTO';
+import { ResponseDTO } from '../data/response/common';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import BrandDTO from '../data/dto/BrandDTO';
 import StatusCode from '../utils/statusCode';
@@ -49,7 +49,10 @@ const getFilterBrand: RequestHandler = (
         })
         .then((response: BrandFilterResponseDTO[]) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO('브랜드 필터 조회 성공', response)
+                new ResponseDTO<BrandFilterResponseDTO[]>(
+                    '브랜드 필터 조회 성공',
+                    response
+                )
             );
         })
         .catch((err: Error) => next(err));

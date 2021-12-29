@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
 import IngredientService from '../service/IngredientService';
-import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
-import ResponseDTO from '../data/response_dto/common/ResponseDTO';
+import { PagingRequestDTO } from '../data/request/common';
+import { ResponseDTO } from '../data/response/common';
 import StatusCode from '../utils/statusCode';
 import {
     SeriesResponseDTO,
@@ -32,7 +32,10 @@ const getSeriesAll: RequestHandler = (
         })
         .then((result: ListAndCountDTO<SeriesResponseDTO>) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO('series 전체 조회 성공', result)
+                new ResponseDTO<ListAndCountDTO<SeriesResponseDTO>>(
+                    'series 전체 조회 성공',
+                    result
+                )
             );
         })
         .catch((err: Error) => next(err));
@@ -56,7 +59,7 @@ const getIngredients: RequestHandler = (
         })
         .then((result: ListAndCountDTO<IngredientResponseDTO>) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO(
+                new ResponseDTO<ListAndCountDTO<IngredientResponseDTO>>(
                     'Series에 해당하는 Ingredient 조회 성공',
                     result
                 )
@@ -79,7 +82,10 @@ const getFilterSeries: RequestHandler = (
         })
         .then((result: ListAndCountDTO<SeriesFilterResponseDTO>) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO('계열 검색 성공', result)
+                new ResponseDTO<ListAndCountDTO<SeriesFilterResponseDTO>>(
+                    '계열 검색 성공',
+                    result
+                )
             );
         })
         .catch((err: Error) => next(err));

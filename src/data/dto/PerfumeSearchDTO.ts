@@ -1,13 +1,16 @@
-'use strict';
-
 class PerfumeSearchDTO {
-    constructor({
-        keywordIdxList,
-        brandIdxList,
-        ingredientIdxList,
-        searchText,
-        userIdx,
-    }) {
+    keywordIdxList: number[];
+    brandIdxList: number[];
+    ingredientIdxList: number[];
+    searchText: string;
+    userIdx: number;
+    constructor(
+        keywordIdxList: number[],
+        brandIdxList: number[],
+        ingredientIdxList: number[],
+        searchText: string,
+        userIdx: number
+    ) {
         this.userIdx = userIdx;
         this.keywordIdxList = keywordIdxList;
         this.brandIdxList = brandIdxList;
@@ -15,7 +18,7 @@ class PerfumeSearchDTO {
         this.searchText = searchText;
     }
 
-    static create(perfumeSearchRequestDTO) {
+    static create(perfumeSearchRequestDTO: any) {
         const {
             keywordList: keywordIdxList,
             brandList: brandIdxList,
@@ -23,14 +26,14 @@ class PerfumeSearchDTO {
             searchText,
             userIdx,
         } = perfumeSearchRequestDTO;
-        return new PerfumeSearchDTO({
+        return new PerfumeSearchDTO(
             keywordIdxList,
             brandIdxList,
             ingredientIdxList,
             searchText,
-            userIdx,
-        });
+            userIdx
+        );
     }
 }
 
-module.exports = PerfumeSearchDTO;
+export default PerfumeSearchDTO;

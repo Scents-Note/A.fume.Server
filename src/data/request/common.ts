@@ -16,4 +16,4 @@ class PagingRequestDTO {
     }
 }
 
-export default PagingRequestDTO;
+export { PagingRequestDTO };

@@ -52,10 +52,4 @@ function flatJob(...keys: string[]) {
     };
 }
 
-module.exports = {
-    updateRows,
-    updateList,
-    removeKeyJob,
-    extractJob,
-    flatJob,
-};
+export { updateRows, updateList, removeKeyJob, extractJob, flatJob };

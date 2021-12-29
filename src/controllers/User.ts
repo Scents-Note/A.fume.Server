@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
-import ResponseDTO from '../data/response_dto/common/ResponseDTO';
+import { ResponseDTO, SimpleResponseDTO } from '../data/response/common';
 import StatusCode from '../utils/statusCode';
 
 import {
@@ -42,7 +42,7 @@ const registerUser: RequestHandler = (
         })
         .then((response: UserRegisterResponse) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO('회원가입 성공', response)
+                new ResponseDTO<UserRegisterResponse>('회원가입 성공', response)
             );
         })
         .catch((err: Error) => next(err));
@@ -55,9 +55,9 @@ const deleteUser: RequestHandler = (
 ) => {
     const userIdx = req.swagger.params['userIdx'].value;
     User.deleteUser(userIdx)
-        .then((response: any) => {
+        .then((_: any) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO('유저 삭제 성공', response)
+                new SimpleResponseDTO('유저 삭제 성공')
             );
         })
         .catch((err: Error) => next(err));
@@ -75,7 +75,7 @@ const loginUser: RequestHandler = (
         })
         .then((response: LoginResponse) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO('로그인 성공', response)
+                new ResponseDTO<LoginResponse>('로그인 성공', response)
             );
         })
         .catch((err: Error) => next(err));
@@ -104,7 +104,7 @@ const updateUser: RequestHandler = (
         })
         .then((response: UserResponse) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO('유저 수정 성공', response)
+                new ResponseDTO<UserResponse>('유저 수정 성공', response)
             );
         })
         .catch((err: Error) => next(err));
@@ -120,7 +120,7 @@ const changePassword: RequestHandler = (
     User.changePassword({ userIdx, prevPassword, newPassword })
         .then(() => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO('비밀번호 변경 성공')
+                new SimpleResponseDTO('비밀번호 변경 성공')
             );
         })
         .catch((err: Error) => next(err));
@@ -138,7 +138,7 @@ const authUser: RequestHandler = (
         })
         .then((response: UserAuthResponse) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO('권한 조회', response)
+                new ResponseDTO<UserAuthResponse>('권한 조회', response)
             );
         })
         .catch((err: Error) => next(err));
@@ -154,11 +154,17 @@ const validateEmail: RequestHandler = (
         .then((response: boolean) => {
             if (response) {
                 res.status(StatusCode.OK).json(
-                    new ResponseDTO('Email 중복 체크: 사용 가능', response)
+                    new ResponseDTO<boolean>(
+                        'Email 중복 체크: 사용 가능',
+                        response
+                    )
                 );
             } else {
                 res.status(StatusCode.CONFLICT).json(
-                    new ResponseDTO('Email 중복 체크: 사용 불가능', response)
+                    new ResponseDTO<boolean>(
+                        'Email 중복 체크: 사용 불가능',
+                        response
+                    )
                 );
             }
         })
@@ -172,7 +178,7 @@ const validateName: RequestHandler = (
 ) => {
     if (!req.query.nickname) {
         res.status(StatusCode.CONFLICT).json(
-            new ResponseDTO('Name 중복 체크: 사용 불가능', false)
+            new ResponseDTO<boolean>('Name 중복 체크: 사용 불가능', false)
         );
         return;
     }
@@ -181,11 +187,17 @@ const validateName: RequestHandler = (
         .then((response: boolean) => {
             if (response) {
                 res.status(StatusCode.OK).json(
-                    new ResponseDTO('Name 중복 체크: 사용 가능', response)
+                    new ResponseDTO<boolean>(
+                        'Name 중복 체크: 사용 가능',
+                        response
+                    )
                 );
             } else {
                 res.status(StatusCode.CONFLICT).json(
-                    new ResponseDTO('Name 중복 체크: 사용 불가능', response)
+                    new ResponseDTO<boolean>(
+                        'Name 중복 체크: 사용 불가능',
+                        response
+                    )
                 );
             }
         })
@@ -201,7 +213,9 @@ const postSurvey: RequestHandler = (
     const { keywordList, perfumeList, seriesList } = req.body;
     User.addSurvey(userIdx, keywordList, perfumeList, seriesList)
         .then(() => {
-            res.status(StatusCode.OK).json(new ResponseDTO('Survey 등록 성공'));
+            res.status(StatusCode.OK).json(
+                new SimpleResponseDTO('Survey 등록 성공')
+            );
         })
         .catch((err: Error) => next(err));
 };
