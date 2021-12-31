@@ -1,7 +1,6 @@
 'use strict';
 const expect = require('../../utils/expect');
-
-const PerfumeDefaultReviewDTO = require('../../../src/data/dto/PerfumeDefaultReviewDTO');
+import PerfumeDefaultReviewDTO from '../../../src/data/dto/PerfumeDefaultReviewDTO';
 
 function isNumber() {
     expect(this).to.be.a('number');

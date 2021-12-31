@@ -1,7 +1,7 @@
 import { NotMatchedError } from '../utils/errors/errors';
+import PerfumeDefaultReviewDTO from '../data/dto/PerfumeDefaultReviewDTO';
 
 const { PerfumeDefaultReview, Keyword } = require('../models');
-const PerfumeDefaultReviewDTO = require('../data/dto/PerfumeDefaultReviewDTO');
 
 /**
  * default review 조회

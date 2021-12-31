@@ -4,7 +4,7 @@ dotenv.config();
 const chai = require('chai');
 const { expect } = chai;
 const perfumeDefaultReviewDao = require('../../src/dao/PerfumeDefaultReviewDao.js');
-const PerfumeDefaultReviewDTO = require('../data/dto/PerfumeDefaultReviewDTO');
+import PerfumeDefaultReviewDTO from '../../src/data/dto/PerfumeDefaultReviewDTO';
 
 describe('# perfumeDefaultReviewDao Test', () => {
     before(async function () {
@@ -19,7 +19,6 @@ describe('# perfumeDefaultReviewDao Test', () => {
                         expect(result).to.be.instanceOf(
                             PerfumeDefaultReviewDTO
                         );
-                        PerfumeDefaultReviewDTO.validTest.call(result);
                         done();
                     })
                     .catch((err) => done(err));

@@ -16,11 +16,11 @@ import PerfumeIntegralDTO from '../../src/data/dto/PerfumeIntegralDTO';
 import PerfumeSearchResultDTO from '../../src/data/dto/PerfumeSearchResultDTO';
 import PerfumeThumbDTO from '../../src/data/dto/PerfumeThumbDTO';
 import PerfumeThumbKeywordDTO from '../../src/data/dto/PerfumeThumbKeywordDTO';
+import PerfumeDefaultReviewDTO from '../../src/data/dto/PerfumeDefaultReviewDTO';
 
 const Perfume: PerfumeService = new PerfumeService();
 
 const { GENDER_WOMAN } = require('../../src/utils/constantUtil.js');
-const PerfumeDefaultReviewDTO: any = require('../../src/data/dto/PerfumeDefaultReviewDTO.js');
 
 const mockS3FileDao: any = {};
 Perfume.setS3FileDao(mockS3FileDao);
@@ -61,7 +61,7 @@ describe('# Perfume Service Test', () => {
                     return { id: expectedReviewIdx };
                 };
                 mockDefaultReviewDao.readByPerfumeIdx = async () => {
-                    return new PerfumeDefaultReviewDTO({
+                    return PerfumeDefaultReviewDTO.createByJson({
                         perfumeIdx: 1,
                         rating: 2,
                         seasonal: {
@@ -151,38 +151,39 @@ describe('# Perfume Service Test', () => {
                 mockReviewDao.findOne = async () => {
                     return { id: expectedReviewIdx };
                 };
-                const mockDefaultReview: any = new PerfumeDefaultReviewDTO({
-                    perfumeIdx: 1,
-                    rating: 5,
-                    seasonal: {
-                        spring: 0,
-                        summer: 0,
-                        fall: 100,
-                        winter: 100,
-                    },
-                    sillage: {
-                        light: 0,
-                        medium: 100,
-                        heavy: 100,
-                    },
-                    longevity: {
-                        veryWeak: 0,
-                        weak: 0,
-                        normal: 0,
-                        strong: 100,
-                        veryStrong: 100,
-                    },
-                    gender: {
-                        male: 0,
-                        neutral: 100,
-                        female: 100,
-                    },
-                    keywordList: [
-                        { id: 3, name: '키워드3' },
-                        { id: 1, name: '키워드1' },
-                        { id: 4, name: '키워드4' },
-                    ],
-                });
+                const mockDefaultReview: any =
+                    PerfumeDefaultReviewDTO.createByJson({
+                        perfumeIdx: 1,
+                        rating: 5,
+                        seasonal: {
+                            spring: 0,
+                            summer: 0,
+                            fall: 100,
+                            winter: 100,
+                        },
+                        sillage: {
+                            light: 0,
+                            medium: 100,
+                            heavy: 100,
+                        },
+                        longevity: {
+                            veryWeak: 0,
+                            weak: 0,
+                            normal: 0,
+                            strong: 100,
+                            veryStrong: 100,
+                        },
+                        gender: {
+                            male: 0,
+                            neutral: 100,
+                            female: 100,
+                        },
+                        keywordList: [
+                            { id: 3, name: '키워드3' },
+                            { id: 1, name: '키워드1' },
+                            { id: 4, name: '키워드4' },
+                        ],
+                    });
                 mockDefaultReviewDao.readByPerfumeIdx = async () => {
                     return mockDefaultReview;
                 };
