@@ -1,6 +1,7 @@
 'use strict';
+import SearchHistoryDao from '../dao/SearchHistoryDao';
 
-const searchHistoryDao = require('../dao/SearchHistoryDao.js');
+const searchHistoryDao = new SearchHistoryDao();
 
 /**
  * 향수 조회 정보 업데이트
