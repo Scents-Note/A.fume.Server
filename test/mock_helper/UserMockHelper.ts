@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import UserDTO from '../../../src/data/dto/UserDTO';
+import UserDTO from '../../src/data/dto/UserDTO';
 
 const {
     GENDER_MAN,
@@ -7,7 +7,7 @@ const {
     GRADE_MANAGER,
     GRADE_USER,
     GRADE_SYSTEM_ADMIN,
-} = require('../../../src/utils/constantUtil');
+} = require('../../src/utils/constantUtil');
 
 class UserMockHelper {
     static validTest(this: UserDTO) {

@@ -13,9 +13,9 @@ const app: any = require('../../src/index.js');
 const basePath: string = '/A.fume/api/0.0.1';
 
 const Perfume = require('../../src/controllers/Perfume');
-import PerfumeThumbMockHelper from '../data/dto/PerfumeThumbMockHelper';
-import PerfumeThumbKeywordMockHelper from '../data/dto/PerfumeThumbKeywordMockHelper';
-import PerfumeIntegralMockHelper from '../data/dto/PerfumeIntegralMockHelper';
+import PerfumeThumbMockHelper from '../mock_helper/PerfumeThumbMockHelper';
+import PerfumeThumbKeywordMockHelper from '../mock_helper/PerfumeThumbKeywordMockHelper';
+import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import { ResponseDTO, SimpleResponseDTO } from '../../src/data/response/common';
 import {

@@ -14,7 +14,7 @@ import BrandDTO from '../../src/data/dto/BrandDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import PagingDTO from '../../src/data/dto/PagingDTO';
 
-import BrandHelper from '../data/dto/BrandHelper';
+import BrandHelper from '../mock_helper/BrandHelper';
 
 const brandDao: BrandDao = new BrandDao();
 

@@ -12,8 +12,9 @@ import IngredientConditionDTO from '../../src/data/dto/IngredientConditionDTO';
 import IngredientDao from '../../src/dao/IngredientDao';
 import IngredientDTO from '../../src/data/dto/IngredientDTO';
 
-import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
+
+import IngredientMockHelper from '../mock_helper/IngredientMockHelper';
 
 const ingredientDao = new IngredientDao();
 

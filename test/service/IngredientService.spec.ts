@@ -7,9 +7,10 @@ dotenv.config();
 import IngredientService from '../../src/service/IngredientService';
 import IngredientDTO from '../../src/data/dto/IngredientDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 import IngredientConditionDTO from '../../src/data/dto/IngredientConditionDTO';
 import IngredientDao from '../../src/dao/IngredientDao';
+
+import IngredientMockHelper from '../mock_helper/IngredientMockHelper';
 
 const ingredientService = new IngredientService();
 const mockIngredientDAO: any | IngredientDao = {};

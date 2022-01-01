@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import PerfumeIntegralDTO from '../../../src/data/dto/PerfumeIntegralDTO';
+import PerfumeIntegralDTO from '../../src/data/dto/PerfumeIntegralDTO';
 
 class PerfumeIntegralMockHelper {
     static validTest(this: PerfumeIntegralDTO) {

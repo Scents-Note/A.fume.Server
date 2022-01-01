@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import BrandDTO from '../../../src/data/dto/BrandDTO';
+import BrandDTO from '../../src/data/dto/BrandDTO';
 const FIRST_INITIAL_REGEX = /^[ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅍㅌㅎ]$/;
 
 class BrandHelper {

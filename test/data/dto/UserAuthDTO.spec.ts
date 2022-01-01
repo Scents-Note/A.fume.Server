@@ -3,7 +3,7 @@ import { expect } from 'chai';
 dotenv.config();
 
 import UserAuthDTO from '../../../src/data/dto/UserAuthDTO';
-import UserMockHelper from './UserMockHelper';
+import UserMockHelper from '../../mock_helper/UserMockHelper';
 
 const {
     GRADE_MANAGER,

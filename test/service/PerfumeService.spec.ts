@@ -10,13 +10,14 @@ import { PagingRequestDTO } from '../../src/data/request/common';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import PerfumeSummaryDTO from '../../src/data/dto/PerfumeSummaryDTO';
 import { PerfumeSearchRequest } from '../../src/data/request/perfume';
-import PerfumeIntegralMockHelper from '../data/dto/PerfumeIntegralMockHelper';
 import { NotMatchedError } from '../../src/utils/errors/errors';
 import PerfumeIntegralDTO from '../../src/data/dto/PerfumeIntegralDTO';
 import PerfumeSearchResultDTO from '../../src/data/dto/PerfumeSearchResultDTO';
 import PerfumeThumbDTO from '../../src/data/dto/PerfumeThumbDTO';
 import PerfumeThumbKeywordDTO from '../../src/data/dto/PerfumeThumbKeywordDTO';
 import PerfumeDefaultReviewDTO from '../../src/data/dto/PerfumeDefaultReviewDTO';
+
+import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
 
 const Perfume: PerfumeService = new PerfumeService();
 

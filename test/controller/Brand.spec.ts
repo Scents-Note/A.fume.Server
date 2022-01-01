@@ -7,7 +7,7 @@ import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
 import BrandDTO from '../../src/data/dto/BrandDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import { BrandResponse } from '../../src/data/response/brand';
-import BrandHelper from '../data/dto/BrandHelper';
+import BrandHelper from '../mock_helper/BrandHelper';
 import StatusCode from '../../src/utils/statusCode';
 
 import BrandService from '../../src/service/BrandService';

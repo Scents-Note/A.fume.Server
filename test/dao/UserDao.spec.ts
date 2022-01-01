@@ -12,8 +12,9 @@ import {
 import UserDao from '../../src/dao/UserDao';
 
 import CreatedResultDTO from '../../src/data/dto/CreatedResultDTO';
-import UserMockHelper from '../data/dto/UserMockHelper';
 import UserDTO from '../../src/data/dto/UserDTO';
+
+import UserMockHelper from '../mock_helper/UserMockHelper';
 
 const userDao = new UserDao();
 const { User } = require('../../src/models');

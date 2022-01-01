@@ -6,12 +6,13 @@ import { Done } from 'mocha';
 
 import PerfumeDao from '../../src/dao/PerfumeDao';
 import PerfumeDTO from '../../src/data/dto/PerfumeDTO';
-import BrandHelper from '../data/dto/BrandHelper';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import PerfumeThumbDTO from '../../src/data/dto/PerfumeThumbDTO';
 import PerfumeSearchResultDTO from '../../src/data/dto/PerfumeSearchResultDTO';
 import PerfumeSearchHistoryDTO from '../../src/data/dto/PerfumeSearchHistoryDTO';
-import PerfumeThumbMockHelper from '../data/dto/PerfumeThumbMockHelper';
+
+import BrandHelper from '../mock_helper/BrandHelper';
+import PerfumeThumbMockHelper from '../mock_helper/PerfumeThumbMockHelper';
 const perfumeDao = new PerfumeDao();
 const { Note, Sequelize } = require('../../src/models');
 const { Op } = Sequelize;

@@ -10,13 +10,14 @@ import {
     UnExpectedError,
 } from '../../src/utils/errors/errors';
 
-import LoginInfoMockHelper from '../data/dto/LoginInfoMockHelper';
-import TokenGroupMockHelper from '../data/dto/TokenGroupMockHelper';
 import UserAuthDTO from '../../src/data/dto/UserAuthDTO';
 
-import UserMockHelper from '../data/dto/UserMockHelper';
 import { Error } from 'aws-sdk/clients/servicecatalog';
 import UserDTO from '../../src/data/dto/UserDTO';
+
+import LoginInfoMockHelper from '../mock_helper/LoginInfoMockHelper';
+import TokenGroupMockHelper from '../mock_helper/TokenGroupMockHelper';
+import UserMockHelper from '../mock_helper/UserMockHelper';
 
 const mockUserDao = require('../dao/UserDao.mock.js');
 const mockJWT = Object.assign({}, require('../lib/token.mock.js'));
