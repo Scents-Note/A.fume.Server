@@ -1,9 +1,8 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
 import BrandService from '../service/BrandService';
-import BrandResponseDTO from '../data/response_dto/brand/BrandResponseDTO';
-import BrandFilterResponseDTO from '../data/response_dto/brand/BrandFilterResponseDTO';
 import { ResponseDTO } from '../data/response/common';
+import { BrandResponse, BrandFilterResponse } from '../data/response/brand';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import BrandDTO from '../data/dto/BrandDTO';
 import StatusCode from '../utils/statusCode';
@@ -22,14 +21,14 @@ const getBrandAll: RequestHandler = (
 ) => {
     Brand.getBrandAll()
         .then((result: ListAndCountDTO<BrandDTO>) => {
-            return new ListAndCountDTO<BrandResponseDTO>(
+            return new ListAndCountDTO<BrandResponse>(
                 result.count,
-                result.rows.map(BrandResponseDTO.create)
+                result.rows.map(BrandResponse.createByJson)
             );
         })
-        .then((result: ListAndCountDTO<BrandResponseDTO>) => {
+        .then((result: ListAndCountDTO<BrandResponse>) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<BrandResponseDTO>>(
+                new ResponseDTO<ListAndCountDTO<BrandResponse>>(
                     '브랜드 조회 성공',
                     result
                 )
@@ -45,11 +44,11 @@ const getFilterBrand: RequestHandler = (
 ) => {
     Brand.getFilterBrand()
         .then((result: BrandFilterDTO[]) => {
-            return result.map(BrandFilterResponseDTO.create);
+            return result.map(BrandFilterResponse.create);
         })
-        .then((response: BrandFilterResponseDTO[]) => {
+        .then((response: BrandFilterResponse[]) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<BrandFilterResponseDTO[]>(
+                new ResponseDTO<BrandFilterResponse[]>(
                     '브랜드 필터 조회 성공',
                     response
                 )

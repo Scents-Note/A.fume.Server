@@ -6,10 +6,11 @@ dotenv.config();
 import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
 import BrandDTO from '../../src/data/dto/BrandDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-import BrandResponseDTO from '../../src/data/response_dto/brand/BrandResponseDTO';
+import { BrandResponse } from '../../src/data/response/brand';
 import BrandHelper from '../data/dto/BrandHelper';
-import BrandService from '../../src/service/BrandService';
 import StatusCode from '../../src/utils/statusCode';
+
+import BrandService from '../../src/service/BrandService';
 
 const app = require('../../src/index.js');
 const expect = require('../utils/expect');
@@ -64,7 +65,7 @@ describe('# Brand Controller Test', () => {
                     const { message, data } = res.body;
                     expect(message).to.be.eq('브랜드 필터 조회 성공');
                     for (const item of data) {
-                        item.brands.forEach((brand: BrandResponseDTO) => {
+                        item.brands.forEach((brand: BrandResponse) => {
                             expect.hasProperties.call(
                                 brand,
                                 'brandIdx',

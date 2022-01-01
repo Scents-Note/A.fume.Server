@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
 import IngredientService from '../service/IngredientService';
-import IngredientResponseDTO from '../data/response_dto/ingredient/IngredientResponseDTO';
 import IngredientDTO from '../data/dto/IngredientDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import { ResponseDTO } from '../data/response/common';
+import { IngredientResponse } from '../data/response/ingredient';
 import StatusCode from '../utils/statusCode';
 
 let Ingredient: IngredientService = new IngredientService();
@@ -16,14 +16,14 @@ const getIngredientAll: RequestHandler = (
 ) => {
     Ingredient.getIngredientAll()
         .then((result: ListAndCountDTO<IngredientDTO>) => {
-            return new ListAndCountDTO<IngredientResponseDTO>(
+            return new ListAndCountDTO<IngredientResponse>(
                 result.count,
-                result.rows.map(IngredientResponseDTO.create)
+                result.rows.map(IngredientResponse.createByJson)
             );
         })
-        .then((result: ListAndCountDTO<IngredientResponseDTO>) => {
+        .then((result: ListAndCountDTO<IngredientResponse>) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<IngredientResponseDTO>>(
+                new ResponseDTO<ListAndCountDTO<IngredientResponse>>(
                     '재료 검색 성공',
                     result
                 )
