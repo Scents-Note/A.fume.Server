@@ -9,7 +9,7 @@ import PerfumeService from '../../src/service/PerfumeService';
 import { PagingRequestDTO } from '../../src/data/request/common';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import PerfumeSummaryDTO from '../../src/data/dto/PerfumeSummaryDTO';
-import { PerfumeSearchRequestDTO } from '../../src/data/request/perfume';
+import { PerfumeSearchRequest } from '../../src/data/request/perfume';
 import PerfumeIntegralMockHelper from '../data/dto/PerfumeIntegralMockHelper';
 import { NotMatchedError } from '../../src/utils/errors/errors';
 import PerfumeIntegralDTO from '../../src/data/dto/PerfumeIntegralDTO';
@@ -330,8 +330,8 @@ describe('# Perfume Service Test', () => {
             ) => {
                 return [{ userIdx, perfumeIdx: 2 }];
             };
-            const perfumeSearchRequestDTO: PerfumeSearchRequestDTO =
-                new PerfumeSearchRequestDTO([], [], [], '', 1);
+            const perfumeSearchRequestDTO: PerfumeSearchRequest =
+                new PerfumeSearchRequest([], [], [], '', 1);
             const pagingRequestDTO: PagingRequestDTO =
                 PagingRequestDTO.createByJson({
                     pagingSize: 100,

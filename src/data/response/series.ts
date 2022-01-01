@@ -1,28 +1,27 @@
-import IngredientResponseDTO from '../response_dto/ingredient/IngredientResponseDTO';
-import IngredientDTO from '../dto/IngredientDTO';
 import SeriesFilterDTO from '../dto/SeriesFilterDTO';
 import SeriesDTO from '../dto/SeriesDTO';
+import { IngredientResponse } from '../response/ingredient';
 
-class SeriesResponseDTO {
+class SeriesResponse {
     seriesIdx: number;
     name: string;
     constructor(seriesIdx: number, name: string) {
         this.seriesIdx = seriesIdx;
         this.name = name;
     }
-    static create(seriesDTO: SeriesDTO): SeriesResponseDTO {
-        return new SeriesResponseDTO(seriesDTO.seriesIdx, seriesDTO.name);
+    static create(seriesDTO: SeriesDTO): SeriesResponse {
+        return new SeriesResponse(seriesDTO.seriesIdx, seriesDTO.name);
     }
 }
 
-class SeriesFilterResponseDTO {
+class SeriesFilterResponse {
     seriesIdx: number;
     name: string;
-    ingredients: IngredientResponseDTO[];
+    ingredients: IngredientResponse[];
     constructor(
         seriesIdx: number,
         name: string,
-        ingredients: IngredientResponseDTO[]
+        ingredients: IngredientResponse[]
     ) {
         this.seriesIdx = seriesIdx;
         this.name = name;
@@ -30,15 +29,12 @@ class SeriesFilterResponseDTO {
     }
 
     static create(seriesFilterDTO: SeriesFilterDTO) {
-        return new SeriesFilterResponseDTO(
+        return new SeriesFilterResponse(
             seriesFilterDTO.seriesIdx,
             seriesFilterDTO.name,
-            seriesFilterDTO.ingredients.map(
-                (it: IngredientDTO) =>
-                    new IngredientResponseDTO(it.ingredientIdx, it.name)
-            )
+            seriesFilterDTO.ingredients.map(IngredientResponse.createByJson)
         );
     }
 }
 
-export { SeriesResponseDTO, SeriesFilterResponseDTO };
+export { SeriesResponse, SeriesFilterResponse };

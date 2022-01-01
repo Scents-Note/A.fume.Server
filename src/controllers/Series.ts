@@ -1,19 +1,20 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
-import IngredientService from '../service/IngredientService';
-import { PagingRequestDTO } from '../data/request/common';
-import { ResponseDTO } from '../data/response/common';
 import StatusCode from '../utils/statusCode';
-import {
-    SeriesResponseDTO,
-    SeriesFilterResponseDTO,
-} from '../data/response/series';
+
+import IngredientService from '../service/IngredientService';
+import SeriesService from '../service/SeriesService';
+
+import { PagingRequestDTO } from '../data/request/common';
+
+import { ResponseDTO } from '../data/response/common';
+import { SeriesResponse, SeriesFilterResponse } from '../data/response/series';
+import { IngredientResponse } from '../data/response/ingredient';
+
+import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import SeriesDTO from '../data/dto/SeriesDTO';
 import SeriesFilterDTO from '../data/dto/SeriesFilterDTO';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import IngredientDTO from '../data/dto/IngredientDTO';
-import IngredientResponseDTO from '../data/response_dto/ingredient/IngredientResponseDTO';
-import SeriesService from '../service/SeriesService';
 
 let Series = new SeriesService();
 let Ingredient = new IngredientService();
@@ -27,12 +28,12 @@ const getSeriesAll: RequestHandler = (
         .then((result: ListAndCountDTO<SeriesDTO>) => {
             return {
                 count: result.count,
-                rows: result.rows.map(SeriesResponseDTO.create),
+                rows: result.rows.map(SeriesResponse.create),
             };
         })
-        .then((result: ListAndCountDTO<SeriesResponseDTO>) => {
+        .then((result: ListAndCountDTO<SeriesResponse>) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<SeriesResponseDTO>>(
+                new ResponseDTO<ListAndCountDTO<SeriesResponse>>(
                     'series 전체 조회 성공',
                     result
                 )
@@ -51,15 +52,12 @@ const getIngredients: RequestHandler = (
         .then((result: ListAndCountDTO<IngredientDTO>) => {
             return new ListAndCountDTO(
                 result.count,
-                result.rows.map(
-                    (it: IngredientDTO) =>
-                        new IngredientResponseDTO(it.ingredientIdx, it.name)
-                )
+                result.rows.map(IngredientResponse.createByJson)
             );
         })
-        .then((result: ListAndCountDTO<IngredientResponseDTO>) => {
+        .then((result: ListAndCountDTO<IngredientResponse>) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<IngredientResponseDTO>>(
+                new ResponseDTO<ListAndCountDTO<IngredientResponse>>(
                     'Series에 해당하는 Ingredient 조회 성공',
                     result
                 )
@@ -77,12 +75,12 @@ const getFilterSeries: RequestHandler = (
         .then((result: ListAndCountDTO<SeriesFilterDTO>) => {
             return new ListAndCountDTO(
                 result.count,
-                result.rows.map(SeriesFilterResponseDTO.create)
+                result.rows.map(SeriesFilterResponse.create)
             );
         })
-        .then((result: ListAndCountDTO<SeriesFilterResponseDTO>) => {
+        .then((result: ListAndCountDTO<SeriesFilterResponse>) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<SeriesFilterResponseDTO>>(
+                new ResponseDTO<ListAndCountDTO<SeriesFilterResponse>>(
                     '계열 검색 성공',
                     result
                 )

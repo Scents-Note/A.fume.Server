@@ -1,4 +1,4 @@
-class PerfumeSearchRequestDTO {
+class PerfumeSearchRequest {
     keywordList: number[];
     brandList: number[];
     ingredientList: number[];
@@ -17,8 +17,8 @@ class PerfumeSearchRequestDTO {
         this.ingredientList = ingredientList;
         this.searchText = searchText;
     }
-    static createByJson(json: any): PerfumeSearchRequestDTO {
-        return new PerfumeSearchRequestDTO(
+    static createByJson(json: any): PerfumeSearchRequest {
+        return new PerfumeSearchRequest(
             json.keywordList,
             json.brandList,
             json.ingredientList,
@@ -28,4 +28,4 @@ class PerfumeSearchRequestDTO {
     }
 }
 
-export { PerfumeSearchRequestDTO };
+export { PerfumeSearchRequest };

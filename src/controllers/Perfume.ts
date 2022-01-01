@@ -4,11 +4,11 @@ import StatusCode from '../utils/statusCode';
 import PerfumeService from '../service/PerfumeService';
 import SearchHistoryService from '../service/SearchHistoryService';
 
-import { PerfumeSearchRequestDTO } from '../data/request/perfume';
+import { PerfumeSearchRequest } from '../data/request/perfume';
 import {
-    PerfumeDetailResponseDTO,
-    PerfumeResponseDTO,
-    PerfumeRecommendResponseDTO,
+    PerfumeDetailResponse,
+    PerfumeResponse,
+    PerfumeRecommendResponse,
 } from '../data/response/perfume';
 
 import { PagingRequestDTO } from '../data/request/common';
@@ -34,14 +34,11 @@ const getPerfume: RequestHandler = (
         SearchHistory.incrementCount(loginUserIdx, perfumeIdx),
     ])
         .then(([result, _]: [PerfumeIntegralDTO, void]) => {
-            return PerfumeDetailResponseDTO.createByPerfumeIntegralDTO(result);
+            return PerfumeDetailResponse.createByPerfumeIntegralDTO(result);
         })
-        .then((data: PerfumeDetailResponseDTO) => {
+        .then((data: PerfumeDetailResponse) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<PerfumeDetailResponseDTO>(
-                    '향수 조회 성공',
-                    data
-                )
+                new ResponseDTO<PerfumeDetailResponse>('향수 조회 성공', data)
             );
         })
         .catch((err: Error) => next(err));
@@ -53,23 +50,23 @@ const searchPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx || -1;
-    const perfumeSearchRequestDTO: PerfumeSearchRequestDTO =
-        PerfumeSearchRequestDTO.createByJson(
+    const perfumeSearchRequest: PerfumeSearchRequest =
+        PerfumeSearchRequest.createByJson(
             Object.assign({ userIdx: loginUserIdx }, req.body)
         );
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
-    Perfume.searchPerfume(perfumeSearchRequestDTO, pagingRequestDTO)
+    Perfume.searchPerfume(perfumeSearchRequest, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
-            return new ListAndCountDTO<PerfumeResponseDTO>(
+            return new ListAndCountDTO<PerfumeResponse>(
                 result.count,
-                result.rows.map(PerfumeResponseDTO.createByJson)
+                result.rows.map(PerfumeResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeResponseDTO>) => {
+        .then((data: ListAndCountDTO<PerfumeResponse>) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<PerfumeResponseDTO>>(
+                new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     '향수 검색 성공',
                     data
                 )
@@ -108,14 +105,14 @@ const getRecentPerfume: RequestHandler = (
     );
     Perfume.recentSearch(loginUserIdx, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-            return new ListAndCountDTO<PerfumeResponseDTO>(
+            return new ListAndCountDTO<PerfumeResponse>(
                 result.count,
-                result.rows.map(PerfumeResponseDTO.createByJson)
+                result.rows.map(PerfumeResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeResponseDTO>) => {
+        .then((data: ListAndCountDTO<PerfumeResponse>) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<PerfumeResponseDTO>>(
+                new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     '최근 검색한 향수 조회',
                     data
                 )
@@ -135,14 +132,14 @@ const recommendPersonalPerfume: RequestHandler = (
     );
     Perfume.recommendByUser(loginUserIdx, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-            return new ListAndCountDTO<PerfumeRecommendResponseDTO>(
+            return new ListAndCountDTO<PerfumeRecommendResponse>(
                 result.count,
-                result.rows.map(PerfumeRecommendResponseDTO.createByJson)
+                result.rows.map(PerfumeRecommendResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeRecommendResponseDTO>) => {
+        .then((data: ListAndCountDTO<PerfumeRecommendResponse>) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<PerfumeRecommendResponseDTO>>(
+                new ResponseDTO<ListAndCountDTO<PerfumeRecommendResponse>>(
                     '향수 개인 맞춤 추천',
                     data
                 )
@@ -162,14 +159,14 @@ const recommendCommonPerfume: RequestHandler = (
     );
     Perfume.recommendByUser(loginUserIdx, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-            return new ListAndCountDTO<PerfumeRecommendResponseDTO>(
+            return new ListAndCountDTO<PerfumeRecommendResponse>(
                 result.count,
-                result.rows.map(PerfumeRecommendResponseDTO.createByJson)
+                result.rows.map(PerfumeRecommendResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeRecommendResponseDTO>) => {
+        .then((data: ListAndCountDTO<PerfumeRecommendResponse>) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<PerfumeRecommendResponseDTO>>(
+                new ResponseDTO<ListAndCountDTO<PerfumeRecommendResponse>>(
                     '향수 일반 추천 (성별, 나이 반영)',
                     data
                 )
@@ -186,14 +183,14 @@ const getSurveyPerfume: RequestHandler = (
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
     Perfume.getSurveyPerfume(loginUserIdx)
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-            return new ListAndCountDTO<PerfumeResponseDTO>(
+            return new ListAndCountDTO<PerfumeResponse>(
                 result.count,
-                result.rows.map(PerfumeResponseDTO.createByJson)
+                result.rows.map(PerfumeResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeResponseDTO>) => {
+        .then((data: ListAndCountDTO<PerfumeResponse>) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<PerfumeResponseDTO>>(
+                new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     '서베이 향수 조회 성공',
                     data
                 )
@@ -213,14 +210,14 @@ const getNewPerfume: RequestHandler = (
     );
     Perfume.getNewPerfume(loginUserIdx, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-            return new ListAndCountDTO<PerfumeResponseDTO>(
+            return new ListAndCountDTO<PerfumeResponse>(
                 result.count,
-                result.rows.map(PerfumeResponseDTO.createByJson)
+                result.rows.map(PerfumeResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeResponseDTO>) => {
+        .then((data: ListAndCountDTO<PerfumeResponse>) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<PerfumeResponseDTO>>(
+                new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     '새로 등록된 향수 조회 성공',
                     data
                 )
@@ -247,14 +244,14 @@ const getLikedPerfume: RequestHandler = (
     }
     Perfume.getLikedPerfume(userIdx, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-            return new ListAndCountDTO<PerfumeResponseDTO>(
+            return new ListAndCountDTO<PerfumeResponse>(
                 result.count,
-                result.rows.map(PerfumeResponseDTO.createByJson)
+                result.rows.map(PerfumeResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeResponseDTO>) => {
+        .then((data: ListAndCountDTO<PerfumeResponse>) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<PerfumeResponseDTO>>(
+                new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     '유저가 좋아요한 향수 조회',
                     data
                 )

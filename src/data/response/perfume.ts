@@ -28,7 +28,7 @@ type NoteDict = {
     single: string;
 };
 
-class PerfumeDetailResponseDTO {
+class PerfumeDetailResponse {
     perfumeIdx: number;
     name: string;
     brandName: string;
@@ -87,15 +87,15 @@ class PerfumeDetailResponseDTO {
     static shouldBeAddedCommasRegex: RegExp = /\B(?=(\d{3})+(?!\d))/g;
     static createByPerfumeIntegralDTO(
         perfumeIntegralDTO: PerfumeIntegralDTO
-    ): PerfumeDetailResponseDTO {
+    ): PerfumeDetailResponse {
         const volumeAndPrice: string[] = perfumeIntegralDTO.volumeAndPrice.map(
             (it: { volume: string; price: number }) => {
-                return `${PerfumeDetailResponseDTO.numberWithCommas(
-                    it.price
-                )}/${it.volume}ml`;
+                return `${PerfumeDetailResponse.numberWithCommas(it.price)}/${
+                    it.volume
+                }ml`;
             }
         );
-        return new PerfumeDetailResponseDTO(
+        return new PerfumeDetailResponse(
             perfumeIntegralDTO.perfumeIdx,
             perfumeIntegralDTO.name,
             perfumeIntegralDTO.brandName,
@@ -117,11 +117,11 @@ class PerfumeDetailResponseDTO {
     private static numberWithCommas(x: number): string {
         return x
             .toString()
-            .replace(PerfumeDetailResponseDTO.shouldBeAddedCommasRegex, ',');
+            .replace(PerfumeDetailResponse.shouldBeAddedCommasRegex, ',');
     }
 }
 
-class PerfumeResponseDTO {
+class PerfumeResponse {
     perfumeIdx: number;
     name: string;
     brandName: string;
@@ -141,8 +141,8 @@ class PerfumeResponseDTO {
         this.isLiked = isLiked;
     }
 
-    static createByJson(json: any): PerfumeResponseDTO {
-        return new PerfumeResponseDTO(
+    static createByJson(json: any): PerfumeResponse {
+        return new PerfumeResponse(
             json.perfumeIdx,
             json.name,
             json.brandName,
@@ -152,7 +152,7 @@ class PerfumeResponseDTO {
     }
 }
 
-class PerfumeRecommendResponseDTO extends PerfumeResponseDTO {
+class PerfumeRecommendResponse extends PerfumeResponse {
     keywordList: string[];
     constructor(
         perfumeIdx: number,
@@ -165,8 +165,8 @@ class PerfumeRecommendResponseDTO extends PerfumeResponseDTO {
         super(perfumeIdx, name, brandName, imageUrl, isLiked);
         this.keywordList = keywordList;
     }
-    static createByJson(json: any): PerfumeRecommendResponseDTO {
-        return new PerfumeRecommendResponseDTO(
+    static createByJson(json: any): PerfumeRecommendResponse {
+        return new PerfumeRecommendResponse(
             json.perfumeIdx,
             json.name,
             json.brandName,
@@ -177,8 +177,4 @@ class PerfumeRecommendResponseDTO extends PerfumeResponseDTO {
     }
 }
 
-export {
-    PerfumeDetailResponseDTO,
-    PerfumeResponseDTO,
-    PerfumeRecommendResponseDTO,
-};
+export { PerfumeDetailResponse, PerfumeResponse, PerfumeRecommendResponse };

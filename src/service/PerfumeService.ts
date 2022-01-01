@@ -20,8 +20,9 @@ import PerfumeSearchResultDTO from '../data/dto/PerfumeSearchResultDTO';
 import UserDTO from '../data/dto/UserDTO';
 import NoteDictDTO from '../data/dto/NoteDictDTO';
 import { PagingRequestDTO } from '../data/request/common';
-import { PerfumeSearchRequestDTO } from '../data/request/perfume';
 import PerfumeDefaultReviewDTO from '../data/dto/PerfumeDefaultReviewDTO';
+
+import { PerfumeSearchRequest } from '../data/request/perfume';
 
 let perfumeDao: PerfumeDao = new PerfumeDao();
 let reviewDao = require('../dao/ReviewDao.js');
@@ -113,18 +114,17 @@ class PerfumeService {
     /**
      * 향수 검색
      *
-     * @param {PerfumeSearchRequestDTO} perfumeSearchRequestDTO
+     * @param {PerfumeSearchRequest} perfumeSearchRequest
      * @param {PagingRequestDTO} pagingRequestDTO
      * @returns {Promise<Perfume[]>}
      **/
     async searchPerfume(
-        perfumeSearchRequestDTO: PerfumeSearchRequestDTO,
+        perfumeSearchRequest: PerfumeSearchRequest,
         pagingRequestDTO: PagingRequestDTO
     ): Promise<ListAndCountDTO<PerfumeSearchResultDTO>> {
         const pagingDTO: PagingDTO = PagingDTO.create(pagingRequestDTO);
-        const perfumeSearchDTO: PerfumeSearchDTO = PerfumeSearchDTO.create(
-            perfumeSearchRequestDTO
-        );
+        const perfumeSearchDTO: PerfumeSearchDTO =
+            PerfumeSearchDTO.create(perfumeSearchRequest);
         return perfumeDao
             .search(
                 perfumeSearchDTO.brandIdxList,
