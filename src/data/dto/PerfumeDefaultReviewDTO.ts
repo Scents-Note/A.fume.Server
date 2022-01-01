@@ -17,6 +17,9 @@ type Longevity = {
 
 type Gender = { male: number; neutral: number; female: number };
 
+type Keyword = {
+    name: string;
+};
 class PerfumeDefaultReviewDTO {
     perfumeIdx: number;
     rating: number;
@@ -24,7 +27,7 @@ class PerfumeDefaultReviewDTO {
     gender: Gender;
     sillage: Sillage;
     longevity: Longevity;
-    keywordList: string[];
+    keywordList: Keyword[];
     constructor(
         perfumeIdx: number,
         rating: number,
@@ -32,7 +35,7 @@ class PerfumeDefaultReviewDTO {
         gender: Gender,
         sillage: Sillage,
         longevity: Longevity,
-        keywordList: string[]
+        keywordList: Keyword[]
     ) {
         this.perfumeIdx = perfumeIdx;
         this.rating = rating;

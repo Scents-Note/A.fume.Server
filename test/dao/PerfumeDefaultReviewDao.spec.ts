@@ -1,10 +1,12 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
+import { expect } from 'chai';
+import { Done } from 'mocha';
 dotenv.config();
 
-const chai = require('chai');
-const { expect } = chai;
-const perfumeDefaultReviewDao = require('../../src/dao/PerfumeDefaultReviewDao.js');
+import PerfumeDefaultReviewDao from '../../src/dao/PerfumeDefaultReviewDao';
 import PerfumeDefaultReviewDTO from '../../src/data/dto/PerfumeDefaultReviewDTO';
+
+const perfumeDefaultReviewDao = new PerfumeDefaultReviewDao();
 
 describe('# perfumeDefaultReviewDao Test', () => {
     before(async function () {
@@ -12,16 +14,16 @@ describe('# perfumeDefaultReviewDao Test', () => {
     });
     describe('# readTest Test', () => {
         describe('# readByPerfumeIdx Test', () => {
-            it('# success case', (done) => {
+            it('# success case', (done: Done) => {
                 perfumeDefaultReviewDao
                     .readByPerfumeIdx(1)
-                    .then((result) => {
+                    .then((result: PerfumeDefaultReviewDTO) => {
                         expect(result).to.be.instanceOf(
                             PerfumeDefaultReviewDTO
                         );
                         done();
                     })
-                    .catch((err) => done(err));
+                    .catch((err: Error) => done(err));
             });
         });
     });
