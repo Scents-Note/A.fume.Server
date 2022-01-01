@@ -3,6 +3,7 @@ import UserDao from '../dao/UserDao';
 import PerfumeDao from '../dao/PerfumeDao';
 import PerfumeDefaultReviewDao from '../dao/PerfumeDefaultReviewDao';
 import NoteDao from '../dao/NoteDao';
+import LikePerfumeDao from '../dao/LikePerfumeDao';
 
 import PagingDTO from '../data/dto/PagingDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
@@ -24,7 +25,7 @@ import PerfumeDefaultReviewDTO from '../data/dto/PerfumeDefaultReviewDTO';
 let perfumeDao = new PerfumeDao();
 let reviewDao = require('../dao/ReviewDao.js');
 let noteDao = new NoteDao();
-let likePerfumeDao = require('../dao/LikePerfumeDao.js');
+let likePerfumeDao = new LikePerfumeDao();
 let keywordDao = require('../dao/KeywordDao.js');
 let defaultReviewDao = new PerfumeDefaultReviewDao();
 let s3FileDao = require('../dao/S3FileDao.js');
@@ -193,35 +194,28 @@ class PerfumeService {
      * @param {number} perfumeIdx
      * @returns {Promise}
      **/
-    async likePerfume(userIdx: number, perfumeIdx: number): Promise<boolean> {
-        return new Promise<boolean>(
-            (
-                resolve: (value: boolean | PromiseLike<boolean>) => void,
-                reject: (reason?: any) => void
-            ) => {
-                likePerfumeDao
-                    .read(userIdx, perfumeIdx)
-                    .then((_: any) => {
-                        return likePerfumeDao
-                            .delete(userIdx, perfumeIdx)
-                            .then((_: any) => true);
-                    })
-                    .catch((err: Error) => {
-                        if (err instanceof NotMatchedError) {
-                            return likePerfumeDao
-                                .create(userIdx, perfumeIdx)
-                                .then((_: any) => false);
-                        }
-                        reject(new FailedToCreateError());
-                    })
-                    .then((exist: boolean) => {
-                        resolve(!exist);
-                    })
-                    .catch((err: Error) => {
-                        reject(err);
-                    });
-            }
-        );
+    likePerfume(userIdx: number, perfumeIdx: number): Promise<boolean> {
+        return likePerfumeDao
+            .read(userIdx, perfumeIdx)
+            .then((_: any) => {
+                return likePerfumeDao
+                    .delete(userIdx, perfumeIdx)
+                    .then((_: number) => true);
+            })
+            .catch((err: Error) => {
+                if (err instanceof NotMatchedError) {
+                    return likePerfumeDao
+                        .create(userIdx, perfumeIdx)
+                        .then(() => false);
+                }
+                throw new FailedToCreateError();
+            })
+            .then((exist: boolean) => {
+                return !exist;
+            })
+            .catch((err: Error) => {
+                throw err;
+            });
     }
 
     /**
@@ -413,11 +407,11 @@ class PerfumeService {
         reviewDao = dao;
     }
 
-    setNoteDao(dao: any) {
+    setNoteDao(dao: NoteDao) {
         noteDao = dao;
     }
 
-    setLikePerfumeDao(dao: any) {
+    setLikePerfumeDao(dao: LikePerfumeDao) {
         likePerfumeDao = dao;
     }
 
@@ -433,7 +427,7 @@ class PerfumeService {
         s3FileDao = dao;
     }
 
-    setDefaultReviewDao(dao: any) {
+    setDefaultReviewDao(dao: PerfumeDefaultReviewDao) {
         defaultReviewDao = dao;
     }
 
@@ -500,7 +494,7 @@ class PerfumeService {
         );
     }
 
-    private isLike(userIdx: number, perfumeIdx: number): (obj: any) => any {
+    private isLike(userIdx: number, perfumeIdx: number): Promise<boolean> {
         return likePerfumeDao
             .read(userIdx, perfumeIdx)
             .then((_: any) => true)
