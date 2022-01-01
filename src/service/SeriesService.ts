@@ -1,5 +1,6 @@
 import IngredientDao from '../dao/IngredientDao';
 import SeriesDao from '../dao/SeriesDao';
+import NoteDao from '../dao/NoteDao';
 
 import PagingDTO from '../data/dto/PagingDTO';
 import { PagingRequestDTO } from '../data/request/common';
@@ -21,7 +22,7 @@ class SeriesService {
     ) {
         this.seriesDao = seriesDao ?? new SeriesDao();
         this.ingredientDao = ingredientDao ?? new IngredientDao();
-        this.noteDao = noteDao ?? require('../dao/NoteDao.js');
+        this.noteDao = noteDao ?? new NoteDao();
     }
 
     /**
@@ -120,11 +121,17 @@ class SeriesService {
             (it: IngredientDTO) => it.ingredientIdx
         );
         const countMap: Map<number, number> = (
-            await this.noteDao.countIngredientUsed(ingredientIdxList)
-        ).reduce((prev: Map<number, number>, cur: any) => {
-            prev.set(cur.ingredientIdx, cur.count);
-            return prev;
-        }, new Map<number, number>());
+            await this.noteDao.getIngredientCountList(ingredientIdxList)
+        ).reduce(
+            (
+                prev: Map<number, number>,
+                cur: { ingredientIdx: number; count: number }
+            ): Map<number, number> => {
+                prev.set(cur.ingredientIdx, cur.count);
+                return prev;
+            },
+            new Map<number, number>()
+        );
         return ingredientList.filter((it: IngredientDTO) => {
             return (
                 (countMap.get(it.ingredientIdx) || 0) >

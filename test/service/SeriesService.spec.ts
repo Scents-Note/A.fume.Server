@@ -92,7 +92,7 @@ describe('# Series Service Test', () => {
                     ret.push(IngredientMockHelper.createWithIdx(i, 3));
                 return ret;
             };
-            mockNoteDAO.countIngredientUsed = async (_: number[]) =>
+            mockNoteDAO.getIngredientCountList = async (_: number[]) =>
                 [...new Array(10)].map((_, index) => ({
                     ingredientIdx: index + 1,
                     count: isNoteCountOver10(index + 1) ? 100 : 4,
