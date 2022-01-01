@@ -8,7 +8,7 @@ import PagingDTO from '../data/dto/PagingDTO';
 class BrandService {
     brandDao: BrandDao;
     constructor(brandDao?: BrandDao) {
-        this.brandDao = brandDao || new BrandDao();
+        this.brandDao = brandDao ?? new BrandDao();
     }
     /**
      * 브랜드 검색

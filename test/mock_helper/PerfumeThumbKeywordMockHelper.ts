@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import PerfumeThumbKeywordDTO from '../../../src/data/dto/PerfumeThumbKeywordDTO';
+import PerfumeThumbKeywordDTO from '../../src/data/dto/PerfumeThumbKeywordDTO';
 
 class PerfumeThumbKeywordMockHelper {
     static validTest(this: PerfumeThumbKeywordDTO) {

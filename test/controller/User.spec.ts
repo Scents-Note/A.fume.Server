@@ -9,12 +9,11 @@ import UserAuthDTO from '../../src/data/dto/UserAuthDTO';
 import StatusCode from '../../src/utils/statusCode';
 import UserDTO from '../../src/data/dto/UserDTO';
 
-import LoginInfoMockHelper from '../data/dto/LoginInfoMockHelper';
-import TokenGroupMockHelper from '../data/dto/TokenGroupMockHelper';
-
-import UserMockHelper from '../data/dto/UserMockHelper';
 import TokenGroupDTO from '../../src/data/dto/TokenGroupDTO';
-import { Error } from 'mongoose';
+
+import UserMockHelper from '../mock_helper/UserMockHelper';
+import LoginInfoMockHelper from '../mock_helper/LoginInfoMockHelper';
+import TokenGroupMockHelper from '../mock_helper/TokenGroupMockHelper';
 
 const expect = require('../utils/expect');
 

@@ -4,10 +4,11 @@ import { Done } from 'mocha';
 import request from 'supertest';
 dotenv.config();
 
-import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 import StatusCode from '../../src/utils/statusCode';
 import IngredientDTO from '../../src/data/dto/IngredientDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
+
+import IngredientMockHelper from '../mock_helper/IngredientMockHelper';
 
 const app = require('../../src/index.js');
 

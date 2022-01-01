@@ -8,8 +8,8 @@ import StatusCode from '../../src/utils/statusCode';
 import SeriesDTO from '../../src/data/dto/SeriesDTO';
 import SeriesFilterDTO from '../../src/data/dto/SeriesFilterDTO';
 
-import SeriesMockHelper from '../data/dto/SeriesMockHelper';
-import SeriesFilterMockHelper from '../data/dto/SeriesFilterMockHelper';
+import SeriesMockHelper from '../mock_helper/SeriesMockHelper';
+import SeriesFilterMockHelper from '../mock_helper/SeriesFilterMockHelper';
 
 const app = require('../../src/index.js');
 const expect = require('../utils/expect');

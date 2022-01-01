@@ -4,15 +4,16 @@ dotenv.config();
 
 import expect from '../utils/expect';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-import IngredientMockHelper from '../data/dto/IngredientMockHelper';
 
-import SeriesHelper from '../data/dto/SeriesMockHelper';
 import SeriesDTO from '../../src/data/dto/SeriesDTO';
 import IngredientDTO from '../../src/data/dto/IngredientDTO';
 import SeriesFilterDTO from '../../src/data/dto/SeriesFilterDTO';
 import { PagingRequestDTO } from '../../src/data/request/common';
 
 import SeriesService from '../../src/service/SeriesService';
+
+import IngredientMockHelper from '../mock_helper/IngredientMockHelper';
+import SeriesHelper from '../mock_helper/SeriesMockHelper';
 
 const mockSeriesDAO: any = {};
 const mockIngredientDAO: any = {};

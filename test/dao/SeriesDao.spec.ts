@@ -13,7 +13,8 @@ import PagingDTO from '../../src/data/dto/PagingDTO';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 
 import SeriesDTO from '../../src/data/dto/SeriesDTO';
-import SeriesMockHelper from '../data/dto/SeriesMockHelper';
+
+import SeriesMockHelper from '../mock_helper/SeriesMockHelper';
 
 const seriesDao = new SeriesDao();
 

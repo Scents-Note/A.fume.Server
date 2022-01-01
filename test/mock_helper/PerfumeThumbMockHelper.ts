@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import PerfumeThumbDTO from '../../../src/data/dto/PerfumeThumbDTO';
+import PerfumeThumbDTO from '../../src/data/dto/PerfumeThumbDTO';
 import BrandHelper from './BrandHelper';
 
 class PerfumeThumbMockHelper {

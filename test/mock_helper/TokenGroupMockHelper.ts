@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import TokenGroupDTO from '../../../src/data/dto/TokenGroupDTO';
+import TokenGroupDTO from '../../src/data/dto/TokenGroupDTO';
 
 class TokenGroupMockHelper {
     static validTest(this: TokenGroupDTO) {

@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 
-import IngredientDTO from '../../../src/data/dto/IngredientDTO';
+import IngredientDTO from '../../src/data/dto/IngredientDTO';
 import IngredientMockHelper from './IngredientMockHelper';
 
-import SeriesFilterDTO from '../../../src/data/dto/SeriesFilterDTO';
+import SeriesFilterDTO from '../../src/data/dto/SeriesFilterDTO';
 import SeriesHelper from './SeriesMockHelper';
 
 class SeriesFilterMockHelper {

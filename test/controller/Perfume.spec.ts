@@ -13,15 +13,15 @@ const app: any = require('../../src/index.js');
 const basePath: string = '/A.fume/api/0.0.1';
 
 const Perfume = require('../../src/controllers/Perfume');
-import PerfumeThumbMockHelper from '../data/dto/PerfumeThumbMockHelper';
-import PerfumeThumbKeywordMockHelper from '../data/dto/PerfumeThumbKeywordMockHelper';
-import PerfumeIntegralMockHelper from '../data/dto/PerfumeIntegralMockHelper';
+import PerfumeThumbMockHelper from '../mock_helper/PerfumeThumbMockHelper';
+import PerfumeThumbKeywordMockHelper from '../mock_helper/PerfumeThumbKeywordMockHelper';
+import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
 import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 import { ResponseDTO, SimpleResponseDTO } from '../../src/data/response/common';
 import {
-    PerfumeResponseDTO,
-    PerfumeDetailResponseDTO,
-    PerfumeRecommendResponseDTO,
+    PerfumeResponse,
+    PerfumeDetailResponse,
+    PerfumeRecommendResponse,
 } from '../../src/data/response/perfume';
 
 const user1tokenPerfume: string = JwtController.create(
@@ -69,8 +69,7 @@ describe('# Perfume Controller Test', () => {
                 .get(`${basePath}/perfume/1`)
                 .expect((res: request.Response) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
-                    const result: ResponseDTO<PerfumeDetailResponseDTO> =
-                        res.body;
+                    const result: ResponseDTO<PerfumeDetailResponse> = res.body;
                     expect(result.message).to.be.eq('향수 조회 성공');
                     done();
                 })
@@ -96,7 +95,7 @@ describe('# Perfume Controller Test', () => {
                     .expect((res: request.Response) => {
                         expect(res.status).to.be.eq(StatusCode.OK);
                         const result: ResponseDTO<
-                            ListAndCountDTO<PerfumeResponseDTO>
+                            ListAndCountDTO<PerfumeResponse>
                         > = res.body;
                         expect(result.message).to.be.eq('향수 검색 성공');
                         expect(result.data!!.count).to.be.gte(0);
@@ -140,7 +139,7 @@ describe('# Perfume Controller Test', () => {
                     .expect((res: request.Response) => {
                         expect(res.status).to.be.eq(StatusCode.OK);
                         const responseDTO: ResponseDTO<
-                            ListAndCountDTO<PerfumeResponseDTO>
+                            ListAndCountDTO<PerfumeResponse>
                         > = res.body;
                         expect(responseDTO.message).to.be.eq(
                             '유저가 좋아요한 향수 조회'
@@ -182,7 +181,7 @@ describe('# Perfume Controller Test', () => {
                     .expect((res: request.Response) => {
                         expect(res.status).to.be.eq(StatusCode.OK);
                         const responseDTO: ResponseDTO<
-                            ListAndCountDTO<PerfumeResponseDTO>
+                            ListAndCountDTO<PerfumeResponse>
                         > = res.body;
                         expect(responseDTO.message).to.be.eq(
                             '최근 검색한 향수 조회'
@@ -223,7 +222,7 @@ describe('# Perfume Controller Test', () => {
                     .expect((res: request.Response) => {
                         expect(res.status).to.be.eq(StatusCode.OK);
                         const responseDTO: ResponseDTO<
-                            ListAndCountDTO<PerfumeRecommendResponseDTO>
+                            ListAndCountDTO<PerfumeRecommendResponse>
                         > = res.body;
                         expect(responseDTO.message).to.be.eq(
                             '향수 개인 맞춤 추천'
@@ -263,7 +262,7 @@ describe('# Perfume Controller Test', () => {
                     .expect((res: request.Response) => {
                         expect(res.status).to.be.eq(StatusCode.OK);
                         const responseDTO: ResponseDTO<
-                            ListAndCountDTO<PerfumeRecommendResponseDTO>
+                            ListAndCountDTO<PerfumeRecommendResponse>
                         > = res.body;
                         expect(responseDTO.message).to.be.eq(
                             '향수 일반 추천 (성별, 나이 반영)'
@@ -290,7 +289,7 @@ describe('# Perfume Controller Test', () => {
                     .expect((res: request.Response) => {
                         expect(res.status).to.be.eq(StatusCode.OK);
                         const responseDTO: ResponseDTO<
-                            ListAndCountDTO<PerfumeResponseDTO>
+                            ListAndCountDTO<PerfumeResponse>
                         > = res.body;
                         expect(responseDTO.message).to.be.eq(
                             '서베이 향수 조회 성공'
@@ -316,7 +315,7 @@ describe('# Perfume Controller Test', () => {
                     .expect((res: request.Response) => {
                         expect(res.status).to.be.eq(200);
                         const responseDTO: ResponseDTO<
-                            ListAndCountDTO<PerfumeResponseDTO>
+                            ListAndCountDTO<PerfumeResponse>
                         > = res.body;
                         expect(responseDTO.message).to.be.eq(
                             '새로 등록된 향수 조회 성공'
