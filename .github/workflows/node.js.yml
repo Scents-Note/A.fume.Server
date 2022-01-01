@@ -47,3 +47,4 @@ jobs:
         AWS_SECRET_ACCESS_KEY: '${{ secrets.AWS_SECRET_ACCESS_KEY}}'
         ENCRYPTION_KEY: '${{ secrets.ENCRYPTION_KEY }}'
         ENCRYPT_ALGORITHM: '${{ secrets.ENCRYPT_ALGORITHM }}'
+        AWS_S3_URL: '${{ secrets.AWS_S3_URL }}'
