@@ -37,7 +37,7 @@ class NoteDao {
      * @param {number[]} ingredientIdxList
      */
 
-    async countIngredientUsed(
+    async getIngredientCountList(
         ingredientIdxList: number[]
     ): Promise<IngredientCount[]> {
         const result: IngredientCount[] = await Note.findAll({

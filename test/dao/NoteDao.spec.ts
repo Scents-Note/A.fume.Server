@@ -49,12 +49,12 @@ describe('# NoteDao Test', () => {
         });
     });
 
-    describe('# countIngredientUsed Test', () => {
+    describe('# getIngredientCountList Test', () => {
         it('# success case', (done: Done) => {
             const ingredientIdxList: number[] = [1, 2, 3, 4, 5];
             const expectedCountList: number[] = [5, 5, 5, 5, 4];
             noteDao
-                .countIngredientUsed(ingredientIdxList)
+                .getIngredientCountList(ingredientIdxList)
                 .then((result: { ingredientIdx: number; count: number }[]) => {
                     for (const json of result) {
                         expect(json.ingredientIdx).to.be.oneOf(

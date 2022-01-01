@@ -121,11 +121,17 @@ class SeriesService {
             (it: IngredientDTO) => it.ingredientIdx
         );
         const countMap: Map<number, number> = (
-            await this.noteDao.countIngredientUsed(ingredientIdxList)
-        ).reduce((prev: Map<number, number>, cur: any) => {
-            prev.set(cur.ingredientIdx, cur.count);
-            return prev;
-        }, new Map<number, number>());
+            await this.noteDao.getIngredientCountList(ingredientIdxList)
+        ).reduce(
+            (
+                prev: Map<number, number>,
+                cur: { ingredientIdx: number; count: number }
+            ): Map<number, number> => {
+                prev.set(cur.ingredientIdx, cur.count);
+                return prev;
+            },
+            new Map<number, number>()
+        );
         return ingredientList.filter((it: IngredientDTO) => {
             return (
                 (countMap.get(it.ingredientIdx) || 0) >
