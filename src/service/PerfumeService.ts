@@ -4,6 +4,7 @@ import PerfumeDao from '../dao/PerfumeDao';
 import PerfumeDefaultReviewDao from '../dao/PerfumeDefaultReviewDao';
 import NoteDao from '../dao/NoteDao';
 import LikePerfumeDao from '../dao/LikePerfumeDao';
+import S3FileDao from '../dao/S3FileDao';
 
 import PagingDTO from '../data/dto/PagingDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
@@ -22,14 +23,14 @@ import { PagingRequestDTO } from '../data/request/common';
 import { PerfumeSearchRequestDTO } from '../data/request/perfume';
 import PerfumeDefaultReviewDTO from '../data/dto/PerfumeDefaultReviewDTO';
 
-let perfumeDao = new PerfumeDao();
+let perfumeDao: PerfumeDao = new PerfumeDao();
 let reviewDao = require('../dao/ReviewDao.js');
-let noteDao = new NoteDao();
-let likePerfumeDao = new LikePerfumeDao();
+let noteDao: NoteDao = new NoteDao();
+let likePerfumeDao: LikePerfumeDao = new LikePerfumeDao();
 let keywordDao = require('../dao/KeywordDao.js');
-let defaultReviewDao = new PerfumeDefaultReviewDao();
-let s3FileDao = require('../dao/S3FileDao.js');
-let userDao = new UserDao();
+let defaultReviewDao: PerfumeDefaultReviewDao = new PerfumeDefaultReviewDao();
+let s3FileDao: S3FileDao = new S3FileDao();
+let userDao: UserDao = new UserDao();
 
 const {
     GENDER_WOMAN,
@@ -423,7 +424,7 @@ class PerfumeService {
         userDao = dao;
     }
 
-    setS3FileDao(dao: any) {
+    setS3FileDao(dao: S3FileDao) {
         s3FileDao = dao;
     }
 
