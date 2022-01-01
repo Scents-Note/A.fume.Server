@@ -14,6 +14,7 @@ import { updateRows, removeKeyJob, flatJob } from '../utils/func';
 import PerfumeDTO from '../data/dto/PerfumeDTO';
 import PerfumeSearchResultDTO from '../data/dto/PerfumeSearchResultDTO';
 import UserDTO from '../data/dto/UserDTO';
+import NoteDictDTO from '../data/dto/NoteDictDTO';
 import { PagingRequestDTO } from '../data/request/common';
 import { PerfumeSearchRequestDTO } from '../data/request/perfume';
 import PerfumeDefaultReviewDTO from '../data/dto/PerfumeDefaultReviewDTO';
@@ -33,8 +34,6 @@ const {
     PERFUME_NOTE_TYPE_NORMAL,
     DEFAULT_REVIEW_THRESHOLD,
 } = require('../utils/constantUtil.js');
-
-const { NoteDictDTO } = require('../data/dto');
 
 const commonJob = [
     removeKeyJob(

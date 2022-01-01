@@ -6,7 +6,7 @@ import {
 
 const { Note, Ingredient, sequelize, Sequelize } = require('../models');
 const { Op } = Sequelize;
-const { NoteDTO } = require('../data/dto');
+import NoteDTO from '../data/dto/NoteDTO';
 
 const {
     NOTE_TYPE_SINGLE,
@@ -154,10 +154,9 @@ module.exports.readByPerfumeIdx = async (perfumeIdx) => {
         raw: true,
         nest: true,
     });
-    return result.map(
-        (it) =>
-            new NoteDTO(
-                Object.assign({}, it, { ingredientName: it.Ingredients.name })
-            )
+    return result.map((it) =>
+        NoteDTO.createByJson(
+            Object.assign({}, it, { ingredientName: it.Ingredients.name })
+        )
     );
 };

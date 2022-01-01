@@ -12,7 +12,7 @@ const { expect } = chai;
 const noteDao = require('../../src/dao/NoteDao.js');
 
 const { Note, Ingredient } = require('../../src/models');
-const NoteDTO = require('../data/dto/NoteDTO');
+import NoteDTO from '../../src/data/dto/NoteDTO';
 
 describe('# NoteDao Test', () => {
     before(async function () {
@@ -108,7 +108,6 @@ describe('# NoteDao Test', () => {
                 .then(async (result) => {
                     result.forEach((note) => {
                         expect(note).instanceOf(NoteDTO);
-                        NoteDTO.validTest.call(note);
                     });
                     for (const note of result) {
                         const ingredient = await Ingredient.findByPk(
