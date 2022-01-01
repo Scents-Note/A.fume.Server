@@ -9,13 +9,19 @@ class SearchHistoryDao {
      * @param {number} userIdx
      * @param {number} perfumeIdx
      * @return {Promise<SearchHistoryDTO>}
+     * @throws {NotMatchedError} if there is no matched item.
      */
     async read(userIdx: number, perfumeIdx: number): Promise<SearchHistoryDTO> {
         return SearchHistory.findOne({
             where: { userIdx, perfumeIdx },
             raw: true,
             nest: true,
-        }).then(SearchHistoryDTO.createByJson);
+        }).then((it: any) => {
+            if (it == null) {
+                throw new NotMatchedError();
+            }
+            return SearchHistoryDTO.createByJson(it);
+        });
     }
 
     /**
@@ -24,7 +30,11 @@ class SearchHistoryDao {
      * @param {number} perfumeIdx
      * @return {Promise}
      */
-    async create(userIdx: number, perfumeIdx: number, count: number) {
+    async create(
+        userIdx: number,
+        perfumeIdx: number,
+        count: number
+    ): Promise<SearchHistoryDTO> {
         return SearchHistory.create(
             { userIdx, perfumeIdx, count },
             { raw: true, nest: true }

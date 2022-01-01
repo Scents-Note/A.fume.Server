@@ -2,6 +2,7 @@ import { Request, Response, NextFunction, RequestHandler } from 'express';
 
 import StatusCode from '../utils/statusCode';
 import PerfumeService from '../service/PerfumeService';
+import SearchHistoryService from '../service/SearchHistoryService';
 
 import { PerfumeSearchRequestDTO } from '../data/request/perfume';
 import {
@@ -18,8 +19,8 @@ import PerfumeSearchResultDTO from '../data/dto/PerfumeSearchResultDTO';
 import PerfumeThumbDTO from '../data/dto/PerfumeThumbDTO';
 import PerfumeThumbKeywordDTO from '../data/dto/PerfumeThumbKeywordDTO';
 
-let Perfume = new PerfumeService();
-let SearchHistory = require('../service/SearchHistoryService');
+let Perfume: PerfumeService = new PerfumeService();
+let SearchHistory: SearchHistoryService = new SearchHistoryService();
 
 const getPerfume: RequestHandler = (
     req: Request | any,
@@ -32,7 +33,7 @@ const getPerfume: RequestHandler = (
         Perfume.getPerfumeById(perfumeIdx, loginUserIdx),
         SearchHistory.incrementCount(loginUserIdx, perfumeIdx),
     ])
-        .then(([result, _]: [PerfumeIntegralDTO, any]) => {
+        .then(([result, _]: [PerfumeIntegralDTO, void]) => {
             return PerfumeDetailResponseDTO.createByPerfumeIntegralDTO(result);
         })
         .then((data: PerfumeDetailResponseDTO) => {
@@ -278,6 +279,6 @@ module.exports.setPerfumeService = (service: PerfumeService) => {
     Perfume = service;
 };
 
-module.exports.setSearchHistoryService = (service: any) => {
+module.exports.setSearchHistoryService = (service: SearchHistoryService) => {
     SearchHistory = service;
 };
