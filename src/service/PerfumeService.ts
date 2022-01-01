@@ -1,6 +1,7 @@
 import { NotMatchedError, FailedToCreateError } from '../utils/errors/errors';
 import UserDao from '../dao/UserDao';
 import PerfumeDao from '../dao/PerfumeDao';
+import PerfumeDefaultReviewDao from '../dao/PerfumeDefaultReviewDao';
 import PagingDTO from '../data/dto/PagingDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import PerfumeThumbDTO from '../data/dto/PerfumeThumbDTO';
@@ -15,13 +16,14 @@ import PerfumeSearchResultDTO from '../data/dto/PerfumeSearchResultDTO';
 import UserDTO from '../data/dto/UserDTO';
 import { PagingRequestDTO } from '../data/request/common';
 import { PerfumeSearchRequestDTO } from '../data/request/perfume';
+import PerfumeDefaultReviewDTO from '../data/dto/PerfumeDefaultReviewDTO';
 
 let perfumeDao = new PerfumeDao();
 let reviewDao = require('../dao/ReviewDao.js');
 let noteDao = require('../dao/NoteDao');
 let likePerfumeDao = require('../dao/LikePerfumeDao.js');
 let keywordDao = require('../dao/KeywordDao.js');
-let defaultReviewDao = require('../dao/PerfumeDefaultReviewDao.js');
+let defaultReviewDao = new PerfumeDefaultReviewDao();
 let s3FileDao = require('../dao/S3FileDao.js');
 let userDao = new UserDao();
 
@@ -64,11 +66,12 @@ class PerfumeService {
             _perfume
         );
 
-        const defaultReviewDTO: any = await defaultReviewDao
-            .readByPerfumeIdx(perfumeIdx)
-            .catch((_: Error) => {
-                return null;
-            });
+        const defaultReviewDTO: PerfumeDefaultReviewDTO | null =
+            await defaultReviewDao
+                .readByPerfumeIdx(perfumeIdx)
+                .catch((_: Error) => {
+                    return null;
+                });
         perfume.isLiked = await this.isLike(userIdx, perfumeIdx);
         const keywordList: string[] = [
             ...new Set<string>(
