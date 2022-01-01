@@ -2,6 +2,8 @@ import { NotMatchedError, FailedToCreateError } from '../utils/errors/errors';
 import UserDao from '../dao/UserDao';
 import PerfumeDao from '../dao/PerfumeDao';
 import PerfumeDefaultReviewDao from '../dao/PerfumeDefaultReviewDao';
+import NoteDao from '../dao/NoteDao';
+
 import PagingDTO from '../data/dto/PagingDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import PerfumeThumbDTO from '../data/dto/PerfumeThumbDTO';
@@ -21,7 +23,7 @@ import PerfumeDefaultReviewDTO from '../data/dto/PerfumeDefaultReviewDTO';
 
 let perfumeDao = new PerfumeDao();
 let reviewDao = require('../dao/ReviewDao.js');
-let noteDao = require('../dao/NoteDao');
+let noteDao = new NoteDao();
 let likePerfumeDao = require('../dao/LikePerfumeDao.js');
 let keywordDao = require('../dao/KeywordDao.js');
 let defaultReviewDao = new PerfumeDefaultReviewDao();
@@ -44,7 +46,6 @@ const commonJob = [
         'updatedAt'
     ),
 ];
-
 class PerfumeService {
     /**
      * 향수 세부 정보 조회

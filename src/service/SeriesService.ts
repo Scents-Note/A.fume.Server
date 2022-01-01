@@ -1,5 +1,6 @@
 import IngredientDao from '../dao/IngredientDao';
 import SeriesDao from '../dao/SeriesDao';
+import NoteDao from '../dao/NoteDao';
 
 import PagingDTO from '../data/dto/PagingDTO';
 import { PagingRequestDTO } from '../data/request/common';
@@ -21,7 +22,7 @@ class SeriesService {
     ) {
         this.seriesDao = seriesDao ?? new SeriesDao();
         this.ingredientDao = ingredientDao ?? new IngredientDao();
-        this.noteDao = noteDao ?? require('../dao/NoteDao.js');
+        this.noteDao = noteDao ?? new NoteDao();
     }
 
     /**
