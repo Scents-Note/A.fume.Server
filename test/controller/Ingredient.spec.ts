@@ -10,6 +10,8 @@ import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
 
 import IngredientMockHelper from '../mock_helper/IngredientMockHelper';
 
+import { MSG_GET_SEARCH_INGREDIENT_SUCCESS } from '../../src/utils/strings';
+
 const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';
@@ -38,7 +40,7 @@ describe('# Ingredient Controller Test', () => {
 
                     const { message, data } = res.body;
 
-                    expect(message).to.be.eq('재료 검색 성공');
+                    expect(message).to.be.eq(MSG_GET_SEARCH_INGREDIENT_SUCCESS);
                     expect(data.count).to.be.gt(0);
                     for (const item of data.rows) {
                         expect(item).to.be.have.property('ingredientIdx');
