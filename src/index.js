@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+import properties from './utils/properties';
+
 import { HttpError } from './utils/errors/errors';
 import { INTERNAL_SERVER_ERROR } from './utils/statusCode';
 
@@ -14,11 +16,11 @@ const cors = require('cors');
 
 const swaggerTools = require('swagger-tools');
 const jsyaml = require('js-yaml');
-const serverPort = process.env.PORT || 8080;
+const serverPort = properties.PORT || 8080;
 
 const app = express();
 
-console.log(`ENV: ${process.env.NODE_ENV}`);
+console.log(`ENV: ${properties.NODE_ENV}`);
 
 const sequelize = require('./models').sequelize;
 sequelize.sync();
@@ -27,9 +29,10 @@ app.use(cookieParser());
 
 require('./utils/db/mongoose.js');
 
-const allowList = process.env.CORS_ALLOW_LIST.split(',').map((it) => {
-    return it.trim();
-});
+const allowList =
+    properties.CORS_ALLOW_LIST.split(',').map((it) => {
+        return it.trim();
+    }) || [];
 const corsOptionsDelegate = function (req, callback) {
     const corsOptions = {
         origin: allowList.indexOf(req.header('Origin')) !== -1,
@@ -40,7 +43,7 @@ const corsOptionsDelegate = function (req, callback) {
 
 app.use(cors(corsOptionsDelegate));
 
-const localIpAddress = process.env.SERVER_IP || 'localhost';
+const localIpAddress = properties.SERVER_IP;
 
 const { verifyTokenMiddleware } = require('./middleware/auth.js');
 
@@ -48,7 +51,7 @@ const { verifyTokenMiddleware } = require('./middleware/auth.js');
 var options = {
     swaggerUi: path.join(__dirname, '/swagger.json'),
     controllers: path.join(__dirname, './controllers'),
-    useStubs: process.env.NODE_ENV === 'dev', // Conditionally turn on stubs (mock mode)
+    useStubs: properties.NODE_ENV === 'dev', // Conditionally turn on stubs (mock mode)
 };
 
 // The Swagger document (require it, build it programmatically, fetch it from a URL, ...)
@@ -84,7 +87,7 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
         let status;
         let message;
         if (err instanceof HttpError) {
-            process.env.NODE_ENV === 'development' && console.log(err.stack);
+            properties.NODE_ENV === 'development' && console.log(err.stack);
             status = err.status;
             message = err.message;
         } else {

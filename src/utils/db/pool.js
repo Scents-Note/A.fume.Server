@@ -3,10 +3,11 @@ import {
     NoReferencedRowError,
     DuplicatedEntryError,
 } from '../errors/errors';
+import properties from '../properties';
 
 const mysql = require('promise-mysql');
 
-const env = process.env.NODE_ENV || 'development';
+const env = properties.NODE_ENV;
 const config = require('../../config/config.js')[env];
 
 const poolPromise = mysql.createPool({

@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
+import properties from '../../src/utils/properties';
+
 import jsonwebtoken from 'jsonwebtoken';
 import JwtController from '../../src/lib/JwtController';
 import { expect } from 'chai';
@@ -55,7 +57,7 @@ describe('# verify Test', () => {
         expect({ ...result }).to.deep.eq({ ...payload });
     });
     it(' # fail case (Expired Token)', (done) => {
-        const jwtSecret: string = process.env.JWT_SECRET || 'secretKey';
+        const jwtSecret: string = properties.JWT_SECRET;
         const expiredToken = jsonwebtoken.sign({ ...payload }, jwtSecret, {
             expiresIn: '1s',
             issuer: 'afume-jackpot',

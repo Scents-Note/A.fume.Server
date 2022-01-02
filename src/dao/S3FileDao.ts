@@ -1,20 +1,12 @@
 import { getImageList } from '../lib/s3';
+import properties from '../utils/properties';
 
 const REGEX_IMAGE: RegExp = /\.jpg$|\.png$/i;
-
-function throwExpression(errorMessage: string): never {
-    throw new Error(errorMessage);
-}
 
 class S3FileDao {
     s3Url: string;
     constructor(s3Url?: string) {
-        this.s3Url =
-            s3Url ??
-            process.env.AWS_S3_URL ??
-            throwExpression(
-                "Can't not found ENV Property [process.env.AWS_S3_URL]"
-            );
+        this.s3Url = s3Url ?? properties.AWS_S3_URL;
     }
     getS3ImageList(perfumeIdx: number): Promise<string[]> {
         return getImageList({

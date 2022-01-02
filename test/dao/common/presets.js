@@ -1,12 +1,13 @@
+import properties from '../../../src/utils/properties';
 const { sequelize } = require('../../../src/models');
 
-if (process.env.NODE_ENV != 'test') {
+if (properties.NODE_ENV != 'test') {
     throw new Error('Only allow TEST ENV');
 }
 
 module.exports = async (context) => {
     context.timeout(100000);
-    if (process.env.NODE_ENV != 'test') {
+    if (properties.NODE_ENV != 'test') {
         throw new Error('Only allow TEST ENV');
     }
     await Promise.all([
