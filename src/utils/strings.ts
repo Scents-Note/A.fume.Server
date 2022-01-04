@@ -9,6 +9,38 @@ const _cancel: string = '취소';
 const _all: string = '전체';
 const _search: string = '검색';
 
+const NONE: string = 'None';
+const COLOGNE: string = '코롱';
+const EAU_DE_COLOGNE: string = '오 드 코롱';
+const EAU_DE_TOILETTE: string = '오 드 뚜왈렛';
+const EAU_DE_PERFUME: string = '오 드 퍼퓸';
+const PERFUME: string = '퍼퓸';
+const ETC: string = '기타';
+
+const SPRING: string = 'spring';
+const SUMMER: string = 'summer';
+const FALL: string = 'fall';
+const WINTER: string = 'winter';
+
+const LIGHT: string = 'light';
+const MEDIUM: string = 'medium';
+const HEAVY: string = 'heavy';
+
+const VERY_WEAK: string = 'veryWeak';
+const WEAK: string = 'weak';
+const NORMAL: string = 'normal';
+const STRONG: string = 'strong';
+const VERY_STRONG: string = 'veryStrong';
+
+const MALE: string = 'male';
+const NEUTRAL: string = 'neutral';
+const FEMALE: string = 'female';
+
+const TOP: string = 'top';
+const MIDDLE: string = 'middle';
+const BASE: string = 'base';
+const SINGLE: string = 'single';
+
 const MSG_GET_BRAND_FILTER_SUCCESS: string = `브랜드 필터 ${_get} ${_success}`;
 const MSG_GET_BRAND_ALL_SUCCESS: string = `브랜드 ${_all} ${_get} ${_success}`;
 const MSG_GET_SEARCH_INGREDIENT_SUCCESS: string = `재료 ${_search} ${_get} ${_success}`;
@@ -72,6 +104,32 @@ const MSG_CANT_USE_PASSWORD_BY_POLICY: string =
 const NO_AUTHORIZE: string = '권한이 없습니다.';
 
 export {
+    NONE,
+    COLOGNE,
+    EAU_DE_COLOGNE,
+    EAU_DE_TOILETTE,
+    EAU_DE_PERFUME,
+    PERFUME,
+    ETC,
+    SPRING,
+    SUMMER,
+    FALL,
+    WINTER,
+    LIGHT,
+    MEDIUM,
+    HEAVY,
+    VERY_WEAK,
+    WEAK,
+    NORMAL,
+    STRONG,
+    VERY_STRONG,
+    MALE,
+    NEUTRAL,
+    FEMALE,
+    TOP,
+    MIDDLE,
+    BASE,
+    SINGLE,
     MSG_GET_BRAND_FILTER_SUCCESS,
     MSG_GET_BRAND_ALL_SUCCESS,
     MSG_GET_SEARCH_INGREDIENT_SUCCESS,
