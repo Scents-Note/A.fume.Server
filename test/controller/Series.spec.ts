@@ -11,6 +11,11 @@ import SeriesFilterDTO from '../../src/data/dto/SeriesFilterDTO';
 import SeriesMockHelper from '../mock_helper/SeriesMockHelper';
 import SeriesFilterMockHelper from '../mock_helper/SeriesFilterMockHelper';
 
+import {
+    MSG_GET_SERIES_ALL_SUCCESS,
+    MSG_SEARCH_SERIES_LIST_SUCCESS,
+} from '../../src/utils/strings';
+
 const app = require('../../src/index.js');
 const expect = require('../utils/expect');
 
@@ -34,7 +39,7 @@ describe('# Series Controller Test', () => {
                 .expect((res) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
-                    expect(message).to.be.eq('series 전체 조회 성공');
+                    expect(message).to.be.eq(MSG_GET_SERIES_ALL_SUCCESS);
                     expect(data.count).to.be.eq(1);
                     data.rows.forEach((item: SeriesDTO) => {
                         expect.hasProperties.call(item, 'seriesIdx', 'name');
@@ -66,7 +71,7 @@ describe('# Series Controller Test', () => {
                 .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
-                    expect(message).to.be.eq('계열 검색 성공');
+                    expect(message).to.be.eq(MSG_SEARCH_SERIES_LIST_SUCCESS);
                     expect(data.count).to.be.eq(1);
                     data.rows.forEach((item: any) => {
                         expect.hasProperties.call(

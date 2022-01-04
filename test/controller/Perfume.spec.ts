@@ -24,6 +24,20 @@ import {
     PerfumeRecommendResponse,
 } from '../../src/data/response/perfume';
 
+import {
+    MSG_GET_PERFUME_DETAIL_SUCCESS,
+    MSG_GET_SEARCH_PERFUME_SUCCESS,
+    LIKE_PERFUME,
+    LIKE_PERFUME_CANCEL,
+    MSG_GET_RECENT_SEARCH_PERFUME_SUCCESS,
+    MSG_GET_RECOMMEND_PERFUME_BY_USER,
+    MSG_GET_RECOMMEND_PERFUME_BY_AGE_AND_GENDER,
+    MSG_GET_PERFUME_FOR_SURVEY_SUCCESS,
+    MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
+    MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
+    MSG_ABNORMAL_ACCESS,
+} from '../../src/utils/strings';
+
 const user1tokenPerfume: string = JwtController.create(
     new TokenPayloadDTO(1, 'nickname', 'MAN', 'email', 1995)
 );
@@ -70,7 +84,9 @@ describe('# Perfume Controller Test', () => {
                 .expect((res: request.Response) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const result: ResponseDTO<PerfumeDetailResponse> = res.body;
-                    expect(result.message).to.be.eq('향수 조회 성공');
+                    expect(result.message).to.be.eq(
+                        MSG_GET_PERFUME_DETAIL_SUCCESS
+                    );
                     done();
                 })
                 .catch((err: Error) => done(err));
@@ -97,7 +113,9 @@ describe('# Perfume Controller Test', () => {
                         const result: ResponseDTO<
                             ListAndCountDTO<PerfumeResponse>
                         > = res.body;
-                        expect(result.message).to.be.eq('향수 검색 성공');
+                        expect(result.message).to.be.eq(
+                            MSG_GET_SEARCH_PERFUME_SUCCESS
+                        );
                         expect(result.data!!.count).to.be.gte(0);
                         done();
                     })
@@ -115,7 +133,9 @@ describe('# Perfume Controller Test', () => {
                         expect(res.status).to.be.eq(StatusCode.OK);
                         const responseDTO: ResponseDTO<boolean> = res.body;
                         expect(responseDTO.message).to.be.eq(
-                            '향수 좋아요' + (responseDTO.data ? '' : ' 취소')
+                            responseDTO.data
+                                ? LIKE_PERFUME
+                                : LIKE_PERFUME_CANCEL
                         );
                         expect(responseDTO.data).to.be.not.undefined;
                         done();
@@ -142,7 +162,7 @@ describe('# Perfume Controller Test', () => {
                             ListAndCountDTO<PerfumeResponse>
                         > = res.body;
                         expect(responseDTO.message).to.be.eq(
-                            '유저가 좋아요한 향수 조회'
+                            MSG_GET_LIKED_PERFUME_LIST_SUCCESS
                         );
                         expect(responseDTO.data.count).to.be.gte(0);
                         done();
@@ -158,7 +178,7 @@ describe('# Perfume Controller Test', () => {
                         expect(res.status).to.be.eq(StatusCode.FORBIDDEN);
                         const responseDTO: SimpleResponseDTO = res.body;
                         expect(responseDTO.message).to.be.eq(
-                            '비정상적인 접근입니다.'
+                            MSG_ABNORMAL_ACCESS
                         );
                         done();
                     })
@@ -184,7 +204,7 @@ describe('# Perfume Controller Test', () => {
                             ListAndCountDTO<PerfumeResponse>
                         > = res.body;
                         expect(responseDTO.message).to.be.eq(
-                            '최근 검색한 향수 조회'
+                            MSG_GET_RECENT_SEARCH_PERFUME_SUCCESS
                         );
                         expect(responseDTO.data.count).to.be.gte(0);
                         done();
@@ -225,7 +245,7 @@ describe('# Perfume Controller Test', () => {
                             ListAndCountDTO<PerfumeRecommendResponse>
                         > = res.body;
                         expect(responseDTO.message).to.be.eq(
-                            '향수 개인 맞춤 추천'
+                            MSG_GET_RECOMMEND_PERFUME_BY_USER
                         );
                         expect(responseDTO.data.count).to.be.gte(0);
                         done();
@@ -265,7 +285,7 @@ describe('# Perfume Controller Test', () => {
                             ListAndCountDTO<PerfumeRecommendResponse>
                         > = res.body;
                         expect(responseDTO.message).to.be.eq(
-                            '향수 일반 추천 (성별, 나이 반영)'
+                            MSG_GET_RECOMMEND_PERFUME_BY_AGE_AND_GENDER
                         );
                         expect(responseDTO.data.count).to.be.gte(0);
                         done();
@@ -292,7 +312,7 @@ describe('# Perfume Controller Test', () => {
                             ListAndCountDTO<PerfumeResponse>
                         > = res.body;
                         expect(responseDTO.message).to.be.eq(
-                            '서베이 향수 조회 성공'
+                            MSG_GET_PERFUME_FOR_SURVEY_SUCCESS
                         );
                         expect(responseDTO.data.count).to.be.gte(0);
                         done();
@@ -318,7 +338,7 @@ describe('# Perfume Controller Test', () => {
                             ListAndCountDTO<PerfumeResponse>
                         > = res.body;
                         expect(responseDTO.message).to.be.eq(
-                            '새로 등록된 향수 조회 성공'
+                            MSG_GET_ADDED_PERFUME_RECENT_SUCCESS
                         );
                         expect(responseDTO.data.count).to.be.gte(0);
                         done();

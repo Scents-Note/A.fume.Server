@@ -1,12 +1,18 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
 import BrandService from '../service/BrandService';
+
 import { ResponseDTO } from '../data/response/common';
 import { BrandResponse, BrandFilterResponse } from '../data/response/brand';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import BrandDTO from '../data/dto/BrandDTO';
-import StatusCode from '../utils/statusCode';
 import BrandFilterDTO from '../data/dto/BrandFilterDTO';
+
+import StatusCode from '../utils/statusCode';
+import {
+    MSG_GET_BRAND_FILTER_SUCCESS,
+    MSG_GET_BRAND_ALL_SUCCESS,
+} from '../utils/strings';
 
 let Brand: BrandService = new BrandService();
 
@@ -29,7 +35,7 @@ const getBrandAll: RequestHandler = (
         .then((result: ListAndCountDTO<BrandResponse>) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<BrandResponse>>(
-                    '브랜드 조회 성공',
+                    MSG_GET_BRAND_ALL_SUCCESS,
                     result
                 )
             );
@@ -49,7 +55,7 @@ const getFilterBrand: RequestHandler = (
         .then((response: BrandFilterResponse[]) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<BrandFilterResponse[]>(
-                    '브랜드 필터 조회 성공',
+                    MSG_GET_BRAND_FILTER_SUCCESS,
                     response
                 )
             );

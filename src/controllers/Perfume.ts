@@ -19,6 +19,20 @@ import PerfumeSearchResultDTO from '../data/dto/PerfumeSearchResultDTO';
 import PerfumeThumbDTO from '../data/dto/PerfumeThumbDTO';
 import PerfumeThumbKeywordDTO from '../data/dto/PerfumeThumbKeywordDTO';
 
+import {
+    MSG_GET_PERFUME_DETAIL_SUCCESS,
+    MSG_GET_SEARCH_PERFUME_SUCCESS,
+    LIKE_PERFUME,
+    LIKE_PERFUME_CANCEL,
+    MSG_GET_RECENT_SEARCH_PERFUME_SUCCESS,
+    MSG_GET_RECOMMEND_PERFUME_BY_USER,
+    MSG_GET_RECOMMEND_PERFUME_BY_AGE_AND_GENDER,
+    MSG_GET_PERFUME_FOR_SURVEY_SUCCESS,
+    MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
+    MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
+    MSG_ABNORMAL_ACCESS,
+} from '../utils/strings';
+
 let Perfume: PerfumeService = new PerfumeService();
 let SearchHistory: SearchHistoryService = new SearchHistoryService();
 
@@ -38,7 +52,10 @@ const getPerfume: RequestHandler = (
         })
         .then((data: PerfumeDetailResponse) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<PerfumeDetailResponse>('향수 조회 성공', data)
+                new ResponseDTO<PerfumeDetailResponse>(
+                    MSG_GET_PERFUME_DETAIL_SUCCESS,
+                    data
+                )
             );
         })
         .catch((err: Error) => next(err));
@@ -67,7 +84,7 @@ const searchPerfume: RequestHandler = (
         .then((data: ListAndCountDTO<PerfumeResponse>) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
-                    '향수 검색 성공',
+                    MSG_GET_SEARCH_PERFUME_SUCCESS,
                     data
                 )
             );
@@ -86,7 +103,7 @@ const likePerfume: RequestHandler = (
         .then((result: boolean) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<boolean>(
-                    `향수 좋아요${result ? '' : ' 취소'}`,
+                    result ? LIKE_PERFUME : LIKE_PERFUME_CANCEL,
                     result
                 )
             );
@@ -113,7 +130,7 @@ const getRecentPerfume: RequestHandler = (
         .then((data: ListAndCountDTO<PerfumeResponse>) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
-                    '최근 검색한 향수 조회',
+                    MSG_GET_RECENT_SEARCH_PERFUME_SUCCESS,
                     data
                 )
             );
@@ -140,7 +157,7 @@ const recommendPersonalPerfume: RequestHandler = (
         .then((data: ListAndCountDTO<PerfumeRecommendResponse>) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeRecommendResponse>>(
-                    '향수 개인 맞춤 추천',
+                    MSG_GET_RECOMMEND_PERFUME_BY_USER,
                     data
                 )
             );
@@ -167,7 +184,7 @@ const recommendCommonPerfume: RequestHandler = (
         .then((data: ListAndCountDTO<PerfumeRecommendResponse>) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeRecommendResponse>>(
-                    '향수 일반 추천 (성별, 나이 반영)',
+                    MSG_GET_RECOMMEND_PERFUME_BY_AGE_AND_GENDER,
                     data
                 )
             );
@@ -191,7 +208,7 @@ const getSurveyPerfume: RequestHandler = (
         .then((data: ListAndCountDTO<PerfumeResponse>) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
-                    '서베이 향수 조회 성공',
+                    MSG_GET_PERFUME_FOR_SURVEY_SUCCESS,
                     data
                 )
             );
@@ -218,7 +235,7 @@ const getNewPerfume: RequestHandler = (
         .then((data: ListAndCountDTO<PerfumeResponse>) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
-                    '새로 등록된 향수 조회 성공',
+                    MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
                     data
                 )
             );
@@ -238,7 +255,7 @@ const getLikedPerfume: RequestHandler = (
     );
     if (loginUserIdx != userIdx) {
         res.status(StatusCode.FORBIDDEN).json(
-            new SimpleResponseDTO('비정상적인 접근입니다.')
+            new SimpleResponseDTO(MSG_ABNORMAL_ACCESS)
         );
         return;
     }
@@ -252,7 +269,7 @@ const getLikedPerfume: RequestHandler = (
         .then((data: ListAndCountDTO<PerfumeResponse>) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
-                    '유저가 좋아요한 향수 조회',
+                    MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
                     data
                 )
             );

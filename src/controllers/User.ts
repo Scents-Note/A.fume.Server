@@ -16,6 +16,20 @@ import UserAuthDTO from '../data/dto/UserAuthDTO';
 import { UnAuthorizedError } from '../utils/errors/errors';
 import { GenderMap } from '../utils/enumType';
 
+import {
+    MSG_REGISTER_SUCCESS,
+    MSG_DELETE_USER_SUCCESS,
+    MSG_LOGIN_SUCCESS,
+    MSG_MODIFY_USER_SUCCESS,
+    MSG_CHANGE_PASSWORD_SUCCESS,
+    MSG_GET_AUTHORIZE_INFO,
+    MSG_DUPLICATE_CHECK_EMAIL_AVAILABLE,
+    MSG_DUPLICATE_CHECK_EMAIL_UNAVAILABLE,
+    MSG_DUPLICATE_CHECK_NAME_AVAILABLE,
+    MSG_DUPLICATE_CHECK_NAME_UNAVAILABLE,
+    MSG_POST_SURVEY_SUCCESS,
+} from '../utils/strings';
+
 const { GRADE_USER } = require('../utils/constantUtil');
 
 let User = require('../service/UserService');
@@ -42,7 +56,10 @@ const registerUser: RequestHandler = (
         })
         .then((response: UserRegisterResponse) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<UserRegisterResponse>('회원가입 성공', response)
+                new ResponseDTO<UserRegisterResponse>(
+                    MSG_REGISTER_SUCCESS,
+                    response
+                )
             );
         })
         .catch((err: Error) => next(err));
@@ -57,7 +74,7 @@ const deleteUser: RequestHandler = (
     User.deleteUser(userIdx)
         .then((_: any) => {
             res.status(StatusCode.OK).json(
-                new SimpleResponseDTO('유저 삭제 성공')
+                new SimpleResponseDTO(MSG_DELETE_USER_SUCCESS)
             );
         })
         .catch((err: Error) => next(err));
@@ -75,7 +92,7 @@ const loginUser: RequestHandler = (
         })
         .then((response: LoginResponse) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<LoginResponse>('로그인 성공', response)
+                new ResponseDTO<LoginResponse>(MSG_LOGIN_SUCCESS, response)
             );
         })
         .catch((err: Error) => next(err));
@@ -104,7 +121,7 @@ const updateUser: RequestHandler = (
         })
         .then((response: UserResponse) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<UserResponse>('유저 수정 성공', response)
+                new ResponseDTO<UserResponse>(MSG_MODIFY_USER_SUCCESS, response)
             );
         })
         .catch((err: Error) => next(err));
@@ -120,7 +137,7 @@ const changePassword: RequestHandler = (
     User.changePassword({ userIdx, prevPassword, newPassword })
         .then(() => {
             res.status(StatusCode.OK).json(
-                new SimpleResponseDTO('비밀번호 변경 성공')
+                new SimpleResponseDTO(MSG_CHANGE_PASSWORD_SUCCESS)
             );
         })
         .catch((err: Error) => next(err));
@@ -138,7 +155,10 @@ const authUser: RequestHandler = (
         })
         .then((response: UserAuthResponse) => {
             res.status(StatusCode.OK).json(
-                new ResponseDTO<UserAuthResponse>('권한 조회', response)
+                new ResponseDTO<UserAuthResponse>(
+                    MSG_GET_AUTHORIZE_INFO,
+                    response
+                )
             );
         })
         .catch((err: Error) => next(err));
@@ -155,14 +175,14 @@ const validateEmail: RequestHandler = (
             if (response) {
                 res.status(StatusCode.OK).json(
                     new ResponseDTO<boolean>(
-                        'Email 중복 체크: 사용 가능',
+                        MSG_DUPLICATE_CHECK_EMAIL_AVAILABLE,
                         response
                     )
                 );
             } else {
                 res.status(StatusCode.CONFLICT).json(
                     new ResponseDTO<boolean>(
-                        'Email 중복 체크: 사용 불가능',
+                        MSG_DUPLICATE_CHECK_EMAIL_UNAVAILABLE,
                         response
                     )
                 );
@@ -178,7 +198,10 @@ const validateName: RequestHandler = (
 ) => {
     if (!req.query.nickname) {
         res.status(StatusCode.CONFLICT).json(
-            new ResponseDTO<boolean>('Name 중복 체크: 사용 불가능', false)
+            new ResponseDTO<boolean>(
+                MSG_DUPLICATE_CHECK_NAME_UNAVAILABLE,
+                false
+            )
         );
         return;
     }
@@ -188,14 +211,14 @@ const validateName: RequestHandler = (
             if (response) {
                 res.status(StatusCode.OK).json(
                     new ResponseDTO<boolean>(
-                        'Name 중복 체크: 사용 가능',
+                        MSG_DUPLICATE_CHECK_NAME_AVAILABLE,
                         response
                     )
                 );
             } else {
                 res.status(StatusCode.CONFLICT).json(
                     new ResponseDTO<boolean>(
-                        'Name 중복 체크: 사용 불가능',
+                        MSG_DUPLICATE_CHECK_NAME_UNAVAILABLE,
                         response
                     )
                 );
@@ -214,7 +237,7 @@ const postSurvey: RequestHandler = (
     User.addSurvey(userIdx, keywordList, perfumeList, seriesList)
         .then(() => {
             res.status(StatusCode.OK).json(
-                new SimpleResponseDTO('Survey 등록 성공')
+                new SimpleResponseDTO(MSG_POST_SURVEY_SUCCESS)
             );
         })
         .catch((err: Error) => next(err));

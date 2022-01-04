@@ -12,6 +12,11 @@ import StatusCode from '../../src/utils/statusCode';
 
 import BrandService from '../../src/service/BrandService';
 
+import {
+    MSG_GET_BRAND_ALL_SUCCESS,
+    MSG_GET_BRAND_FILTER_SUCCESS,
+} from '../../src/utils/strings';
+
 const app = require('../../src/index.js');
 const expect = require('../utils/expect');
 
@@ -37,7 +42,7 @@ describe('# Brand Controller Test', () => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
 
-                    expect(message).to.be.eq('브랜드 조회 성공');
+                    expect(message).to.be.eq(MSG_GET_BRAND_ALL_SUCCESS);
                     expect(data.count).to.be.gt(0);
                     data.rows.forEach((brand: BrandDTO) => {
                         expect.hasProperties.call(brand, 'brandIdx', 'name');
@@ -63,7 +68,7 @@ describe('# Brand Controller Test', () => {
                 .expect((res) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
-                    expect(message).to.be.eq('브랜드 필터 조회 성공');
+                    expect(message).to.be.eq(MSG_GET_BRAND_FILTER_SUCCESS);
                     for (const item of data) {
                         item.brands.forEach((brand: BrandResponse) => {
                             expect.hasProperties.call(

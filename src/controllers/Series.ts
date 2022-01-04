@@ -16,6 +16,12 @@ import SeriesDTO from '../data/dto/SeriesDTO';
 import SeriesFilterDTO from '../data/dto/SeriesFilterDTO';
 import IngredientDTO from '../data/dto/IngredientDTO';
 
+import {
+    MSG_GET_SERIES_ALL_SUCCESS,
+    MSG_GET_INGREDIENT_BY_SERIES_SUCCESS,
+    MSG_SEARCH_SERIES_LIST_SUCCESS,
+} from '../utils/strings';
+
 let Series = new SeriesService();
 let Ingredient = new IngredientService();
 
@@ -34,7 +40,7 @@ const getSeriesAll: RequestHandler = (
         .then((result: ListAndCountDTO<SeriesResponse>) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<SeriesResponse>>(
-                    'series 전체 조회 성공',
+                    MSG_GET_SERIES_ALL_SUCCESS,
                     result
                 )
             );
@@ -58,7 +64,7 @@ const getIngredients: RequestHandler = (
         .then((result: ListAndCountDTO<IngredientResponse>) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<IngredientResponse>>(
-                    'Series에 해당하는 Ingredient 조회 성공',
+                    MSG_GET_INGREDIENT_BY_SERIES_SUCCESS,
                     result
                 )
             );
@@ -81,7 +87,7 @@ const getFilterSeries: RequestHandler = (
         .then((result: ListAndCountDTO<SeriesFilterResponse>) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<SeriesFilterResponse>>(
-                    '계열 검색 성공',
+                    MSG_SEARCH_SERIES_LIST_SUCCESS,
                     result
                 )
             );

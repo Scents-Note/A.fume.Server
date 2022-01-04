@@ -7,6 +7,8 @@ import { ResponseDTO } from '../data/response/common';
 import { IngredientResponse } from '../data/response/ingredient';
 import StatusCode from '../utils/statusCode';
 
+import { MSG_GET_SEARCH_INGREDIENT_SUCCESS } from '../utils/strings';
+
 let Ingredient: IngredientService = new IngredientService();
 
 const getIngredientAll: RequestHandler = (
@@ -24,7 +26,7 @@ const getIngredientAll: RequestHandler = (
         .then((result: ListAndCountDTO<IngredientResponse>) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<IngredientResponse>>(
-                    '재료 검색 성공',
+                    MSG_GET_SEARCH_INGREDIENT_SUCCESS,
                     result
                 )
             );
