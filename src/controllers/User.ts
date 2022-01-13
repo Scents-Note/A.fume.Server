@@ -70,7 +70,7 @@ const deleteUser: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    const userIdx = req.swagger.params['userIdx'].value;
+    const userIdx = req.params['userIdx'];
     User.deleteUser(userIdx)
         .then((_: any) => {
             res.status(StatusCode.OK).json(
@@ -103,7 +103,7 @@ const updateUser: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    const userIdx = req.swagger.params['userIdx'].value;
+    const userIdx = req.params['userIdx'];
     const tokenUserIdx = req.middlewareToken.loginUserIdx;
     if (userIdx != tokenUserIdx) {
         next(new UnAuthorizedError());

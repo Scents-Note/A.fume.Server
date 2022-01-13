@@ -41,7 +41,7 @@ const getPerfume: RequestHandler = (
     res: Response,
     next: NextFunction
 ): any => {
-    const perfumeIdx: number = req.swagger.params['perfumeIdx'].value;
+    const perfumeIdx: number = req.params['perfumeIdx'];
     const loginUserIdx: number = req.middlewareToken.loginUserIdx || -1;
     Promise.all([
         Perfume.getPerfumeById(perfumeIdx, loginUserIdx),
@@ -249,7 +249,7 @@ const getLikedPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
-    const userIdx: number = req.swagger.params['userIdx'].value;
+    const userIdx: number = req.params['userIdx'];
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
