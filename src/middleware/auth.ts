@@ -16,7 +16,6 @@ function verifyTokenMiddleware(
     next: express.NextFunction
 ) {
     const currentScopes = req.swagger['x-security-scopes'] || [];
-    console.log(currentScopes);
     const token = req.headers['x-access-token'] || '';
     req.middlewareToken = {};
     if (!token) {
