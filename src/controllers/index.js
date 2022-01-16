@@ -24,9 +24,10 @@ module.exports = (specs) => {
                 );
                 continue;
             }
-            console.log(
-                `route [${method}] ${endpoint} : ${controller}.${operationId}`
-            );
+            // TODO 해당 정보는 파일로 로깅하기
+            // console.log(
+            //     `route [${method}] ${endpoint} : ${controller}.${operationId}`
+            // );
             router[method](endpoint, operation);
         }
     }

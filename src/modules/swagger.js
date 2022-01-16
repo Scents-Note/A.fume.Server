@@ -79,9 +79,10 @@ for (const _endpoint in specs.paths) {
 
     for (const method in specs.paths[_endpoint]) {
         const parameters = specs.paths[_endpoint][method];
-        console.log(
-            `x-security-scopes | [${method}] ${expressPath} : ${parameters['x-security-scopes']}`
-        );
+        // TODO 해당 정보는 file로 로깅하기
+        // console.log(
+        //     `x-security-scopes | [${method}] ${expressPath} : ${parameters['x-security-scopes']}`
+        // );
         apiCache[cacheKey] = parameters;
         apiCache[cacheKey].re = re;
     }
