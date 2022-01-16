@@ -2,6 +2,8 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const express = require('express');
 const parseurl = require('parseurl');
+var pathToRegexp = require('path-to-regexp');
+const _ = require('lodash');
 const { default: properties } = require('../utils/properties');
 
 const localIpAddress = properties.SERVER_IP || 'localhost';
@@ -61,29 +63,42 @@ const options = {
 const specs = swaggerJsdoc(options);
 
 const swaggerRouter = express.Router();
+
+var apiCache = {};
+
 for (const _endpoint in specs.paths) {
     if (_endpoint[0] != '/') {
         continue;
     }
-    const endpoint = expressStylePath(
-        specs.basePath,
-        _endpoint.replace(/{/g, ':').replace(/}/g, '')
-    );
+    const expressPath = expressStylePath(specs.basePath, _endpoint);
+
+    var keys = [];
+    var re = pathToRegexp(expressPath, keys);
+
+    var cacheKey = re.toString();
+
     for (const method in specs.paths[_endpoint]) {
         const parameters = specs.paths[_endpoint][method];
         console.log(
-            `x-security-scopes | [${method}] ${endpoint} : ${parameters['x-security-scopes']}`
+            `x-security-scopes | [${method}] ${expressPath} : ${parameters['x-security-scopes']}`
         );
-        swaggerRouter[method].call(
-            swaggerRouter,
-            endpoint,
-            (req, res, next) => {
-                req.swagger = parameters;
-                req.next();
-            }
-        );
+        apiCache[cacheKey] = parameters;
+        apiCache[cacheKey].re = re;
     }
 }
+
+swaggerRouter.use((req, res, next) => {
+    var path = parseurl(req).pathname;
+    const cacheEntry =
+        apiCache[path] ||
+        _.find(apiCache, function (metadata) {
+            const match = metadata.re.exec(path);
+            return _.isArray(match);
+        });
+    req.swagger = cacheEntry;
+    console.log(req.swagger);
+    next();
+});
 
 module.exports = {
     swaggerUi,
