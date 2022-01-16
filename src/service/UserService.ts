@@ -3,6 +3,7 @@ import {
     PasswordPolicyError,
     NotMatchedError,
 } from '../utils/errors/errors';
+import UserDao from '../dao/UserDao';
 import { encrypt, decrypt } from '../lib/crypto';
 import JwtController from '../lib/JwtController';
 import TokenPayloadDTO from '../data/dto/TokenPayloadDTO';
@@ -17,7 +18,7 @@ class UserService {
     crypto: any;
     jwt: any;
     constructor(userDao?: any, crypto?: any, jwt?: any) {
-        this.userDao = userDao || require('../dao/UserDao.js');
+        this.userDao = userDao || new UserDao();
         this.crypto = crypto || { encrypt, decrypt };
         this.jwt = jwt || {
             create: JwtController.create,

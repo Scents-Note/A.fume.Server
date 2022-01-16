@@ -10,6 +10,8 @@ import {
     LoginResponse,
 } from '../data/response/user';
 
+import UserService from '../service/UserService';
+
 import { UserRegisterRequest, UserEditRequest } from '../data/request/user';
 import UserDTO from '../data/dto/UserDTO';
 import UserAuthDTO from '../data/dto/UserAuthDTO';
@@ -32,7 +34,7 @@ import {
 
 const { GRADE_USER } = require('../utils/constantUtil');
 
-let User = require('../service/UserService');
+let User: UserService = new UserService();
 
 module.exports.setUserService = (userService: any) => {
     User = userService;
