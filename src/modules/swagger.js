@@ -97,7 +97,6 @@ swaggerRouter.use((req, res, next) => {
             return _.isArray(match);
         });
     req.swagger = cacheEntry;
-    console.log(req.swagger);
     next();
 });
 
