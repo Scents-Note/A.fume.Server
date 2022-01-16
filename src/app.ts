@@ -4,7 +4,6 @@ import cookieParser from 'cookie-parser';
 import cors, { CorsOptions, CorsOptionsDelegate } from 'cors';
 import express, { Express } from 'express';
 import createError from 'http-errors';
-import http from 'http';
 
 import properties from './utils/properties';
 
@@ -14,11 +13,7 @@ import { verifyTokenMiddleware } from './middleware/auth';
 
 const { swaggerUi, specs, swaggerRouter } = require('./modules/swagger');
 
-const serverPort: string = properties.PORT;
-
 const app: Express = express();
-
-console.log(`ENV: ${properties.NODE_ENV}`);
 
 const sequelize: any = require('./models').sequelize;
 sequelize.sync();
@@ -45,8 +40,6 @@ const corsOptionsDelegate: CorsOptionsDelegate<express.Request> = function (
 
 app.use(cors(corsOptionsDelegate));
 app.use(express.json());
-
-const localIpAddress: string = properties.SERVER_IP;
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 
@@ -84,7 +77,7 @@ app.use(function (
 ) {
     let status: number;
     let message: string;
-    if (err instanceof HttpError) {
+    if (err instanceof HttpError || err instanceof createError.HttpError) {
         properties.NODE_ENV !== 'production' && console.log(err.stack);
         status = err.status;
         message = err.message;
@@ -99,21 +92,6 @@ app.use(function (
     const payload: string = JSON.stringify({ message }, null, 2);
     res.write(payload);
     res.end();
-});
-
-// Start the server
-http.createServer(app).listen(serverPort, function () {
-    console.log(
-        'Your server is listening on port %d (http://%s:%d)',
-        serverPort,
-        localIpAddress,
-        serverPort
-    );
-    console.log(
-        'Swagger-ui is available on http://%s:%d/docs',
-        localIpAddress,
-        serverPort
-    );
 });
 
 require('./lib/cron.js');
