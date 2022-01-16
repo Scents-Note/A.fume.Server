@@ -1,9 +1,33 @@
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsdoc = require('swagger-jsdoc');
 const express = require('express');
+const parseurl = require('parseurl');
 const { default: properties } = require('../utils/properties');
 
 const localIpAddress = properties.SERVER_IP || 'localhost';
+
+// Helper functions
+var expressStylePath = function (basePath, apiPath) {
+    basePath = parseurl({ url: basePath || '/' }).pathname || '/';
+
+    // Make sure the base path starts with '/'
+    if (basePath.charAt(0) !== '/') {
+        basePath = '/' + basePath;
+    }
+
+    // Make sure the base path ends with '/'
+    if (basePath.charAt(basePath.length - 1) !== '/') {
+        basePath = basePath + '/';
+    }
+
+    // Make sure the api path does not start with '/' since the base path will end with '/'
+    if (apiPath.charAt(0) === '/') {
+        apiPath = apiPath.substring(1);
+    }
+
+    // Replace Swagger syntax for path parameters with Express' version (All Swagger path parameters are required)
+    return (basePath + apiPath).replace(/{/g, ':').replace(/}/g, '');
+};
 
 const options = {
     swaggerDefinition: {
@@ -41,7 +65,10 @@ for (const _endpoint in specs.paths) {
     if (_endpoint[0] != '/') {
         continue;
     }
-    const endpoint = _endpoint.replace(/{/g, ':').replace(/}/g, '');
+    const endpoint = expressStylePath(
+        specs.basePath,
+        _endpoint.replace(/{/g, ':').replace(/}/g, '')
+    );
     for (const method in specs.paths[_endpoint]) {
         const parameters = specs.paths[_endpoint][method];
         console.log(

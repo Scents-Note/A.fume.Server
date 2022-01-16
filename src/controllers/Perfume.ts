@@ -42,6 +42,10 @@ const getPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const perfumeIdx: number = req.params['perfumeIdx'];
+    if (isNaN(perfumeIdx)) {
+        next();
+        return;
+    }
     const loginUserIdx: number = req.middlewareToken.loginUserIdx || -1;
     Promise.all([
         Perfume.getPerfumeById(perfumeIdx, loginUserIdx),
@@ -97,7 +101,7 @@ const likePerfume: RequestHandler = (
     res: Response,
     next: NextFunction
 ): any => {
-    const perfumeIdx: number = req.swagger.params['perfumeIdx'].value;
+    const perfumeIdx: number = req.params['perfumeIdx'];
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
     Perfume.likePerfume(loginUserIdx, perfumeIdx)
         .then((result: boolean) => {

@@ -10,7 +10,6 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-host: {SERVER_URL}:{SERVER_PORT}
 basePath: /A.fume/api/0.0.1
 tags:
 - name: perfume
@@ -121,9 +120,9 @@ paths:
       description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 최근에 향수 세부 보기를 수행한 향수들을 조회한다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
       operationId: getRecentPerfume
       security:
-        - userToken: []
+      - userToken: []
       x-security-scopes:
-        - user
+      - user
       produces:
       - application/json
       parameters:
