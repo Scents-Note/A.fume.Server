@@ -31,6 +31,8 @@ import {
     MSG_DUPLICATE_CHECK_NAME_UNAVAILABLE,
     MSG_POST_SURVEY_SUCCESS,
 } from '../utils/strings';
+import UserInputDTO from '../data/dto/UserInputDTO';
+import LoginInfoDTO from '../data/dto/LoginInfoDTO';
 
 const { GRADE_USER } = require('../utils/constantUtil');
 
@@ -52,7 +54,7 @@ const registerUser: RequestHandler = (
         next(new UnAuthorizedError());
         return;
     }
-    User.createUser(userRegisterRequest)
+    User.createUser(UserInputDTO.createByJson(userRegisterRequest))
         .then((result: UserDTO) => {
             return UserRegisterResponse.createByJson(result);
         })
@@ -87,9 +89,10 @@ const loginUser: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    const { email, password } = req.body;
+    const email: string = req.body.email;
+    const password: string = req.body.password;
     User.loginUser(email, password)
-        .then((result: UserDTO) => {
+        .then((result: LoginInfoDTO) => {
             return LoginResponse.createByJson(result);
         })
         .then((response: LoginResponse) => {
@@ -117,7 +120,7 @@ const updateUser: RequestHandler = (
     if (userEditRequest.gender) {
         userEditRequest.gender = GenderMap[userEditRequest.gender];
     }
-    User.updateUser(userEditRequest)
+    User.updateUser(UserInputDTO.createByJson(userEditRequest))
         .then((result: UserResponse) => {
             return UserResponse.createByJson(result);
         })
@@ -136,7 +139,7 @@ const changePassword: RequestHandler = (
 ) => {
     const userIdx = req.middlewareToken.loginUserIdx;
     const { prevPassword, newPassword } = req.body;
-    User.changePassword({ userIdx, prevPassword, newPassword })
+    User.changePassword(userIdx, prevPassword, newPassword)
         .then(() => {
             res.status(StatusCode.OK).json(
                 new SimpleResponseDTO(MSG_CHANGE_PASSWORD_SUCCESS)
@@ -171,7 +174,7 @@ const validateEmail: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    const { email } = req.query;
+    const email: string = req.query.email as string;
     User.validateEmail(email)
         .then((response: boolean) => {
             if (response) {

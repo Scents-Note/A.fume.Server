@@ -184,7 +184,7 @@ class UserService {
      * @param {string} Email
      * @returns {boolean}
      **/
-    async validateEmail(email: string): Promise<Boolean> {
+    async validateEmail(email: string): Promise<boolean> {
         try {
             await this.userDao.read({ email });
             return false;
@@ -202,7 +202,7 @@ class UserService {
      * @param {string} nickname
      * @returns {boolean}
      **/
-    async validateName(nickname: string): Promise<Boolean> {
+    async validateName(nickname: string): Promise<boolean> {
         try {
             await this.userDao.read({ nickname });
             return false;
