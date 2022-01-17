@@ -12,7 +12,7 @@ import {
     MSG_WRONG_PASSWORD,
     MSG_CANT_USE_PASSWORD_BY_POLICY,
     NO_AUTHORIZE,
-} from '../strings';
+} from '../../utils/strings';
 
 class HttpError extends Error {
     status: number;

@@ -3,6 +3,7 @@ import {
     PasswordPolicyError,
     NotMatchedError,
 } from '../utils/errors/errors';
+import UserDao from '../dao/UserDao';
 import { encrypt, decrypt } from '../lib/crypto';
 import JwtController from '../lib/JwtController';
 import TokenPayloadDTO from '../data/dto/TokenPayloadDTO';
@@ -11,13 +12,14 @@ import TokenGroupDTO from '../data/dto/TokenGroupDTO';
 import UserAuthDTO from '../data/dto/UserAuthDTO';
 import UserDTO from '../data/dto/UserDTO';
 import UserInputDTO from '../data/dto/UserInputDTO';
+import SurveyDTO from '../data/dto/SurveyDTO';
 
 class UserService {
-    userDao: any;
+    userDao: UserDao;
     crypto: any;
     jwt: any;
-    constructor(userDao?: any, crypto?: any, jwt?: any) {
-        this.userDao = userDao || require('../dao/UserDao.js');
+    constructor(userDao?: UserDao, crypto?: any, jwt?: any) {
+        this.userDao = userDao || new UserDao();
         this.crypto = crypto || { encrypt, decrypt };
         this.jwt = jwt || {
             create: JwtController.create,
@@ -144,7 +146,7 @@ class UserService {
     async updateUser(userInputDTO: UserInputDTO): Promise<UserDTO> {
         await this.userDao.update(userInputDTO);
         const user: UserDTO = await this.userDao.readByIdx(
-            userInputDTO.userIdx
+            userInputDTO.userIdx!!
         );
         return UserDTO.createByJson(user);
     }
@@ -183,7 +185,7 @@ class UserService {
      * @param {string} Email
      * @returns {boolean}
      **/
-    async validateEmail(email: string): Promise<Boolean> {
+    async validateEmail(email: string): Promise<boolean> {
         try {
             await this.userDao.read({ email });
             return false;
@@ -201,7 +203,7 @@ class UserService {
      * @param {string} nickname
      * @returns {boolean}
      **/
-    async validateName(nickname: string): Promise<Boolean> {
+    async validateName(nickname: string): Promise<boolean> {
         try {
             await this.userDao.read({ nickname });
             return false;
@@ -216,24 +218,11 @@ class UserService {
     /**
      * 서베이 등록
      *
-     * @param {number} userIdx
-     * @param {number[]} keywordIdxList
-     * @param {number[]} perfumeIdxList
-     * @param {number[]} seriesIdxList
+     * @param {surveyDTO} surveyDTO
      * @returns {boolean}
      **/
-    async addSurvey(
-        userIdx: number,
-        keywordIdxList: number[],
-        perfumeIdxList: number[],
-        seriesIdxList: number[]
-    ) {
-        return this.userDao.postSurvey(
-            userIdx,
-            keywordIdxList,
-            perfumeIdxList,
-            seriesIdxList
-        );
+    async addSurvey(surveyDTO: SurveyDTO) {
+        return this.userDao.postSurvey(surveyDTO);
     }
 }
 
