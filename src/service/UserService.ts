@@ -12,6 +12,7 @@ import TokenGroupDTO from '../data/dto/TokenGroupDTO';
 import UserAuthDTO from '../data/dto/UserAuthDTO';
 import UserDTO from '../data/dto/UserDTO';
 import UserInputDTO from '../data/dto/UserInputDTO';
+import SurveyDTO from '../data/dto/SurveyDTO';
 
 class UserService {
     userDao: UserDao;
@@ -217,24 +218,11 @@ class UserService {
     /**
      * 서베이 등록
      *
-     * @param {number} userIdx
-     * @param {number[]} keywordIdxList
-     * @param {number[]} perfumeIdxList
-     * @param {number[]} seriesIdxList
+     * @param {surveyDTO} surveyDTO
      * @returns {boolean}
      **/
-    async addSurvey(
-        userIdx: number,
-        keywordIdxList: number[],
-        perfumeIdxList: number[],
-        seriesIdxList: number[]
-    ) {
-        return this.userDao.postSurvey(
-            userIdx,
-            keywordIdxList,
-            perfumeIdxList,
-            seriesIdxList
-        );
+    async addSurvey(surveyDTO: SurveyDTO) {
+        return this.userDao.postSurvey(surveyDTO);
     }
 }
 

@@ -33,6 +33,7 @@ import {
 } from '../utils/strings';
 import UserInputDTO from '../data/dto/UserInputDTO';
 import LoginInfoDTO from '../data/dto/LoginInfoDTO';
+import SurveyDTO from '../data/dto/SurveyDTO';
 
 const { GRADE_USER } = require('../utils/constantUtil');
 
@@ -238,8 +239,22 @@ const postSurvey: RequestHandler = (
     next: NextFunction
 ) => {
     const userIdx: number = req.middlewareToken.loginUserIdx;
-    const { keywordList, perfumeList, seriesList } = req.body;
-    User.addSurvey(userIdx, keywordList, perfumeList, seriesList)
+    const {
+        keywordList,
+        perfumeList,
+        seriesList,
+    }: {
+        keywordList?: number[];
+        perfumeList?: number[];
+        seriesList?: number[];
+    } = req.body;
+    const surveyDTO: SurveyDTO = new SurveyDTO(
+        userIdx,
+        keywordList || [],
+        perfumeList || [],
+        seriesList || []
+    );
+    User.addSurvey(surveyDTO)
         .then(() => {
             res.status(StatusCode.OK).json(
                 new SimpleResponseDTO(MSG_POST_SURVEY_SUCCESS)
