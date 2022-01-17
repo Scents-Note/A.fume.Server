@@ -65,10 +65,18 @@ class PerfumeDefaultReviewDTO {
             sillage,
             longevity,
         }: { [key: string]: string } = json;
-        const seasonalList: number[] = seasonal.split('/').map(parseInt);
-        const sillageList: number[] = sillage.split('/').map(parseInt);
-        const longevityList: number[] = longevity.split('/').map(parseInt);
-        const genderList: number[] = gender.split('/').map(parseInt);
+        const seasonalList: number[] = seasonal
+            .split('/')
+            .map((it) => parseInt(it));
+        const sillageList: number[] = sillage
+            .split('/')
+            .map((it) => parseInt(it));
+        const longevityList: number[] = longevity
+            .split('/')
+            .map((it) => parseInt(it));
+        const genderList: number[] = gender
+            .split('/')
+            .map((it) => parseInt(it));
         return new PerfumeDefaultReviewDTO(
             json.perfumeIdx,
             json.rating,
