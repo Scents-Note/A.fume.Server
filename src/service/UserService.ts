@@ -14,10 +14,10 @@ import UserDTO from '../data/dto/UserDTO';
 import UserInputDTO from '../data/dto/UserInputDTO';
 
 class UserService {
-    userDao: any;
+    userDao: UserDao;
     crypto: any;
     jwt: any;
-    constructor(userDao?: any, crypto?: any, jwt?: any) {
+    constructor(userDao?: UserDao, crypto?: any, jwt?: any) {
         this.userDao = userDao || new UserDao();
         this.crypto = crypto || { encrypt, decrypt };
         this.jwt = jwt || {
