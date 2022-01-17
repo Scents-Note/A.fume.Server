@@ -1,4 +1,5 @@
-const { UserDTO, CreatedResultDTO } = require('../../data/dto');
+import CreatedResultDTO from '../../src/data/dto/CreatedResultDTO';
+import UserDTO from '../../src/data/dto/UserDTO';
 
 module.exports.create = async ({
     nickname,
@@ -9,9 +10,9 @@ module.exports.create = async ({
     grade,
     accessTime,
 }) => {
-    return new CreatedResultDTO({
-        idx: 94,
-        created: new UserDTO({
+    return new CreatedResultDTO(
+        94,
+        UserDTO.createByJson({
             userIdx: 1,
             nickname,
             password,
@@ -22,12 +23,12 @@ module.exports.create = async ({
             accessTime,
             createdAt: '2021-07-13T11:33:49.000Z',
             updatedAt: '2021-08-07T09:20:29.000Z',
-        }),
-    });
+        })
+    );
 };
 
 module.exports.read = async (where) => {
-    return new UserDTO({
+    return UserDTO.createByJson({
         userIdx: 1,
         nickname: 'user1',
         password: 'test',
@@ -42,7 +43,7 @@ module.exports.read = async (where) => {
 };
 
 module.exports.readByIdx = async (userIdx) => {
-    return new UserDTO({
+    return UserDTO.createByJson({
         userIdx,
         nickname: 'user1',
         password: 'test',

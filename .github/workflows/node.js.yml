@@ -23,9 +23,11 @@ jobs:
     - uses: actions/checkout@v2
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
+    - run: npm install -g mocha
+    - run: npm install -g typescript
+    - run: npm install -g ts-node
     - run: npm install
-    - run: npm install --save-dev mocha
-    - run: npm audit fix
+#    - run: npm audit fix  /* swagger-tools 보완 취약점 존재. Swagger-tools 제거하고 주석 해제 해야함. */
 #    - run: npm ci
 #    - run: npm run build --if-present
     - name: run test code 
@@ -43,3 +45,6 @@ jobs:
         JWT_SECRET: '${{ secrets.JWT_SECRET }}'
         AWS_ACCESS_KEY_ID: '${{ secrets.AWS_ACCESS_KEY_ID }}'
         AWS_SECRET_ACCESS_KEY: '${{ secrets.AWS_SECRET_ACCESS_KEY}}'
+        ENCRYPTION_KEY: '${{ secrets.ENCRYPTION_KEY }}'
+        ENCRYPT_ALGORITHM: '${{ secrets.ENCRYPT_ALGORITHM }}'
+        AWS_S3_URL: '${{ secrets.AWS_S3_URL }}'
