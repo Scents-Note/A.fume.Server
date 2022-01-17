@@ -13,7 +13,6 @@ import {
 import UserService from '../service/UserService';
 
 import { UserRegisterRequest, UserEditRequest } from '../data/request/user';
-import UserDTO from '../data/dto/UserDTO';
 import UserAuthDTO from '../data/dto/UserAuthDTO';
 import { UnAuthorizedError } from '../utils/errors/errors';
 import { GenderMap } from '../utils/enumType';
@@ -56,7 +55,7 @@ const registerUser: RequestHandler = (
         return;
     }
     User.createUser(UserInputDTO.createByJson(userRegisterRequest))
-        .then((result: UserDTO) => {
+        .then((result: UserInputDTO) => {
             return UserRegisterResponse.createByJson(result);
         })
         .then((response: UserRegisterResponse) => {

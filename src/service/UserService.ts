@@ -146,7 +146,7 @@ class UserService {
     async updateUser(userInputDTO: UserInputDTO): Promise<UserDTO> {
         await this.userDao.update(userInputDTO);
         const user: UserDTO = await this.userDao.readByIdx(
-            userInputDTO.userIdx
+            userInputDTO.userIdx!!
         );
         return UserDTO.createByJson(user);
     }
