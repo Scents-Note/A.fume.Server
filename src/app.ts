@@ -78,7 +78,7 @@ app.use(function (
     let status: number;
     let message: string;
     if (err instanceof HttpError || err instanceof createError.HttpError) {
-        properties.NODE_ENV !== 'production' && console.log(err.stack);
+        properties.NODE_ENV === 'development' && console.log(err.stack);
         status = err.status;
         message = err.message;
     } else {
