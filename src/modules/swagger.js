@@ -94,10 +94,11 @@ for (const _endpoint in specs.paths) {
 }
 
 swaggerRouter.use((req, res, next) => {
-    var path = parseurl(req).pathname;
+    const path = parseurl(req).pathname;
     const apiCache = apiCaches[req.method.toLowerCase()] || {};
+    const cacheKey = pathToRegexp(path, keys);
     const cacheEntry =
-        apiCache[path] ||
+        apiCache[cacheKey] ||
         _.find(apiCache, function (metadata) {
             const match = metadata.re.exec(path);
             return _.isArray(match);
