@@ -11,7 +11,7 @@ import { HttpError } from './utils/errors/errors';
 import statusCode from './utils/statusCode';
 import { verifyTokenMiddleware } from './middleware/auth';
 
-const { swaggerUi, specs, swaggerRouter } = require('./modules/swagger');
+const { swaggerUi, specs, swaggerMetadata } = require('./modules/swagger');
 
 const app: Express = express();
 
@@ -54,7 +54,7 @@ app.use(
         next();
     }
 );
-app.use(swaggerRouter);
+app.use(swaggerMetadata);
 app.use(specs.basePath, verifyTokenMiddleware);
 app.use(specs.basePath, require('./controllers/index')(specs));
 

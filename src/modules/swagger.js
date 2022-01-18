@@ -63,7 +63,7 @@ const options = {
 
 const specs = swaggerJsdoc(options);
 
-const swaggerRouter = express.Router();
+const swaggerMetadata = express.Router();
 
 var apiCaches = {};
 
@@ -93,7 +93,7 @@ for (const _endpoint in specs.paths) {
     }
 }
 
-swaggerRouter.use((req, res, next) => {
+swaggerMetadata.use((req, res, next) => {
     const path = parseurl(req).pathname;
     const apiCache = apiCaches[req.method.toLowerCase()] || {};
     const cacheKey = pathToRegexp(path, keys);
@@ -110,5 +110,5 @@ swaggerRouter.use((req, res, next) => {
 module.exports = {
     swaggerUi,
     specs,
-    swaggerRouter,
+    swaggerMetadata,
 };
