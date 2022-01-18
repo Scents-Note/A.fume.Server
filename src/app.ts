@@ -12,7 +12,11 @@ import statusCode from './utils/statusCode';
 import { verifyTokenMiddleware } from './middleware/auth';
 import { swaggerRouter } from './controllers/index';
 
-const { swaggerUi, specs, swaggerMetadata } = require('./modules/swagger');
+const {
+    swaggerUi,
+    specs,
+    swaggerMetadataHandler,
+} = require('./modules/swagger');
 
 const app: Express = express();
 
@@ -55,7 +59,7 @@ app.use(
         next();
     }
 );
-app.use(swaggerMetadata);
+app.use(swaggerMetadataHandler);
 app.use(specs.basePath, verifyTokenMiddleware);
 app.use(specs.basePath, swaggerRouter(specs));
 

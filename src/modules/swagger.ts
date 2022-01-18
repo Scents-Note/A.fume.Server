@@ -1,6 +1,6 @@
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc, { SwaggerDefinition } from 'swagger-jsdoc';
-import express from 'express';
+import { RequestHandler, Request, Response, NextFunction } from 'express';
 import _ from 'lodash';
 import properties from '../utils/properties';
 import swaggerJSDoc from 'swagger-jsdoc';
@@ -66,8 +66,6 @@ const options: swaggerJSDoc.Options = {
 
 const specs: SwaggerDefinition = swaggerJsdoc(options) as SwaggerDefinition;
 
-const swaggerMetadata = express.Router()
-
 type ApiCache = { [key: string]: any };
 
 type ApiCacheByMethod = {
@@ -128,10 +126,10 @@ for (const _endpoint in specs.paths) {
     }
 }
 
-swaggerMetadata.use((
-    req: express.Request | any,
-    _res: express.Response,
-    next: express.NextFunction
+const swaggerMetadataHandler: RequestHandler = (
+    req: Request | any,
+    _res: Response,
+    next: NextFunction
 ) => {
     const path: string = parseurl(req).pathname;
     const apiCache: { [key: string]: any } = getApiCache(
@@ -149,4 +147,4 @@ swaggerMetadata.use((
     next();
 };
 
-export { swaggerUi, specs, swaggerMetadata };
+export { swaggerUi, specs, swaggerMetadataHandler };
