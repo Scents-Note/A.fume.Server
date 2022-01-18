@@ -24,7 +24,77 @@ import {
 
 let Series = new SeriesService();
 let Ingredient = new IngredientService();
+/**
+ * @swagger
+ * definitions:
+ *   SeriesInfo:
+ *     type: object
+ *     properties:
+ *       name:
+ *         type: string
+ *       englishName:
+ *         type: string
+ *       description:
+ *         type: string
+ *       imageUrl:
+ *         type: string
+ *     example:
+ *       name: 꿀
+ *       englishName: Honey
+ *       description: 화이트 허니, 허니
+ *       imageUrl: http://
+ *  */
 
+/**
+ * @swagger
+ *    /series:
+ *     get:
+ *       tags:
+ *       - series
+ *       summary: 계열 전체 목록 조회
+ *       description: 계열 조회 <br/> 반환 되는 정보 [계열]
+ *       operationId: getSeriesAll
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: pagingSize
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       - name: pagingIndex
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: series 목록 조회 성공
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   count:
+ *                     type: integer
+ *                     example: 10
+ *                   rows:
+ *                     type: array
+ *                     items:
+ *                       allOf:
+ *                         - $ref: '#/definitions/SeriesInfo'
+ *                         - type: object
+ *                           properties:
+ *                             seriesIdx:
+ *                               type: integer
+ *                           example:
+ *                             seriesIdx: 222
+ *         401:
+ *           description: Token is missing or invalid
+ *       x-swagger-router-controller: Series
+ *  */
 const getSeriesAll: RequestHandler = (
     req: Request,
     res: Response,
@@ -72,6 +142,56 @@ const getIngredients: RequestHandler = (
         .catch((err: Error) => next(err));
 };
 
+/**
+ * @swagger
+ *   /filter/series:
+ *     get:
+ *       tags:
+ *       - series
+ *       summary: 필터를 위한 series 리스트
+ *       description: 향수 검색 화면에서 제공되는 계열 + 재료 리스트 <br/> 반환 되는 정보 [계열 x 재료 리스트]
+ *       operationId: getFilterSeries
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: pagingSize
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       - name: pagingIndex
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: Filter Series 리스트 조회 성공
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   count:
+ *                     type: integer
+ *                     example: 1
+ *                   rows:
+ *                     type: array
+ *                     items:
+ *                       allOf:
+ *                       - $ref: '#/definitions/SeriesInfo'
+ *                       - type: object
+ *                         properties:
+ *                           ingredients:
+ *                             type: array
+ *                             items:
+ *                               $ref: '#/definitions/IngredientInfo'
+ *                         example:
+ *                           ingredients: []
+ *       x-swagger-router-controller: Series
+ *  */
 const getFilterSeries: RequestHandler = (
     req: Request,
     res: Response,
