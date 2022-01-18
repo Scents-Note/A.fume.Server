@@ -6,6 +6,7 @@ import properties from '../utils/properties';
 import swaggerJSDoc from 'swagger-jsdoc';
 
 const parseurl: any = require('parseurl');
+
 const pathToRegexp: (
     path: string,
     keys: any[],
@@ -68,45 +69,41 @@ const specs: SwaggerDefinition = swaggerJsdoc(options) as SwaggerDefinition;
 
 type ApiCache = { [key: string]: any };
 
-type ApiCacheByMethod = {
-    get: ApiCache;
-    post: ApiCache;
-    put: ApiCache;
-    delete: ApiCache;
-    patch: ApiCache;
-};
+function initApiCache() {
+    const apiCaches: { [key: string]: ApiCache } = {
+        get: {},
+        post: {},
+        put: {},
+        delete: {},
+        patch: {},
+    };
 
-const apiCaches: ApiCacheByMethod = {
-    get: {},
-    post: {},
-    put: {},
-    delete: {},
-    patch: {},
-};
-
-function getApiCache(apiCaches: ApiCacheByMethod, method: string) {
-    switch (method) {
-        case 'get':
-            return apiCaches.get;
-        case 'post':
-            return apiCaches.post;
-        case 'put':
-            return apiCaches.put;
-        case 'delete':
-            return apiCaches.delete;
-        case 'patch':
-            return apiCaches.delete;
-        default:
-            console.log('Not Implemented for ' + method);
-            return () => {};
-    }
+    return (method: string) => {
+        switch (method) {
+            case 'get':
+                return apiCaches.get;
+            case 'post':
+                return apiCaches.post;
+            case 'put':
+                return apiCaches.put;
+            case 'delete':
+                return apiCaches.delete;
+            case 'patch':
+                return apiCaches.delete;
+            default:
+                console.log('Not Implemented for ' + method);
+                return () => {};
+        }
+    };
 }
+
+const getApiCache: (method: string) => ApiCache = initApiCache();
 
 for (const _endpoint in specs.paths) {
     if (_endpoint[0] != '/') {
         continue;
     }
-    const expressPath = expressStylePath(specs.basePath!!, _endpoint);
+    const expressPath: string = expressStylePath(specs.basePath!!, _endpoint);
 
     const keys: any[] = [];
     const re: RegExp = pathToRegexp(expressPath, keys);
@@ -120,7 +117,7 @@ for (const _endpoint in specs.paths) {
         // console.log(
         //     `x-security-scopes | [${method}] ${expressPath} : ${parameters['x-security-scopes']}`
         // );
-        const apiCache: { [key: string]: any } = getApiCache(apiCaches, method);
+        const apiCache: ApiCache = getApiCache(method);
         apiCache[cacheKey] = parameters;
         apiCache[cacheKey].re = re;
     }
@@ -133,7 +130,6 @@ const swaggerMetadataHandler: RequestHandler = (
 ) => {
     const path: string = parseurl(req).pathname;
     const apiCache: { [key: string]: any } = getApiCache(
-        apiCaches,
         req.method.toLowerCase()
     );
     const cacheKey: string = pathToRegexp(path, []).toString();
