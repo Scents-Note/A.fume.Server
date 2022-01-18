@@ -65,7 +65,7 @@ const specs = swaggerJsdoc(options);
 
 const swaggerRouter = express.Router();
 
-var apiCache = {};
+var apiCaches = {};
 
 for (const _endpoint in specs.paths) {
     if (_endpoint[0] != '/') {
@@ -78,19 +78,24 @@ for (const _endpoint in specs.paths) {
 
     var cacheKey = re.toString();
 
-    for (const method in specs.paths[_endpoint]) {
+    for (const _method in specs.paths[_endpoint]) {
+        const method = _method.toLowerCase();
+        if (!apiCaches[method]) {
+            apiCaches[method] = {};
+        }
         const parameters = specs.paths[_endpoint][method];
         // TODO 해당 정보는 file로 로깅하기
         // console.log(
         //     `x-security-scopes | [${method}] ${expressPath} : ${parameters['x-security-scopes']}`
         // );
-        apiCache[cacheKey] = parameters;
-        apiCache[cacheKey].re = re;
+        apiCaches[method][cacheKey] = parameters;
+        apiCaches[method][cacheKey].re = re;
     }
 }
 
 swaggerRouter.use((req, res, next) => {
     var path = parseurl(req).pathname;
+    const apiCache = apiCaches[req.method.toLowerCase()] || {};
     const cacheEntry =
         apiCache[path] ||
         _.find(apiCache, function (metadata) {
