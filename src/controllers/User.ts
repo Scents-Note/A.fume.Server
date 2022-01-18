@@ -150,44 +150,6 @@ const registerUser: RequestHandler = (
 
 /**
  * @swagger
- *   /user/{userIdx}:
- *     delete:
- *       tags:
- *       - user
- *       summary: Delete user
- *       description: This can only be done by the logged in user.
- *       operationId: deleteUser
- *       produces:
- *       - application/json
- *       parameters:
- *       - name: userIdx
- *         in: path
- *         required: true
- *         type: string
- *       responses:
- *         400:
- *           description: Invalid username supplied
- *         404:
- *           description: User not found
- *       x-swagger-router-controller: User
- *  */
-const deleteUser: RequestHandler = (
-    req: Request | any,
-    res: Response,
-    next: NextFunction
-) => {
-    const userIdx = req.params['userIdx'];
-    User.deleteUser(userIdx)
-        .then((_: any) => {
-            res.status(StatusCode.OK).json(
-                new SimpleResponseDTO(MSG_DELETE_USER_SUCCESS)
-            );
-        })
-        .catch((err: Error) => next(err));
-};
-
-/**
- * @swagger
  *   /user/login:
  *     post:
  *       tags:
@@ -264,95 +226,6 @@ const loginUser: RequestHandler = (
         .then((response: LoginResponse) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<LoginResponse>(MSG_LOGIN_SUCCESS, response)
-            );
-        })
-        .catch((err: Error) => next(err));
-};
-
-/**
- * @swagger
- *   /user/{userIdx}:
- *     put:
- *       tags:
- *       - user
- *       summary: 유저 정보 수정
- *       description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저 정보 수정 <br/>
- *       operationId: updateUser
- *       security:
- *         - userToken: []
- *       x-security-scopes:
- *         - user
- *       produces:
- *       - application/json
- *       parameters:
- *       - name: userIdx
- *         in: path
- *         description: name that need to be updated
- *         required: true
- *         type: string
- *       - in: body
- *         name: body
- *         description: Updated user object
- *         required: true
- *         schema:
- *           $ref: '#/definitions/User'
- *       responses:
- *         200:
- *           description: successful operation
- *           schema:
- *             type: object
- *             properties:
- *               message:
- *                 type: string
- *               data:
- *                 allOf:
- *                 - $ref: '#/definitions/User'
- *                 - type: object
- *                   properties:
- *                     userIdx:
- *                       type: integer
- *             example:
- *               message: 유저 수정 성공
- *               data:
- *                 userIdx: 1
- *                 nickname: nickname
- *                 gender: WOMAN
- *                 birth: 1995
- *                 email: email
- *         401:
- *           description: login Token 의 UserIdx와 일치하지 않는 경우 /  login Token이 없는 경우
- *           schema:
- *             type: object
- *             example:
- *               message: 권한이 없습니다 / 유효하지 않는 토큰입니다.
- *         404:
- *           description: User not found
- *       x-swagger-router-controller: User
- *  */
-const updateUser: RequestHandler = (
-    req: Request | any,
-    res: Response,
-    next: NextFunction
-) => {
-    const userIdx = req.params['userIdx'];
-    const tokenUserIdx = req.middlewareToken.loginUserIdx;
-    if (userIdx != tokenUserIdx) {
-        next(new UnAuthorizedError());
-        return;
-    }
-    const userEditRequest = UserEditRequest.createByJson(
-        Object.assign({ userIdx }, req.body)
-    );
-    if (userEditRequest.gender) {
-        userEditRequest.gender = GenderMap[userEditRequest.gender];
-    }
-    User.updateUser(UserInputDTO.createByJson(userEditRequest))
-        .then((result: UserResponse) => {
-            return UserResponse.createByJson(result);
-        })
-        .then((response: UserResponse) => {
-            res.status(StatusCode.OK).json(
-                new ResponseDTO<UserResponse>(MSG_MODIFY_USER_SUCCESS, response)
             );
         })
         .catch((err: Error) => next(err));
@@ -661,6 +534,142 @@ const postSurvey: RequestHandler = (
         .then(() => {
             res.status(StatusCode.OK).json(
                 new SimpleResponseDTO(MSG_POST_SURVEY_SUCCESS)
+            );
+        })
+        .catch((err: Error) => next(err));
+};
+
+/* 
+    TODO
+    endpoint에 path variable이 있는 경우 
+    다른 엔드포인트의 경로를 path variable로 인식하는 문제가 발생한다.
+    e.g ) /user/changePassword 에서 changePassword를 userIdx로 인식하여 의도하지 않는 operation 호출
+    현재 이에 대한 해결 방법이 필요하다.
+    임시 적인 조치로 path variable이 들어간 경우 controller 내에서 하단에 위치하면 회피할 수 있다.
+*/
+
+/**
+ * @swagger
+ *   /user/{userIdx}:
+ *     put:
+ *       tags:
+ *       - user
+ *       summary: 유저 정보 수정
+ *       description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저 정보 수정 <br/>
+ *       operationId: updateUser
+ *       security:
+ *         - userToken: []
+ *       x-security-scopes:
+ *         - user
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: userIdx
+ *         in: path
+ *         description: name that need to be updated
+ *         required: true
+ *         type: string
+ *       - in: body
+ *         name: body
+ *         description: Updated user object
+ *         required: true
+ *         schema:
+ *           $ref: '#/definitions/User'
+ *       responses:
+ *         200:
+ *           description: successful operation
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *               data:
+ *                 allOf:
+ *                 - $ref: '#/definitions/User'
+ *                 - type: object
+ *                   properties:
+ *                     userIdx:
+ *                       type: integer
+ *             example:
+ *               message: 유저 수정 성공
+ *               data:
+ *                 userIdx: 1
+ *                 nickname: nickname
+ *                 gender: WOMAN
+ *                 birth: 1995
+ *                 email: email
+ *         401:
+ *           description: login Token 의 UserIdx와 일치하지 않는 경우 /  login Token이 없는 경우
+ *           schema:
+ *             type: object
+ *             example:
+ *               message: 권한이 없습니다 / 유효하지 않는 토큰입니다.
+ *         404:
+ *           description: User not found
+ *       x-swagger-router-controller: User
+ *  */
+const updateUser: RequestHandler = (
+    req: Request | any,
+    res: Response,
+    next: NextFunction
+) => {
+    const userIdx = req.params['userIdx'];
+    const tokenUserIdx = req.middlewareToken.loginUserIdx;
+    if (userIdx != tokenUserIdx) {
+        next(new UnAuthorizedError());
+        return;
+    }
+    const userEditRequest = UserEditRequest.createByJson(
+        Object.assign({ userIdx }, req.body)
+    );
+    if (userEditRequest.gender) {
+        userEditRequest.gender = GenderMap[userEditRequest.gender];
+    }
+    User.updateUser(UserInputDTO.createByJson(userEditRequest))
+        .then((result: UserResponse) => {
+            return UserResponse.createByJson(result);
+        })
+        .then((response: UserResponse) => {
+            res.status(StatusCode.OK).json(
+                new ResponseDTO<UserResponse>(MSG_MODIFY_USER_SUCCESS, response)
+            );
+        })
+        .catch((err: Error) => next(err));
+};
+
+/**
+ * @swagger
+ *   /user/{userIdx}:
+ *     delete:
+ *       tags:
+ *       - user
+ *       summary: Delete user
+ *       description: This can only be done by the logged in user.
+ *       operationId: deleteUser
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: userIdx
+ *         in: path
+ *         required: true
+ *         type: string
+ *       responses:
+ *         400:
+ *           description: Invalid username supplied
+ *         404:
+ *           description: User not found
+ *       x-swagger-router-controller: User
+ *  */
+const deleteUser: RequestHandler = (
+    req: Request | any,
+    res: Response,
+    next: NextFunction
+) => {
+    const userIdx = req.params['userIdx'];
+    User.deleteUser(userIdx)
+        .then((_: any) => {
+            res.status(StatusCode.OK).json(
+                new SimpleResponseDTO(MSG_DELETE_USER_SUCCESS)
             );
         })
         .catch((err: Error) => next(err));
