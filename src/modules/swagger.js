@@ -52,6 +52,7 @@ const options = {
         basePath: '/A.fume/api/0.0.1',
     },
     apis: [
+        './src/controllers/*.ts',
         './src/controllers/*.js',
         './src/modules/swagger/*',
         './api/swagger.yaml',
