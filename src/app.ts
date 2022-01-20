@@ -10,8 +10,13 @@ import properties from './utils/properties';
 import { HttpError } from './utils/errors/errors';
 import statusCode from './utils/statusCode';
 import { verifyTokenMiddleware } from './middleware/auth';
+import { swaggerRouter } from './controllers/index';
 
-const { swaggerUi, specs, swaggerRouter } = require('./modules/swagger');
+const {
+    swaggerUi,
+    specs,
+    swaggerMetadataHandler,
+} = require('./modules/swagger');
 
 const app: Express = express();
 
@@ -54,9 +59,9 @@ app.use(
         next();
     }
 );
-app.use(swaggerRouter);
+app.use(swaggerMetadataHandler);
 app.use(specs.basePath, verifyTokenMiddleware);
-app.use(specs.basePath, require('./controllers/index')(specs));
+app.use(specs.basePath, swaggerRouter(specs));
 
 // catch 404 and forward to error handler
 app.use(
