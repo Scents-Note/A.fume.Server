@@ -15,6 +15,9 @@ jobs:
       matrix:
         node-version: [12.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+    defaults:
+      run:
+        working-directory: ${{ env.NODE_ENV }}
     steps:
     - uses: actions/checkout@v2
       with:
@@ -24,7 +27,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: ${{ env.NODE_ENV }}/package-lock.json
     - run: cp ~/config-injection/ecosystem-${{ env.NODE_ENV }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
     - run: cp ~/config-injection/.env ${{ env.PROJECT_PATH }}/.env
     - run: ${{ env.PROJECT_PATH }}/script/prebuild.sh
