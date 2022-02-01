@@ -1,11 +1,13 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Node.js CI
+name: Deployment to ec2
 
 on:
   push:
-    branches: [ dev, main ]
+    branches: 
+    - dev
+    - main
 
 jobs:
   build:
@@ -24,6 +26,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - run: cp -r ~/config-injection/ ~/action_runner/_work/A.fume.Server/A.fume.Server/
     - run: npm ci
     - run: npm run build --if-present
     - run: npm start
