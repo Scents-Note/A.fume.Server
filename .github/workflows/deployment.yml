@@ -26,7 +26,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: eval "cp -rT ~/config-${NODE_ENV}-injection/ $PROJECT_PATH/"
+    - run: eval "cp ~/config-injection/ecosystem-${NODE_ENV}.json $PROJECT_PATH/ecosystem.json"
+    - run: eval "cp ~/config-injection/.env $PROJECT_PATH/.env"
     - run: eval "$PROJECT_PATH/script/prebuild.sh"
     - run: eval "$PROJECT_PATH/script/reload.sh"
     env:
