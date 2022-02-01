@@ -26,7 +26,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: cp -r ~/config-injection/ ~/action_runner/_work/A.fume.Server/A.fume.Server/
+    - run: cp -rT ~/config-injection/ ~/actions-runner/_work/A.fume.Server/A.fume.Server/
     - run: npm ci
     - run: npm run build --if-present
     - run: npm start
