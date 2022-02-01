@@ -1,6 +1,3 @@
-import dotenv from 'dotenv';
-dotenv.config();
-
 const REQUIRED_ENV_LIST: string[] = [
     'AWS_S3_URL',
     'ENCRYPT_ALGORITHM',

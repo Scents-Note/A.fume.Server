@@ -4,7 +4,7 @@ var Review = require('../service/ReviewService');
 import StatusCode from '../utils/statusCode';
 
 module.exports.postReview = function postReview(req, res, next) {
-    const perfumeIdx = req.params['perfumeIdx'];
+    const perfumeIdx = req.swagger.params['perfumeIdx'].value;
     const userIdx = req.middlewareToken.loginUserIdx;
     const {
         score,
@@ -15,7 +15,7 @@ module.exports.postReview = function postReview(req, res, next) {
         access,
         content,
         keywordList,
-    } = req.body;
+    } = req.swagger.params['body'].value;
     Review.postReview({
         perfumeIdx,
         userIdx,
@@ -40,7 +40,7 @@ module.exports.postReview = function postReview(req, res, next) {
 };
 
 module.exports.getReviewByIdx = function getReviewByIdx(req, res, next) {
-    var reviewIdx = req.params['reviewIdx'];
+    var reviewIdx = req.swagger.params['reviewIdx'].value;
     Review.getReviewByIdx(reviewIdx)
         .then((response) => {
             res.status(StatusCode.OK).json({
@@ -52,7 +52,7 @@ module.exports.getReviewByIdx = function getReviewByIdx(req, res, next) {
 };
 
 module.exports.getPerfumeReview = function getPerfumeReview(req, res, next) {
-    var perfumeIdx = req.params['perfumeIdx'];
+    var perfumeIdx = req.swagger.params['perfumeIdx'].value;
     const userIdx = req.middlewareToken.loginUserIdx;
     Review.getReviewOfPerfumeByLike({ perfumeIdx, userIdx })
         .then((response) => {
@@ -77,7 +77,7 @@ module.exports.getReviewOfUser = function getReviewOfUser(req, res, next) {
 };
 
 module.exports.putReview = (req, res, next) => {
-    var reviewIdx = req.params['reviewIdx'];
+    var reviewIdx = req.swagger.params['reviewIdx'].value;
     const userIdx = req.middlewareToken.loginUserIdx;
     var {
         score,
@@ -88,7 +88,7 @@ module.exports.putReview = (req, res, next) => {
         access,
         content,
         keywordList,
-    } = req.body;
+    } = req.swagger.params['body'].value;
     Review.updateReview({
         reviewIdx,
         userIdx,
@@ -111,7 +111,7 @@ module.exports.putReview = (req, res, next) => {
 };
 
 module.exports.deleteReview = (req, res, next) => {
-    const reviewIdx = req.params['reviewIdx'];
+    const reviewIdx = req.swagger.params['reviewIdx'].value;
     const userIdx = req.middlewareToken.loginUserIdx;
     Review.deleteReview({ reviewIdx, userIdx })
         .then(() => {
@@ -123,7 +123,7 @@ module.exports.deleteReview = (req, res, next) => {
 };
 
 module.exports.likeReview = (req, res, next) => {
-    const reviewIdx = req.params['reviewIdx'];
+    const reviewIdx = req.swagger.params['reviewIdx'].value;
     const userIdx = req.middlewareToken.loginUserIdx;
     Review.likeReview(reviewIdx, userIdx)
         .then((result) => {

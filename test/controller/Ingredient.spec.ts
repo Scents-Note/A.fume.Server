@@ -12,7 +12,7 @@ import IngredientMockHelper from '../mock_helper/IngredientMockHelper';
 
 import { MSG_GET_SEARCH_INGREDIENT_SUCCESS } from '../../src/utils/strings';
 
-import app from '../../src/app';
+const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';
 

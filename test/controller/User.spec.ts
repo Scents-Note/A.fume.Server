@@ -15,8 +15,6 @@ import UserMockHelper from '../mock_helper/UserMockHelper';
 import LoginInfoMockHelper from '../mock_helper/LoginInfoMockHelper';
 import TokenGroupMockHelper from '../mock_helper/TokenGroupMockHelper';
 
-import app from '../../src/app';
-
 import {
     MSG_REGISTER_SUCCESS,
     MSG_DELETE_USER_SUCCESS,
@@ -35,6 +33,8 @@ import {
 const expect = require('../utils/expect');
 
 const User = require('../../src/controllers/User');
+
+const app = require('../../src/index.js');
 
 const basePath = '/A.fume/api/0.0.1';
 

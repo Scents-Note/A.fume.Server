@@ -18,7 +18,7 @@ module.exports.getKeywordAll = (req, res, next) => {
 };
 
 module.exports.getKeywordOfPerfume = (req, res, next) => {
-    let perfumeIdx = req.params['perfumeIdx'];
+    let perfumeIdx = req.swagger.params['perfumeIdx']['value'];
     Keyword.getKeywordOfPerfume(perfumeIdx)
         .then((response) => {
             res.status(StatusCode.OK).json({
