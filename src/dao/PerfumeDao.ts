@@ -166,6 +166,10 @@ class PerfumeDao {
                 whereCondition = `${whereCondition} OR b.name LIKE '%${searchText}%'`;
             }
             whereCondition = `${whereCondition} )`;
+            orderCondition =
+                `case when MATCH(p.name) AGAINST('${searchText}') then 0 ` +
+                `when MATCH(p.name) AGAINST('${searchText}*' IN BOOLEAN MODE) then 1 ` +
+                `else 2 end, ${orderCondition}`;
         }
         const countSQL: string = SQL_SEARCH_PERFUME_SELECT_COUNT.replace(
             ':whereCondition',
