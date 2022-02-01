@@ -161,7 +161,7 @@ class PerfumeDao {
                     .join(' AND ');
         }
         if (searchText && searchText.length > 0) {
-            whereCondition = `${whereCondition} AND ( p.name LIKE '%${searchText}%'`;
+            whereCondition = `${whereCondition} AND (MATCH(p.name) AGAINST('${searchText}*' IN BOOLEAN MODE)`;
             if (brandIdxList.length == 0) {
                 whereCondition = `${whereCondition} OR b.name LIKE '%${searchText}%'`;
             }
