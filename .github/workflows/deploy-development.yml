@@ -6,7 +6,7 @@ name: Deploy development server to ec2
 on:
   push:
     branches: 
-    - development
+    - dev
 
 jobs:
   build:
