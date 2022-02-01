@@ -18,16 +18,16 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        path: $PROJECT_PATH
+        path: ${{ env.NODE_ENV }}
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: eval "cp ~/config-injection/ecosystem-${NODE_ENV}.json $PROJECT_PATH/ecosystem.json"
-    - run: eval "cp ~/config-injection/.env $PROJECT_PATH/.env"
-    - run: eval "$PROJECT_PATH/script/prebuild.sh"
-    - run: eval "$PROJECT_PATH/script/reload.sh"
+    - run: cp ~/config-injection/ecosystem-${{ env.NODE_ENV }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
+    - run: cp ~/config-injection/.env ${{ env.PROJECT_PATH }}/.env
+    - run: ${{ env.PROJECT_PATH }}/script/prebuild.sh
+    - run: ${{ env.PROJECT_PATH }}/script/reload.sh
     env:
       NODE_ENV: development
-      PROJECT_PATH: ~/actions-runner/_work/A.fume.Server-${NODE_ENV}/
+      PROJECT_PATH: ~/actions-runner/_work/A.fume.Server/A.fume.Server/development
