@@ -8,7 +8,7 @@ import JwtController from '../../src/lib/JwtController';
 import TokenPayloadDTO from '../../src/data/dto/TokenPayloadDTO';
 import StatusCode from '../../src/utils/statusCode';
 
-const app: any = require('../../src/index.js');
+import app from '../../src/app';
 
 const basePath: string = '/A.fume/api/0.0.1';
 

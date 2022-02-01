@@ -17,7 +17,8 @@ import {
     MSG_GET_BRAND_FILTER_SUCCESS,
 } from '../../src/utils/strings';
 
-const app = require('../../src/index.js');
+import app from '../../src/app';
+
 const expect = require('../utils/expect');
 
 const basePath = '/A.fume/api/0.0.1';
