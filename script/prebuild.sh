@@ -1,5 +1,5 @@
 #!/bin/sh
-npm install
+npm ci
 
 npm install -g mocha
 npm install -g typescript
