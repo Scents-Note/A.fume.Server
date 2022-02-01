@@ -13,7 +13,8 @@ jobs:
   build:
 
     runs-on: self-hosted
-
+    env:
+      PROJECT_PATH: ~/actions-runner/_work/A.fume.Server/A.fume.Server
     strategy:
       matrix:
         node-version: [12.x]
@@ -26,7 +27,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: cp -rT ~/config-injection/ ~/actions-runner/_work/A.fume.Server/A.fume.Server/
-    - run: npm ci
-    - run: npm run build --if-present
-    - run: npm start
+    - run: cp -rT ~/config-injection/ ${{PROJECT_PATH}}/
+    - run: ${{PROJECT_PATH}}/script/prebuild.sh
+    - run: ${{PROJECT_PATH}}/script/reload.sh
