@@ -11,7 +11,6 @@ on:
 
 jobs:
   build:
-
     runs-on: self-hosted
     strategy:
       matrix:
@@ -20,13 +19,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        path: $PROJECT_PATH
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: eval "cp -rT ~/config-injection/ $PROJECT_PATH/"
+    - run: eval "cp -rT ~/config-${NODE_ENV}-injection/ $PROJECT_PATH/"
     - run: eval "$PROJECT_PATH/script/prebuild.sh"
     - run: eval "$PROJECT_PATH/script/reload.sh"
     env:
-      PROJECT_PATH: ~/actions-runner/_work/A.fume.Server/A.fume.Server
+      PROJECT_PATH: ~/actions-runner/_work/A.fume.Server-${NODE_ENV}/
