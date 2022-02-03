@@ -298,6 +298,12 @@ describe('# perfumeDao Test', () => {
                     .then(
                         (result: ListAndCountDTO<PerfumeSearchHistoryDTO>) => {
                             expect(result.rows.length).gte(5);
+                            result.rows.forEach((element: any) => {
+                                for (const key in element) {
+                                    expect(element[key]).to.be.not.undefined;
+                                }
+                            });
+
                             const originString: string = result.rows
                                 .map(
                                     (it: PerfumeSearchHistoryDTO) =>
