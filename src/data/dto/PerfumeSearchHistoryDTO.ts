@@ -29,11 +29,11 @@ class PerfumeSearchHistoryDTO extends PerfumeThumbDTO {
         return new PerfumeSearchHistoryDTO(
             json.perfumeIdx,
             json.name,
-            json.brandName,
             json.isLiked,
             json.imageUrl,
             json.createdAt,
             json.updatedAt,
+            json.Brand,
             json.SearchHistory
         );
     }
