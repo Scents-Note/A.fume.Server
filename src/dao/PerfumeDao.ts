@@ -149,23 +149,31 @@ class PerfumeDao {
                 SQL_SEARCH_KEYWORD_CONDITION,
                 SQL_SEARCH_BRAND_CONDITION,
             ];
-            whereCondition =
-                'WHERE ' +
-                arr
-                    .reduce((prev: string[], cur: number[], index: number) => {
-                        if (cur.length > 0) {
-                            prev.push(conditionSQL[index]);
-                        }
-                        return prev;
-                    }, [])
-                    .join(' AND ');
+            whereCondition = arr
+                .reduce((prev: string[], cur: number[], index: number) => {
+                    if (cur.length > 0) {
+                        prev.push(conditionSQL[index]);
+                    }
+                    return prev;
+                }, [])
+                .join(' AND ');
         }
         if (searchText && searchText.length > 0) {
-            whereCondition = `${whereCondition} AND ( p.name LIKE '%${searchText}%'`;
+            if (whereCondition.length) {
+                whereCondition = `${whereCondition} AND `;
+            }
+            whereCondition = `${whereCondition} (MATCH(p.name) AGAINST('${searchText}*' IN BOOLEAN MODE)`;
             if (brandIdxList.length == 0) {
-                whereCondition = `${whereCondition} OR b.name LIKE '%${searchText}%'`;
+                whereCondition = `${whereCondition} OR (MATCH(b.name) AGAINST ('${searchText}*' IN BOOLEAN MODE))`;
             }
             whereCondition = `${whereCondition} )`;
+            orderCondition =
+                `case when MATCH(p.name) AGAINST('${searchText}') then 0 ` +
+                `when MATCH(p.name) AGAINST('${searchText}*' IN BOOLEAN MODE) then 1 ` +
+                `else 2 end, ${orderCondition}`;
+        }
+        if (whereCondition.length > 0) {
+            whereCondition = `WHERE ${whereCondition}`;
         }
         const countSQL: string = SQL_SEARCH_PERFUME_SELECT_COUNT.replace(
             ':whereCondition',
