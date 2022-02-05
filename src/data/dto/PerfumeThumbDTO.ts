@@ -28,6 +28,10 @@ class PerfumeThumbDTO {
         this.Brand = Brand;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): PerfumeThumbDTO {
         return new PerfumeThumbDTO(
             json.perfumeIdx,

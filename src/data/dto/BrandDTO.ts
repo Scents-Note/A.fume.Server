@@ -26,6 +26,11 @@ class BrandDTO {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): BrandDTO {
         const brandIdx: number = json.brandIdx;
         const name: string = json.name;

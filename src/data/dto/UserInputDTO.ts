@@ -29,6 +29,10 @@ class UserInputDTO {
         this.accessTime = accessTime;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): UserInputDTO {
         return new UserInputDTO(
             json.userIdx,

@@ -25,6 +25,10 @@ class PerfumeSearchHistoryDTO extends PerfumeThumbDTO {
         this.SearchHistory = SearchHistory;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): PerfumeSearchHistoryDTO {
         return new PerfumeSearchHistoryDTO(
             json.perfumeIdx,

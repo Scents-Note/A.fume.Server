@@ -85,6 +85,10 @@ class PerfumeIntegralDTO {
         this.reviewIdx = reviewIdx;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static create(
         perfumeDTO: any,
         perfumeSummaryDTO: any,

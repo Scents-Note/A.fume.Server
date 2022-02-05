@@ -10,6 +10,10 @@ class UserAuthDTO {
         this.isAdmin = isAdmin;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static create(user: UserDTO) {
         return new UserAuthDTO(true, user.grade >= GRADE_MANAGER);
     }

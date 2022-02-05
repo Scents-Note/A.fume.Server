@@ -26,6 +26,10 @@ class LoginResponse {
         this.refreshToken = refreshToken;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): LoginResponse {
         return new LoginResponse(
             json.userIdx,
@@ -46,6 +50,11 @@ class UserAuthResponse {
         this.isAuth = isAuth;
         this.isAdmin = isAdmin;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): UserAuthResponse {
         return new UserAuthResponse(json.isAuth, json.isAdmin);
     }
@@ -59,6 +68,10 @@ class UserRegisterResponse {
         this.userIdx = userIdx;
         this.token = token;
         this.refreshToken = refreshToken;
+    }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
 
     static createByJson(json: any): UserRegisterResponse {
@@ -88,6 +101,10 @@ class UserResponse {
         this.gender = gender;
         this.email = email;
         this.birth = birth;
+    }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
 
     static createByJson(json: any): UserResponse {

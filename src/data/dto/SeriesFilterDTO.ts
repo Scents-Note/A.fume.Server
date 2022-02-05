@@ -25,6 +25,10 @@ class SeriesFilterDTO extends SeriesDTO {
         this.ingredients = ingredients;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): SeriesFilterDTO {
         const seriesIdx: number = json.seriesIdx;
         const name: string = json.name;

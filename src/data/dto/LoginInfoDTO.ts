@@ -26,6 +26,10 @@ class LoginInfoDTO {
         this.refreshToken = refreshToken;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): LoginInfoDTO {
         return new LoginInfoDTO(
             json.userIdx,
