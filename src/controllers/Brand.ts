@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
+import { loggerAdapter } from '../modules/winston';
+
 import BrandService from '../service/BrandService';
 
 import { ResponseDTO } from '../data/response/common';
@@ -15,6 +17,7 @@ import {
 } from '../utils/strings';
 
 let Brand: BrandService = new BrandService();
+const LOG_TAG: string = '[Brand/Controller]';
 
 module.exports.setBrandService = (brandService: BrandService) => {
     Brand = brandService;
@@ -106,6 +109,9 @@ const getBrandAll: RequestHandler = (
             );
         })
         .then((result: ListAndCountDTO<BrandResponse>) => {
+            loggerAdapter.infoWithTruncate(
+                `${LOG_TAG} getBrandAll's result = ${result}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<BrandResponse>>(
                     MSG_GET_BRAND_ALL_SUCCESS,
@@ -168,6 +174,9 @@ const getFilterBrand: RequestHandler = (
             return result.map(BrandFilterResponse.create);
         })
         .then((response: BrandFilterResponse[]) => {
+            loggerAdapter.infoWithTruncate(
+                `${LOG_TAG} getFilterBrand's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<BrandFilterResponse[]>(
                     MSG_GET_BRAND_FILTER_SUCCESS,

@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
+import { loggerAdapter } from '../modules/winston';
+
 import IngredientService from '../service/IngredientService';
 import IngredientDTO from '../data/dto/IngredientDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
@@ -8,6 +10,8 @@ import { IngredientResponse } from '../data/response/ingredient';
 import StatusCode from '../utils/statusCode';
 
 import { MSG_GET_SEARCH_INGREDIENT_SUCCESS } from '../utils/strings';
+
+const LOG_TAG: string = '[Ingredient/Controller]';
 
 let Ingredient: IngredientService = new IngredientService();
 /**
@@ -98,6 +102,9 @@ const getIngredientAll: RequestHandler = (
             );
         })
         .then((result: ListAndCountDTO<IngredientResponse>) => {
+            loggerAdapter.infoWithTruncate(
+                `${LOG_TAG} getIngredientAll's result = ${result}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<IngredientResponse>>(
                     MSG_GET_SEARCH_INGREDIENT_SUCCESS,

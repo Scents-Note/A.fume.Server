@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
+import { loggerAdapter } from '../modules/winston';
+
 import StatusCode from '../utils/statusCode';
 
 import IngredientService from '../service/IngredientService';
@@ -21,6 +23,8 @@ import {
     MSG_GET_INGREDIENT_BY_SERIES_SUCCESS,
     MSG_SEARCH_SERIES_LIST_SUCCESS,
 } from '../utils/strings';
+
+const LOG_TAG: string = '[Series/Controller]';
 
 let Series = new SeriesService();
 let Ingredient = new IngredientService();
@@ -108,6 +112,9 @@ const getSeriesAll: RequestHandler = (
             };
         })
         .then((result: ListAndCountDTO<SeriesResponse>) => {
+            loggerAdapter.infoWithTruncate(
+                `${LOG_TAG} getSeriesAll's result = ${result}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<SeriesResponse>>(
                     MSG_GET_SERIES_ALL_SUCCESS,
@@ -132,6 +139,9 @@ const getIngredients: RequestHandler = (
             );
         })
         .then((result: ListAndCountDTO<IngredientResponse>) => {
+            loggerAdapter.infoWithTruncate(
+                `${LOG_TAG} getIngredients's result = ${result}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<IngredientResponse>>(
                     MSG_GET_INGREDIENT_BY_SERIES_SUCCESS,
@@ -205,6 +215,9 @@ const getFilterSeries: RequestHandler = (
             );
         })
         .then((result: ListAndCountDTO<SeriesFilterResponse>) => {
+            loggerAdapter.infoWithTruncate(
+                `${LOG_TAG} getFilterSeries's result = ${result}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<SeriesFilterResponse>>(
                     MSG_SEARCH_SERIES_LIST_SUCCESS,
