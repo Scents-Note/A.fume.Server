@@ -14,9 +14,73 @@ const logFormat: winston.Logform.Format = printf(
     }
 );
 
-function makeLogger(): winston.Logger {
-    if (properties.NODE_ENV == 'test') {
-        return winston.createLogger({
+function truncate(input: string, limit: number) {
+    return input.length > limit ? `${input.substring(0, limit)}...` : input;
+}
+interface ILoggerAdapter {
+    logger: winston.Logger;
+    infoWithTruncate(message: string): void;
+}
+const LIMIT_LOG_MESSAGE_LENGTH: number = 500;
+class LoggerAdapter implements ILoggerAdapter {
+    logger: winston.Logger;
+    constructor() {
+        /*
+         * Log Level
+         * error: 0, warn: 1, info: 2, http: 3, verbose: 4, debug: 5, silly: 6
+         */
+        this.logger = winston.createLogger({
+            format: combine(
+                timestamp({
+                    format: 'YYYY-MM-DD HH:mm:ss',
+                }),
+                logFormat
+            ),
+            transports: [
+                new winstonDaily({
+                    level: 'info',
+                    datePattern: 'YYYY-MM-DD',
+                    dirname: logDir,
+                    filename: `%DATE%.log`,
+                    maxFiles: 14,
+                    zippedArchive: true,
+                }),
+                new winstonDaily({
+                    level: 'http',
+                    datePattern: 'YYYY-MM-DD',
+                    dirname: httpDir,
+                    filename: `%DATE%.http.log`,
+                    maxFiles: 7,
+                    zippedArchive: true,
+                }),
+                new winstonDaily({
+                    level: 'error',
+                    datePattern: 'YYYY-MM-DD',
+                    dirname: errorDir,
+                    filename: `%DATE%.error.log`,
+                    maxFiles: 30,
+                    zippedArchive: true,
+                }),
+            ],
+        });
+        if (process.env.NODE_ENV !== 'production') {
+            this.logger.add(
+                new winston.transports.Console({
+                    format: combine(colorize(), simple()),
+                })
+            );
+        }
+    }
+
+    public infoWithTruncate(message: string): void {
+        logger.info(truncate(message, LIMIT_LOG_MESSAGE_LENGTH));
+    }
+}
+
+class TestLoggerAdapter implements ILoggerAdapter {
+    logger: winston.Logger;
+    constructor() {
+        this.logger = winston.createLogger({
             level: 'debug',
             format: combine(
                 timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
@@ -35,54 +99,18 @@ function makeLogger(): winston.Logger {
         });
     }
 
-    /*
-     * Log Level
-     * error: 0, warn: 1, info: 2, http: 3, verbose: 4, debug: 5, silly: 6
-     */
-    const logger: winston.Logger = winston.createLogger({
-        format: combine(
-            timestamp({
-                format: 'YYYY-MM-DD HH:mm:ss',
-            }),
-            logFormat
-        ),
-        transports: [
-            new winstonDaily({
-                level: 'info',
-                datePattern: 'YYYY-MM-DD',
-                dirname: logDir,
-                filename: `%DATE%.log`,
-                maxFiles: 14,
-                zippedArchive: true,
-            }),
-            new winstonDaily({
-                level: 'http',
-                datePattern: 'YYYY-MM-DD',
-                dirname: httpDir,
-                filename: `%DATE%.http.log`,
-                maxFiles: 7,
-                zippedArchive: true,
-            }),
-            new winstonDaily({
-                level: 'error',
-                datePattern: 'YYYY-MM-DD',
-                dirname: errorDir,
-                filename: `%DATE%.error.log`,
-                maxFiles: 30,
-                zippedArchive: true,
-            }),
-        ],
-    });
-    if (process.env.NODE_ENV !== 'production') {
-        logger.add(
-            new winston.transports.Console({
-                format: combine(colorize(), simple()),
-            })
-        );
+    public infoWithTruncate(message: string): void {
+        logger.info(message);
     }
-    return logger;
+}
+function createLoggerAdapter(): ILoggerAdapter {
+    if (properties.NODE_ENV == 'test') {
+        return new TestLoggerAdapter();
+    }
+    return new LoggerAdapter();
 }
 
-const logger: winston.Logger = makeLogger();
+const loggerAdapter: ILoggerAdapter = createLoggerAdapter();
+const logger: winston.Logger = loggerAdapter.logger;
 
-export { logger };
+export { ILoggerAdapter, logger, loggerAdapter };
