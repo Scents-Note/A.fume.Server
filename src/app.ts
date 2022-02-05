@@ -6,6 +6,7 @@ import express, { Express } from 'express';
 import createError from 'http-errors';
 
 import properties from './utils/properties';
+import makeMorgan from './modules/morgan';
 
 import { HttpError } from './utils/errors/errors';
 import statusCode from './utils/statusCode';
@@ -18,14 +19,14 @@ const {
     swaggerMetadataHandler,
 } = require('./modules/swagger');
 
-const app: Express = express();
-
 const sequelize: any = require('./models').sequelize;
 sequelize.sync();
 
-app.use(cookieParser());
-
 require('./utils/db/mongoose.js');
+
+const app: Express = express();
+
+app.use(cookieParser());
 
 const allowList: string[] =
     properties.CORS_ALLOW_LIST.split(',').map((it) => {
@@ -46,19 +47,14 @@ const corsOptionsDelegate: CorsOptionsDelegate<express.Request> = function (
 app.use(cors(corsOptionsDelegate));
 app.use(express.json());
 
+app.use(
+    makeMorgan((message: string) => {
+        console.log(message);
+    })
+);
+
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 
-app.use(
-    specs.basePath,
-    (
-        req: express.Request,
-        _res: express.Response,
-        next: express.NextFunction
-    ) => {
-        console.log(req.url);
-        next();
-    }
-);
 app.use(swaggerMetadataHandler);
 app.use(specs.basePath, verifyTokenMiddleware);
 app.use(specs.basePath, swaggerRouter(specs));
