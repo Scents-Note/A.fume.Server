@@ -6,6 +6,7 @@ import express, { Express } from 'express';
 import createError from 'http-errors';
 
 import properties from './utils/properties';
+import { logger } from './modules/winston';
 import makeMorgan from './modules/morgan';
 
 import { HttpError } from './utils/errors/errors';
@@ -50,6 +51,7 @@ app.use(express.json());
 app.use(
     makeMorgan((message: string) => {
         console.log(message);
+        logger.http(message);
     })
 );
 
@@ -79,11 +81,11 @@ app.use(function (
     let status: number;
     let message: string;
     if (err instanceof HttpError || err instanceof createError.HttpError) {
-        properties.NODE_ENV === 'development' && console.log(err.stack);
+        properties.NODE_ENV === 'development' && logger.error(err.stack);
         status = err.status;
         message = err.message;
     } else {
-        console.log(err);
+        logger.error(err);
         status = statusCode.INTERNAL_SERVER_ERROR;
         message = 'Internal Server Error';
     }
