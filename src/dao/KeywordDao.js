@@ -1,3 +1,4 @@
+import { logger } from '../modules/winston';
 import { NotMatchedError } from '../utils/errors/errors';
 const {
     Keyword,
@@ -43,7 +44,7 @@ module.exports.create = async ({ reviewIdx, keywordIdx, perfumeIdx }) => {
                 updatePerfumeKeyword,
             ];
         } catch (err) {
-            console.log(err);
+            logger.error(err);
         }
     });
 };
