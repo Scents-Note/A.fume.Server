@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 import http from 'http';
 const debug = require('debug')('swagger-test:server');
-import { logger } from '../modules/winston';
 
-import properties from '../utils/properties';
-import app from '../app';
+import { logger } from '@modules/winston';
+
+import properties from '@properties';
+import app from '@src/app';
 logger.info(`ENV: ${properties.NODE_ENV}`);
 
 const localIpAddress = properties.SERVER_IP;

@@ -10,24 +10,24 @@
         [
             "module-resolver",
             {
-                "root": ["src"],
+                "root": ["./src"],
                 "alias": {
-                    "@src" : "./",
-                    "@controllers": "./controllers",
-                    "@services": "./service",
-                    "@dao" : "./dao",
-                    "@modules": "./modules",
-                    "@errors" : "./utils/errors/errors",
-                    "@properties" : "./utils/properties",
-                    "@mongoose": "./mongoose_models/index",
-                    "@sequelize" : "./models/index",
-                    "@utils" : "./utils",
-                    "@libs" : "./lib",
-                    "@middleware" : "./middleware",
-                    "@configs" : "./config",
-                    "@request" : "./data/request",
-                    "@response" : "./data/response",
-                    "@dto" : "./data/dto"
+                    "@src" : "./src",
+                    "@controllers": "./src/controllers",
+                    "@services": "./src/service",
+                    "@dao" : "./src/dao",
+                    "@modules": "./src/modules",
+                    "@errors" : "./src/utils/errors/errors",
+                    "@properties" : "./src/utils/properties",
+                    "@mongoose": "./src/mongoose_models/index",
+                    "@sequelize" : "./src/models/index",
+                    "@utils" : "./src/utils",
+                    "@libs" : "./src/lib",
+                    "@middleware" : "./src/middleware",
+                    "@configs" : "./src/config",
+                    "@request" : "./src/data/request",
+                    "@response" : "./src/data/response",
+                    "@dto" : "./src/data/dto"
                 }
             }
         ]
