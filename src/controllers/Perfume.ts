@@ -58,15 +58,15 @@ const getPerfume: RequestHandler = (
         .then(([result, _]: [PerfumeIntegralDTO, void]) => {
             return PerfumeDetailResponse.createByPerfumeIntegralDTO(result);
         })
-        .then((data: PerfumeDetailResponse) => {
+        .then((response: PerfumeDetailResponse) => {
             LoggerHelper.logTruncated(
                 logger.debug,
-                `${LOG_TAG} getPerfume's result = ${data}`
+                `${LOG_TAG} getPerfume's result = ${response}`
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<PerfumeDetailResponse>(
                     MSG_GET_PERFUME_DETAIL_SUCCESS,
-                    data
+                    response
                 )
             );
         })
@@ -93,15 +93,15 @@ const searchPerfume: RequestHandler = (
                 result.rows.map(PerfumeResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
                 logger.debug,
-                `${LOG_TAG} searchPerfume's result = ${data}`
+                `${LOG_TAG} searchPerfume's result = ${response}`
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     MSG_GET_SEARCH_PERFUME_SUCCESS,
-                    data
+                    response
                 )
             );
         })
@@ -147,15 +147,15 @@ const getRecentPerfume: RequestHandler = (
                 result.rows.map(PerfumeResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
                 logger.debug,
-                `${LOG_TAG} getRecentPerfume's result = ${data}`
+                `${LOG_TAG} getRecentPerfume's result = ${response}`
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     MSG_GET_RECENT_SEARCH_PERFUME_SUCCESS,
-                    data
+                    response
                 )
             );
         })
@@ -178,15 +178,15 @@ const recommendPersonalPerfume: RequestHandler = (
                 result.rows.map(PerfumeRecommendResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeRecommendResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeRecommendResponse>) => {
             LoggerHelper.logTruncated(
                 logger.debug,
-                `${LOG_TAG} recommendPersonalPerfume's result = ${data}`
+                `${LOG_TAG} recommendPersonalPerfume's result = ${response}`
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeRecommendResponse>>(
                     MSG_GET_RECOMMEND_PERFUME_BY_USER,
-                    data
+                    response
                 )
             );
         })
@@ -209,15 +209,15 @@ const recommendCommonPerfume: RequestHandler = (
                 result.rows.map(PerfumeRecommendResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeRecommendResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeRecommendResponse>) => {
             LoggerHelper.logTruncated(
                 logger.debug,
-                `${LOG_TAG} recommendCommonPerfume's result = ${data}`
+                `${LOG_TAG} recommendCommonPerfume's result = ${response}`
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeRecommendResponse>>(
                     MSG_GET_RECOMMEND_PERFUME_BY_AGE_AND_GENDER,
-                    data
+                    response
                 )
             );
         })
@@ -237,15 +237,15 @@ const getSurveyPerfume: RequestHandler = (
                 result.rows.map(PerfumeResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
                 logger.debug,
-                `${LOG_TAG} getSurveyPerfume's result = ${data}`
+                `${LOG_TAG} getSurveyPerfume's result = ${response}`
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     MSG_GET_PERFUME_FOR_SURVEY_SUCCESS,
-                    data
+                    response
                 )
             );
         })
@@ -268,15 +268,15 @@ const getNewPerfume: RequestHandler = (
                 result.rows.map(PerfumeResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
                 logger.debug,
-                `${LOG_TAG} getNewPerfume's result = ${data}`
+                `${LOG_TAG} getNewPerfume's result = ${response}`
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
-                    data
+                    response
                 )
             );
         })
@@ -306,15 +306,15 @@ const getLikedPerfume: RequestHandler = (
                 result.rows.map(PerfumeResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
                 logger.debug,
-                `${LOG_TAG} getLikedPerfume's result = ${data}`
+                `${LOG_TAG} getLikedPerfume's result = ${response}`
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
-                    data
+                    response
                 )
             );
         })

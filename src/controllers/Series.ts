@@ -111,15 +111,15 @@ const getSeriesAll: RequestHandler = (
                 rows: result.rows.map(SeriesResponse.create),
             };
         })
-        .then((result: ListAndCountDTO<SeriesResponse>) => {
+        .then((response: ListAndCountDTO<SeriesResponse>) => {
             LoggerHelper.logTruncated(
                 logger.debug,
-                `${LOG_TAG} getSeriesAll's result = ${result}`
+                `${LOG_TAG} getSeriesAll's result = ${response}`
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<SeriesResponse>>(
                     MSG_GET_SERIES_ALL_SUCCESS,
-                    result
+                    response
                 )
             );
         })
@@ -139,15 +139,15 @@ const getIngredients: RequestHandler = (
                 result.rows.map(IngredientResponse.createByJson)
             );
         })
-        .then((result: ListAndCountDTO<IngredientResponse>) => {
+        .then((response: ListAndCountDTO<IngredientResponse>) => {
             LoggerHelper.logTruncated(
                 logger.debug,
-                `${LOG_TAG} getIngredients's result = ${result}`
+                `${LOG_TAG} getIngredients's result = ${response}`
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<IngredientResponse>>(
                     MSG_GET_INGREDIENT_BY_SERIES_SUCCESS,
-                    result
+                    response
                 )
             );
         })
@@ -216,15 +216,15 @@ const getFilterSeries: RequestHandler = (
                 result.rows.map(SeriesFilterResponse.create)
             );
         })
-        .then((result: ListAndCountDTO<SeriesFilterResponse>) => {
+        .then((response: ListAndCountDTO<SeriesFilterResponse>) => {
             LoggerHelper.logTruncated(
                 logger.debug,
-                `${LOG_TAG} getFilterSeries's result = ${result}`
+                `${LOG_TAG} getFilterSeries's result = ${response}`
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<SeriesFilterResponse>>(
                     MSG_SEARCH_SERIES_LIST_SUCCESS,
-                    result
+                    response
                 )
             );
         })

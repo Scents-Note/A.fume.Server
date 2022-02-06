@@ -101,15 +101,15 @@ const getIngredientAll: RequestHandler = (
                 result.rows.map(IngredientResponse.createByJson)
             );
         })
-        .then((result: ListAndCountDTO<IngredientResponse>) => {
+        .then((response: ListAndCountDTO<IngredientResponse>) => {
             LoggerHelper.logTruncated(
                 logger.debug,
-                `${LOG_TAG} getIngredientAll's result = ${result}`
+                `${LOG_TAG} getIngredientAll's result = ${response}`
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<IngredientResponse>>(
                     MSG_GET_SEARCH_INGREDIENT_SUCCESS,
-                    result
+                    response
                 )
             );
         })

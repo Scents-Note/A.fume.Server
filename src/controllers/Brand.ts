@@ -108,15 +108,15 @@ const getBrandAll: RequestHandler = (
                 result.rows.map(BrandResponse.createByJson)
             );
         })
-        .then((result: ListAndCountDTO<BrandResponse>) => {
+        .then((response: ListAndCountDTO<BrandResponse>) => {
             LoggerHelper.logTruncated(
                 logger.debug,
-                `${LOG_TAG} getBrandAll's result = ${result}`
+                `${LOG_TAG} getBrandAll's result = ${response}`
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<BrandResponse>>(
                     MSG_GET_BRAND_ALL_SUCCESS,
-                    result
+                    response
                 )
             );
         })
