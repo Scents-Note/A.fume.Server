@@ -6,6 +6,17 @@
     "plugins": [
         "@babel/proposal-class-properties",
         "@babel/proposal-object-rest-spread",
-        "@babel/plugin-transform-runtime"
+        "@babel/plugin-transform-runtime",
+        [
+            "module-resolver",
+            {
+                "root": ["./"],
+                "alias": {
+                    "@modules": "./src/modules",
+                    "@services": "./src/service",
+                    "@controllers": "./src/controller"
+                }
+            }
+        ]
     ]
 }
