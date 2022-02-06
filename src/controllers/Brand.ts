@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
-import { loggerAdapter } from '../modules/winston';
+import { logger, LoggerHelper } from '../modules/winston';
 
 import BrandService from '../service/BrandService';
 
@@ -109,7 +109,8 @@ const getBrandAll: RequestHandler = (
             );
         })
         .then((result: ListAndCountDTO<BrandResponse>) => {
-            loggerAdapter.infoWithTruncate(
+            LoggerHelper.logTruncated(
+                logger.info,
                 `${LOG_TAG} getBrandAll's result = ${result}`
             );
             res.status(StatusCode.OK).json(
@@ -174,7 +175,8 @@ const getFilterBrand: RequestHandler = (
             return result.map(BrandFilterResponse.create);
         })
         .then((response: BrandFilterResponse[]) => {
-            loggerAdapter.infoWithTruncate(
+            LoggerHelper.logTruncated(
+                logger.info,
                 `${LOG_TAG} getFilterBrand's result = ${response}`
             );
             res.status(StatusCode.OK).json(

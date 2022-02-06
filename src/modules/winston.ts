@@ -1,4 +1,4 @@
-import winston from 'winston';
+import winston, { LeveledLogMethod } from 'winston';
 import winstonDaily from 'winston-daily-rotate-file';
 
 import properties from '../utils/properties';
@@ -20,7 +20,6 @@ function truncate(input: string, limit: number) {
 }
 interface ILoggerAdapter {
     logger: winston.Logger;
-    infoWithTruncate(message: string): void;
 }
 const LIMIT_LOG_MESSAGE_LENGTH: number = 500;
 class LoggerAdapter implements ILoggerAdapter {
@@ -80,10 +79,6 @@ class LoggerAdapter implements ILoggerAdapter {
             );
         }
     }
-
-    public infoWithTruncate(message: string): void {
-        logger.info(truncate(message, LIMIT_LOG_MESSAGE_LENGTH));
-    }
 }
 
 class TestLoggerAdapter implements ILoggerAdapter {
@@ -108,8 +103,8 @@ class TestLoggerAdapter implements ILoggerAdapter {
         });
     }
 
-    public infoWithTruncate(message: string): void {
-        logger.info(message);
+    public logTruncated(method: LeveledLogMethod, message: string): void {
+        method(message);
     }
 }
 function createLoggerAdapter(): ILoggerAdapter {
@@ -119,7 +114,16 @@ function createLoggerAdapter(): ILoggerAdapter {
     return new LoggerAdapter();
 }
 
+class LoggerHelper {
+    public static logTruncated(
+        method: LeveledLogMethod,
+        message: string
+    ): void {
+        method(truncate(message, LIMIT_LOG_MESSAGE_LENGTH));
+    }
+}
+
 const loggerAdapter: ILoggerAdapter = createLoggerAdapter();
 const logger: winston.Logger = loggerAdapter.logger;
 
-export { ILoggerAdapter, logger, loggerAdapter };
+export { ILoggerAdapter, logger, loggerAdapter, LoggerHelper };

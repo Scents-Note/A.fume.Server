@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
-import { loggerAdapter } from '../modules/winston';
+import { logger, LoggerHelper } from '../modules/winston';
 
 import IngredientService from '../service/IngredientService';
 import IngredientDTO from '../data/dto/IngredientDTO';
@@ -102,7 +102,8 @@ const getIngredientAll: RequestHandler = (
             );
         })
         .then((result: ListAndCountDTO<IngredientResponse>) => {
-            loggerAdapter.infoWithTruncate(
+            LoggerHelper.logTruncated(
+                logger.info,
                 `${LOG_TAG} getIngredientAll's result = ${result}`
             );
             res.status(StatusCode.OK).json(

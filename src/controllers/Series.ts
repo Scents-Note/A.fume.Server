@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
-import { loggerAdapter } from '../modules/winston';
+import { logger, LoggerHelper } from '../modules/winston';
 
 import StatusCode from '../utils/statusCode';
 
@@ -112,7 +112,8 @@ const getSeriesAll: RequestHandler = (
             };
         })
         .then((result: ListAndCountDTO<SeriesResponse>) => {
-            loggerAdapter.infoWithTruncate(
+            LoggerHelper.logTruncated(
+                logger.info,
                 `${LOG_TAG} getSeriesAll's result = ${result}`
             );
             res.status(StatusCode.OK).json(
@@ -139,7 +140,8 @@ const getIngredients: RequestHandler = (
             );
         })
         .then((result: ListAndCountDTO<IngredientResponse>) => {
-            loggerAdapter.infoWithTruncate(
+            LoggerHelper.logTruncated(
+                logger.info,
                 `${LOG_TAG} getIngredients's result = ${result}`
             );
             res.status(StatusCode.OK).json(
@@ -215,7 +217,8 @@ const getFilterSeries: RequestHandler = (
             );
         })
         .then((result: ListAndCountDTO<SeriesFilterResponse>) => {
-            loggerAdapter.infoWithTruncate(
+            LoggerHelper.logTruncated(
+                logger.info,
                 `${LOG_TAG} getFilterSeries's result = ${result}`
             );
             res.status(StatusCode.OK).json(

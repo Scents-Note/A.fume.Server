@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
-import { logger, loggerAdapter } from '../modules/winston';
+import { logger, LoggerHelper } from '../modules/winston';
 
 import { ResponseDTO, SimpleResponseDTO } from '../data/response/common';
 
@@ -143,7 +143,8 @@ const registerUser: RequestHandler = (
             return UserRegisterResponse.createByJson(result);
         })
         .then((response: UserRegisterResponse) => {
-            loggerAdapter.infoWithTruncate(
+            LoggerHelper.logTruncated(
+                logger.info,
                 `${LOG_TAG} registerUser's result = ${response}`
             );
             res.status(StatusCode.OK).json(
@@ -232,7 +233,8 @@ const loginUser: RequestHandler = (
             return LoginResponse.createByJson(result);
         })
         .then((response: LoginResponse) => {
-            loggerAdapter.infoWithTruncate(
+            LoggerHelper.logTruncated(
+                logger.info,
                 `${LOG_TAG} loginUser's result = ${response}`
             );
             res.status(StatusCode.OK).json(
@@ -286,7 +288,10 @@ const changePassword: RequestHandler = (
     const { prevPassword, newPassword } = req.body;
     User.changePassword(userIdx, prevPassword, newPassword)
         .then(() => {
-            loggerAdapter.infoWithTruncate(`${LOG_TAG} changePassword success`);
+            LoggerHelper.logTruncated(
+                logger.info,
+                `${LOG_TAG} changePassword success`
+            );
             res.status(StatusCode.OK).json(
                 new SimpleResponseDTO(MSG_CHANGE_PASSWORD_SUCCESS)
             );
@@ -343,7 +348,8 @@ const authUser: RequestHandler = (
             return UserAuthResponse.createByJson(result);
         })
         .then((response: UserAuthResponse) => {
-            loggerAdapter.infoWithTruncate(
+            LoggerHelper.logTruncated(
+                logger.info,
                 `${LOG_TAG} authUser's result = ${response}`
             );
             res.status(StatusCode.OK).json(
@@ -395,7 +401,8 @@ const validateEmail: RequestHandler = (
     const email: string = req.query.email as string;
     User.validateEmail(email)
         .then((response: boolean) => {
-            loggerAdapter.infoWithTruncate(
+            LoggerHelper.logTruncated(
+                logger.info,
                 `${LOG_TAG} validateEmail's result = ${response}`
             );
             if (response) {
@@ -454,7 +461,8 @@ const validateName: RequestHandler = (
     next: NextFunction
 ) => {
     if (!req.query.nickname) {
-        loggerAdapter.infoWithTruncate(
+        LoggerHelper.logTruncated(
+            logger.info,
             `${LOG_TAG} validateName's result = false`
         );
         res.status(StatusCode.CONFLICT).json(
@@ -468,7 +476,8 @@ const validateName: RequestHandler = (
     const nickname: string = decodeURIComponent(req.query.nickname + '');
     User.validateName(nickname)
         .then((response: boolean) => {
-            loggerAdapter.infoWithTruncate(
+            LoggerHelper.logTruncated(
+                logger.info,
                 `${LOG_TAG} validateName's result = ${response}`
             );
             if (response) {
@@ -556,7 +565,10 @@ const postSurvey: RequestHandler = (
     );
     User.addSurvey(surveyDTO)
         .then(() => {
-            loggerAdapter.infoWithTruncate(`${LOG_TAG} postSurvey success`);
+            LoggerHelper.logTruncated(
+                logger.info,
+                `${LOG_TAG} postSurvey success`
+            );
             res.status(StatusCode.OK).json(
                 new SimpleResponseDTO(MSG_POST_SURVEY_SUCCESS)
             );
@@ -656,7 +668,8 @@ const updateUser: RequestHandler = (
             return UserResponse.createByJson(result);
         })
         .then((response: UserResponse) => {
-            loggerAdapter.infoWithTruncate(
+            LoggerHelper.logTruncated(
+                logger.info,
                 `${LOG_TAG} updateUser's result = ${response}`
             );
             res.status(StatusCode.OK).json(
@@ -697,7 +710,10 @@ const deleteUser: RequestHandler = (
     const userIdx = req.params['userIdx'];
     User.deleteUser(userIdx)
         .then((_: any) => {
-            loggerAdapter.infoWithTruncate(`${LOG_TAG} deleteUser success`);
+            LoggerHelper.logTruncated(
+                logger.info,
+                `${LOG_TAG} deleteUser success`
+            );
             res.status(StatusCode.OK).json(
                 new SimpleResponseDTO(MSG_DELETE_USER_SUCCESS)
             );
