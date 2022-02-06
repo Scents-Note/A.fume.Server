@@ -3,8 +3,8 @@ import swaggerJSDoc, { SwaggerDefinition } from 'swagger-jsdoc';
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import _ from 'lodash';
 
-import properties from '../utils/properties';
-import { logger } from '../modules/winston';
+import properties from '@properties';
+import { logger } from '@modules/winston';
 
 const parseurl: any = require('parseurl');
 

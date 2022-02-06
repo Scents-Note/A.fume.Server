@@ -1,7 +1,7 @@
 import AWS, { AWSError } from 'aws-sdk';
 const s3 = new AWS.S3();
 
-import { logger } from '../modules/winston';
+import { logger } from '@modules/winston';
 
 function getImageList(
     params: AWS.S3.Types.ListObjectsV2Request

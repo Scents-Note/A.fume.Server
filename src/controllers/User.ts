@@ -1,24 +1,10 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
-import { logger, LoggerHelper } from '../modules/winston';
+import { logger, LoggerHelper } from '@modules/winston';
 
-import { ResponseDTO, SimpleResponseDTO } from '../data/response/common';
+import { UnAuthorizedError } from '@errors';
 
-import StatusCode from '../utils/statusCode';
-
-import {
-    UserResponse,
-    UserRegisterResponse,
-    UserAuthResponse,
-    LoginResponse,
-} from '../data/response/user';
-
-import UserService from '../service/UserService';
-
-import { UserRegisterRequest, UserEditRequest } from '../data/request/user';
-import UserAuthDTO from '../data/dto/UserAuthDTO';
-import { UnAuthorizedError } from '../utils/errors/errors';
-import { GenderMap } from '../utils/enumType';
+import { GRADE_USER } from '@utils/constants';
 
 import {
     MSG_REGISTER_SUCCESS,
@@ -32,12 +18,25 @@ import {
     MSG_DUPLICATE_CHECK_NAME_AVAILABLE,
     MSG_DUPLICATE_CHECK_NAME_UNAVAILABLE,
     MSG_POST_SURVEY_SUCCESS,
-} from '../utils/strings';
-import UserInputDTO from '../data/dto/UserInputDTO';
-import LoginInfoDTO from '../data/dto/LoginInfoDTO';
-import SurveyDTO from '../data/dto/SurveyDTO';
+} from '@utils/strings';
 
-const { GRADE_USER } = require('../utils/constantUtil');
+import { GenderMap } from '@utils/enumType';
+import StatusCode from '@utils/statusCode';
+
+import UserService from '@services/UserService';
+
+import { UserRegisterRequest, UserEditRequest } from '@request/user';
+
+import { ResponseDTO, SimpleResponseDTO } from '@response/common';
+
+import {
+    UserResponse,
+    UserRegisterResponse,
+    UserAuthResponse,
+    LoginResponse,
+} from '@response/user';
+
+import { UserAuthDTO, UserInputDTO, LoginInfoDTO, SurveyDTO } from '@dto/index';
 
 const LOG_TAG: string = '[User/Controller]';
 

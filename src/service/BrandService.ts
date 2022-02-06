@@ -1,11 +1,15 @@
-import BrandFilterDTO from '../data/dto/BrandFilterDTO';
-import BrandDao from '../dao/BrandDao';
-import { PagingRequestDTO } from '../data/request/common';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
-import BrandDTO from '../data/dto/BrandDTO';
-import PagingDTO from '../data/dto/PagingDTO';
+import { logger } from '@modules/winston';
 
-import { logger } from '../modules/winston';
+import BrandDao from '@dao/BrandDao';
+
+import { PagingRequestDTO } from '@request/common';
+
+import {
+    BrandFilterDTO,
+    ListAndCountDTO,
+    BrandDTO,
+    PagingDTO,
+} from '@dto/index';
 
 const LOG_TAG: string = '[Brand/Service]';
 

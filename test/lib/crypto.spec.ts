@@ -1,8 +1,9 @@
 import dotenv from 'dotenv';
 dotenv.config();
-import { encrypt, decrypt } from '../../src/lib/crypto';
 
 import { expect } from 'chai';
+
+import { encrypt, decrypt } from '@libs/crypto';
 
 describe('# encrypt and decrypt Test', () => {
     it(' # success case', () => {

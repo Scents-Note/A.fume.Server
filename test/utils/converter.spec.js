@@ -4,7 +4,7 @@ dotenv.config();
 const chai = require('chai');
 const { expect } = chai;
 
-const converter = require('../../src/utils/converter.js');
+const converter = require('@utils/converter.js');
 
 describe('# converter Test', () => {
     it(' # Input Str < - > DB Int Test', (done) => {

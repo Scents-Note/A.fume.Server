@@ -1,4 +1,4 @@
-import { PagingRequestDTO } from '../request/common';
+import { PagingRequestDTO } from '@request/common';
 
 type Ascending = 'DESC' | 'ASC';
 
@@ -47,4 +47,4 @@ class PagingDTO {
     }
 }
 
-export default PagingDTO;
+export { PagingDTO };

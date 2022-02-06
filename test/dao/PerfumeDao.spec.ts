@@ -4,20 +4,23 @@ dotenv.config();
 import { expect } from 'chai';
 import { Done } from 'mocha';
 
-import PerfumeDao from '../../src/dao/PerfumeDao';
-import PerfumeDTO from '../../src/data/dto/PerfumeDTO';
-import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-import PerfumeThumbDTO from '../../src/data/dto/PerfumeThumbDTO';
-import PerfumeSearchResultDTO from '../../src/data/dto/PerfumeSearchResultDTO';
-import PerfumeSearchHistoryDTO from '../../src/data/dto/PerfumeSearchHistoryDTO';
+import { GENDER_WOMAN } from '@utils/constants';
+
+import PerfumeDao from '@dao/PerfumeDao';
+
+import {
+    PerfumeDTO,
+    ListAndCountDTO,
+    PerfumeThumbDTO,
+    PerfumeSearchResultDTO,
+    PerfumeSearchHistoryDTO,
+} from '@dto/index';
 
 import BrandHelper from '../mock_helper/BrandHelper';
 import PerfumeThumbMockHelper from '../mock_helper/PerfumeThumbMockHelper';
 const perfumeDao = new PerfumeDao();
-const { Note, Sequelize } = require('../../src/models');
+const { Note, Sequelize } = require('@sequelize');
 const { Op } = Sequelize;
-
-const { GENDER_WOMAN } = require('../../src/utils/constantUtil');
 
 describe('# perfumeDao Test', () => {
     before(async function () {

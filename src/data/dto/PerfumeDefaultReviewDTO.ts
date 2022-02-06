@@ -112,4 +112,4 @@ class PerfumeDefaultReviewDTO {
     }
 }
 
-export default PerfumeDefaultReviewDTO;
+export { PerfumeDefaultReviewDTO };

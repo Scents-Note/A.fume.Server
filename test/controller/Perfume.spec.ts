@@ -4,25 +4,7 @@ import { expect } from 'chai';
 import { Done } from 'mocha';
 dotenv.config();
 
-import JwtController from '../../src/lib/JwtController';
-import TokenPayloadDTO from '../../src/data/dto/TokenPayloadDTO';
-import StatusCode from '../../src/utils/statusCode';
-
-import app from '../../src/app';
-
-const basePath: string = '/A.fume/api/0.0.1';
-
-const Perfume = require('../../src/controllers/Perfume');
-import PerfumeThumbMockHelper from '../mock_helper/PerfumeThumbMockHelper';
-import PerfumeThumbKeywordMockHelper from '../mock_helper/PerfumeThumbKeywordMockHelper';
-import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
-import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-import { ResponseDTO, SimpleResponseDTO } from '../../src/data/response/common';
-import {
-    PerfumeResponse,
-    PerfumeDetailResponse,
-    PerfumeRecommendResponse,
-} from '../../src/data/response/perfume';
+import StatusCode from '@utils/statusCode';
 
 import {
     MSG_GET_PERFUME_DETAIL_SUCCESS,
@@ -36,7 +18,27 @@ import {
     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
     MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
     MSG_ABNORMAL_ACCESS,
-} from '../../src/utils/strings';
+} from '@utils/strings';
+
+import JwtController from '@libs/JwtController';
+
+import { ResponseDTO, SimpleResponseDTO } from '@response/common';
+import {
+    PerfumeResponse,
+    PerfumeDetailResponse,
+    PerfumeRecommendResponse,
+} from '@response/perfume';
+
+import { TokenPayloadDTO, ListAndCountDTO } from '@dto/index';
+
+import app from '@src/app';
+
+const basePath: string = '/A.fume/api/0.0.1';
+
+const Perfume = require('@controllers/Perfume');
+import PerfumeThumbMockHelper from '../mock_helper/PerfumeThumbMockHelper';
+import PerfumeThumbKeywordMockHelper from '../mock_helper/PerfumeThumbKeywordMockHelper';
+import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
 
 const user1tokenPerfume: string = JwtController.create(
     new TokenPayloadDTO(1, 'nickname', 'MAN', 'email', 1995)

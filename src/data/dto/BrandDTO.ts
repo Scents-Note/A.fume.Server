@@ -53,4 +53,4 @@ class BrandDTO {
     }
 }
 
-export default BrandDTO;
+export { BrandDTO };

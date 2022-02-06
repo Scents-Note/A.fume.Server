@@ -51,4 +51,4 @@ class IngredientDTO {
     }
 }
 
-export default IngredientDTO;
+export { IngredientDTO };

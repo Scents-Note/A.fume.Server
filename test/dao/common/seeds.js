@@ -14,8 +14,9 @@ const {
     JoinReviewKeyword,
     Review,
     PerfumeDefaultReview,
-} = require('../../../src/models');
-const { GENDER_MAN, GENDER_WOMAN } = require('../../../src/utils/constantUtil');
+} = require('@sequelize');
+
+import { GENDER_MAN, GENDER_WOMAN } from '@utils/constants';
 
 module.exports = () => {
     const firstJob = [];

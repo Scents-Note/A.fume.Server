@@ -1,20 +1,25 @@
+import { logger } from '@modules/winston';
+
 import {
     WrongPasswordError,
     PasswordPolicyError,
     NotMatchedError,
-} from '../utils/errors/errors';
-import UserDao from '../dao/UserDao';
-import { encrypt, decrypt } from '../lib/crypto';
-import JwtController from '../lib/JwtController';
-import TokenPayloadDTO from '../data/dto/TokenPayloadDTO';
-import LoginInfoDTO from '../data/dto/LoginInfoDTO';
-import TokenGroupDTO from '../data/dto/TokenGroupDTO';
-import UserAuthDTO from '../data/dto/UserAuthDTO';
-import UserDTO from '../data/dto/UserDTO';
-import UserInputDTO from '../data/dto/UserInputDTO';
-import SurveyDTO from '../data/dto/SurveyDTO';
+} from '@errors';
 
-import { logger } from '../modules/winston';
+import UserDao from '@dao/UserDao';
+
+import { encrypt, decrypt } from '@libs/crypto';
+import JwtController from '@libs/JwtController';
+
+import {
+    TokenPayloadDTO,
+    LoginInfoDTO,
+    TokenGroupDTO,
+    UserAuthDTO,
+    UserInputDTO,
+    UserDTO,
+    SurveyDTO,
+} from '@dto/index';
 
 const LOG_TAG: string = '[User/Service]';
 

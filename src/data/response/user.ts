@@ -1,4 +1,4 @@
-import { GenderInvMap, GenderKey } from '../../utils/enumType';
+import { GenderInvMap, GenderKey } from '@utils/enumType';
 
 class LoginResponse {
     userIdx: number;

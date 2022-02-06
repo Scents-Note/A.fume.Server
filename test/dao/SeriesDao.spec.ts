@@ -3,22 +3,17 @@ import { expect } from 'chai';
 import { Done } from 'mocha';
 dotenv.config();
 
-import SeriesDao from '../../src/dao/SeriesDao';
+import { NotMatchedError, UnExpectedError } from '@errors';
 
-import {
-    NotMatchedError,
-    UnExpectedError,
-} from '../../src/utils/errors/errors';
-import PagingDTO from '../../src/data/dto/PagingDTO';
-import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
+import SeriesDao from '@dao/SeriesDao';
 
-import SeriesDTO from '../../src/data/dto/SeriesDTO';
+import { PagingDTO, ListAndCountDTO, SeriesDTO } from '@dto/index';
 
 import SeriesMockHelper from '../mock_helper/SeriesMockHelper';
 
 const seriesDao = new SeriesDao();
 
-const { Series } = require('../../src/models/index.js');
+const { Series } = require('@sequelize');
 
 describe('# seriesDao Test', () => {
     before(async function () {

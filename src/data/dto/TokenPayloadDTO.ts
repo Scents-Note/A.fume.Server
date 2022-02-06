@@ -32,4 +32,4 @@ class TokenPayloadDTO {
     }
 }
 
-export default TokenPayloadDTO;
+export { TokenPayloadDTO };

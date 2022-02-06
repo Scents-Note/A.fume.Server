@@ -1,8 +1,10 @@
-import SearchHistoryDao from '../dao/SearchHistoryDao';
-import SearchHistoryDTO from '../data/dto/SearchHistoryDTO';
-import { NotMatchedError } from '../utils/errors/errors';
+import { logger } from '@modules/winston';
 
-import { logger } from '../modules/winston';
+import { NotMatchedError } from '@errors';
+
+import SearchHistoryDao from '@dao/SearchHistoryDao';
+
+import { SearchHistoryDTO } from '@dto/index';
 
 const LOG_TAG: string = '[SearchHistory/Service]';
 

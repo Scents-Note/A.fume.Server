@@ -6,6 +6,30 @@
     "plugins": [
         "@babel/proposal-class-properties",
         "@babel/proposal-object-rest-spread",
-        "@babel/plugin-transform-runtime"
+        "@babel/plugin-transform-runtime",
+        [
+            "module-resolver",
+            {
+                "root": ["src"],
+                "alias": {
+                    "@src" : "./",
+                    "@controllers": "./controllers",
+                    "@services": "./service",
+                    "@dao" : "./dao",
+                    "@modules": "./modules",
+                    "@errors" : "./utils/errors/errors",
+                    "@properties" : "./utils/properties",
+                    "@mongoose": "./mongoose_models/index",
+                    "@sequelize" : "./models/index",
+                    "@utils" : "./utils",
+                    "@libs" : "./lib",
+                    "@middleware" : "./middleware",
+                    "@configs" : "./config",
+                    "@request" : "./data/request",
+                    "@response" : "./data/response",
+                    "@dto" : "./data/dto"
+                }
+            }
+        ]
     ]
 }

@@ -1,7 +1,8 @@
-import NoteDTO from '../data/dto/NoteDTO';
-import { logger } from '../modules/winston';
+import { logger } from '@modules/winston';
 
-const { Note, Ingredient, sequelize, Sequelize } = require('../models');
+import { NoteDTO } from '@dto/index';
+
+const { Note, Ingredient, sequelize, Sequelize } = require('@sequelize');
 const { Op } = Sequelize;
 
 const LOG_TAG: string = '[Note/DAO]';

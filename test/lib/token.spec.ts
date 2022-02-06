@@ -1,18 +1,15 @@
 import dotenv from 'dotenv';
 dotenv.config();
-
-import properties from '../../src/utils/properties';
-
 import jsonwebtoken from 'jsonwebtoken';
-import JwtController from '../../src/lib/JwtController';
 import { expect } from 'chai';
 
-import {
-    InvalidTokenError,
-    ExpiredTokenError,
-} from '../../src/utils/errors/errors';
+import properties from '@properties';
 
-import TokenPayloadDTO from '../../src/data/dto/TokenPayloadDTO';
+import { InvalidTokenError, ExpiredTokenError } from '@errors';
+
+import JwtController from '@libs/JwtController';
+
+import { TokenPayloadDTO } from '@dto/index';
 
 describe('# publish Test', () => {
     it(' # create case', () => {

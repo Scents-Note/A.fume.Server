@@ -1,28 +1,30 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
-import { logger, LoggerHelper } from '../modules/winston';
+import { logger, LoggerHelper } from '@modules/winston';
 
-import StatusCode from '../utils/statusCode';
+import IngredientService from '@services/IngredientService';
+import SeriesService from '@services/SeriesService';
 
-import IngredientService from '../service/IngredientService';
-import SeriesService from '../service/SeriesService';
+import { PagingRequestDTO } from '@request/common';
 
-import { PagingRequestDTO } from '../data/request/common';
+import { ResponseDTO } from '@response/common';
+import { SeriesResponse, SeriesFilterResponse } from '@response/series';
+import { IngredientResponse } from '@response/ingredient';
 
-import { ResponseDTO } from '../data/response/common';
-import { SeriesResponse, SeriesFilterResponse } from '../data/response/series';
-import { IngredientResponse } from '../data/response/ingredient';
-
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
-import SeriesDTO from '../data/dto/SeriesDTO';
-import SeriesFilterDTO from '../data/dto/SeriesFilterDTO';
-import IngredientDTO from '../data/dto/IngredientDTO';
+import {
+    ListAndCountDTO,
+    SeriesDTO,
+    SeriesFilterDTO,
+    IngredientDTO,
+} from '@dto/index';
 
 import {
     MSG_GET_SERIES_ALL_SUCCESS,
     MSG_GET_INGREDIENT_BY_SERIES_SUCCESS,
     MSG_SEARCH_SERIES_LIST_SUCCESS,
-} from '../utils/strings';
+} from '@utils/strings';
+
+import StatusCode from '@utils/statusCode';
 
 const LOG_TAG: string = '[Series/Controller]';
 

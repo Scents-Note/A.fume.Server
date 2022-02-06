@@ -3,19 +3,7 @@ import request from 'supertest';
 import { Done } from 'mocha';
 dotenv.config();
 
-import JwtController from '../../src/lib/JwtController';
-import TokenPayloadDTO from '../../src/data/dto/TokenPayloadDTO';
-import UserAuthDTO from '../../src/data/dto/UserAuthDTO';
-import StatusCode from '../../src/utils/statusCode';
-import UserDTO from '../../src/data/dto/UserDTO';
-
-import TokenGroupDTO from '../../src/data/dto/TokenGroupDTO';
-
-import UserMockHelper from '../mock_helper/UserMockHelper';
-import LoginInfoMockHelper from '../mock_helper/LoginInfoMockHelper';
-import TokenGroupMockHelper from '../mock_helper/TokenGroupMockHelper';
-
-import app from '../../src/app';
+import StatusCode from '@utils/statusCode';
 
 import {
     MSG_REGISTER_SUCCESS,
@@ -30,11 +18,26 @@ import {
     MSG_INVALID_TOKEN,
     NO_AUTHORIZE,
     MSG_CHANGE_PASSWORD_SUCCESS,
-} from '../../src/utils/strings';
+} from '@utils/strings';
+
+import JwtController from '@libs/JwtController';
+
+import {
+    TokenPayloadDTO,
+    UserAuthDTO,
+    UserDTO,
+    TokenGroupDTO,
+} from '@dto/index';
+
+import UserMockHelper from '../mock_helper/UserMockHelper';
+import LoginInfoMockHelper from '../mock_helper/LoginInfoMockHelper';
+import TokenGroupMockHelper from '../mock_helper/TokenGroupMockHelper';
+
+import app from '@src/app';
 
 const expect = require('../utils/expect');
 
-const User = require('../../src/controllers/User');
+const User = require('@controllers/User');
 
 const basePath = '/A.fume/api/0.0.1';
 

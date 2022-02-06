@@ -40,4 +40,4 @@ class PerfumeSearchDTO {
     }
 }
 
-export default PerfumeSearchDTO;
+export { PerfumeSearchDTO };

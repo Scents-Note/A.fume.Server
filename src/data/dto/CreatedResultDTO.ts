@@ -11,4 +11,4 @@ class CreatedResultDTO<Type> {
     }
 }
 
-export default CreatedResultDTO;
+export { CreatedResultDTO };

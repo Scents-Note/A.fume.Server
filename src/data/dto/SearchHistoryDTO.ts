@@ -39,4 +39,4 @@ class SearchHistoryDTO {
     }
 }
 
-export default SearchHistoryDTO;
+export { SearchHistoryDTO };

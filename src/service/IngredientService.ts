@@ -1,9 +1,12 @@
-import IngredientDao from '../dao/IngredientDao';
-import ingredientConditionDTO from '../data/dto/IngredientConditionDTO';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
-import IngredientDTO from '../data/dto/IngredientDTO';
+import { logger } from '@modules/winston';
 
-import { logger } from '../modules/winston';
+import IngredientDao from '@dao/IngredientDao';
+
+import {
+    IngredientConditionDTO,
+    ListAndCountDTO,
+    IngredientDTO,
+} from '@dto/index';
 
 const LOG_TAG: string = '[Ingredient/Service]';
 
@@ -31,7 +34,7 @@ class IngredientService {
      * @returns {Promise<IngredientDTO>} ingredientDTO
      **/
     findIngredient(
-        ingredientConditionDTO: ingredientConditionDTO
+        ingredientConditionDTO: IngredientConditionDTO
     ): Promise<IngredientDTO> {
         logger.debug(
             `${LOG_TAG} findIngredient(ingredientConditionDTO = ${ingredientConditionDTO})`

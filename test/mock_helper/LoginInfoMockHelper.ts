@@ -1,7 +1,8 @@
 import { expect } from 'chai';
-import LoginInfoDTO from '../../src/data/dto/LoginInfoDTO';
 
-const { GENDER_WOMAN, GENDER_MAN } = require('../../src/utils/constantUtil');
+import { GENDER_WOMAN, GENDER_MAN } from '@utils/constants';
+
+import { LoginInfoDTO } from '@dto/index';
 
 class LoginInfoMockHelper {
     static validTest(this: LoginInfoDTO) {

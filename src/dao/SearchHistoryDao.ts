@@ -1,11 +1,12 @@
-import { NotMatchedError } from '../utils/errors/errors';
-import SearchHistoryDTO from '../data/dto/SearchHistoryDTO';
+import { logger } from '@modules/winston';
 
-import { logger } from '../modules/winston';
+import { NotMatchedError } from '@errors';
+
+import { SearchHistoryDTO } from '@dto/index';
 
 const LOG_TAG: string = '[SearchHistory/DAO]';
 
-const { SearchHistory } = require('../models');
+const { SearchHistory } = require('@sequelize');
 
 class SearchHistoryDao {
     /**

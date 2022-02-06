@@ -1,11 +1,12 @@
-import { NotMatchedError } from '../utils/errors/errors';
-import PerfumeDefaultReviewDTO from '../data/dto/PerfumeDefaultReviewDTO';
+import { logger } from '@modules/winston';
 
-import { logger } from '../modules/winston';
+import { NotMatchedError } from '@errors';
+
+import { PerfumeDefaultReviewDTO } from '@dto/index';
 
 const LOG_TAG: string = '[PerfumeDefaultReview/DAO]';
 
-const { PerfumeDefaultReview, Keyword } = require('../models');
+const { PerfumeDefaultReview, Keyword } = require('@sequelize');
 
 class PerfumeDefaultReviewDao {
     /**

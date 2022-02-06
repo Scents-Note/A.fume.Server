@@ -43,4 +43,4 @@ class PerfumeThumbKeywordDTO {
     }
 }
 
-export default PerfumeThumbKeywordDTO;
+export { PerfumeThumbKeywordDTO };

@@ -1,6 +1,6 @@
-import UserDTO from './UserDTO';
+import { GRADE_MANAGER } from '@utils/constants';
 
-const { GRADE_MANAGER } = require('../../utils/constantUtil');
+import { UserDTO } from '@dto/UserDTO';
 
 class UserAuthDTO {
     isAuth: boolean;
@@ -19,4 +19,4 @@ class UserAuthDTO {
     }
 }
 
-export default UserAuthDTO;
+export { UserAuthDTO };

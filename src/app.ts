@@ -5,25 +5,26 @@ import cors, { CorsOptions, CorsOptionsDelegate } from 'cors';
 import express, { Express } from 'express';
 import createError from 'http-errors';
 
-import properties from './utils/properties';
-import { logger } from './modules/winston';
-import makeMorgan from './modules/morgan';
+import properties from '@properties';
 
-import { HttpError } from './utils/errors/errors';
-import statusCode from './utils/statusCode';
-import { verifyTokenMiddleware } from './middleware/auth';
-import { swaggerRouter } from './controllers/index';
+import { logger } from '@modules/winston';
+import makeMorgan from '@modules/morgan';
+
+import { HttpError } from '@errors';
+import statusCode from '@utils/statusCode';
+import { verifyTokenMiddleware } from '@middleware/auth';
+import { swaggerRouter } from '@controllers/index';
 
 const {
     swaggerUi,
     specs,
     swaggerMetadataHandler,
-} = require('./modules/swagger');
+} = require('@modules/swagger');
 
 const sequelize: any = require('./models').sequelize;
 sequelize.sync();
 
-require('./utils/db/mongoose.js');
+require('@utils/db/mongoose.js');
 
 const app: Express = express();
 

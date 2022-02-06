@@ -1,9 +1,9 @@
 import jwt, { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
 
-import { ExpiredTokenError, InvalidTokenError } from '../utils/errors/errors';
-import TokenPayloadDTO from '../data/dto/TokenPayloadDTO';
+import { ExpiredTokenError, InvalidTokenError } from '@errors';
+import properties from '@properties';
 
-import properties from '../utils/properties';
+import { TokenPayloadDTO } from '@dto/index';
 
 const jwtSecret: jwt.Secret = properties.JWT_SECRET;
 

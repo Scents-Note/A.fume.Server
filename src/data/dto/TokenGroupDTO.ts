@@ -17,4 +17,4 @@ class TokenGroupDTO {
     }
 }
 
-export default TokenGroupDTO;
+export { TokenGroupDTO };

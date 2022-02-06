@@ -1,7 +1,7 @@
 import winston, { LeveledLogMethod } from 'winston';
 import winstonDaily from 'winston-daily-rotate-file';
 
-import properties from '../utils/properties';
+import properties from '@properties';
 
 const errorDir: string = 'logs/error';
 const logDir: string = 'logs/info';

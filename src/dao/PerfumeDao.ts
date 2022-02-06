@@ -1,12 +1,16 @@
 import _ from 'lodash';
-import { NotMatchedError } from '../utils/errors/errors';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
-import PerfumeDTO from '../data/dto/PerfumeDTO';
-import PerfumeThumbDTO from '../data/dto/PerfumeThumbDTO';
-import PerfumeSearchResultDTO from '../data/dto/PerfumeSearchResultDTO';
-import PerfumeSearchHistoryDTO from '../data/dto/PerfumeSearchHistoryDTO';
 
-import { logger } from '../modules/winston';
+import { logger } from '@modules/winston';
+
+import { NotMatchedError } from '@errors';
+
+import {
+    ListAndCountDTO,
+    PerfumeDTO,
+    PerfumeThumbDTO,
+    PerfumeSearchResultDTO,
+    PerfumeSearchHistoryDTO,
+} from '@dto/index';
 
 const LOG_TAG: string = '[Perfume/DAO]';
 
@@ -18,10 +22,10 @@ const {
     SearchHistory,
     sequelize,
     Sequelize,
-} = require('../models');
+} = require('@sequelize');
 const { Op } = Sequelize;
 
-const { ranking } = require('../mongoose_models');
+const { ranking } = require('@mongoose');
 
 const PERFUME_THUMB_COLUMNS: string[] = [
     'perfumeIdx',
@@ -388,7 +392,7 @@ class PerfumeDao {
      * @returns {Promise<Perfume[]>}
      */
     async recommendPerfumeByAgeAndGender(
-        gender: string,
+        gender: number,
         ageGroup: number,
         pagingIndex: number,
         pagingSize: number

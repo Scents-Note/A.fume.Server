@@ -1,6 +1,6 @@
 import express, { RequestHandler } from 'express';
 import { SwaggerDefinition } from 'swagger-jsdoc';
-import { logger } from '../modules/winston';
+import { logger } from '@modules/winston';
 
 function swaggerRouter(specs: SwaggerDefinition) {
     const router: any = express.Router();

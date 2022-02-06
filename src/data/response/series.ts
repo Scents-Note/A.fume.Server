@@ -1,6 +1,5 @@
-import SeriesFilterDTO from '../dto/SeriesFilterDTO';
-import SeriesDTO from '../dto/SeriesDTO';
-import { IngredientResponse } from '../response/ingredient';
+import { SeriesFilterDTO, SeriesDTO } from '@dto/index';
+import { IngredientResponse } from '@response/ingredient';
 
 class SeriesResponse {
     seriesIdx: number;

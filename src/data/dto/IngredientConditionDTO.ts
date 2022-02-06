@@ -26,4 +26,4 @@ class IngredientConditionDTO {
     }
 }
 
-export default IngredientConditionDTO;
+export { IngredientConditionDTO };
