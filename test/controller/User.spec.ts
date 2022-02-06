@@ -5,7 +5,7 @@ dotenv.config();
 
 import StatusCode from '@utils/statusCode';
 
-import app from '../../src/app';
+import app from '@src/app';
 
 import {
     MSG_REGISTER_SUCCESS,
@@ -34,8 +34,6 @@ import {
 import UserMockHelper from '../mock_helper/UserMockHelper';
 import LoginInfoMockHelper from '../mock_helper/LoginInfoMockHelper';
 import TokenGroupMockHelper from '../mock_helper/TokenGroupMockHelper';
-
-import app from '@src/app';
 
 const expect = require('../utils/expect');
 
