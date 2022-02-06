@@ -1,10 +1,10 @@
-const constantUtil = require('./constantUtil');
-
-const GENDER_MAN: number = constantUtil.GENDER_MAN;
-const GENDER_WOMAN: number = constantUtil.GENDER_WOMAN;
-const GRADE_USER: number = constantUtil.GRADE_USER;
-const GRADE_MANAGER: number = constantUtil.GRADE_MANAGER;
-const GRADE_SYSTEM_ADMIN: number = constantUtil.GRADE_SYSTEM_ADMIN;
+import {
+    GENDER_MAN,
+    GENDER_WOMAN,
+    GRADE_USER,
+    GRADE_MANAGER,
+    GRADE_SYSTEM_ADMIN,
+} from '@utils/constants';
 
 const GenderMap: { [index: string]: number } = {
     MAN: GENDER_MAN,

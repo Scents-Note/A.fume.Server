@@ -1,9 +1,10 @@
-import properties from '../properties';
+import mongoose from 'mongoose';
 
-const mongoose = require('mongoose');
+import properties from '@properties';
+
+import { logger } from '@modules/winston';
+
 mongoose.Promise = global.Promise;
-
-const { logger } = require('../../modules/winston');
 
 module.exports = mongoose
     .connect(

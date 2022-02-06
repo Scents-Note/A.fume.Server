@@ -1,4 +1,4 @@
-import BrandDTO from './BrandDTO';
+import { BrandDTO } from '@dto/BrandDTO';
 
 class PerfumeThumbDTO {
     perfumeIdx: number;
@@ -45,4 +45,4 @@ class PerfumeThumbDTO {
     }
 }
 
-export default PerfumeThumbDTO;
+export { PerfumeThumbDTO };

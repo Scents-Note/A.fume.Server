@@ -1,4 +1,4 @@
-import BrandDTO from './BrandDTO';
+import { BrandDTO } from '@dto/BrandDTO';
 
 type Score = {
     ingredient: number;
@@ -59,4 +59,4 @@ class PerfumeSearchResultDTO {
     }
 }
 
-export default PerfumeSearchResultDTO;
+export { PerfumeSearchResultDTO };

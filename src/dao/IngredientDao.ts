@@ -1,10 +1,10 @@
-import IngredientDTO from '../data/dto/IngredientDTO';
-import { NotMatchedError } from '../utils/errors/errors';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
+import { logger } from '@modules/winston';
 
-import { logger } from '../modules/winston';
+import { NotMatchedError } from '@errors';
 
-const { Ingredient, Sequelize } = require('../models');
+import { IngredientDTO, ListAndCountDTO } from '@dto/index';
+
+const { Ingredient, Sequelize } = require('@sequelize');
 const { Op } = Sequelize;
 
 const LOG_TAG: string = '[Ingredient/DAO]';

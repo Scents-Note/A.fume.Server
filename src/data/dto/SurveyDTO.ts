@@ -20,4 +20,4 @@ class SurveyDTO {
     }
 }
 
-export default SurveyDTO;
+export { SurveyDTO };

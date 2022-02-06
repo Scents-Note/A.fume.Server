@@ -1,4 +1,4 @@
-import StatusCode from '../statusCode';
+import StatusCode from '@utils/statusCode';
 import {
     MSG_WRONG_FOREIGN_KEY,
     INTERNAL_DB_ERROR,
@@ -12,7 +12,7 @@ import {
     MSG_WRONG_PASSWORD,
     MSG_CANT_USE_PASSWORD_BY_POLICY,
     NO_AUTHORIZE,
-} from '../../utils/strings';
+} from '@utils/strings';
 
 class HttpError extends Error {
     status: number;

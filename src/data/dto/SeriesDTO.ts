@@ -48,4 +48,4 @@ class SeriesDTO {
     }
 }
 
-export default SeriesDTO;
+export { SeriesDTO };

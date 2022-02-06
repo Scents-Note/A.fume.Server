@@ -1,5 +1,5 @@
-import BrandDTO from './BrandDTO';
-import PerfumeThumbDTO from './PerfumeThumbDTO';
+import { BrandDTO } from '@dto/BrandDTO';
+import { PerfumeThumbDTO } from '@dto/PerfumeThumbDTO';
 
 type SearchHistory = {
     userIdx: number;
@@ -43,4 +43,4 @@ class PerfumeSearchHistoryDTO extends PerfumeThumbDTO {
     }
 }
 
-export default PerfumeSearchHistoryDTO;
+export { PerfumeSearchHistoryDTO };

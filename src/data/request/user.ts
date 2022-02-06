@@ -1,5 +1,5 @@
-import { GradeKey, GenderKey } from '../../utils/enumType';
-const { GRADE_USER } = require('../../utils/constantUtil');
+import { GradeKey, GenderKey } from '@utils/enumType';
+import { GRADE_USER } from '@utils/constants';
 
 class UserEditRequest {
     userIdx: number;

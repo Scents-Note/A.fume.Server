@@ -1,9 +1,9 @@
-const {
+import {
     SEASONAL_LIST,
     SILLAGE_LIST,
     GENDER_LIST,
     LONGEVITY_LIST,
-}: { [key: string]: number[] } = require('../../utils/constantUtil.js');
+} from '@utils/constants';
 
 class PerfumeSummaryDTO {
     score: number;
@@ -179,4 +179,4 @@ class PerfumeSummaryDTO {
     }
 }
 
-export default PerfumeSummaryDTO;
+export { PerfumeSummaryDTO };

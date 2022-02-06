@@ -1,5 +1,7 @@
 import { expect } from 'chai';
-import PerfumeThumbDTO from '../../src/data/dto/PerfumeThumbDTO';
+
+import { PerfumeThumbDTO } from '@dto/index';
+
 import BrandHelper from './BrandHelper';
 
 class PerfumeThumbMockHelper {

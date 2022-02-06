@@ -1,5 +1,5 @@
-import IngredientDTO from './IngredientDTO';
-import SeriesDTO from './SeriesDTO';
+import { SeriesDTO } from '@dto/SeriesDTO';
+import { IngredientDTO } from '@dto/IngredientDTO';
 
 class SeriesFilterDTO extends SeriesDTO {
     ingredients: IngredientDTO[];
@@ -51,4 +51,4 @@ class SeriesFilterDTO extends SeriesDTO {
     }
 }
 
-export default SeriesFilterDTO;
+export { SeriesFilterDTO };

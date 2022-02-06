@@ -1,7 +1,8 @@
-import { getImageList } from '../lib/s3';
-import properties from '../utils/properties';
+import properties from '@properties';
 
-import { logger } from '../modules/winston';
+import { getImageList } from '@libs/s3';
+
+import { logger } from '@modules/winston';
 
 const LOG_TAG: string = '[S3File/DAO]';
 

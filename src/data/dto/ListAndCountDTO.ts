@@ -10,4 +10,4 @@ class ListAndCountDTO<Type> {
     }
 }
 
-export default ListAndCountDTO;
+export { ListAndCountDTO };

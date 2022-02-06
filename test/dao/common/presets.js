@@ -1,5 +1,5 @@
-import properties from '../../../src/utils/properties';
-const { sequelize } = require('../../../src/models');
+import properties from '@properties';
+const { sequelize } = require('@sequelize');
 
 if (properties.NODE_ENV != 'test') {
     throw new Error('Only allow TEST ENV');

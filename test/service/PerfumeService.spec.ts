@@ -4,24 +4,28 @@ import { Done } from 'mocha';
 
 dotenv.config();
 
-import PerfumeService from '../../src/service/PerfumeService';
+import PerfumeService from '@services/PerfumeService';
 
-import { PagingRequestDTO } from '../../src/data/request/common';
-import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-import PerfumeSummaryDTO from '../../src/data/dto/PerfumeSummaryDTO';
-import { PerfumeSearchRequest } from '../../src/data/request/perfume';
-import { NotMatchedError } from '../../src/utils/errors/errors';
-import PerfumeIntegralDTO from '../../src/data/dto/PerfumeIntegralDTO';
-import PerfumeSearchResultDTO from '../../src/data/dto/PerfumeSearchResultDTO';
-import PerfumeThumbDTO from '../../src/data/dto/PerfumeThumbDTO';
-import PerfumeThumbKeywordDTO from '../../src/data/dto/PerfumeThumbKeywordDTO';
-import PerfumeDefaultReviewDTO from '../../src/data/dto/PerfumeDefaultReviewDTO';
+import { NotMatchedError } from '@errors';
+
+import { GENDER_WOMAN } from '@utils/constants';
+
+import { PagingRequestDTO } from '@request/common';
+import { PerfumeSearchRequest } from '@request/perfume';
+
+import {
+    ListAndCountDTO,
+    PerfumeSummaryDTO,
+    PerfumeIntegralDTO,
+    PerfumeSearchResultDTO,
+    PerfumeDefaultReviewDTO,
+    PerfumeThumbDTO,
+    PerfumeThumbKeywordDTO,
+} from '@dto/index';
 
 import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
 
 const Perfume: PerfumeService = new PerfumeService();
-
-const { GENDER_WOMAN } = require('../../src/utils/constantUtil.js');
 
 const mockS3FileDao: any = {};
 Perfume.setS3FileDao(mockS3FileDao);

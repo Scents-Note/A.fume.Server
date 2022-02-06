@@ -1,11 +1,11 @@
-import NoteDTO from './NoteDTO';
-
-const {
+import {
     NOTE_TYPE_TOP,
     NOTE_TYPE_MIDDLE,
     NOTE_TYPE_BASE,
     NOTE_TYPE_SINGLE,
-} = require('../../utils/constantUtil');
+} from '@utils/constants';
+
+import { NoteDTO } from '@dto/NoteDTO';
 
 class NoteDictDTO {
     top: string;
@@ -63,4 +63,4 @@ class NoteDictDTO {
     }
 }
 
-export default NoteDictDTO;
+export { NoteDictDTO };

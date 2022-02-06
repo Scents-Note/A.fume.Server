@@ -1,4 +1,5 @@
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
+// TODO 불필요한 의존성
+import { ListAndCountDTO } from '@dto/index';
 
 type Convert = (obj: any) => any;
 function updateRows(result: ListAndCountDTO<Object>, ...jobs: Convert[]) {

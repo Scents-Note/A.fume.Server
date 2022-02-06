@@ -12,9 +12,22 @@
             {
                 "root": ["./"],
                 "alias": {
-                    "@modules": "./src/modules",
+                    "@src" : "./src",
+                    "@controllers": "./src/controllers",
                     "@services": "./src/service",
-                    "@controllers": "./src/controller"
+                    "@dao" : "./src/dao",
+                    "@modules": "./src/modules",
+                    "@errors" : "./src/utils/errors/errors",
+                    "@properties" : "./src/utils/properties",
+                    "@mongoose": "./src/mongoose_models/index",
+                    "@sequelize" : "./src/models/index",
+                    "@utils" : "./src/utils",
+                    "@libs" : "./src/lib",
+                    "@middleware" : "./src/middleware",
+                    "@configs" : "./src/config",
+                    "@request" : "./src/data/request",
+                    "@response" : "./src/data/response",
+                    "@dto" : "./src/data/dto"
                 }
             }
         ]

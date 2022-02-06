@@ -1,15 +1,18 @@
-import IngredientDao from '../dao/IngredientDao';
-import SeriesDao from '../dao/SeriesDao';
-import NoteDao from '../dao/NoteDao';
+import { logger } from '@modules/winston';
 
-import PagingDTO from '../data/dto/PagingDTO';
-import { PagingRequestDTO } from '../data/request/common';
-import IngredientDTO from '../data/dto/IngredientDTO';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
-import SeriesDTO from '../data/dto/SeriesDTO';
-import SeriesFilterDTO from '../data/dto/SeriesFilterDTO';
+import IngredientDao from '@dao/IngredientDao';
+import SeriesDao from '@dao/SeriesDao';
+import NoteDao from '@dao/NoteDao';
 
-import { logger } from '../modules/winston';
+import { PagingRequestDTO } from '@request/common';
+
+import {
+    PagingDTO,
+    IngredientDTO,
+    ListAndCountDTO,
+    SeriesDTO,
+    SeriesFilterDTO,
+} from '@dto/index';
 
 const LOG_TAG: string = '[Series/Service]';
 

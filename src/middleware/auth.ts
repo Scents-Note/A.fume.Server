@@ -1,6 +1,8 @@
-import JwtController from '../lib/JwtController';
-import { InvalidTokenError, UnAuthorizedError } from '../utils/errors/errors';
 import express from 'express';
+
+import { InvalidTokenError, UnAuthorizedError } from '@errors';
+
+import JwtController from '@libs/JwtController';
 
 /**
  * 로그인 토큰을 읽어서 userIdx를 req.middlewareToken에 추가

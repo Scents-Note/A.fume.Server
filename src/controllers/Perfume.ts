@@ -1,25 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
-import { logger, LoggerHelper } from '../modules/winston';
-
-import StatusCode from '../utils/statusCode';
-import PerfumeService from '../service/PerfumeService';
-import SearchHistoryService from '../service/SearchHistoryService';
-
-import { PerfumeSearchRequest } from '../data/request/perfume';
-import {
-    PerfumeDetailResponse,
-    PerfumeResponse,
-    PerfumeRecommendResponse,
-} from '../data/response/perfume';
-
-import { PagingRequestDTO } from '../data/request/common';
-import { ResponseDTO, SimpleResponseDTO } from '../data/response/common';
-import PerfumeIntegralDTO from '../data/dto/PerfumeIntegralDTO';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
-import PerfumeSearchResultDTO from '../data/dto/PerfumeSearchResultDTO';
-import PerfumeThumbDTO from '../data/dto/PerfumeThumbDTO';
-import PerfumeThumbKeywordDTO from '../data/dto/PerfumeThumbKeywordDTO';
+import { logger, LoggerHelper } from '@modules/winston';
 
 import {
     MSG_GET_PERFUME_DETAIL_SUCCESS,
@@ -33,7 +14,29 @@ import {
     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
     MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
     MSG_ABNORMAL_ACCESS,
-} from '../utils/strings';
+} from '@utils/strings';
+
+import StatusCode from '@utils/statusCode';
+
+import PerfumeService from '@services/PerfumeService';
+import SearchHistoryService from '@services/SearchHistoryService';
+
+import { PerfumeSearchRequest } from '@request/index';
+import {
+    PerfumeDetailResponse,
+    PerfumeResponse,
+    PerfumeRecommendResponse,
+} from '@response/perfume';
+
+import { PagingRequestDTO } from '@request/index';
+import { ResponseDTO, SimpleResponseDTO } from '@response/index';
+import {
+    PerfumeIntegralDTO,
+    ListAndCountDTO,
+    PerfumeSearchResultDTO,
+    PerfumeThumbDTO,
+    PerfumeThumbKeywordDTO,
+} from '@dto/index';
 
 const LOG_TAG: string = '[Perfume/Controller]';
 

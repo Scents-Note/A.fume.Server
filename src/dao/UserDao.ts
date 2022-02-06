@@ -1,15 +1,13 @@
-import { NotMatchedError, DuplicatedEntryError } from '../utils/errors/errors';
-import CreatedResultDTO from '../data/dto/CreatedResultDTO';
-import UserDTO from '../data/dto/UserDTO';
-import SurveyDTO from '../data/dto/SurveyDTO';
-import UserInputDTO from '../data/dto/UserInputDTO';
+import { logger } from '@modules/winston';
 
-import { logger } from '../modules/winston';
+import { NotMatchedError, DuplicatedEntryError } from '@errors';
+
+import { CreatedResultDTO, UserDTO, SurveyDTO, UserInputDTO } from '@dto/index';
 
 const LOG_TAG: string = '[User/DAO]';
 
-const { sequelize, User } = require('../models');
-const { user: MongooseUser } = require('../mongoose_models');
+const { sequelize, User } = require('@sequelize');
+const { user: MongooseUser } = require('@mongoose');
 
 class UserDao {
     /**

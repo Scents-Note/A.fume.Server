@@ -42,4 +42,4 @@ class NoteDTO {
     }
 }
 
-export default NoteDTO;
+export { NoteDTO };

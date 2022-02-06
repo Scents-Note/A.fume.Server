@@ -1,4 +1,4 @@
-import { Gender } from '../../utils/enumType';
+import { Gender } from '@utils/enumType';
 
 class LoginInfoDTO {
     userIdx: number;
@@ -43,4 +43,4 @@ class LoginInfoDTO {
     }
 }
 
-export default LoginInfoDTO;
+export { LoginInfoDTO };

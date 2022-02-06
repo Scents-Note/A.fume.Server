@@ -2,13 +2,11 @@ import dotenv from 'dotenv';
 import { expect } from 'chai';
 dotenv.config();
 
-import UserAuthDTO from '../../../src/data/dto/UserAuthDTO';
-import UserMockHelper from '../../mock_helper/UserMockHelper';
+import { GRADE_MANAGER, GRADE_USER } from '@utils/constants';
 
-const {
-    GRADE_MANAGER,
-    GRADE_USER,
-} = require('../../../src/utils/constantUtil');
+import { UserAuthDTO } from '@dto/index';
+
+import UserMockHelper from '../../mock_helper/UserMockHelper';
 
 describe('# UserAuthDTO Test', () => {
     describe('# create Test', () => {

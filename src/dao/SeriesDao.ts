@@ -1,13 +1,12 @@
-import { NotMatchedError } from '../utils/errors/errors';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
-import SeriesDTO from '../data/dto/SeriesDTO';
-import PagingDTO from '../data/dto/PagingDTO';
+import { logger } from '@modules/winston';
 
-import { logger } from '../modules/winston';
+import { NotMatchedError } from '@errors';
+
+import { ListAndCountDTO, SeriesDTO, PagingDTO } from '@dto/index';
 
 const LOG_TAG: string = '[Series/DAO]';
 
-const { Series } = require('../models');
+const { Series } = require('@sequelize');
 
 class SeriesDao {
     /**

@@ -1,5 +1,6 @@
 import { expect } from 'chai';
-import SeriesDTO from '../../src/data/dto/SeriesDTO';
+
+import { SeriesDTO } from '@dto/index';
 
 class SeriesMockHelper {
     static validTest(this: SeriesDTO) {

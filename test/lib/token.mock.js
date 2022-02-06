@@ -1,7 +1,4 @@
-import {
-    ExpiredTokenError,
-    InvalidTokenError,
-} from '../../src/utils/errors/errors';
+import { ExpiredTokenError, InvalidTokenError } from '@errors';
 
 module.exports.publish = () => {
     return {

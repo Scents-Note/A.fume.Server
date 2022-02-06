@@ -1,15 +1,15 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
-import { logger, LoggerHelper } from '../modules/winston';
+import { logger, LoggerHelper } from '@modules/winston';
 
-import IngredientService from '../service/IngredientService';
-import IngredientDTO from '../data/dto/IngredientDTO';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
-import { ResponseDTO } from '../data/response/common';
-import { IngredientResponse } from '../data/response/ingredient';
-import StatusCode from '../utils/statusCode';
+import { MSG_GET_SEARCH_INGREDIENT_SUCCESS } from '@utils/strings';
+import StatusCode from '@utils/statusCode';
 
-import { MSG_GET_SEARCH_INGREDIENT_SUCCESS } from '../utils/strings';
+import IngredientService from '@services/IngredientService';
+
+import { ResponseDTO } from '@response/common';
+import { IngredientResponse } from '@response/ingredient';
+import { IngredientDTO, ListAndCountDTO } from '@dto/index';
 
 const LOG_TAG: string = '[Ingredient/Controller]';
 

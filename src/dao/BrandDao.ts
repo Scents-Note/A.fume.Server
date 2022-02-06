@@ -1,11 +1,9 @@
-import { NotMatchedError } from '../utils/errors/errors';
-import BrandDTO from '../data/dto/BrandDTO';
-import PagingDTO from '../data/dto/PagingDTO';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
+import { logger } from '@modules/winston';
+import { NotMatchedError } from '@errors';
 
-import { logger } from '../modules/winston';
+import { BrandDTO, PagingDTO, ListAndCountDTO } from '@dto/index';
 
-const { Brand } = require('../models');
+const { Brand } = require('@sequelize');
 
 const LOG_TAG: string = '[Brand/DAO]';
 

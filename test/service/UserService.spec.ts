@@ -2,18 +2,16 @@ import dotenv from 'dotenv';
 import { expect } from 'chai';
 import { Done } from 'mocha';
 dotenv.config();
-import UserService from '../../src/service/UserService';
 
 import {
     WrongPasswordError,
     PasswordPolicyError,
     UnExpectedError,
-} from '../../src/utils/errors/errors';
+} from '@errors';
 
-import UserAuthDTO from '../../src/data/dto/UserAuthDTO';
+import UserService from '@services/UserService';
 
-import { Error } from 'aws-sdk/clients/servicecatalog';
-import UserDTO from '../../src/data/dto/UserDTO';
+import { UserAuthDTO, UserDTO } from '@dto/index';
 
 import LoginInfoMockHelper from '../mock_helper/LoginInfoMockHelper';
 import TokenGroupMockHelper from '../mock_helper/TokenGroupMockHelper';

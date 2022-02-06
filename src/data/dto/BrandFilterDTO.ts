@@ -1,4 +1,4 @@
-import BrandDTO from './BrandDTO';
+import { BrandDTO } from '@dto/BrandDTO';
 
 class BrandFilterDTO {
     firstInitial: string;
@@ -13,4 +13,4 @@ class BrandFilterDTO {
     }
 }
 
-export default BrandFilterDTO;
+export { BrandFilterDTO };

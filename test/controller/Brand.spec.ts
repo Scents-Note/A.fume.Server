@@ -3,27 +3,28 @@ import { Done } from 'mocha';
 import request from 'supertest';
 dotenv.config();
 
-import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
-import BrandDTO from '../../src/data/dto/BrandDTO';
-import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-import { BrandResponse } from '../../src/data/response/brand';
-import BrandHelper from '../mock_helper/BrandHelper';
-import StatusCode from '../../src/utils/statusCode';
-
-import BrandService from '../../src/service/BrandService';
+import StatusCode from '@utils/statusCode';
 
 import {
     MSG_GET_BRAND_ALL_SUCCESS,
     MSG_GET_BRAND_FILTER_SUCCESS,
-} from '../../src/utils/strings';
+} from '@utils/strings';
 
-import app from '../../src/app';
+import BrandService from '@services/BrandService';
+
+import { BrandResponse } from '@response/brand';
+
+import { BrandFilterDTO, BrandDTO, ListAndCountDTO } from '@dto/index';
+
+import BrandHelper from '../mock_helper/BrandHelper';
+
+import app from '@src/app';
 
 const expect = require('../utils/expect');
 
 const basePath = '/A.fume/api/0.0.1';
 
-const Brand = require('../../src/controllers/Brand');
+const Brand = require('@controllers/Brand');
 
 const mockBrandService: BrandService | any = {};
 Brand.setBrandService(mockBrandService);

@@ -1,20 +1,20 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
-import { logger, LoggerHelper } from '../modules/winston';
+import { logger, LoggerHelper } from '@modules/winston';
 
-import BrandService from '../service/BrandService';
+import BrandService from '@services/BrandService';
 
-import { ResponseDTO } from '../data/response/common';
-import { BrandResponse, BrandFilterResponse } from '../data/response/brand';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
-import BrandDTO from '../data/dto/BrandDTO';
-import BrandFilterDTO from '../data/dto/BrandFilterDTO';
+import { ResponseDTO } from '@response/common';
+import { BrandResponse, BrandFilterResponse } from '@response/brand';
 
-import StatusCode from '../utils/statusCode';
+import { ListAndCountDTO, BrandDTO, BrandFilterDTO } from '@dto/index';
+
+import StatusCode from '@utils/statusCode';
+
 import {
     MSG_GET_BRAND_FILTER_SUCCESS,
     MSG_GET_BRAND_ALL_SUCCESS,
-} from '../utils/strings';
+} from '@utils/strings';
 
 let Brand: BrandService = new BrandService();
 const LOG_TAG: string = '[Brand/Controller]';

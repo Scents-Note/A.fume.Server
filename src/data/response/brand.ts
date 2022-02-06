@@ -1,4 +1,4 @@
-import BrandFilterDTO from '../dto/BrandFilterDTO';
+import { BrandFilterDTO } from '@dto/index';
 
 class BrandResponse {
     brandIdx: number;

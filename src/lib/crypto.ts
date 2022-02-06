@@ -1,5 +1,6 @@
 import crypto from 'crypto';
-import properties from '../utils/properties';
+
+import properties from '@properties';
 
 const IV_LENGTH: number = 16; // For AES, this is always 16
 

@@ -4,19 +4,18 @@ import { Done } from 'mocha';
 import request from 'supertest';
 dotenv.config();
 
-import StatusCode from '../../src/utils/statusCode';
-import IngredientDTO from '../../src/data/dto/IngredientDTO';
-import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
+import { MSG_GET_SEARCH_INGREDIENT_SUCCESS } from '@utils/strings';
+import StatusCode from '@utils/statusCode';
+
+import { IngredientDTO, ListAndCountDTO } from '@dto/index';
 
 import IngredientMockHelper from '../mock_helper/IngredientMockHelper';
 
-import { MSG_GET_SEARCH_INGREDIENT_SUCCESS } from '../../src/utils/strings';
+import app from '@src/app';
 
-import app from '../../src/app';
+const Ingredient = require('@controllers/Ingredient');
 
 const basePath = '/A.fume/api/0.0.1';
-
-const Ingredient = require('../../src/controllers/Ingredient');
 
 const mockIngredientService: any = {};
 Ingredient.setIngredientService(mockIngredientService);

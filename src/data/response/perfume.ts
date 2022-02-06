@@ -1,4 +1,4 @@
-import PerfumeIntegralDTO from '../dto/PerfumeIntegralDTO';
+import { PerfumeIntegralDTO } from '@dto/index';
 
 const NO_REVIEW: number = 0;
 

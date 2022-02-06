@@ -1,7 +1,8 @@
-import { NotMatchedError, DuplicatedEntryError } from '../utils/errors/errors';
-import { logger } from '../modules/winston';
+import { logger } from '@modules/winston';
 
-const { LikePerfume, Sequelize } = require('../models');
+import { NotMatchedError, DuplicatedEntryError } from '@errors';
+
+const { LikePerfume, Sequelize } = require('@sequelize');
 const { Op } = Sequelize;
 
 const LOG_TAG: string = '[Ingredient/DAO]';

@@ -1,5 +1,4 @@
-import CreatedResultDTO from '../../src/data/dto/CreatedResultDTO';
-import UserDTO from '../../src/data/dto/UserDTO';
+import { CreatedResultDTO, UserDTO } from '@dto/index';
 
 module.exports.create = async ({
     nickname,
