@@ -24,6 +24,10 @@ import PerfumeDefaultReviewDTO from '../data/dto/PerfumeDefaultReviewDTO';
 
 import { PerfumeSearchRequest } from '../data/request/perfume';
 
+import { logger } from '../modules/winston';
+
+const LOG_TAG: string = '[Perfume/Service]';
+
 let perfumeDao: PerfumeDao = new PerfumeDao();
 let reviewDao = require('../dao/ReviewDao.js');
 let noteDao: NoteDao = new NoteDao();
@@ -61,6 +65,9 @@ class PerfumeService {
         perfumeIdx: number,
         userIdx: number
     ): Promise<PerfumeIntegralDTO> {
+        logger.debug(
+            `${LOG_TAG} getPerfumeById(perfumeIdx = ${perfumeIdx}, userIdx = ${userIdx})`
+        );
         let _perfume: PerfumeDTO = await perfumeDao.readByPerfumeIdx(
             perfumeIdx
         );
@@ -122,6 +129,9 @@ class PerfumeService {
         perfumeSearchRequest: PerfumeSearchRequest,
         pagingRequestDTO: PagingRequestDTO
     ): Promise<ListAndCountDTO<PerfumeSearchResultDTO>> {
+        logger.debug(
+            `${LOG_TAG} searchPerfume(perfumeSearchRequest = ${perfumeSearchRequest}, pagingRequestDTO = ${pagingRequestDTO})`
+        );
         const pagingDTO: PagingDTO = PagingDTO.create(pagingRequestDTO);
         const perfumeSearchDTO: PerfumeSearchDTO =
             PerfumeSearchDTO.create(perfumeSearchRequest);
@@ -165,6 +175,7 @@ class PerfumeService {
     async getSurveyPerfume(
         userIdx: number
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        logger.debug(`${LOG_TAG} getSurveyPerfume(userIdx = ${userIdx})`);
         return userDao
             .readByIdx(userIdx)
             .then((it: UserDTO) => {
@@ -196,6 +207,9 @@ class PerfumeService {
      * @returns {Promise}
      **/
     likePerfume(userIdx: number, perfumeIdx: number): Promise<boolean> {
+        logger.debug(
+            `${LOG_TAG} likePerfume(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx})`
+        );
         return likePerfumeDao
             .read(userIdx, perfumeIdx)
             .then((_: any) => {
@@ -230,6 +244,9 @@ class PerfumeService {
         userIdx: number,
         pagingRequestDTO: PagingRequestDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        logger.debug(
+            `${LOG_TAG} recentSearch(userIdx = ${userIdx}, pagingRequestDTO = ${pagingRequestDTO})`
+        );
         const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
         return perfumeDao
             .recentSearchPerfumeList(userIdx, pagingIndex, pagingSize)
@@ -262,6 +279,9 @@ class PerfumeService {
         userIdx: number,
         pagingRequestDTO: PagingRequestDTO
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
+        logger.debug(
+            `${LOG_TAG} recommendByUser(userIdx = ${userIdx}, pagingRequestDTO = ${pagingRequestDTO})`
+        );
         const { ageGroup, gender } = await this.getAgeGroupAndGender(userIdx);
 
         const recommendedListPromise: Promise<
@@ -316,6 +336,9 @@ class PerfumeService {
         ageGroup: number,
         pagingRequestDTO: PagingRequestDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        logger.debug(
+            `${LOG_TAG} recommendByGenderAgeAndGender(gender = ${gender}, ageGroup = ${ageGroup}, pagingRequestDTO = ${pagingRequestDTO})`
+        );
         const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
         return perfumeDao.recommendPerfumeByAgeAndGender(
             gender,
@@ -333,9 +356,12 @@ class PerfumeService {
      * @returns {Promise<Perfume[]>}
      **/
     getNewPerfume(
-        userIdx: number,
+        userIdx: number, // TODO userIdx 삭제하기
         pagingRequestDTO: PagingRequestDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        logger.debug(
+            `${LOG_TAG} getNewPerfume(userIdx = ${userIdx}, pagingRequestDTO = ${pagingRequestDTO})`
+        );
         const pagingDTO: PagingDTO = PagingDTO.create(pagingRequestDTO);
         const fromDate: Date = new Date();
         fromDate.setDate(fromDate.getDate() - 7);
@@ -375,6 +401,9 @@ class PerfumeService {
         userIdx: number,
         pagingRequestDTO: PagingRequestDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        logger.debug(
+            `${LOG_TAG} getLikedPerfume(userIdx = ${userIdx}, pagingRequestDTO = ${pagingRequestDTO})`
+        );
         const pagingDTO: PagingDTO = PagingDTO.create(pagingRequestDTO);
         return perfumeDao
             .readLikedPerfume(

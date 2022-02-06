@@ -14,6 +14,10 @@ import UserDTO from '../data/dto/UserDTO';
 import UserInputDTO from '../data/dto/UserInputDTO';
 import SurveyDTO from '../data/dto/SurveyDTO';
 
+import { logger } from '../modules/winston';
+
+const LOG_TAG: string = '[User/Service]';
+
 class UserService {
     userDao: UserDao;
     crypto: any;
@@ -35,6 +39,7 @@ class UserService {
      * @returns {Promise}
      **/
     async createUser(userInputDTO: UserInputDTO) {
+        logger.debug(`${LOG_TAG} createUser(userInputDTO = ${userInputDTO})`);
         userInputDTO.password = this.crypto.encrypt(userInputDTO.password);
         return this.userDao
             .create(userInputDTO)
@@ -61,6 +66,7 @@ class UserService {
      * @returns {Promise}
      */
     deleteUser(userIdx: number) {
+        logger.debug(`${LOG_TAG} deleteUser(userIdx = ${userIdx})`);
         return this.userDao.delete(userIdx);
     }
 
@@ -71,6 +77,7 @@ class UserService {
      * @returns {Promise<UserDTO>}
      **/
     async getUserByIdx(userIdx: number): Promise<UserDTO> {
+        logger.debug(`${LOG_TAG} getUserByIdx(userIdx = ${userIdx})`);
         return this.userDao.readByIdx(userIdx);
     }
 
@@ -81,6 +88,7 @@ class UserService {
      * @returns {Promise<UserAuthDTO>}
      **/
     async authUser(token: string): Promise<UserAuthDTO> {
+        logger.debug(`${LOG_TAG} authUser(token = ${token})`);
         return new Promise((resolve, _) => {
             try {
                 const payload: any = this.jwt.verify(token);
@@ -113,7 +121,12 @@ class UserService {
      **/
     async loginUser(email: string, password: string): Promise<LoginInfoDTO> {
         const encryptPassword: string = this.crypto.encrypt(password);
+        logger.debug(
+            `${LOG_TAG} authUser(email = ${email}, encrypt_password = ${encryptPassword})`
+        );
         const user: UserDTO = await this.userDao.read({ email });
+        console.log(user.password);
+        console.log(encryptPassword);
         if (user.password != encryptPassword) {
             throw new WrongPasswordError();
         }
@@ -145,6 +158,7 @@ class UserService {
      * @returns {UserDTO} UserDTO
      **/
     async updateUser(userInputDTO: UserInputDTO): Promise<UserDTO> {
+        logger.debug(`${LOG_TAG} authUser(userInputDTO = ${userInputDTO})`);
         await this.userDao.update(userInputDTO);
         const user: UserDTO = await this.userDao.readByIdx(
             userInputDTO.userIdx!!
@@ -167,6 +181,9 @@ class UserService {
     ) {
         const encryptPrevPassword: string = this.crypto.encrypt(prevPassword);
         const encryptNewPassword: string = this.crypto.encrypt(newPassword);
+        logger.debug(
+            `${LOG_TAG} authUser(userIdx = ${userIdx}, prevPassword = ${prevPassword}, newPassword = ${newPassword})`
+        );
         const user: UserDTO = await this.userDao.readByIdx(userIdx);
         if (user.password !== encryptPrevPassword) {
             throw new WrongPasswordError();
@@ -188,6 +205,7 @@ class UserService {
      * @returns {boolean}
      **/
     async validateEmail(email: string): Promise<boolean> {
+        logger.debug(`${LOG_TAG} validateEmail(email = ${email})`);
         try {
             await this.userDao.read({ email });
             return false;
@@ -206,6 +224,7 @@ class UserService {
      * @returns {boolean}
      **/
     async validateName(nickname: string): Promise<boolean> {
+        logger.debug(`${LOG_TAG} validateName(nickname = ${nickname})`);
         try {
             await this.userDao.read({ nickname });
             return false;
@@ -224,6 +243,7 @@ class UserService {
      * @returns {boolean}
      **/
     async addSurvey(surveyDTO: SurveyDTO) {
+        logger.debug(`${LOG_TAG} addSurvey(surveyDTO = ${surveyDTO})`);
         return this.userDao.postSurvey(surveyDTO);
     }
 }
