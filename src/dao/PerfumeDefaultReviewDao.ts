@@ -1,6 +1,10 @@
 import { NotMatchedError } from '../utils/errors/errors';
 import PerfumeDefaultReviewDTO from '../data/dto/PerfumeDefaultReviewDTO';
 
+import { logger } from '../modules/winston';
+
+const LOG_TAG: string = '[PerfumeDefaultReview/DAO]';
+
 const { PerfumeDefaultReview, Keyword } = require('../models');
 
 class PerfumeDefaultReviewDao {
@@ -14,6 +18,7 @@ class PerfumeDefaultReviewDao {
     async readByPerfumeIdx(
         perfumeIdx: number
     ): Promise<PerfumeDefaultReviewDTO> {
+        logger.debug(`${LOG_TAG} readByPerfumeIdx(perfumeIdx = ${perfumeIdx})`);
         const result: any = await PerfumeDefaultReview.findOne({
             where: { perfumeIdx },
             raw: true,

@@ -3,7 +3,11 @@ import BrandDTO from '../data/dto/BrandDTO';
 import PagingDTO from '../data/dto/PagingDTO';
 import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 
+import { logger } from '../modules/winston';
+
 const { Brand } = require('../models');
+
+const LOG_TAG: string = '[Brand/DAO]';
 
 class BrandDao {
     /**
@@ -13,6 +17,7 @@ class BrandDao {
      * @returns {Promise<BrandDTO>}
      */
     async read(brandIdx: number): Promise<BrandDTO> {
+        logger.debug(`${LOG_TAG} read(brandIdx = ${brandIdx})`);
         const result = await Brand.findByPk(brandIdx, {
             nest: true,
             raw: true,
@@ -30,6 +35,7 @@ class BrandDao {
      * @returns {Promise<ListAndCountDTO<BrandDTO>>}
      */
     async search(pagingDTO: PagingDTO): Promise<ListAndCountDTO<BrandDTO>> {
+        logger.debug(`${LOG_TAG} search(PagingDTO = ${pagingDTO})`);
         const pagingSize: number = pagingDTO.pagingSize;
         const pagingIndex: number = pagingDTO.pagingIndex;
         const order: any = pagingDTO.order;
@@ -51,6 +57,7 @@ class BrandDao {
      * @returns {Promise<ListAndCountDTO<BrandDTO>>}
      */
     async readAll(): Promise<ListAndCountDTO<BrandDTO>> {
+        logger.debug(`${LOG_TAG} readAll()`);
         return Brand.findAndCountAll({
             raw: true,
             nest: true,
@@ -69,6 +76,9 @@ class BrandDao {
      * @returns {Promise<BrandDTO>}
      */
     async findBrand(condition: any): Promise<BrandDTO> {
+        logger.debug(
+            `${LOG_TAG} findBrand(condition = ${JSON.stringify(condition)})`
+        );
         return Brand.findOne({
             where: { ...condition },
             nest: true,

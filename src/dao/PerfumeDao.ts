@@ -6,6 +6,10 @@ import PerfumeThumbDTO from '../data/dto/PerfumeThumbDTO';
 import PerfumeSearchResultDTO from '../data/dto/PerfumeSearchResultDTO';
 import PerfumeSearchHistoryDTO from '../data/dto/PerfumeSearchHistoryDTO';
 
+import { logger } from '../modules/winston';
+
+const LOG_TAG: string = '[Perfume/DAO]';
+
 const {
     Perfume,
     PerfumeSurvey,
@@ -118,6 +122,13 @@ class PerfumeDao {
         pagingSize: number,
         order: any[] = []
     ): Promise<ListAndCountDTO<PerfumeSearchResultDTO>> {
+        logger.debug(
+            `${LOG_TAG} search(brandIdxList = ${brandIdxList}, ` +
+                `ingredientIdxList = ${ingredientIdxList}, ` +
+                `keywordList = ${keywordIdxList}, ` +
+                `searchText = ${searchText}, ` +
+                `pagingIndex = ${pagingIndex}, pagingSize = ${pagingSize}, order = ${order})`
+        );
         let orderCondition = '';
         if (!order || order.length == 0) {
             orderCondition = SQL_ORDER_DEFAULT;
@@ -226,6 +237,9 @@ class PerfumeDao {
         pagingIndex: number,
         pagingSize: number
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        logger.debug(
+            `${LOG_TAG} readNewPerfume(fromDate = ${fromDate}, pagingIndex = ${pagingIndex}, pagingSize = ${pagingSize})`
+        );
         const options: { [key: string]: any } = Object.assign(
             {},
             defaultOption,
@@ -262,6 +276,7 @@ class PerfumeDao {
      * @returns {Promise<Perfume>}
      */
     async readByPerfumeIdx(perfumeIdx: number): Promise<PerfumeDTO> {
+        logger.debug(`${LOG_TAG} readByPerfumeIdx(perfumeIdx = ${perfumeIdx})`);
         const options = _.merge({}, defaultOption, {
             where: { perfumeIdx },
         });
@@ -292,6 +307,9 @@ class PerfumeDao {
         pagingIndex: number,
         pagingSize: number
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        logger.debug(
+            `${LOG_TAG} readLikedPerfume(userIdx = ${userIdx}, pagingIndex = ${pagingIndex}, pagingSize = ${pagingSize})`
+        );
         const options: { [key: string]: any } = _.merge({}, defaultOption, {
             offset: (pagingIndex - 1) * pagingSize,
             limit: pagingSize,
@@ -329,6 +347,9 @@ class PerfumeDao {
         pagingIndex: number,
         pagingSize: number
     ): Promise<ListAndCountDTO<PerfumeSearchHistoryDTO>> {
+        logger.debug(
+            `${LOG_TAG} recentSearchPerfumeList(userIdx = ${userIdx}, pagingIndex = ${pagingIndex}, pagingSize = ${pagingSize})`
+        );
         const options: { [key: string]: any } = _.merge({}, defaultOption, {
             order: [
                 [
@@ -372,6 +393,9 @@ class PerfumeDao {
         pagingIndex: number,
         pagingSize: number
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        logger.debug(
+            `${LOG_TAG} recommendPerfumeByAgeAndGender(gender = ${gender}, ageGroup = ${ageGroup}, pagingIndex = ${pagingIndex}, pagingSize = ${pagingSize})`
+        );
         const today: Date = new Date();
         const startYear: number = today.getFullYear() - ageGroup - 8;
         const endYear: number = today.getFullYear() - ageGroup + 1;
@@ -412,6 +436,9 @@ class PerfumeDao {
         gender: string,
         ageGroup: number
     ): Promise<PerfumeThumbDTO[]> {
+        logger.debug(
+            `${LOG_TAG} recommendPerfumeByAgeAndGenderCached(gender = ${gender}, ageGroup = ${ageGroup})`
+        );
         return ranking.findItem({ gender, ageGroup });
     }
 
@@ -424,6 +451,7 @@ class PerfumeDao {
     async readPerfumeSurvey(
         gender: number
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        logger.debug(`${LOG_TAG} readPerfumeSurvey(gender = ${gender})`);
         const options = _.merge({}, defaultOption);
         options.include.push({
             model: PerfumeSurvey,
@@ -447,6 +475,7 @@ class PerfumeDao {
      * @returns {Promise<Perfume[]>}
      */
     async readAll(): Promise<PerfumeThumbDTO[]> {
+        logger.debug(`${LOG_TAG} readAll()`);
         return Perfume.findAll();
     }
 }
