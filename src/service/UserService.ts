@@ -112,8 +112,9 @@ class UserService {
      * @returns {LoginInfoDTO} - 토큰 정보
      **/
     async loginUser(email: string, password: string): Promise<LoginInfoDTO> {
+        const encryptPassword: string = this.crypto.encrypt(password);
         const user: UserDTO = await this.userDao.read({ email });
-        if (this.crypto.decrypt(user.password) != password) {
+        if (user.password != encryptPassword) {
             throw new WrongPasswordError();
         }
         this.userDao.updateAccessTime(user.userIdx);
@@ -164,15 +165,16 @@ class UserService {
         prevPassword: string,
         newPassword: string
     ) {
-        const user = await this.userDao.readByIdx(userIdx);
-        const dbPassword = this.crypto.decrypt(user.password);
-        if (dbPassword !== prevPassword) {
+        const encryptPrevPassword: string = this.crypto.encrypt(prevPassword);
+        const encryptNewPassword: string = this.crypto.encrypt(newPassword);
+        const user: UserDTO = await this.userDao.readByIdx(userIdx);
+        if (user.password !== encryptPrevPassword) {
             throw new WrongPasswordError();
         }
-        if (dbPassword === newPassword) {
+        if (user.password === encryptNewPassword) {
             throw new PasswordPolicyError();
         }
-        const password = this.crypto.encrypt(newPassword);
+        const password: string = encryptNewPassword;
         return this.userDao.update({
             userIdx,
             password,

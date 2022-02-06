@@ -22,8 +22,8 @@ import UserMockHelper from '../mock_helper/UserMockHelper';
 const mockUserDao = require('../dao/UserDao.mock.js');
 const mockJWT = Object.assign({}, require('../lib/token.mock.js'));
 const mockCrypt = {
-    encrypt: () => 'encrypted',
-    decrypt: () => 'decrypted',
+    encrypt: (data: string): string => data,
+    decrypt: (data: string): string => data,
 };
 const userService = new UserService(mockUserDao, mockCrypt, mockJWT);
 
@@ -82,7 +82,7 @@ describe('# User Service Test', () => {
         });
         it('# success case', (done: Done) => {
             userService
-                .loginUser('', 'decrypted')
+                .loginUser('', 'encrypted')
                 .then((result) => {
                     LoginInfoMockHelper.validTest.call(result);
                     done();
@@ -119,7 +119,7 @@ describe('# User Service Test', () => {
 
         it('# same password(restrict by password policy)', (done: Done) => {
             userService
-                .changePassword(1, 'decrypted', 'decrypted')
+                .changePassword(1, 'encrypted', 'encrypted')
                 .then(() => {
                     done(new UnExpectedError(PasswordPolicyError));
                 })
