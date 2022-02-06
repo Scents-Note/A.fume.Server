@@ -1,6 +1,9 @@
-import properties from '../properties';
+import mongoose from 'mongoose';
 
-const mongoose = require('mongoose');
+import properties from '@properties';
+
+import { logger } from '@modules/winston';
+
 mongoose.Promise = global.Promise;
 
 module.exports = mongoose
@@ -11,5 +14,5 @@ module.exports = mongoose
             useUnifiedTopology: true,
         }
     )
-    .then(() => console.log('Successfully connected to mongodb'))
+    .then(() => logger.info('Successfully connected to mongodb'))
     .catch((e) => console.error(e));

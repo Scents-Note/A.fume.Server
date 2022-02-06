@@ -1,9 +1,9 @@
-const {
+import {
     SEASONAL_LIST,
     SILLAGE_LIST,
     GENDER_LIST,
     LONGEVITY_LIST,
-}: { [key: string]: number[] } = require('../../utils/constantUtil.js');
+} from '@utils/constants';
 
 class PerfumeSummaryDTO {
     score: number;
@@ -23,6 +23,10 @@ class PerfumeSummaryDTO {
         this.sillage = sillage;
         this.longevity = longevity;
         this.gender = gender;
+    }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
 
     static createByReviewList(reviewList: any[]): PerfumeSummaryDTO {
@@ -175,4 +179,4 @@ class PerfumeSummaryDTO {
     }
 }
 
-export default PerfumeSummaryDTO;
+export { PerfumeSummaryDTO };

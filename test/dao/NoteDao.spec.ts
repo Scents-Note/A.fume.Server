@@ -3,10 +3,11 @@ import { expect } from 'chai';
 import { Done } from 'mocha';
 dotenv.config();
 
-import NoteDao from '../../src/dao/NoteDao';
+import NoteDao from '@dao/NoteDao';
 
-const { Ingredient } = require('../../src/models');
-import NoteDTO from '../../src/data/dto/NoteDTO';
+import { NoteDTO } from '@dto/index';
+
+const { Ingredient } = require('@sequelize');
 
 const noteDao: NoteDao = new NoteDao();
 

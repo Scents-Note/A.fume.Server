@@ -1,4 +1,4 @@
-const { ABUNDANCE_RATE_LIST } = require('../../utils/constantUtil.js');
+import { ABUNDANCE_RATE_LIST } from '@utils/constants';
 
 type VolumeAndPrice = { volume: string; price: number }[];
 
@@ -85,6 +85,10 @@ class PerfumeIntegralDTO {
         this.reviewIdx = reviewIdx;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static create(
         perfumeDTO: any,
         perfumeSummaryDTO: any,
@@ -152,4 +156,4 @@ function emptyCheck(x: any) {
     return x;
 }
 
-export default PerfumeIntegralDTO;
+export { PerfumeIntegralDTO };

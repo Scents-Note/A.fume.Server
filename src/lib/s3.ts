@@ -1,6 +1,8 @@
 import AWS, { AWSError } from 'aws-sdk';
 const s3 = new AWS.S3();
 
+import { logger } from '@modules/winston';
+
 function getImageList(
     params: AWS.S3.Types.ListObjectsV2Request
 ): Promise<string[]> {
@@ -9,7 +11,7 @@ function getImageList(
             params,
             (err: AWSError, data: AWS.S3.Types.ListObjectsV2Output): void => {
                 if (err) {
-                    console.log(err, err.stack);
+                    logger.error(err.stack);
                     reject(err);
                 }
                 resolve(data.Contents?.map((it: any) => it.Key) ?? []);

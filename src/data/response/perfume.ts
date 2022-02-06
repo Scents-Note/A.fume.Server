@@ -1,4 +1,4 @@
-import PerfumeIntegralDTO from '../dto/PerfumeIntegralDTO';
+import { PerfumeIntegralDTO } from '@dto/index';
 
 const NO_REVIEW: number = 0;
 
@@ -84,6 +84,10 @@ class PerfumeDetailResponse {
         this.reviewIdx = reviewIdx;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static shouldBeAddedCommasRegex: RegExp = /\B(?=(\d{3})+(?!\d))/g;
     static createByPerfumeIntegralDTO(
         perfumeIntegralDTO: PerfumeIntegralDTO
@@ -141,6 +145,10 @@ class PerfumeResponse {
         this.isLiked = isLiked;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): PerfumeResponse {
         return new PerfumeResponse(
             json.perfumeIdx,
@@ -165,6 +173,11 @@ class PerfumeRecommendResponse extends PerfumeResponse {
         super(perfumeIdx, name, brandName, imageUrl, isLiked);
         this.keywordList = keywordList;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): PerfumeRecommendResponse {
         return new PerfumeRecommendResponse(
             json.perfumeIdx,

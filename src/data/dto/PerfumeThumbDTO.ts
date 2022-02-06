@@ -1,4 +1,4 @@
-import BrandDTO from './BrandDTO';
+import { BrandDTO } from '@dto/BrandDTO';
 
 class PerfumeThumbDTO {
     perfumeIdx: number;
@@ -28,6 +28,10 @@ class PerfumeThumbDTO {
         this.Brand = Brand;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): PerfumeThumbDTO {
         return new PerfumeThumbDTO(
             json.perfumeIdx,
@@ -41,4 +45,4 @@ class PerfumeThumbDTO {
     }
 }
 
-export default PerfumeThumbDTO;
+export { PerfumeThumbDTO };

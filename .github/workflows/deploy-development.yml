@@ -30,7 +30,7 @@ jobs:
         cache-dependency-path: ${{ env.NODE_ENV }}/package-lock.json
     - run: cp ~/config-injection/ecosystem-${{ env.NODE_ENV }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
     - run: cp ~/config-injection/.env ${{ env.PROJECT_PATH }}/.env
-    - run: ${{ env.PROJECT_PATH }}/script/prebuild.sh
+    - run: sudo ${{ env.PROJECT_PATH }}/script/prebuild.sh
     - run: ${{ env.PROJECT_PATH }}/script/reload.sh
     env:
       NODE_ENV: development

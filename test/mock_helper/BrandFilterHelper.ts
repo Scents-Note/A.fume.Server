@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
+import { BrandFilterDTO } from '@dto/index';
 import BrandHelper from './BrandHelper';
 
 const FIRST_INITIAL_REGEX = /^[ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅍㅌㅎ]$/;

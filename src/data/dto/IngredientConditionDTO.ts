@@ -5,7 +5,14 @@ class IngredientConditionDTO {
     description: string | undefined;
     imageUrl: string | undefined;
     seriesIdx: number | undefined;
-    constructor(ingredientIdx?: number, name?: string, englishName?: string, description?: string, imageUrl?: string, seriesIdx?: number) {
+    constructor(
+        ingredientIdx?: number,
+        name?: string,
+        englishName?: string,
+        description?: string,
+        imageUrl?: string,
+        seriesIdx?: number
+    ) {
         this.ingredientIdx = ingredientIdx;
         this.name = name;
         this.englishName = englishName;
@@ -13,6 +20,10 @@ class IngredientConditionDTO {
         this.imageUrl = imageUrl;
         this.seriesIdx = seriesIdx;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
 }
 
-export default IngredientConditionDTO;
+export { IngredientConditionDTO };

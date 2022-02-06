@@ -2,18 +2,16 @@ import dotenv from 'dotenv';
 import { expect } from 'chai';
 import { Done } from 'mocha';
 dotenv.config();
-import UserService from '../../src/service/UserService';
 
 import {
     WrongPasswordError,
     PasswordPolicyError,
     UnExpectedError,
-} from '../../src/utils/errors/errors';
+} from '@errors';
 
-import UserAuthDTO from '../../src/data/dto/UserAuthDTO';
+import UserService from '@services/UserService';
 
-import { Error } from 'aws-sdk/clients/servicecatalog';
-import UserDTO from '../../src/data/dto/UserDTO';
+import { UserAuthDTO, UserDTO } from '@dto/index';
 
 import LoginInfoMockHelper from '../mock_helper/LoginInfoMockHelper';
 import TokenGroupMockHelper from '../mock_helper/TokenGroupMockHelper';
@@ -22,8 +20,8 @@ import UserMockHelper from '../mock_helper/UserMockHelper';
 const mockUserDao = require('../dao/UserDao.mock.js');
 const mockJWT = Object.assign({}, require('../lib/token.mock.js'));
 const mockCrypt = {
-    encrypt: () => 'encrypted',
-    decrypt: () => 'decrypted',
+    encrypt: (data: string): string => data,
+    decrypt: (data: string): string => data,
 };
 const userService = new UserService(mockUserDao, mockCrypt, mockJWT);
 
@@ -82,7 +80,7 @@ describe('# User Service Test', () => {
         });
         it('# success case', (done: Done) => {
             userService
-                .loginUser('', 'decrypted')
+                .loginUser('', 'encrypted')
                 .then((result) => {
                     LoginInfoMockHelper.validTest.call(result);
                     done();
@@ -119,7 +117,7 @@ describe('# User Service Test', () => {
 
         it('# same password(restrict by password policy)', (done: Done) => {
             userService
-                .changePassword(1, 'decrypted', 'decrypted')
+                .changePassword(1, 'encrypted', 'encrypted')
                 .then(() => {
                     done(new UnExpectedError(PasswordPolicyError));
                 })

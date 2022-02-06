@@ -1,4 +1,4 @@
-import BrandFilterDTO from '../dto/BrandFilterDTO';
+import { BrandFilterDTO } from '@dto/index';
 
 class BrandResponse {
     brandIdx: number;
@@ -7,6 +7,11 @@ class BrandResponse {
         this.brandIdx = brandIdx;
         this.name = name;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: {
         brandIdx: number;
         name: string;
@@ -21,6 +26,10 @@ class BrandFilterResponse {
     constructor(firstInitial: string, brands: BrandResponse[]) {
         this.firstInitial = firstInitial;
         this.brands = brands;
+    }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
 
     static create(brandFilterDTO: BrandFilterDTO) {

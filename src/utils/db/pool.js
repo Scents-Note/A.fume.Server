@@ -1,14 +1,14 @@
+import mysql from 'promise-mysql';
+
+import properties from '@properties';
 import {
     DatabaseError,
     NoReferencedRowError,
     DuplicatedEntryError,
-} from '../errors/errors';
-import properties from '../properties';
-
-const mysql = require('promise-mysql');
+} from '@errors';
 
 const env = properties.NODE_ENV;
-const config = require('../../config/config.js')[env];
+const config = require('@config/config.js')[env];
 
 const poolPromise = mysql.createPool({
     host: config.host,

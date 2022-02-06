@@ -1,6 +1,6 @@
-import UserDTO from './UserDTO';
+import { GRADE_MANAGER } from '@utils/constants';
 
-const { GRADE_MANAGER } = require('../../utils/constantUtil');
+import { UserDTO } from '@dto/UserDTO';
 
 class UserAuthDTO {
     isAuth: boolean;
@@ -10,9 +10,13 @@ class UserAuthDTO {
         this.isAdmin = isAdmin;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static create(user: UserDTO) {
         return new UserAuthDTO(true, user.grade >= GRADE_MANAGER);
     }
 }
 
-export default UserAuthDTO;
+export { UserAuthDTO };

@@ -1,11 +1,11 @@
-import NoteDTO from './NoteDTO';
-
-const {
+import {
     NOTE_TYPE_TOP,
     NOTE_TYPE_MIDDLE,
     NOTE_TYPE_BASE,
     NOTE_TYPE_SINGLE,
-} = require('../../utils/constantUtil');
+} from '@utils/constants';
+
+import { NoteDTO } from '@dto/NoteDTO';
 
 class NoteDictDTO {
     top: string;
@@ -17,6 +17,10 @@ class NoteDictDTO {
         this.middle = middle;
         this.base = base;
         this.single = single;
+    }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
 
     static createByNoteList(noteList: NoteDTO[]): NoteDictDTO {
@@ -59,4 +63,4 @@ class NoteDictDTO {
     }
 }
 
-export default NoteDictDTO;
+export { NoteDictDTO };

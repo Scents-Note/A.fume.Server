@@ -5,6 +5,9 @@ class ListAndCountDTO<Type> {
         this.count = count;
         this.rows = rows;
     }
+    public toString(): string {
+        return `ListAndCountDTO (count: ${this.count}, rows: ${this.rows})`;
+    }
 }
 
-export default ListAndCountDTO;
+export { ListAndCountDTO };

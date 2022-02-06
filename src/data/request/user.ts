@@ -1,5 +1,5 @@
-import { GradeKey, GenderKey } from '../../utils/enumType';
-const { GRADE_USER } = require('../../utils/constantUtil');
+import { GradeKey, GenderKey } from '@utils/enumType';
+import { GRADE_USER } from '@utils/constants';
 
 class UserEditRequest {
     userIdx: number;
@@ -25,6 +25,10 @@ class UserEditRequest {
         this.password = password;
         this.email = email;
         this.birth = birth;
+    }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
 
     static createByJson(json: any): UserEditRequest {
@@ -61,6 +65,11 @@ class UserRegisterRequest {
         this.email = email;
         this.birth = birth;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): UserRegisterRequest {
         return new UserRegisterRequest(
             json.nickname,

@@ -20,6 +20,11 @@ class PerfumeThumbKeywordDTO {
         this.imageUrl = imageUrl;
         this.keywordList = keywordList;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): PerfumeThumbKeywordDTO {
         const perfumeIdx: number = json.perfumeIdx;
         const name: string = json.name;
@@ -38,4 +43,4 @@ class PerfumeThumbKeywordDTO {
     }
 }
 
-export default PerfumeThumbKeywordDTO;
+export { PerfumeThumbKeywordDTO };

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import IngredientDTO from '../../src/data/dto/IngredientDTO';
+import { IngredientDTO } from '@dto/index';
 
 class IngredientMockHelper {
     static validTest(this: IngredientDTO) {

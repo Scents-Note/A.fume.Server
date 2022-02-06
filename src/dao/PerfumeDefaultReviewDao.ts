@@ -1,7 +1,12 @@
-import { NotMatchedError } from '../utils/errors/errors';
-import PerfumeDefaultReviewDTO from '../data/dto/PerfumeDefaultReviewDTO';
+import { logger } from '@modules/winston';
 
-const { PerfumeDefaultReview, Keyword } = require('../models');
+import { NotMatchedError } from '@errors';
+
+import { PerfumeDefaultReviewDTO } from '@dto/index';
+
+const LOG_TAG: string = '[PerfumeDefaultReview/DAO]';
+
+const { PerfumeDefaultReview, Keyword } = require('@sequelize');
 
 class PerfumeDefaultReviewDao {
     /**
@@ -14,6 +19,7 @@ class PerfumeDefaultReviewDao {
     async readByPerfumeIdx(
         perfumeIdx: number
     ): Promise<PerfumeDefaultReviewDTO> {
+        logger.debug(`${LOG_TAG} readByPerfumeIdx(perfumeIdx = ${perfumeIdx})`);
         const result: any = await PerfumeDefaultReview.findOne({
             where: { perfumeIdx },
             raw: true,

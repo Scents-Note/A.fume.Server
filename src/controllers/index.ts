@@ -1,5 +1,6 @@
 import express, { RequestHandler } from 'express';
 import { SwaggerDefinition } from 'swagger-jsdoc';
+import { logger } from '@modules/winston';
 
 function swaggerRouter(specs: SwaggerDefinition) {
     const router: any = express.Router();
@@ -21,7 +22,7 @@ function swaggerRouter(specs: SwaggerDefinition) {
             const operation: RequestHandler =
                 require(controllerPath)[operationId];
             if (!operation) {
-                console.log(
+                logger.error(
                     '[Error] Operation is Not Exist :' +
                         controller +
                         '.' +
@@ -29,10 +30,9 @@ function swaggerRouter(specs: SwaggerDefinition) {
                 );
                 continue;
             }
-            // TODO 해당 정보는 파일로 로깅하기
-            // console.log(
-            //     `route [${method}] ${endpoint} : ${controller}.${operationId}`
-            // );
+            logger.info(
+                `route [${method}] ${endpoint} : ${controller}.${operationId}`
+            );
             router[method](endpoint, operation);
         }
     }

@@ -26,6 +26,9 @@ class IngredientDTO {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
     static createByJson(json: any): IngredientDTO {
         const ingredientIdx: number = json.ingredientIdx;
         const name: string = json.name;
@@ -48,4 +51,4 @@ class IngredientDTO {
     }
 }
 
-export default IngredientDTO;
+export { IngredientDTO };

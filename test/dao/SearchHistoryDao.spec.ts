@@ -3,10 +3,13 @@ import { expect } from 'chai';
 import { Done } from 'mocha';
 dotenv.config();
 
-import SearchHistoryDao from '../../src/dao/SearchHistoryDao';
-import SearchHistoryDTO from '../../src/data/dto/SearchHistoryDTO';
+import SearchHistoryDao from '@dao/SearchHistoryDao';
+
+import { SearchHistoryDTO } from '@dto/index';
+
+const { SearchHistory } = require('@sequelize');
+
 const searchHistoryDao = new SearchHistoryDao();
-const { SearchHistory } = require('../../src/models');
 
 describe('# searchHistoryDao Test', () => {
     before(async function () {

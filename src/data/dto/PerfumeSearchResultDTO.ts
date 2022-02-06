@@ -1,4 +1,4 @@
-import BrandDTO from './BrandDTO';
+import { BrandDTO } from '@dto/BrandDTO';
 
 type Score = {
     ingredient: number;
@@ -40,6 +40,10 @@ class PerfumeSearchResultDTO {
         this.Score = Score;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): PerfumeSearchResultDTO {
         return new PerfumeSearchResultDTO(
             json.perfumeIdx,
@@ -55,4 +59,4 @@ class PerfumeSearchResultDTO {
     }
 }
 
-export default PerfumeSearchResultDTO;
+export { PerfumeSearchResultDTO };

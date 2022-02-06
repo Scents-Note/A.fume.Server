@@ -5,13 +5,13 @@ import {
     DuplicatedEntryError,
     NotMatchedError,
     UnExpectedError,
-} from '../../src/utils/errors/errors';
+} from '@errors';
 
 const chai = require('chai');
 const { expect } = chai;
-const likeReviewDao = require('../../src/dao/LikeReviewDao.js');
+const likeReviewDao = require('@dao/LikeReviewDao.js');
 
-const { LikeReview } = require('../../src/models');
+const { LikeReview } = require('@sequelize');
 
 describe('# LikeReviewDao Test', () => {
     before(async function () {

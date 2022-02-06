@@ -1,4 +1,4 @@
-import { PagingRequestDTO } from '../request/common';
+import { PagingRequestDTO } from '@request/common';
 
 type Ascending = 'DESC' | 'ASC';
 
@@ -14,6 +14,9 @@ class PagingDTO {
         this.pagingSize = pagingSize;
         this.pagingIndex = pagingIndex;
         this.order = order;
+    }
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
 
     static create(pagingRequestDTO: PagingRequestDTO): PagingDTO {
@@ -44,4 +47,4 @@ class PagingDTO {
     }
 }
 
-export default PagingDTO;
+export { PagingDTO };

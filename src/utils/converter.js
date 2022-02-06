@@ -1,11 +1,14 @@
-import { InvalidValueError } from './errors/errors';
+import { logger } from '@modules/winston';
+
+import { InvalidValueError } from '@errors';
 
 const seasonalTypeArr = ['봄', '여름', '가을', '겨울'];
 const sillageTypeArr = ['가벼움', '보통', '무거움'];
 const longevityTypeArr = ['매우 약함', '약함', '보통', '강함', '매우 강함'];
 const genderTypeArr = ['남성', '중성', '여성'];
 
-const KeywordDao = require('../dao/KeywordDao');
+// TODO converter가 특정 dao에 의존하는 것은 불필요한 의존성을 만드는 거 같네요.
+const KeywordDao = require('@dao/KeywordDao');
 
 const INSTEAD_NULL_VALUE = -1;
 
@@ -65,7 +68,7 @@ module.exports.inputStrToDBIntOfReview = async ({
             keywordList: keywordList ? keywordIdxList : [],
         };
     } catch (err) {
-        console.log(err);
+        logger.error(err);
         throw err;
     }
 };
@@ -108,7 +111,7 @@ module.exports.DBIntToOutputStrOfReview = async ({
             gender: gender ? genderTypeArr[gender - 1] : INSTEAD_NULL_VALUE,
         };
     } catch (err) {
-        console.log(err);
+        logger.error(err);
         throw err;
     }
 };
@@ -167,7 +170,7 @@ module.exports.InputIntToDBIntOfReview = async ({
             keywordList: keywordList ? keywordIdxList : [],
         };
     } catch (err) {
-        console.log(err);
+        logger.error(err);
         throw err;
     }
 };
@@ -208,7 +211,7 @@ module.exports.DBIntToOutputIntOfReview = async ({
             gender: gender ? gender - 1 : INSTEAD_NULL_VALUE,
         };
     } catch (err) {
-        console.log(err);
+        logger.error(err);
         throw err;
     }
 };
