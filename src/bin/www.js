@@ -13,15 +13,10 @@ const port = normalizePort(properties.PORT || 8080);
 const server = http.createServer(app);
 server.listen(port, function () {
     logger.info(
-        'Your server is listening on port %d (http://%s:%d)',
-        port,
-        localIpAddress,
-        port
+        `Your server is listening on port ${port} (http://${localIpAddress}:${port})`
     );
     logger.info(
-        'Swagger-ui is available on http://%s:%d/docs',
-        localIpAddress,
-        port
+        `Swagger-ui is available on http://${localIpAddress}:${port}/docs`
     );
 });
 server.on('error', onError);
