@@ -103,7 +103,7 @@ const getIngredientAll: RequestHandler = (
         })
         .then((result: ListAndCountDTO<IngredientResponse>) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} getIngredientAll's result = ${result}`
             );
             res.status(StatusCode.OK).json(

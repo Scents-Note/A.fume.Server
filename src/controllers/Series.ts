@@ -113,7 +113,7 @@ const getSeriesAll: RequestHandler = (
         })
         .then((result: ListAndCountDTO<SeriesResponse>) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} getSeriesAll's result = ${result}`
             );
             res.status(StatusCode.OK).json(
@@ -141,7 +141,7 @@ const getIngredients: RequestHandler = (
         })
         .then((result: ListAndCountDTO<IngredientResponse>) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} getIngredients's result = ${result}`
             );
             res.status(StatusCode.OK).json(
@@ -218,7 +218,7 @@ const getFilterSeries: RequestHandler = (
         })
         .then((result: ListAndCountDTO<SeriesFilterResponse>) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} getFilterSeries's result = ${result}`
             );
             res.status(StatusCode.OK).json(

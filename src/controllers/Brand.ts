@@ -110,7 +110,7 @@ const getBrandAll: RequestHandler = (
         })
         .then((result: ListAndCountDTO<BrandResponse>) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} getBrandAll's result = ${result}`
             );
             res.status(StatusCode.OK).json(
@@ -176,7 +176,7 @@ const getFilterBrand: RequestHandler = (
         })
         .then((response: BrandFilterResponse[]) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} getFilterBrand's result = ${response}`
             );
             res.status(StatusCode.OK).json(

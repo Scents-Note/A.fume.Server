@@ -144,7 +144,7 @@ const registerUser: RequestHandler = (
         })
         .then((response: UserRegisterResponse) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} registerUser's result = ${response}`
             );
             res.status(StatusCode.OK).json(
@@ -234,7 +234,7 @@ const loginUser: RequestHandler = (
         })
         .then((response: LoginResponse) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} loginUser's result = ${response}`
             );
             res.status(StatusCode.OK).json(
@@ -289,7 +289,7 @@ const changePassword: RequestHandler = (
     User.changePassword(userIdx, prevPassword, newPassword)
         .then(() => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} changePassword success`
             );
             res.status(StatusCode.OK).json(
@@ -349,7 +349,7 @@ const authUser: RequestHandler = (
         })
         .then((response: UserAuthResponse) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} authUser's result = ${response}`
             );
             res.status(StatusCode.OK).json(
@@ -402,7 +402,7 @@ const validateEmail: RequestHandler = (
     User.validateEmail(email)
         .then((response: boolean) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} validateEmail's result = ${response}`
             );
             if (response) {
@@ -462,7 +462,7 @@ const validateName: RequestHandler = (
 ) => {
     if (!req.query.nickname) {
         LoggerHelper.logTruncated(
-            logger.info,
+            logger.debug,
             `${LOG_TAG} validateName's result = false`
         );
         res.status(StatusCode.CONFLICT).json(
@@ -477,7 +477,7 @@ const validateName: RequestHandler = (
     User.validateName(nickname)
         .then((response: boolean) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} validateName's result = ${response}`
             );
             if (response) {
@@ -566,7 +566,7 @@ const postSurvey: RequestHandler = (
     User.addSurvey(surveyDTO)
         .then(() => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} postSurvey success`
             );
             res.status(StatusCode.OK).json(
@@ -669,7 +669,7 @@ const updateUser: RequestHandler = (
         })
         .then((response: UserResponse) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} updateUser's result = ${response}`
             );
             res.status(StatusCode.OK).json(
@@ -711,7 +711,7 @@ const deleteUser: RequestHandler = (
     User.deleteUser(userIdx)
         .then((_: any) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} deleteUser success`
             );
             res.status(StatusCode.OK).json(

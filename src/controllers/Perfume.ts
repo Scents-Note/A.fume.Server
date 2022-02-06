@@ -60,7 +60,7 @@ const getPerfume: RequestHandler = (
         })
         .then((data: PerfumeDetailResponse) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} getPerfume's result = ${data}`
             );
             res.status(StatusCode.OK).json(
@@ -95,7 +95,7 @@ const searchPerfume: RequestHandler = (
         })
         .then((data: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} searchPerfume's result = ${data}`
             );
             res.status(StatusCode.OK).json(
@@ -118,7 +118,7 @@ const likePerfume: RequestHandler = (
     Perfume.likePerfume(loginUserIdx, perfumeIdx)
         .then((result: boolean) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} likePerfume's result = ${result}`
             );
             res.status(StatusCode.OK).json(
@@ -149,7 +149,7 @@ const getRecentPerfume: RequestHandler = (
         })
         .then((data: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} getRecentPerfume's result = ${data}`
             );
             res.status(StatusCode.OK).json(
@@ -180,7 +180,7 @@ const recommendPersonalPerfume: RequestHandler = (
         })
         .then((data: ListAndCountDTO<PerfumeRecommendResponse>) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} recommendPersonalPerfume's result = ${data}`
             );
             res.status(StatusCode.OK).json(
@@ -211,7 +211,7 @@ const recommendCommonPerfume: RequestHandler = (
         })
         .then((data: ListAndCountDTO<PerfumeRecommendResponse>) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} recommendCommonPerfume's result = ${data}`
             );
             res.status(StatusCode.OK).json(
@@ -239,7 +239,7 @@ const getSurveyPerfume: RequestHandler = (
         })
         .then((data: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} getSurveyPerfume's result = ${data}`
             );
             res.status(StatusCode.OK).json(
@@ -270,7 +270,7 @@ const getNewPerfume: RequestHandler = (
         })
         .then((data: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} getNewPerfume's result = ${data}`
             );
             res.status(StatusCode.OK).json(
@@ -308,7 +308,7 @@ const getLikedPerfume: RequestHandler = (
         })
         .then((data: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
-                logger.info,
+                logger.debug,
                 `${LOG_TAG} getLikedPerfume's result = ${data}`
             );
             res.status(StatusCode.OK).json(
