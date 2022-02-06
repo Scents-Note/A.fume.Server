@@ -3,9 +3,10 @@ import winstonDaily from 'winston-daily-rotate-file';
 
 import properties from '../utils/properties';
 
+const errorDir: string = 'logs/error';
 const logDir: string = 'logs/info';
 const httpDir: string = 'logs/http';
-const errorDir: string = 'logs/error';
+const debugDir: string = 'logs/debug';
 const { combine, timestamp, printf, colorize, simple } = winston.format;
 
 const logFormat: winston.Logform.Format = printf(
@@ -38,6 +39,14 @@ class LoggerAdapter implements ILoggerAdapter {
             ),
             transports: [
                 new winstonDaily({
+                    level: 'error',
+                    datePattern: 'YYYY-MM-DD',
+                    dirname: errorDir,
+                    filename: `%DATE%.error.log`,
+                    maxFiles: 30,
+                    zippedArchive: true,
+                }),
+                new winstonDaily({
                     level: 'info',
                     datePattern: 'YYYY-MM-DD',
                     dirname: logDir,
@@ -54,11 +63,11 @@ class LoggerAdapter implements ILoggerAdapter {
                     zippedArchive: true,
                 }),
                 new winstonDaily({
-                    level: 'error',
+                    level: 'debug',
                     datePattern: 'YYYY-MM-DD',
-                    dirname: errorDir,
-                    filename: `%DATE%.error.log`,
-                    maxFiles: 30,
+                    dirname: debugDir,
+                    filename: `%DATE%.debug.log`,
+                    maxFiles: 1,
                     zippedArchive: true,
                 }),
             ],
