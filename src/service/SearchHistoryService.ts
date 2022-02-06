@@ -2,6 +2,10 @@ import SearchHistoryDao from '../dao/SearchHistoryDao';
 import SearchHistoryDTO from '../data/dto/SearchHistoryDTO';
 import { NotMatchedError } from '../utils/errors/errors';
 
+import { logger } from '../modules/winston';
+
+const LOG_TAG: string = '[SearchHistory/Service]';
+
 class SearchHistoryService {
     searchHistoryDao: SearchHistoryDao;
     constructor(searchHistoryDao?: SearchHistoryDao) {
@@ -15,6 +19,9 @@ class SearchHistoryService {
      * @returns {Promise}
      **/
     async incrementCount(userIdx: number, perfumeIdx: number): Promise<void> {
+        logger.debug(
+            `${LOG_TAG} incrementCount(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx})`
+        );
         if (userIdx == -1) return;
         this.searchHistoryDao
             .read(userIdx, perfumeIdx)

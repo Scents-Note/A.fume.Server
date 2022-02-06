@@ -20,6 +20,9 @@ class NoteDTO {
         this.updatedAt = updatedAt;
         this.ingredientName = ingredientName;
     }
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
     static createByJson(json: {
         perfumeIdx: number;
         ingredientIdx: number;

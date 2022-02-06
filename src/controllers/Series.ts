@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
+import { logger, LoggerHelper } from '../modules/winston';
+
 import StatusCode from '../utils/statusCode';
 
 import IngredientService from '../service/IngredientService';
@@ -21,6 +23,8 @@ import {
     MSG_GET_INGREDIENT_BY_SERIES_SUCCESS,
     MSG_SEARCH_SERIES_LIST_SUCCESS,
 } from '../utils/strings';
+
+const LOG_TAG: string = '[Series/Controller]';
 
 let Series = new SeriesService();
 let Ingredient = new IngredientService();
@@ -100,6 +104,7 @@ const getSeriesAll: RequestHandler = (
     res: Response,
     next: NextFunction
 ): any => {
+    logger.debug(`${LOG_TAG} getSeriesAll(query = ${req.query})`);
     Series.getSeriesAll(PagingRequestDTO.createByJson(req.query))
         .then((result: ListAndCountDTO<SeriesDTO>) => {
             return {
@@ -107,11 +112,15 @@ const getSeriesAll: RequestHandler = (
                 rows: result.rows.map(SeriesResponse.create),
             };
         })
-        .then((result: ListAndCountDTO<SeriesResponse>) => {
+        .then((response: ListAndCountDTO<SeriesResponse>) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} getSeriesAll's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<SeriesResponse>>(
                     MSG_GET_SERIES_ALL_SUCCESS,
-                    result
+                    response
                 )
             );
         })
@@ -123,6 +132,7 @@ const getIngredients: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} getIngredients(params = ${req.params})`);
     const seriesIdx: number = parseInt(req.params['seriesIdx']);
     Ingredient.getIngredientList(seriesIdx)
         .then((result: ListAndCountDTO<IngredientDTO>) => {
@@ -131,11 +141,15 @@ const getIngredients: RequestHandler = (
                 result.rows.map(IngredientResponse.createByJson)
             );
         })
-        .then((result: ListAndCountDTO<IngredientResponse>) => {
+        .then((response: ListAndCountDTO<IngredientResponse>) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} getIngredients's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<IngredientResponse>>(
                     MSG_GET_INGREDIENT_BY_SERIES_SUCCESS,
-                    result
+                    response
                 )
             );
         })
@@ -197,6 +211,7 @@ const getFilterSeries: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} getFilterSeries(query = ${req.query})`);
     Series.getFilterSeries(PagingRequestDTO.createByJson(req.query))
         .then((result: ListAndCountDTO<SeriesFilterDTO>) => {
             return new ListAndCountDTO(
@@ -204,11 +219,15 @@ const getFilterSeries: RequestHandler = (
                 result.rows.map(SeriesFilterResponse.create)
             );
         })
-        .then((result: ListAndCountDTO<SeriesFilterResponse>) => {
+        .then((response: ListAndCountDTO<SeriesFilterResponse>) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} getFilterSeries's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<SeriesFilterResponse>>(
                     MSG_SEARCH_SERIES_LIST_SUCCESS,
-                    result
+                    response
                 )
             );
         })

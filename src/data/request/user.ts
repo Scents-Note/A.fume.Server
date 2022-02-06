@@ -27,6 +27,10 @@ class UserEditRequest {
         this.birth = birth;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): UserEditRequest {
         return new UserEditRequest(
             json.userIdx,
@@ -61,6 +65,11 @@ class UserRegisterRequest {
         this.email = email;
         this.birth = birth;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): UserRegisterRequest {
         return new UserRegisterRequest(
             json.nickname,

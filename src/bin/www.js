@@ -1,23 +1,24 @@
 #!/usr/bin/env node
 import http from 'http';
 const debug = require('debug')('swagger-test:server');
+import { logger } from '../modules/winston';
 
 import properties from '../utils/properties';
 import app from '../app';
-console.log(`ENV: ${properties.NODE_ENV}`);
+logger.info(`ENV: ${properties.NODE_ENV}`);
 
 const localIpAddress = properties.SERVER_IP;
 const port = normalizePort(properties.PORT || 8080);
 
 const server = http.createServer(app);
 server.listen(port, function () {
-    console.log(
+    logger.info(
         'Your server is listening on port %d (http://%s:%d)',
         port,
         localIpAddress,
         port
     );
-    console.log(
+    logger.info(
         'Swagger-ui is available on http://%s:%d/docs',
         localIpAddress,
         port

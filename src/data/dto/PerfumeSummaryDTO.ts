@@ -25,6 +25,10 @@ class PerfumeSummaryDTO {
         this.gender = gender;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByReviewList(reviewList: any[]): PerfumeSummaryDTO {
         const seasonalCountMap: { [key: string]: number } = {
             spring: 0,

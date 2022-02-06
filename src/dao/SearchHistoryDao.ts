@@ -1,6 +1,10 @@
 import { NotMatchedError } from '../utils/errors/errors';
 import SearchHistoryDTO from '../data/dto/SearchHistoryDTO';
 
+import { logger } from '../modules/winston';
+
+const LOG_TAG: string = '[SearchHistory/DAO]';
+
 const { SearchHistory } = require('../models');
 
 class SearchHistoryDao {
@@ -12,6 +16,9 @@ class SearchHistoryDao {
      * @throws {NotMatchedError} if there is no matched item.
      */
     async read(userIdx: number, perfumeIdx: number): Promise<SearchHistoryDTO> {
+        logger.debug(
+            `${LOG_TAG} read(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx})`
+        );
         return SearchHistory.findOne({
             where: { userIdx, perfumeIdx },
             raw: true,
@@ -35,6 +42,9 @@ class SearchHistoryDao {
         perfumeIdx: number,
         count: number
     ): Promise<SearchHistoryDTO> {
+        logger.debug(
+            `${LOG_TAG} create(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx}, count = ${count})`
+        );
         return SearchHistory.create(
             { userIdx, perfumeIdx, count },
             { raw: true, nest: true }
@@ -58,6 +68,9 @@ class SearchHistoryDao {
         perfumeIdx: number,
         count: number
     ): Promise<number> {
+        logger.debug(
+            `${LOG_TAG} update(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx}, count = ${count})`
+        );
         const [affectedRows]: [number] = await SearchHistory.update(
             { count },
             { where: { userIdx, perfumeIdx } }

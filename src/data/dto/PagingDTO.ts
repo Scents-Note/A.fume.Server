@@ -15,6 +15,9 @@ class PagingDTO {
         this.pagingIndex = pagingIndex;
         this.order = order;
     }
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
 
     static create(pagingRequestDTO: PagingRequestDTO): PagingDTO {
         const { pagingSize, pagingIndex, sort } = pagingRequestDTO;

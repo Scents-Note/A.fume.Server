@@ -9,6 +9,10 @@ import ListAndCountDTO from '../data/dto/ListAndCountDTO';
 import SeriesDTO from '../data/dto/SeriesDTO';
 import SeriesFilterDTO from '../data/dto/SeriesFilterDTO';
 
+import { logger } from '../modules/winston';
+
+const LOG_TAG: string = '[Series/Service]';
+
 const FILTER_INGREDIENT_LIMIT_USED_COUNT: number = 10;
 
 class SeriesService {
@@ -32,6 +36,7 @@ class SeriesService {
      * @returns {Promise<SeriesDTO>} seriesDTO
      **/
     getSeriesByIdx(seriesIdx: number): Promise<SeriesDTO> {
+        logger.debug(`${LOG_TAG} getSeriesByIdx(seriesIdx = ${seriesIdx})`);
         return this.seriesDao.readByIdx(seriesIdx);
     }
 
@@ -44,6 +49,9 @@ class SeriesService {
     getSeriesAll(
         pagingRequestDTO: PagingRequestDTO
     ): Promise<ListAndCountDTO<SeriesDTO>> {
+        logger.debug(
+            `${LOG_TAG} getSeriesAll(pagingRequestDTO = ${pagingRequestDTO})`
+        );
         return this.seriesDao.readAll(PagingDTO.create(pagingRequestDTO));
     }
 
@@ -56,6 +64,9 @@ class SeriesService {
     searchSeries(
         pagingRequestDTO: PagingRequestDTO
     ): Promise<ListAndCountDTO<SeriesDTO>> {
+        logger.debug(
+            `${LOG_TAG} searchSeries(pagingRequestDTO = ${pagingRequestDTO})`
+        );
         return this.seriesDao.search(PagingDTO.create(pagingRequestDTO));
     }
 
@@ -68,6 +79,9 @@ class SeriesService {
     async getFilterSeries(
         pagingRequestDTO: PagingRequestDTO
     ): Promise<ListAndCountDTO<SeriesFilterDTO>> {
+        logger.debug(
+            `${LOG_TAG} getFilterSeries(pagingRequestDTO = ${pagingRequestDTO})`
+        );
         const result: ListAndCountDTO<SeriesDTO> = await this.seriesDao.readAll(
             PagingDTO.create(pagingRequestDTO)
         );
@@ -111,6 +125,9 @@ class SeriesService {
      * @returns {Promise<SeriesDTO>}
      **/
     findSeriesByEnglishName(englishName: string): Promise<SeriesDTO> {
+        logger.debug(
+            `${LOG_TAG} findSeriesByEnglishName(englishName = ${englishName})`
+        );
         return this.seriesDao.findSeries({ englishName });
     }
 

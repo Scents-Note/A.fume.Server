@@ -17,6 +17,11 @@ class SearchHistoryDTO {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: {
         userIdx: number;
         perfumeIdx: number;

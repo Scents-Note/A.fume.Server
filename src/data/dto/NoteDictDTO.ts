@@ -19,6 +19,10 @@ class NoteDictDTO {
         this.single = single;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByNoteList(noteList: NoteDTO[]): NoteDictDTO {
         const topList: string[] = [];
         const middleList: string[] = [];

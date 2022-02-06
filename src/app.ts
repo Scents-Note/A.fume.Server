@@ -6,6 +6,8 @@ import express, { Express } from 'express';
 import createError from 'http-errors';
 
 import properties from './utils/properties';
+import { logger } from './modules/winston';
+import makeMorgan from './modules/morgan';
 
 import { HttpError } from './utils/errors/errors';
 import statusCode from './utils/statusCode';
@@ -18,14 +20,14 @@ const {
     swaggerMetadataHandler,
 } = require('./modules/swagger');
 
-const app: Express = express();
-
 const sequelize: any = require('./models').sequelize;
 sequelize.sync();
 
-app.use(cookieParser());
-
 require('./utils/db/mongoose.js');
+
+const app: Express = express();
+
+app.use(cookieParser());
 
 const allowList: string[] =
     properties.CORS_ALLOW_LIST.split(',').map((it) => {
@@ -46,19 +48,15 @@ const corsOptionsDelegate: CorsOptionsDelegate<express.Request> = function (
 app.use(cors(corsOptionsDelegate));
 app.use(express.json());
 
+app.use(
+    makeMorgan((message: string) => {
+        console.log(message);
+        logger.http(message);
+    })
+);
+
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 
-app.use(
-    specs.basePath,
-    (
-        req: express.Request,
-        _res: express.Response,
-        next: express.NextFunction
-    ) => {
-        console.log(req.url);
-        next();
-    }
-);
 app.use(swaggerMetadataHandler);
 app.use(specs.basePath, verifyTokenMiddleware);
 app.use(specs.basePath, swaggerRouter(specs));
@@ -83,11 +81,11 @@ app.use(function (
     let status: number;
     let message: string;
     if (err instanceof HttpError || err instanceof createError.HttpError) {
-        properties.NODE_ENV === 'development' && console.log(err.stack);
+        properties.NODE_ENV === 'development' && logger.error(err.stack);
         status = err.status;
         message = err.message;
     } else {
-        console.log(err);
+        logger.error(err);
         status = statusCode.INTERNAL_SERVER_ERROR;
         message = 'Internal Server Error';
     }

@@ -1,5 +1,7 @@
 import { InvalidValueError } from './errors/errors';
 
+import { logger } from '../modules/winston';
+
 const seasonalTypeArr = ['봄', '여름', '가을', '겨울'];
 const sillageTypeArr = ['가벼움', '보통', '무거움'];
 const longevityTypeArr = ['매우 약함', '약함', '보통', '강함', '매우 강함'];
@@ -65,7 +67,7 @@ module.exports.inputStrToDBIntOfReview = async ({
             keywordList: keywordList ? keywordIdxList : [],
         };
     } catch (err) {
-        console.log(err);
+        logger.error(err);
         throw err;
     }
 };
@@ -108,7 +110,7 @@ module.exports.DBIntToOutputStrOfReview = async ({
             gender: gender ? genderTypeArr[gender - 1] : INSTEAD_NULL_VALUE,
         };
     } catch (err) {
-        console.log(err);
+        logger.error(err);
         throw err;
     }
 };
@@ -167,7 +169,7 @@ module.exports.InputIntToDBIntOfReview = async ({
             keywordList: keywordList ? keywordIdxList : [],
         };
     } catch (err) {
-        console.log(err);
+        logger.error(err);
         throw err;
     }
 };
@@ -208,7 +210,7 @@ module.exports.DBIntToOutputIntOfReview = async ({
             gender: gender ? gender - 1 : INSTEAD_NULL_VALUE,
         };
     } catch (err) {
-        console.log(err);
+        logger.error(err);
         throw err;
     }
 };

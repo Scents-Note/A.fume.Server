@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
+import { logger, LoggerHelper } from '../modules/winston';
+
 import BrandService from '../service/BrandService';
 
 import { ResponseDTO } from '../data/response/common';
@@ -15,6 +17,7 @@ import {
 } from '../utils/strings';
 
 let Brand: BrandService = new BrandService();
+const LOG_TAG: string = '[Brand/Controller]';
 
 module.exports.setBrandService = (brandService: BrandService) => {
     Brand = brandService;
@@ -98,6 +101,7 @@ const getBrandAll: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} getBrandAll()`);
     Brand.getBrandAll()
         .then((result: ListAndCountDTO<BrandDTO>) => {
             return new ListAndCountDTO<BrandResponse>(
@@ -105,11 +109,15 @@ const getBrandAll: RequestHandler = (
                 result.rows.map(BrandResponse.createByJson)
             );
         })
-        .then((result: ListAndCountDTO<BrandResponse>) => {
+        .then((response: ListAndCountDTO<BrandResponse>) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} getBrandAll's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<BrandResponse>>(
                     MSG_GET_BRAND_ALL_SUCCESS,
-                    result
+                    response
                 )
             );
         })
@@ -163,11 +171,16 @@ const getFilterBrand: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} getFilterBrand()`);
     Brand.getFilterBrand()
         .then((result: BrandFilterDTO[]) => {
             return result.map(BrandFilterResponse.create);
         })
         .then((response: BrandFilterResponse[]) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} getFilterBrand's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<BrandFilterResponse[]>(
                     MSG_GET_BRAND_FILTER_SUCCESS,

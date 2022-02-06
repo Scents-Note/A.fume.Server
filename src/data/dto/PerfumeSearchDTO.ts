@@ -18,6 +18,10 @@ class PerfumeSearchDTO {
         this.searchText = searchText;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static create(perfumeSearchRequestDTO: any) {
         const {
             keywordList: keywordIdxList,

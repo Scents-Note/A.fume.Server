@@ -7,6 +7,10 @@ class BrandFilterDTO {
         this.firstInitial = firstInitial;
         this.brands = brands;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
 }
 
 export default BrandFilterDTO;

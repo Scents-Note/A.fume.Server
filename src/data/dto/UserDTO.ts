@@ -35,6 +35,10 @@ class UserDTO {
         this.updatedAt = updatedAt;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): UserDTO {
         return new UserDTO(
             json.userIdx,

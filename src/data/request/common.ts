@@ -8,6 +8,10 @@ class PagingRequestDTO {
         this.sort = sort;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): PagingRequestDTO {
         const pagingSize: number = json.pagingSize || 10;
         const pagingIndex: number = json.pagingIndex || 1;
