@@ -5,6 +5,8 @@ dotenv.config();
 
 import StatusCode from '@utils/statusCode';
 
+import app from '../../src/app';
+
 import {
     MSG_REGISTER_SUCCESS,
     MSG_DELETE_USER_SUCCESS,
@@ -38,7 +40,6 @@ import app from '@src/app';
 const expect = require('../utils/expect');
 
 const User = require('@controllers/User');
-
 const basePath = '/A.fume/api/0.0.1';
 
 const mockUserService: any = {};
