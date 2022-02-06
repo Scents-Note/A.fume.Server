@@ -101,6 +101,7 @@ const getBrandAll: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} getBrandAll()`);
     Brand.getBrandAll()
         .then((result: ListAndCountDTO<BrandDTO>) => {
             return new ListAndCountDTO<BrandResponse>(
@@ -170,6 +171,7 @@ const getFilterBrand: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} getFilterBrand()`);
     Brand.getFilterBrand()
         .then((result: BrandFilterDTO[]) => {
             return result.map(BrandFilterResponse.create);

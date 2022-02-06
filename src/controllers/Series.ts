@@ -104,6 +104,7 @@ const getSeriesAll: RequestHandler = (
     res: Response,
     next: NextFunction
 ): any => {
+    logger.debug(`${LOG_TAG} getSeriesAll(query = ${req.query})`);
     Series.getSeriesAll(PagingRequestDTO.createByJson(req.query))
         .then((result: ListAndCountDTO<SeriesDTO>) => {
             return {
@@ -131,6 +132,7 @@ const getIngredients: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} getIngredients(params = ${req.params})`);
     const seriesIdx: number = parseInt(req.params['seriesIdx']);
     Ingredient.getIngredientList(seriesIdx)
         .then((result: ListAndCountDTO<IngredientDTO>) => {
@@ -209,6 +211,7 @@ const getFilterSeries: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} getFilterSeries(query = ${req.query})`);
     Series.getFilterSeries(PagingRequestDTO.createByJson(req.query))
         .then((result: ListAndCountDTO<SeriesFilterDTO>) => {
             return new ListAndCountDTO(

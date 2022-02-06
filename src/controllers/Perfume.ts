@@ -51,6 +51,9 @@ const getPerfume: RequestHandler = (
         return;
     }
     const loginUserIdx: number = req.middlewareToken.loginUserIdx || -1;
+    logger.debug(
+        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, params = ${req.params})`
+    );
     Promise.all([
         Perfume.getPerfumeById(perfumeIdx, loginUserIdx),
         SearchHistory.incrementCount(loginUserIdx, perfumeIdx),
@@ -86,6 +89,9 @@ const searchPerfume: RequestHandler = (
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
+    logger.debug(
+        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, query = ${req.query}, body = ${req.body})`
+    );
     Perfume.searchPerfume(perfumeSearchRequest, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
             return new ListAndCountDTO<PerfumeResponse>(
@@ -115,6 +121,9 @@ const likePerfume: RequestHandler = (
 ): any => {
     const perfumeIdx: number = req.params['perfumeIdx'];
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
+    logger.debug(
+        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, params = ${req.params})`
+    );
     Perfume.likePerfume(loginUserIdx, perfumeIdx)
         .then((result: boolean) => {
             LoggerHelper.logTruncated(
@@ -139,6 +148,9 @@ const getRecentPerfume: RequestHandler = (
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
+    );
+    logger.debug(
+        `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
     );
     Perfume.recentSearch(loginUserIdx, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
@@ -171,6 +183,9 @@ const recommendPersonalPerfume: RequestHandler = (
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
+    logger.debug(
+        `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
+    );
     Perfume.recommendByUser(loginUserIdx, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return new ListAndCountDTO<PerfumeRecommendResponse>(
@@ -202,6 +217,9 @@ const recommendCommonPerfume: RequestHandler = (
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
+    logger.debug(
+        `${LOG_TAG} recommendCommonPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
+    );
     Perfume.recommendByUser(loginUserIdx, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return new ListAndCountDTO<PerfumeRecommendResponse>(
@@ -230,6 +248,7 @@ const getSurveyPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
+    logger.debug(`${LOG_TAG} getSurveyPerfume(userIdx = ${loginUserIdx})`);
     Perfume.getSurveyPerfume(loginUserIdx)
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
             return new ListAndCountDTO<PerfumeResponse>(
@@ -260,6 +279,9 @@ const getNewPerfume: RequestHandler = (
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
+    );
+    logger.debug(
+        `${LOG_TAG} getNewPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
     );
     Perfume.getNewPerfume(loginUserIdx, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
@@ -292,6 +314,9 @@ const getLikedPerfume: RequestHandler = (
     const userIdx: number = req.params['userIdx'];
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
+    );
+    logger.debug(
+        `${LOG_TAG} getLikedPerfume(userIdx = ${userIdx}, loginUserIdx = ${loginUserIdx}, query = ${req.query})`
     );
     if (loginUserIdx != userIdx) {
         res.status(StatusCode.FORBIDDEN).json(

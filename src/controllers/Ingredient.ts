@@ -94,6 +94,7 @@ const getIngredientAll: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} getIngredientAll()`);
     Ingredient.getIngredientAll()
         .then((result: ListAndCountDTO<IngredientDTO>) => {
             return new ListAndCountDTO<IngredientResponse>(

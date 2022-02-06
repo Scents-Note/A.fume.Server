@@ -43,9 +43,6 @@ const LOG_TAG: string = '[User/Controller]';
 
 let User: UserService = new UserService();
 
-module.exports.setUserService = (userService: any) => {
-    User = userService;
-};
 /**
  * @swagger
  * definitions:
@@ -131,6 +128,7 @@ const registerUser: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} registerUser(body = ${req.body})`);
     const userRegisterRequest: UserRegisterRequest =
         UserRegisterRequest.createByJson(req.body);
 
@@ -226,6 +224,7 @@ const loginUser: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} loginUser(body = ${req.body})`);
     const email: string = req.body.email;
     const password: string = req.body.password;
     User.loginUser(email, password)
@@ -285,6 +284,9 @@ const changePassword: RequestHandler = (
     next: NextFunction
 ) => {
     const userIdx = req.middlewareToken.loginUserIdx;
+    logger.debug(
+        `${LOG_TAG} changePassword(userIdx = ${userIdx}, body = ${req.body})`
+    );
     const { prevPassword, newPassword } = req.body;
     User.changePassword(userIdx, prevPassword, newPassword)
         .then(() => {
@@ -342,6 +344,7 @@ const authUser: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} authUser(body = ${req.body})`);
     const { token } = req.body;
     User.authUser(token)
         .then((result: UserAuthDTO) => {
@@ -398,6 +401,7 @@ const validateEmail: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} validateEmail(query = ${req.query})`);
     const email: string = req.query.email as string;
     User.validateEmail(email)
         .then((response: boolean) => {
@@ -460,6 +464,7 @@ const validateName: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} validateName(query = ${req.query})`);
     if (!req.query.nickname) {
         LoggerHelper.logTruncated(
             logger.debug,
@@ -548,6 +553,9 @@ const postSurvey: RequestHandler = (
     next: NextFunction
 ) => {
     const userIdx: number = req.middlewareToken.loginUserIdx;
+    logger.debug(
+        `${LOG_TAG} postSurvey(userIdx = ${userIdx}, body = ${req.body})`
+    );
     const {
         keywordList,
         perfumeList,
@@ -652,6 +660,9 @@ const updateUser: RequestHandler = (
 ) => {
     const userIdx = req.params['userIdx'];
     const tokenUserIdx = req.middlewareToken.loginUserIdx;
+    logger.debug(
+        `${LOG_TAG} updateUser(userIdx = ${tokenUserIdx}, params = ${req.params}, body = ${req.body})`
+    );
     if (userIdx != tokenUserIdx) {
         logger.warn('userIdx and tokenUserIdx is not same');
         next(new UnAuthorizedError());
@@ -708,6 +719,7 @@ const deleteUser: RequestHandler = (
     next: NextFunction
 ) => {
     const userIdx = req.params['userIdx'];
+    logger.debug(`${LOG_TAG} deleteUser(params = ${req.params})`);
     User.deleteUser(userIdx)
         .then((_: any) => {
             LoggerHelper.logTruncated(
@@ -719,6 +731,10 @@ const deleteUser: RequestHandler = (
             );
         })
         .catch((err: Error) => next(err));
+};
+
+module.exports.setUserService = (userService: any) => {
+    User = userService;
 };
 
 module.exports.registerUser = registerUser;
