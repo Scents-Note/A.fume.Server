@@ -8,7 +8,7 @@ import {
 
 import UserDao from '@dao/UserDao';
 
-import { encrypt, decrypt } from '@libs/crypto';
+import { encrypt as _encrypt, decrypt as _decrypt } from '@libs/crypto';
 import JwtController from '@libs/JwtController';
 
 import {
@@ -29,7 +29,7 @@ class UserService {
     jwt: any;
     constructor(userDao?: UserDao, crypto?: any, jwt?: any) {
         this.userDao = userDao || new UserDao();
-        this.crypto = crypto || { encrypt, decrypt };
+        this.crypto = crypto || { encrypt: _encrypt, decrypt: _decrypt };
         this.jwt = jwt || {
             create: JwtController.create,
             publish: JwtController.publish,
