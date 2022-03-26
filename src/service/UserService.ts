@@ -132,7 +132,10 @@ class UserService {
         const user: UserDTO = await this.userDao.read({ email });
         console.log(user.password);
         console.log(encryptPassword);
-        if (user.password != encryptPassword) {
+        if (
+            this.crypto.decrypt(user.password) !=
+            this.crypto.decrypt(encryptPassword)
+        ) {
             throw new WrongPasswordError();
         }
         this.userDao.updateAccessTime(user.userIdx);
