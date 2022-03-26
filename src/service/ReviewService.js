@@ -3,6 +3,7 @@ import { UnAuthorizedError } from '../utils/errors/errors';
 const reviewDao = require('../dao/ReviewDao.js');
 const likeReviewDao = require('../dao/LikeReviewDao');
 const keywordDao = require('../dao/KeywordDao');
+const likePerfumeDao = require('../dao/LikePerfumeDao')
 const {
     InputIntToDBIntOfReview,
     DBIntToOutputIntOfReview,
@@ -55,6 +56,7 @@ exports.postReview = async ({
             keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx });
         })
     );
+    await likePerfumeDao.delete(userIdx, perfumeIdx);
     return reviewIdx;
 };
 
