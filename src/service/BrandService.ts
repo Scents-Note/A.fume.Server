@@ -1,14 +1,22 @@
-import BrandFilterDTO from '../data/dto/BrandFilterDTO';
-import BrandDao from '../dao/BrandDao';
-import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
-import BrandDTO from '../data/dto/BrandDTO';
-import PagingDTO from '../data/dto/PagingDTO';
+import { logger } from '@modules/winston';
+
+import BrandDao from '@dao/BrandDao';
+
+import { PagingRequestDTO } from '@request/common';
+
+import {
+    BrandFilterDTO,
+    ListAndCountDTO,
+    BrandDTO,
+    PagingDTO,
+} from '@dto/index';
+
+const LOG_TAG: string = '[Brand/Service]';
 
 class BrandService {
     brandDao: BrandDao;
     constructor(brandDao?: BrandDao) {
-        this.brandDao = brandDao || new BrandDao();
+        this.brandDao = brandDao ?? new BrandDao();
     }
     /**
      * 브랜드 검색
@@ -19,6 +27,9 @@ class BrandService {
     searchBrand(
         pagingRequestDTO: PagingRequestDTO
     ): Promise<ListAndCountDTO<BrandDTO>> {
+        logger.debug(
+            `${LOG_TAG} searchBrand(pagingRequestDTO = ${pagingRequestDTO})`
+        );
         const pagingDTO = PagingDTO.create(pagingRequestDTO);
         return this.brandDao.search(pagingDTO);
     }
@@ -28,6 +39,7 @@ class BrandService {
      * @returns {Promise<ListAndCountDTO<BrandDTO>>} listAndCountDTO
      **/
     getBrandAll(): Promise<ListAndCountDTO<BrandDTO>> {
+        logger.debug(`${LOG_TAG} getBrandAll()`);
         return this.brandDao.readAll();
     }
 
@@ -38,6 +50,7 @@ class BrandService {
      * @returns {Promise<BrandDTO>} brandDTO
      **/
     getBrandByIdx(brandIdx: number): Promise<BrandDTO> {
+        logger.debug(`${LOG_TAG} getBrandByIdx(brandIdx = ${brandIdx})`);
         return this.brandDao.read(brandIdx);
     }
 
@@ -47,6 +60,7 @@ class BrandService {
      * @returns {Promise<BrandFilterDTO[]>} brandFilterDTO[]
      */
     getFilterBrand(): Promise<BrandFilterDTO[]> {
+        logger.debug(`${LOG_TAG} getFilterBrand()`);
         return this.brandDao.readAll().then((result) => {
             const firstInitialMap = result.rows.reduce(
                 (prev: Map<string, BrandDTO[]>, cur: BrandDTO) => {

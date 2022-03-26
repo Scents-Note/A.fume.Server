@@ -1,16 +1,15 @@
 import dotenv from 'dotenv';
 dotenv.config();
-
 import jsonwebtoken from 'jsonwebtoken';
-import JwtController from '../../src/lib/JwtController';
 import { expect } from 'chai';
 
-import {
-    InvalidTokenError,
-    ExpiredTokenError,
-} from '../../src/utils/errors/errors';
+import properties from '@properties';
 
-import TokenPayloadDTO from '../../src/data/dto/TokenPayloadDTO';
+import { InvalidTokenError, ExpiredTokenError } from '@errors';
+
+import JwtController from '@libs/JwtController';
+
+import { TokenPayloadDTO } from '@dto/index';
 
 describe('# publish Test', () => {
     it(' # create case', () => {
@@ -55,7 +54,7 @@ describe('# verify Test', () => {
         expect({ ...result }).to.deep.eq({ ...payload });
     });
     it(' # fail case (Expired Token)', (done) => {
-        const jwtSecret: string = process.env.JWT_SECRET || 'secretKey';
+        const jwtSecret: string = properties.JWT_SECRET;
         const expiredToken = jsonwebtoken.sign({ ...payload }, jwtSecret, {
             expiresIn: '1s',
             issuer: 'afume-jackpot',

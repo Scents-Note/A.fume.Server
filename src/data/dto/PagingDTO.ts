@@ -1,4 +1,4 @@
-import PagingRequestDto from '../request_dto/PagingRequestDTO';
+import { PagingRequestDTO } from '@request/common';
 
 type Ascending = 'DESC' | 'ASC';
 
@@ -15,8 +15,11 @@ class PagingDTO {
         this.pagingIndex = pagingIndex;
         this.order = order;
     }
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
 
-    static create(pagingRequestDTO: PagingRequestDto) {
+    static create(pagingRequestDTO: PagingRequestDTO): PagingDTO {
         const { pagingSize, pagingIndex, sort } = pagingRequestDTO;
         return new PagingDTO(
             pagingSize,
@@ -25,8 +28,8 @@ class PagingDTO {
         );
     }
 
-    private static parseSortToOrder(sort: string): string[][] {
-        const order = [];
+    private static parseSortToOrder(sort: string): [string, string][] {
+        const order: [string, string][] = [];
         const [key, _ascending] = sort.split('_');
         let ascending: Ascending = 'ASC';
         switch (_ascending) {
@@ -44,4 +47,4 @@ class PagingDTO {
     }
 }
 
-export default PagingDTO;
+export { PagingDTO };

@@ -4,17 +4,13 @@ import { Done } from 'mocha';
 
 dotenv.config();
 
-import {
-    NotMatchedError,
-    UnExpectedError,
-} from '../../src/utils/errors/errors';
+import { NotMatchedError, UnExpectedError } from '@errors';
 
-import BrandDao from '../../src/dao/BrandDao';
-import BrandDTO from '../../src/data/dto/BrandDTO';
-import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-import PagingDTO from '../../src/data/dto/PagingDTO';
+import BrandDao from '@dao/BrandDao';
 
-import BrandHelper from '../data/dto/BrandHelper';
+import { BrandDTO, ListAndCountDTO, PagingDTO } from '@dto/index';
+
+import BrandHelper from '../mock_helper/BrandHelper';
 
 const brandDao: BrandDao = new BrandDao();
 

@@ -3,20 +3,25 @@ import request from 'supertest';
 import { Done } from 'mocha';
 dotenv.config();
 
-import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-import StatusCode from '../../src/utils/statusCode';
-import SeriesDTO from '../../src/data/dto/SeriesDTO';
-import SeriesFilterDTO from '../../src/data/dto/SeriesFilterDTO';
+import {
+    MSG_GET_SERIES_ALL_SUCCESS,
+    MSG_SEARCH_SERIES_LIST_SUCCESS,
+} from '@utils/strings';
 
-import SeriesMockHelper from '../data/dto/SeriesMockHelper';
-import SeriesFilterMockHelper from '../data/dto/SeriesFilterMockHelper';
+import StatusCode from '@utils/statusCode';
 
-const app = require('../../src/index.js');
+import { ListAndCountDTO, SeriesDTO, SeriesFilterDTO } from '@dto/index';
+
+import SeriesMockHelper from '../mock_helper/SeriesMockHelper';
+import SeriesFilterMockHelper from '../mock_helper/SeriesFilterMockHelper';
+
+import app from '@src/app';
+
 const expect = require('../utils/expect');
 
 const basePath = '/A.fume/api/0.0.1';
 
-const Series = require('../../src/controllers/Series');
+const Series = require('@controllers/Series');
 const mockSeriesService: any = {};
 Series.setSeriesService(mockSeriesService);
 
@@ -34,7 +39,7 @@ describe('# Series Controller Test', () => {
                 .expect((res) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
-                    expect(message).to.be.eq('series 전체 조회 성공');
+                    expect(message).to.be.eq(MSG_GET_SERIES_ALL_SUCCESS);
                     expect(data.count).to.be.eq(1);
                     data.rows.forEach((item: SeriesDTO) => {
                         expect.hasProperties.call(item, 'seriesIdx', 'name');
@@ -66,7 +71,7 @@ describe('# Series Controller Test', () => {
                 .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
-                    expect(message).to.be.eq('계열 검색 성공');
+                    expect(message).to.be.eq(MSG_SEARCH_SERIES_LIST_SUCCESS);
                     expect(data.count).to.be.eq(1);
                     data.rows.forEach((item: any) => {
                         expect.hasProperties.call(

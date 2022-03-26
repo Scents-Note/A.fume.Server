@@ -3,25 +3,41 @@ import request from 'supertest';
 import { Done } from 'mocha';
 dotenv.config();
 
-import JwtController from '../../src/lib/JwtController';
-import TokenPayloadDTO from '../../src/data/dto/TokenPayloadDTO';
-import UserAuthDTO from '../../src/data/dto/UserAuthDTO';
-import StatusCode from '../../src/utils/statusCode';
-import UserDTO from '../../src/data/dto/UserDTO';
+import StatusCode from '@utils/statusCode';
 
-import LoginInfoMockHelper from '../data/dto/LoginInfoMockHelper';
-import TokenGroupMockHelper from '../data/dto/TokenGroupMockHelper';
+import app from '@src/app';
 
-import UserMockHelper from '../data/dto/UserMockHelper';
-import TokenGroupDTO from '../../src/data/dto/TokenGroupDTO';
-import { Error } from 'mongoose';
+import {
+    MSG_REGISTER_SUCCESS,
+    MSG_DELETE_USER_SUCCESS,
+    MSG_LOGIN_SUCCESS,
+    MSG_MODIFY_USER_SUCCESS,
+    MSG_GET_AUTHORIZE_INFO,
+    MSG_DUPLICATE_CHECK_EMAIL_AVAILABLE,
+    MSG_DUPLICATE_CHECK_EMAIL_UNAVAILABLE,
+    MSG_DUPLICATE_CHECK_NAME_AVAILABLE,
+    MSG_DUPLICATE_CHECK_NAME_UNAVAILABLE,
+    MSG_INVALID_TOKEN,
+    NO_AUTHORIZE,
+    MSG_CHANGE_PASSWORD_SUCCESS,
+} from '@utils/strings';
+
+import JwtController from '@libs/JwtController';
+
+import {
+    TokenPayloadDTO,
+    UserAuthDTO,
+    UserDTO,
+    TokenGroupDTO,
+} from '@dto/index';
+
+import UserMockHelper from '../mock_helper/UserMockHelper';
+import LoginInfoMockHelper from '../mock_helper/LoginInfoMockHelper';
+import TokenGroupMockHelper from '../mock_helper/TokenGroupMockHelper';
 
 const expect = require('../utils/expect');
 
-const User = require('../../src/controllers/User');
-
-const app = require('../../src/index.js');
-
+const User = require('@controllers/User');
 const basePath = '/A.fume/api/0.0.1';
 
 const mockUserService: any = {};
@@ -50,7 +66,7 @@ describe('# User Controller Test', () => {
                 .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
-                    expect(message).to.be.eq('회원가입 성공');
+                    expect(message).to.be.eq(MSG_REGISTER_SUCCESS);
                     expect.hasProperties.call(
                         data,
                         'userIdx',
@@ -74,7 +90,7 @@ describe('# User Controller Test', () => {
                 .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message } = res.body;
-                    expect(message).to.be.eq('유저 삭제 성공');
+                    expect(message).to.be.eq(MSG_DELETE_USER_SUCCESS);
                     done();
                 })
                 .catch((err: Error) => done(err));
@@ -95,7 +111,7 @@ describe('# User Controller Test', () => {
                 .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
-                    expect(message).to.be.eq('로그인 성공');
+                    expect(message).to.be.eq(MSG_LOGIN_SUCCESS);
                     expect.hasProperties.call(
                         data,
                         'userIdx',
@@ -129,7 +145,7 @@ describe('# User Controller Test', () => {
                 .expect((res) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
-                    expect(message).to.be.eq('유저 수정 성공');
+                    expect(message).to.be.eq(MSG_MODIFY_USER_SUCCESS);
                     expect.hasProperties.call(
                         data,
                         'userIdx',
@@ -151,7 +167,7 @@ describe('# User Controller Test', () => {
                 .expect((res) => {
                     expect(res.status).to.be.eq(StatusCode.UNAUTHORIZED);
                     const { message } = res.body;
-                    expect(message).to.be.eq('유효하지 않는 토큰입니다.');
+                    expect(message).to.be.eq(MSG_INVALID_TOKEN);
                     done();
                 })
                 .catch((err: Error) => done(err));
@@ -165,7 +181,7 @@ describe('# User Controller Test', () => {
                 .expect((res) => {
                     expect(res.status).to.be.eq(StatusCode.UNAUTHORIZED);
                     const { message } = res.body;
-                    expect(message).to.be.eq('권한이 없습니다.');
+                    expect(message).to.be.eq(NO_AUTHORIZE);
                     done();
                 })
                 .catch((err: Error) => done(err));
@@ -188,7 +204,7 @@ describe('# User Controller Test', () => {
                 .expect((res) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message } = res.body;
-                    expect(message).to.be.eq('비밀번호 변경 성공');
+                    expect(message).to.be.eq(MSG_CHANGE_PASSWORD_SUCCESS);
                     done();
                 })
                 .catch((err: Error) => done(err));
@@ -201,7 +217,7 @@ describe('# User Controller Test', () => {
                 .expect((res) => {
                     expect(res.status).to.be.eq(StatusCode.UNAUTHORIZED);
                     const { message } = res.body;
-                    expect(message).to.be.eq('유효하지 않는 토큰입니다.');
+                    expect(message).to.be.eq(MSG_INVALID_TOKEN);
                     done();
                 })
                 .catch((err: Error) => done(err));
@@ -219,7 +235,7 @@ describe('# User Controller Test', () => {
                 .expect((res) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
-                    expect(message).to.be.eq('권한 조회');
+                    expect(message).to.be.eq(MSG_GET_AUTHORIZE_INFO);
                     expect.hasProperties.call(data, 'isAuth', 'isAdmin');
                     done();
                 })
@@ -233,7 +249,7 @@ describe('# User Controller Test', () => {
                 .expect((res) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
-                    expect(message).to.be.eq('권한 조회');
+                    expect(message).to.be.eq(MSG_GET_AUTHORIZE_INFO);
                     expect.hasProperties.call(data, 'isAuth', 'isAdmin');
                     expect(data.isAuth).to.be.false;
                     expect(data.isAdmin).to.be.false;
@@ -256,7 +272,9 @@ describe('# User Controller Test', () => {
                 .expect((res) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
-                    expect(message).to.be.eq('Email 중복 체크: 사용 가능');
+                    expect(message).to.be.eq(
+                        MSG_DUPLICATE_CHECK_EMAIL_AVAILABLE
+                    );
                     expect(data).to.be.true;
                     done();
                 })
@@ -269,7 +287,9 @@ describe('# User Controller Test', () => {
                 .expect((res) => {
                     expect(res.status).to.be.eq(StatusCode.CONFLICT);
                     const { message, data } = res.body;
-                    expect(message).to.be.eq('Email 중복 체크: 사용 불가능');
+                    expect(message).to.be.eq(
+                        MSG_DUPLICATE_CHECK_EMAIL_UNAVAILABLE
+                    );
                     expect(data).to.be.false;
                     done();
                 })
@@ -290,7 +310,9 @@ describe('# User Controller Test', () => {
                 .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
-                    expect(message).to.be.eq('Name 중복 체크: 사용 가능');
+                    expect(message).to.be.eq(
+                        MSG_DUPLICATE_CHECK_NAME_AVAILABLE
+                    );
                     expect(data).to.be.true;
                     done();
                 })
@@ -303,7 +325,9 @@ describe('# User Controller Test', () => {
                 .expect((res) => {
                     expect(res.status).to.be.eq(StatusCode.CONFLICT);
                     const { message, data } = res.body;
-                    expect(message).to.be.eq('Name 중복 체크: 사용 불가능');
+                    expect(message).to.be.eq(
+                        MSG_DUPLICATE_CHECK_NAME_UNAVAILABLE
+                    );
                     expect(data).to.be.false;
                     done();
                 })

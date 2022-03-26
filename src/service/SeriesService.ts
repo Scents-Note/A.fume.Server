@@ -1,12 +1,20 @@
-import IngredientDao from '../dao/IngredientDao';
-import SeriesDao from '../dao/SeriesDao';
+import { logger } from '@modules/winston';
 
-import PagingDTO from '../data/dto/PagingDTO';
-import PagingRequestDTO from '../data/request_dto/PagingRequestDTO';
-import IngredientDTO from '../data/dto/IngredientDTO';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
-import SeriesDTO from '../data/dto/SeriesDTO';
-import SeriesFilterDTO from '../data/dto/SeriesFilterDTO';
+import IngredientDao from '@dao/IngredientDao';
+import SeriesDao from '@dao/SeriesDao';
+import NoteDao from '@dao/NoteDao';
+
+import { PagingRequestDTO } from '@request/common';
+
+import {
+    PagingDTO,
+    IngredientDTO,
+    ListAndCountDTO,
+    SeriesDTO,
+    SeriesFilterDTO,
+} from '@dto/index';
+
+const LOG_TAG: string = '[Series/Service]';
 
 const FILTER_INGREDIENT_LIMIT_USED_COUNT: number = 10;
 
@@ -21,7 +29,7 @@ class SeriesService {
     ) {
         this.seriesDao = seriesDao ?? new SeriesDao();
         this.ingredientDao = ingredientDao ?? new IngredientDao();
-        this.noteDao = noteDao ?? require('../dao/NoteDao.js');
+        this.noteDao = noteDao ?? new NoteDao();
     }
 
     /**
@@ -31,6 +39,7 @@ class SeriesService {
      * @returns {Promise<SeriesDTO>} seriesDTO
      **/
     getSeriesByIdx(seriesIdx: number): Promise<SeriesDTO> {
+        logger.debug(`${LOG_TAG} getSeriesByIdx(seriesIdx = ${seriesIdx})`);
         return this.seriesDao.readByIdx(seriesIdx);
     }
 
@@ -43,6 +52,9 @@ class SeriesService {
     getSeriesAll(
         pagingRequestDTO: PagingRequestDTO
     ): Promise<ListAndCountDTO<SeriesDTO>> {
+        logger.debug(
+            `${LOG_TAG} getSeriesAll(pagingRequestDTO = ${pagingRequestDTO})`
+        );
         return this.seriesDao.readAll(PagingDTO.create(pagingRequestDTO));
     }
 
@@ -55,6 +67,9 @@ class SeriesService {
     searchSeries(
         pagingRequestDTO: PagingRequestDTO
     ): Promise<ListAndCountDTO<SeriesDTO>> {
+        logger.debug(
+            `${LOG_TAG} searchSeries(pagingRequestDTO = ${pagingRequestDTO})`
+        );
         return this.seriesDao.search(PagingDTO.create(pagingRequestDTO));
     }
 
@@ -67,6 +82,9 @@ class SeriesService {
     async getFilterSeries(
         pagingRequestDTO: PagingRequestDTO
     ): Promise<ListAndCountDTO<SeriesFilterDTO>> {
+        logger.debug(
+            `${LOG_TAG} getFilterSeries(pagingRequestDTO = ${pagingRequestDTO})`
+        );
         const result: ListAndCountDTO<SeriesDTO> = await this.seriesDao.readAll(
             PagingDTO.create(pagingRequestDTO)
         );
@@ -110,6 +128,9 @@ class SeriesService {
      * @returns {Promise<SeriesDTO>}
      **/
     findSeriesByEnglishName(englishName: string): Promise<SeriesDTO> {
+        logger.debug(
+            `${LOG_TAG} findSeriesByEnglishName(englishName = ${englishName})`
+        );
         return this.seriesDao.findSeries({ englishName });
     }
 
@@ -120,11 +141,17 @@ class SeriesService {
             (it: IngredientDTO) => it.ingredientIdx
         );
         const countMap: Map<number, number> = (
-            await this.noteDao.countIngredientUsed(ingredientIdxList)
-        ).reduce((prev: Map<number, number>, cur: any) => {
-            prev.set(cur.ingredientIdx, cur.count);
-            return prev;
-        }, new Map<number, number>());
+            await this.noteDao.getIngredientCountList(ingredientIdxList)
+        ).reduce(
+            (
+                prev: Map<number, number>,
+                cur: { ingredientIdx: number; count: number }
+            ): Map<number, number> => {
+                prev.set(cur.ingredientIdx, cur.count);
+                return prev;
+            },
+            new Map<number, number>()
+        );
         return ingredientList.filter((it: IngredientDTO) => {
             return (
                 (countMap.get(it.ingredientIdx) || 0) >

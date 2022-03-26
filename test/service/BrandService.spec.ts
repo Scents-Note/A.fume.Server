@@ -3,15 +3,21 @@ import { expect } from 'chai';
 import { Done } from 'mocha';
 dotenv.config();
 
-import BrandDTO from '../../src/data/dto/BrandDTO';
-import BrandHelper from '../data/dto/BrandHelper';
-import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
-import BrandFilterHelper from '../data/dto/BrandFilterHelper';
-import BrandService from '../../src/service/BrandService';
-import BrandDao from '../../src/dao/BrandDao';
-import PagingDTO from '../../src/data/dto/PagingDTO';
-import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-import PagingRequestDTO from '../../src/data/request_dto/PagingRequestDTO';
+import BrandService from '@services/BrandService';
+
+import BrandDao from '@dao/BrandDao';
+
+import { PagingRequestDTO } from '@request/common';
+
+import {
+    BrandDTO,
+    BrandFilterDTO,
+    PagingDTO,
+    ListAndCountDTO,
+} from '@dto/index';
+
+import BrandHelper from '../mock_helper/BrandHelper';
+import BrandFilterHelper from '../mock_helper/BrandFilterHelper';
 
 const mockListAndCountDTO: ListAndCountDTO<BrandDTO> =
     new ListAndCountDTO<BrandDTO>(1, [

@@ -3,17 +3,17 @@ import { expect } from 'chai';
 import { Done } from 'mocha';
 dotenv.config();
 
+import { NotMatchedError, UnExpectedError } from '@errors';
+
+import IngredientDao from '@dao/IngredientDao';
+
 import {
-    NotMatchedError,
-    UnExpectedError,
-} from '../../src/utils/errors/errors';
+    IngredientConditionDTO,
+    IngredientDTO,
+    ListAndCountDTO,
+} from '@dto/index';
 
-import IngredientConditionDTO from '../../src/data/dto/IngredientConditionDTO';
-import IngredientDao from '../../src/dao/IngredientDao';
-import IngredientDTO from '../../src/data/dto/IngredientDTO';
-
-import IngredientMockHelper from '../data/dto/IngredientMockHelper';
-import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
+import IngredientMockHelper from '../mock_helper/IngredientMockHelper';
 
 const ingredientDao = new IngredientDao();
 

@@ -2,17 +2,21 @@ import dotenv from 'dotenv';
 import { Done } from 'mocha';
 dotenv.config();
 
+import { PagingRequestDTO } from '@request/common';
+
+import {
+    ListAndCountDTO,
+    SeriesDTO,
+    SeriesFilterDTO,
+    IngredientDTO,
+} from '@dto/index';
+
+import SeriesService from '@services/SeriesService';
+
 import expect from '../utils/expect';
-import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-import IngredientMockHelper from '../data/dto/IngredientMockHelper';
-import PagingRequestDTO from '../../src/data/request_dto/PagingRequestDTO';
 
-import SeriesHelper from '../data/dto/SeriesMockHelper';
-import SeriesDTO from '../../src/data/dto/SeriesDTO';
-import IngredientDTO from '../../src/data/dto/IngredientDTO';
-import SeriesFilterDTO from '../../src/data/dto/SeriesFilterDTO';
-
-import SeriesService from '../../src/service/SeriesService';
+import IngredientMockHelper from '../mock_helper/IngredientMockHelper';
+import SeriesHelper from '../mock_helper/SeriesMockHelper';
 
 const mockSeriesDAO: any = {};
 const mockIngredientDAO: any = {};
@@ -92,7 +96,7 @@ describe('# Series Service Test', () => {
                     ret.push(IngredientMockHelper.createWithIdx(i, 3));
                 return ret;
             };
-            mockNoteDAO.countIngredientUsed = async (_: number[]) =>
+            mockNoteDAO.getIngredientCountList = async (_: number[]) =>
                 [...new Array(10)].map((_, index) => ({
                     ingredientIdx: index + 1,
                     count: isNoteCountOver10(index + 1) ? 100 : 4,

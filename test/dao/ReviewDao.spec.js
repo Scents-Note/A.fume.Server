@@ -1,14 +1,16 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-import { NotMatchedError } from '../../src/utils/errors/errors';
+import { NotMatchedError } from '@errors';
+import NoteDao from '@dao/NoteDao';
 
 const chai = require('chai');
 const { expect } = chai;
-const reviewDao = require('../../src/dao/ReviewDao.js');
-const keywordDao = require('../../src/dao/KeywordDao');
-const { Review, JoinReviewKeyword } = require('../../src/models');
-const { read } = require('../../src/dao/NoteDao.js');
+const reviewDao = require('@dao/ReviewDao.js');
+const keywordDao = require('@dao/KeywordDao');
+const { Review } = require('@sequelize');
+const noteDao = new NoteDao();
+const { read } = noteDao;
 
 describe('# reviewDao Test', () => {
     before(async function () {

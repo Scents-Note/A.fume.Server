@@ -1,15 +1,11 @@
 import jwt, { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
 
-import { ExpiredTokenError, InvalidTokenError } from '../utils/errors/errors';
-import TokenPayloadDTO from '../data/dto/TokenPayloadDTO';
+import { ExpiredTokenError, InvalidTokenError } from '@errors';
+import properties from '@properties';
 
-function throwExpression(errorMessage: string): never {
-    throw new Error(errorMessage);
-}
+import { TokenPayloadDTO } from '@dto/index';
 
-const jwtSecret: jwt.Secret =
-    process.env.JWT_SECRET ??
-    throwExpression("Can't not found ENV Property [JWT_SECRET]");
+const jwtSecret: jwt.Secret = properties.JWT_SECRET;
 
 const options: jwt.SignOptions = {
     expiresIn: '20d',

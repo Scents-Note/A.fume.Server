@@ -7,18 +7,18 @@ import {
     NotMatchedError,
     DuplicatedEntryError,
     UnExpectedError,
-} from '../../src/utils/errors/errors';
+} from '@errors';
 
-import UserDao from '../../src/dao/UserDao';
+import { GENDER_MAN, GENDER_WOMAN } from '@utils/constants';
 
-import CreatedResultDTO from '../../src/data/dto/CreatedResultDTO';
-import UserMockHelper from '../data/dto/UserMockHelper';
-import UserDTO from '../../src/data/dto/UserDTO';
+import UserDao from '@dao/UserDao';
+
+import { CreatedResultDTO, UserDTO } from '@dto/index';
+
+import UserMockHelper from '../mock_helper/UserMockHelper';
 
 const userDao = new UserDao();
-const { User } = require('../../src/models');
-
-const { GENDER_MAN, GENDER_WOMAN } = require('../../src/utils/constantUtil');
+const { User } = require('@sequelize');
 
 describe('# userDao Test', () => {
     before(async function () {

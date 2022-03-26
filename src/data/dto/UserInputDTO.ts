@@ -1,4 +1,4 @@
-import { Gender, Grade } from '../../utils/enumType';
+import { Gender, Grade } from '@utils/enumType';
 
 class UserInputDTO {
     userIdx?: number;
@@ -29,6 +29,10 @@ class UserInputDTO {
         this.accessTime = accessTime;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): UserInputDTO {
         return new UserInputDTO(
             json.userIdx,
@@ -43,4 +47,4 @@ class UserInputDTO {
     }
 }
 
-export default UserInputDTO;
+export { UserInputDTO };

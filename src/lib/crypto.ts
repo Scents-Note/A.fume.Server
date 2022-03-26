@@ -1,16 +1,7 @@
 import crypto from 'crypto';
 
-function throwExpression(errorMessage: string): never {
-    throw new Error(errorMessage);
-}
+import properties from '@properties';
 
-const algorithm: string =
-    process.env.ENCRYPT_ALGORITHM ??
-    throwExpression("Can't not found ENV Property [ENCRYPT_ALGORITHM]");
-
-const ENCRYPTION_KEY: string =
-    process.env.ENCRYPTION_KEY ??
-    throwExpression("Can't not found ENV Property [ENCRYPTION_KEY]");
 const IV_LENGTH: number = 16; // For AES, this is always 16
 
 /**
@@ -22,8 +13,8 @@ const IV_LENGTH: number = 16; // For AES, this is always 16
 function encrypt(text: string) {
     const iv: Buffer = crypto.randomBytes(IV_LENGTH);
     const cipher: crypto.Cipher = crypto.createCipheriv(
-        algorithm,
-        Buffer.from(ENCRYPTION_KEY),
+        properties.ENCRYPT_ALGORITHM,
+        Buffer.from(properties.ENCRYPTION_KEY),
         iv
     );
     const encrypted: Buffer = cipher.update(text);
@@ -45,8 +36,8 @@ function decrypt(text: string) {
     const iv: Buffer = Buffer.from(textParts.shift(), 'hex');
     const encryptedText: Buffer = Buffer.from(textParts.join(':'), 'hex');
     const decipher: crypto.Decipher = crypto.createDecipheriv(
-        algorithm,
-        Buffer.from(ENCRYPTION_KEY),
+        properties.ENCRYPT_ALGORITHM,
+        Buffer.from(properties.ENCRYPTION_KEY),
         iv
     );
     const decrypted: Buffer = decipher.update(encryptedText);

@@ -3,20 +3,28 @@ import { Done } from 'mocha';
 import request from 'supertest';
 dotenv.config();
 
-import BrandFilterDTO from '../../src/data/dto/BrandFilterDTO';
-import BrandDTO from '../../src/data/dto/BrandDTO';
-import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
-import BrandResponseDTO from '../../src/data/response_dto/brand/BrandResponseDTO';
-import BrandHelper from '../data/dto/BrandHelper';
-import BrandService from '../../src/service/BrandService';
-import StatusCode from '../../src/utils/statusCode';
+import StatusCode from '@utils/statusCode';
 
-const app = require('../../src/index.js');
+import {
+    MSG_GET_BRAND_ALL_SUCCESS,
+    MSG_GET_BRAND_FILTER_SUCCESS,
+} from '@utils/strings';
+
+import BrandService from '@services/BrandService';
+
+import { BrandResponse } from '@response/brand';
+
+import { BrandFilterDTO, BrandDTO, ListAndCountDTO } from '@dto/index';
+
+import BrandHelper from '../mock_helper/BrandHelper';
+
+import app from '@src/app';
+
 const expect = require('../utils/expect');
 
 const basePath = '/A.fume/api/0.0.1';
 
-const Brand = require('../../src/controllers/Brand');
+const Brand = require('@controllers/Brand');
 
 const mockBrandService: BrandService | any = {};
 Brand.setBrandService(mockBrandService);
@@ -36,7 +44,7 @@ describe('# Brand Controller Test', () => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
 
-                    expect(message).to.be.eq('브랜드 조회 성공');
+                    expect(message).to.be.eq(MSG_GET_BRAND_ALL_SUCCESS);
                     expect(data.count).to.be.gt(0);
                     data.rows.forEach((brand: BrandDTO) => {
                         expect.hasProperties.call(brand, 'brandIdx', 'name');
@@ -62,9 +70,9 @@ describe('# Brand Controller Test', () => {
                 .expect((res) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
-                    expect(message).to.be.eq('브랜드 필터 조회 성공');
+                    expect(message).to.be.eq(MSG_GET_BRAND_FILTER_SUCCESS);
                     for (const item of data) {
-                        item.brands.forEach((brand: BrandResponseDTO) => {
+                        item.brands.forEach((brand: BrandResponse) => {
                             expect.hasProperties.call(
                                 brand,
                                 'brandIdx',

@@ -4,16 +4,18 @@ import { Done } from 'mocha';
 import request from 'supertest';
 dotenv.config();
 
-import IngredientMockHelper from '../data/dto/IngredientMockHelper';
-import StatusCode from '../../src/utils/statusCode';
-import IngredientDTO from '../../src/data/dto/IngredientDTO';
-import ListAndCountDTO from '../../src/data/dto/ListAndCountDTO';
+import { MSG_GET_SEARCH_INGREDIENT_SUCCESS } from '@utils/strings';
+import StatusCode from '@utils/statusCode';
 
-const app = require('../../src/index.js');
+import { IngredientDTO, ListAndCountDTO } from '@dto/index';
+
+import IngredientMockHelper from '../mock_helper/IngredientMockHelper';
+
+import app from '@src/app';
+
+const Ingredient = require('@controllers/Ingredient');
 
 const basePath = '/A.fume/api/0.0.1';
-
-const Ingredient = require('../../src/controllers/Ingredient');
 
 const mockIngredientService: any = {};
 Ingredient.setIngredientService(mockIngredientService);
@@ -37,7 +39,7 @@ describe('# Ingredient Controller Test', () => {
 
                     const { message, data } = res.body;
 
-                    expect(message).to.be.eq('재료 검색 성공');
+                    expect(message).to.be.eq(MSG_GET_SEARCH_INGREDIENT_SUCCESS);
                     expect(data.count).to.be.gt(0);
                     for (const item of data.rows) {
                         expect(item).to.be.have.property('ingredientIdx');
