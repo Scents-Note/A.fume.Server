@@ -135,6 +135,24 @@ module.exports.likeReview = (req, res, next) => {
         .catch((err) => next(err));
 };
 
+module.exports.reportReview = (req, res, next) => {
+    const reviewIdx = req.params['reviewIdx'];
+    const userIdx = req.middlewareToken.loginUserIdx;
+    var {
+        reason
+    } = req.body;
+    Review.reportReview({
+        userIdx,
+        reviewIdx,
+        reason
+    }).then(() => {
+        res.status(StatusCode.OK).json({
+            message: '시향노트 신고 성공',
+        });
+    }).catch((err) => next(err));
+};
+
+
 // module.exports.getReviewOfPerfumeByScore = function getReviewOfPerfumeByScore(
 //     req,
 //     res,

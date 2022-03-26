@@ -10,6 +10,8 @@ const {
     getApproxAge,
 } = require('../utils/converter');
 
+const discordHook = require('../utils/discordHook')
+
 /**
  * 시향노트 작성
  *
@@ -258,6 +260,31 @@ exports.likeReview = async (reviewIdx, userIdx) => {
         await likeReviewDao.delete(userIdx, reviewIdx);
     }
     return !isLiked;
+};
+
+/**
+ * 시향노트 작성
+ *
+ * @param {String} reason
+ * @param {Number} userIdx
+ * @returns {Promise}
+ **/
+exports.reportReview = async ({
+    userIdx,
+    reviewIdx,
+    reason
+}) => {
+    try {
+        const reviewData = await reviewDao.read(reviewIdx);
+        const perfumeName = reviewData.Perfume.name
+        const reviewContent = reviewData.content
+
+        await discordHook.send(`시향노트 신고가 들어왔습니다.\n\n신고 사유 : ${reason} \n향수명 : ${perfumeName} \n시향노트 내용 : ${reviewContent} \n신고자 Idx : ${userIdx} \n시향노트 Idx : ${reviewIdx} `);
+
+    return true;
+    } catch (err) {
+        console.log(err)
+    }
 };
 
 // /**

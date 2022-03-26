@@ -811,6 +811,51 @@ paths:
         404:
           description: Review Like not found
       x-swagger-router-controller: Review
+  /review/{reviewIdx}/report:
+    post:
+      tags:
+      - review
+      summary:  시향노트 신고
+      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 시향노트 신고하기. <br/>
+      security:
+        - userToken: []
+      x-security-scopes:
+        - user
+      operationId: reportReview
+      produces:
+      - application/json
+      parameters:
+      - name: reviewIdx
+        in: path
+        description: 시향노트 Idx
+        required: true
+        type: integer
+        format: int64
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            reason:
+              type: string
+              example: '광고, 홍보'
+      responses:
+        200:
+          description: 성공
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 시향노트 신고 성공
+        401:
+          description: Not authenticated
+        403:
+          description: Access token does not have the required scope
+        404:
+          description: Review Report not found
+      x-swagger-router-controller: Review
   /keyword:
     get:
       tags:
