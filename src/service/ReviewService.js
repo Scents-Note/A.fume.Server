@@ -10,6 +10,10 @@ const {
     getApproxAge,
 } = require('../utils/converter');
 
+import UserDao from '@dao/UserDao';
+
+const userDao = new UserDao();
+
 const discordHook = require('../utils/discordHook')
 
 /**
@@ -275,11 +279,13 @@ exports.reportReview = async ({
     reason
 }) => {
     try {
+        const userInfo = await userDao.readByIdx(userIdx)
+        const userNickname = userInfo.nickname;
         const reviewData = await reviewDao.read(reviewIdx);
         const perfumeName = reviewData.Perfume.name
         const reviewContent = reviewData.content
 
-        await discordHook.send(`시향노트 신고가 들어왔습니다.\n\n신고 사유 : ${reason} \n향수명 : ${perfumeName} \n시향노트 내용 : ${reviewContent} \n신고자 Idx : ${userIdx} \n시향노트 Idx : ${reviewIdx} `);
+        await discordHook.send(`시향노트 신고가 들어왔습니다.\n\n신고 사유 : ${reason} \n향수명 : ${perfumeName} \n시향노트 내용 : ${reviewContent} \n신고자 : ${userNickname} \n시향노트 Idx : ${reviewIdx} `);
 
     return true;
     } catch (err) {
