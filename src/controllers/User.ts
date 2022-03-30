@@ -20,7 +20,6 @@ import {
     MSG_POST_SURVEY_SUCCESS,
 } from '@utils/strings';
 
-import { GenderMap } from '@utils/enumType';
 import StatusCode from '@utils/statusCode';
 
 import UserService from '@services/UserService';
@@ -135,7 +134,7 @@ const registerUser: RequestHandler = (
         next(new UnAuthorizedError());
         return;
     }
-    User.createUser(UserInputDTO.createByJson(userRegisterRequest))
+    User.createUser(UserInputDTO.createByRequest(userRegisterRequest))
         .then((result: UserInputDTO) => {
             return UserRegisterResponse.createByJson(result);
         })
@@ -670,10 +669,7 @@ const updateUser: RequestHandler = (
     const userEditRequest = UserEditRequest.createByJson(
         Object.assign({ userIdx }, req.body)
     );
-    if (userEditRequest.gender) {
-        userEditRequest.gender = GenderMap[userEditRequest.gender];
-    }
-    User.updateUser(UserInputDTO.createByJson(userEditRequest))
+    User.updateUser(UserInputDTO.createByRequest(userEditRequest))
         .then((result: UserResponse) => {
             return UserResponse.createByJson(result);
         })

@@ -1,7 +1,17 @@
-import { GradeKey, GenderKey } from '@utils/enumType';
 import { GRADE_USER } from '@utils/constants';
+import { GradeKey, GenderKey } from '@utils/enumType';
 
-class UserEditRequest {
+interface UserInputRequest {
+    userIdx?: number;
+    grade?: GradeKey;
+    gender?: GenderKey;
+    nickname?: string;
+    password?: string;
+    email?: string;
+    birth?: number;
+}
+
+class UserEditRequest implements UserInputRequest {
     userIdx: number;
     grade?: GradeKey;
     gender?: GenderKey;
@@ -43,7 +53,7 @@ class UserEditRequest {
         );
     }
 }
-class UserRegisterRequest {
+class UserRegisterRequest implements UserInputRequest {
     nickname: string;
     password: string;
     gender: GenderKey;
@@ -82,4 +92,4 @@ class UserRegisterRequest {
     }
 }
 
-export { UserEditRequest, UserRegisterRequest };
+export { UserInputRequest, UserEditRequest, UserRegisterRequest };
