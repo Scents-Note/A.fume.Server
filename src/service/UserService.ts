@@ -45,7 +45,6 @@ class UserService {
      **/
     async createUser(userInputDTO: UserInputDTO) {
         logger.debug(`${LOG_TAG} createUser(userInputDTO = ${userInputDTO})`);
-        userInputDTO.password = this.crypto.encrypt(userInputDTO.password);
         return this.userDao
             .create(userInputDTO)
             .then(() => {
@@ -124,8 +123,10 @@ class UserService {
      * @param {string} password
      * @returns {LoginInfoDTO} - 토큰 정보
      **/
-    async loginUser(email: string, password: string): Promise<LoginInfoDTO> {
-        const encryptPassword: string = this.crypto.encrypt(password);
+    async loginUser(
+        email: string,
+        encryptPassword: string
+    ): Promise<LoginInfoDTO> {
         logger.debug(
             `${LOG_TAG} authUser(email = ${email}, encrypt_password = ${encryptPassword})`
         );

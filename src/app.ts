@@ -12,9 +12,8 @@ import makeMorgan from '@modules/morgan';
 
 import { HttpError } from '@errors';
 import statusCode from '@utils/statusCode';
-import { verifyTokenMiddleware } from '@middleware/auth';
+import { verifyTokenMiddleware, encryptPassword } from '@middleware/auth';
 import { swaggerRouter } from '@controllers/index';
-
 
 const {
     swaggerUi,
@@ -61,6 +60,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use(swaggerMetadataHandler);
 app.use(specs.basePath, verifyTokenMiddleware);
+app.use(specs.basePath, encryptPassword);
 app.use(specs.basePath, swaggerRouter(specs));
 
 // catch 404 and forward to error handler
