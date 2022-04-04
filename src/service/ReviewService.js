@@ -3,7 +3,6 @@ import { UnAuthorizedError } from '../utils/errors/errors';
 const reviewDao = require('../dao/ReviewDao.js');
 const likeReviewDao = require('../dao/LikeReviewDao');
 const keywordDao = require('../dao/KeywordDao');
-const likePerfumeDao = require('../dao/LikePerfumeDao')
 const {
     InputIntToDBIntOfReview,
     DBIntToOutputIntOfReview,
@@ -11,8 +10,10 @@ const {
 } = require('../utils/converter');
 
 import UserDao from '@dao/UserDao';
+import LikePerfumeDao from '@dao/LikePerfumeDao';
 
 const userDao = new UserDao();
+const likePerfumeDao = new LikePerfumeDao();
 
 const discordHook = require('../utils/discordHook')
 
@@ -34,36 +35,42 @@ exports.postReview = async ({
     content,
     keywordList,
 }) => {
-    // 데이터 변환
-    const translationResult = await InputIntToDBIntOfReview({
-        longevity,
-        sillage,
-        seasonalList: seasonal,
-        gender,
-        keywordList,
-    });
+    try {
+        // 데이터 변환
+        const translationResult = await InputIntToDBIntOfReview({
+            longevity,
+            sillage,
+            seasonalList: seasonal,
+            gender,
+            keywordList,
+        });
 
-    const createReview = await reviewDao.create({
-        perfumeIdx,
-        userIdx,
-        score,
-        longevity: translationResult.longevity,
-        sillage: translationResult.sillage,
-        seasonal: translationResult.sumOfBitSeasonal,
-        gender: translationResult.gender,
-        access: access ? 1 : 0,
-        content,
-    });
+        const createReview = await reviewDao.create({
+            perfumeIdx,
+            userIdx,
+            score,
+            longevity: translationResult.longevity,
+            sillage: translationResult.sillage,
+            seasonal: translationResult.sumOfBitSeasonal,
+            gender: translationResult.gender,
+            access: access ? 1 : 0,
+            content,
+        });
 
-    const reviewIdx = createReview.dataValues.id;
-    const KeywordIdxList = translationResult.keywordList;
-    const createReviewKeyword = await Promise.all(
-        KeywordIdxList.map((it) => {
-            keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx });
-        })
-    );
-    await likePerfumeDao.delete(userIdx, perfumeIdx);
-    return reviewIdx;
+        const reviewIdx = createReview.dataValues.id;
+        const KeywordIdxList = translationResult.keywordList;
+        const createReviewKeyword = await Promise.all(
+            KeywordIdxList.map((it) => {
+                keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx });
+            })
+        );
+        await likePerfumeDao.delete(userIdx, perfumeIdx);
+        return reviewIdx;
+
+    } catch (err) {
+        console.log(err)
+        throw err;
+    }
 };
 
 /**
