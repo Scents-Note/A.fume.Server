@@ -3,6 +3,7 @@ import { UnAuthorizedError } from '../utils/errors/errors';
 const reviewDao = require('../dao/ReviewDao.js');
 const likeReviewDao = require('../dao/LikeReviewDao');
 const keywordDao = require('../dao/KeywordDao');
+const reportReviewDao = require('../dao/ReportReviewDao');
 const {
     InputIntToDBIntOfReview,
     DBIntToOutputIntOfReview,
@@ -229,27 +230,40 @@ exports.getReviewOfUser = async (userIdx) => {
  * @returns {Promise<Review[]>} reviewList
  **/
 exports.getReviewOfPerfumeByLike = async ({ perfumeIdx, userIdx }) => {
-    const reviewList = await reviewDao.readAllOfPerfume(perfumeIdx);
-    const result = await reviewList.reduce(async (prevPromise, it) => {
-        let prevResult = await prevPromise.then();
-        const approxAge = getApproxAge(it.User.birth);
-        const readLikeResult = await likeReviewDao.read(userIdx, it.reviewIdx);
-        const currentResult = {
-            reviewIdx: it.reviewIdx,
-            score: it.score,
-            access: it.access == 1 ? true : false,
-            content: it.content,
-            likeCount: it.LikeReview.likeCount,
-            isLiked: readLikeResult ? true : false,
-            userGender: it.User.gender,
-            age: approxAge,
-            nickname: it.User.nickname,
-            createTime: it.createdAt,
-        };
-        prevResult.push(currentResult);
-        return Promise.resolve(prevResult);
-    }, Promise.resolve([]));
-    return result;
+    try {
+        const reviewList = await reviewDao.readAllOfPerfume(perfumeIdx);
+
+        // 유저가 신고한 시향노트 인덱스 목록 조회
+        const allReportedReviewByUser = await reportReviewDao.readAllReportedReviewByUser(userIdx)
+        const reportedReviewIdxList = allReportedReviewByUser.map((it) => {
+                    return it.reviewIdx;
+        });
+
+        const result = await reviewList.reduce(async (prevPromise, it) => {
+            let prevResult = await prevPromise.then();
+            const approxAge = getApproxAge(it.User.birth);
+            const readLikeResult = await likeReviewDao.read(userIdx, it.reviewIdx);
+            const currentResult = {
+                reviewIdx: it.reviewIdx,
+                score: it.score,
+                access: it.access == 1 ? true : false,
+                content: it.content,
+                likeCount: it.LikeReview.likeCount,
+                isLiked: readLikeResult ? true : false,
+                userGender: it.User.gender,
+                age: approxAge,
+                nickname: it.User.nickname,
+                createTime: it.createdAt,
+                isReported: reportedReviewIdxList.includes(it.reviewIdx)
+            };
+            prevResult.push(currentResult);
+            return Promise.resolve(prevResult);
+        }, Promise.resolve([]));
+        return result;
+    } catch (err) {
+        console.log(err)
+        throw err
+    }
 };
 
 /**
@@ -274,7 +288,7 @@ exports.likeReview = async (reviewIdx, userIdx) => {
 };
 
 /**
- * 시향노트 작성
+ * 시향노트 신고
  *
  * @param {String} reason
  * @param {Number} userIdx
@@ -292,11 +306,36 @@ exports.reportReview = async ({
         const perfumeName = reviewData.Perfume.name
         const reviewContent = reviewData.content
 
+        // 신고 정보 저장
+        await reportReviewDao.create({ reporterIdx: userIdx, reviewIdx, reason })
+
+        // 디스코드로 신고 알림 전송
         await discordHook.send(`시향노트 신고가 들어왔습니다.\n\n신고 사유 : ${reason} \n향수명 : ${perfumeName} \n시향노트 내용 : ${reviewContent} \n신고자 : ${userNickname} \n시향노트 Idx : ${reviewIdx} `);
 
     return true;
     } catch (err) {
         console.log(err)
+        throw err
+    }
+};
+
+/**
+ * 내가 신고한 시향노트 목록 조회
+ *
+ * @param {number} userIdx
+ * @returns {Promise<reviewIdx[]>} reviewIdx List
+ */
+
+ module.exports.readAllReportedReviewByUser = async (userIdx) => {
+    try {
+        const allReportedReviewByUser = await reportReviewDao.readAllReportedReviewByUser(userIdx)
+        console.log('allReportedReviewByUser', allReportedReviewByUser)
+        return result.map((it) => {
+                return it.reviewIdx;
+        });
+    } catch (err) {
+        console.log(err)
+        throw err
     }
 };
 
