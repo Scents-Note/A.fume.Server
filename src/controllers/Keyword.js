@@ -1,12 +1,13 @@
 'use strict';
 
 const Keyword = require('../service/KeywordService');
+import { DEFAULT_PAGE_SIZE } from '@src/utils/constants';
 import StatusCode from '../utils/statusCode';
 
 module.exports.getKeywordAll = (req, res, next) => {
     let { pagingIndex, pagingSize } = req.query;
     pagingIndex = parseInt(pagingIndex) || 1;
-    pagingSize = parseInt(pagingSize) || 10;
+    pagingSize = parseInt(pagingSize) || DEFAULT_PAGE_SIZE;
     Keyword.getKeywordAll(pagingIndex, pagingSize)
         .then((response) => {
             res.status(StatusCode.OK).json({
