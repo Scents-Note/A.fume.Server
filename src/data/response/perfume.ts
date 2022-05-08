@@ -115,7 +115,8 @@ class PerfumeDetailResponse {
             perfumeIntegralDTO.isLiked,
             perfumeIntegralDTO.keywordList,
             perfumeIntegralDTO.noteType,
-            perfumeIntegralDTO.noteDict
+            perfumeIntegralDTO.noteDict,
+            perfumeIntegralDTO.reviewIdx
         );
     }
     private static numberWithCommas(x: number): string {
