@@ -143,9 +143,7 @@ class PerfumeService {
                 perfumeSearchDTO.ingredientIdxList,
                 perfumeSearchDTO.keywordIdxList,
                 perfumeSearchDTO.searchText,
-                pagingDTO.pagingIndex,
-                pagingDTO.pagingSize,
-                pagingDTO.order
+                pagingDTO
             )
             .then(async (result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
                 const perfumeIdxList: number[] = result.rows.map(
@@ -249,9 +247,11 @@ class PerfumeService {
         logger.debug(
             `${LOG_TAG} recentSearch(userIdx = ${userIdx}, pagingRequestDTO = ${pagingRequestDTO})`
         );
-        const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
         return perfumeDao
-            .recentSearchPerfumeList(userIdx, pagingIndex, pagingSize)
+            .recentSearchPerfumeList(
+                userIdx,
+                PagingDTO.create(pagingRequestDTO)
+            )
             .then(async (result) => {
                 const perfumeIdxList: number[] = result.rows.map(
                     (it) => it.perfumeIdx
@@ -341,12 +341,10 @@ class PerfumeService {
         logger.debug(
             `${LOG_TAG} recommendByGenderAgeAndGender(gender = ${gender}, ageGroup = ${ageGroup}, pagingRequestDTO = ${pagingRequestDTO})`
         );
-        const { pagingIndex, pagingSize } = PagingDTO.create(pagingRequestDTO);
         return perfumeDao.recommendPerfumeByAgeAndGender(
             gender,
             ageGroup,
-            pagingIndex,
-            pagingSize
+            PagingDTO.create(pagingRequestDTO)
         );
     }
 
@@ -364,15 +362,10 @@ class PerfumeService {
         logger.debug(
             `${LOG_TAG} getNewPerfume(userIdx = ${userIdx}, pagingRequestDTO = ${pagingRequestDTO})`
         );
-        const pagingDTO: PagingDTO = PagingDTO.create(pagingRequestDTO);
         const fromDate: Date = new Date();
         fromDate.setDate(fromDate.getDate() - 7);
         return perfumeDao
-            .readNewPerfume(
-                fromDate,
-                pagingDTO.pagingIndex,
-                pagingDTO.pagingSize
-            )
+            .readNewPerfume(fromDate, PagingDTO.create(pagingRequestDTO))
             .then(async (result: ListAndCountDTO<PerfumeThumbDTO>) => {
                 const perfumeIdxList: number[] = result.rows.map(
                     (it: PerfumeThumbDTO) => it.perfumeIdx
@@ -408,11 +401,7 @@ class PerfumeService {
         );
         const pagingDTO: PagingDTO = PagingDTO.create(pagingRequestDTO);
         return perfumeDao
-            .readLikedPerfume(
-                userIdx,
-                pagingDTO.pagingIndex,
-                pagingDTO.pagingSize
-            )
+            .readLikedPerfume(userIdx, pagingDTO)
             .then(async (result: ListAndCountDTO<PerfumeThumbDTO>) => {
                 const perfumeIdxList: number[] = result.rows.map(
                     (it: PerfumeThumbDTO) => it.perfumeIdx
