@@ -81,13 +81,15 @@ class IngredientDao {
         pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<IngredientDTO>> {
         logger.debug(`${LOG_TAG} search(pagingDTO = ${pagingDTO})`);
-        return Ingredient.findAndCountAll({
-            offset: (pagingDTO.pagingIndex - 1) * pagingDTO.pagingSize,
-            limit: pagingDTO.pagingSize,
-            order: pagingDTO.order,
-            raw: true,
-            nest: true,
-        }).then((result: any) => {
+        return Ingredient.findAndCountAll(
+            Object.assign(
+                {
+                    raw: true,
+                    nest: true,
+                },
+                pagingDTO.sequelizeOption
+            )
+        ).then((result: any) => {
             const { count, rows } = result;
             return new ListAndCountDTO<IngredientDTO>(
                 count,

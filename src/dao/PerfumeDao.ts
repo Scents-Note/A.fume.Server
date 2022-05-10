@@ -224,6 +224,7 @@ class PerfumeDao {
         fromDate: Date,
         pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        pagingDTO.order = [['createdAt', 'desc']];
         logger.debug(
             `${LOG_TAG} readNewPerfume(fromDate = ${fromDate}, pagingDTO = ${pagingDTO})`
         );
@@ -243,10 +244,8 @@ class PerfumeDao {
                         as: 'Brand',
                     },
                 ],
-                offset: (pagingDTO.pagingIndex - 1) * pagingDTO.pagingSize,
-                limit: pagingDTO.pagingSize,
-                order: [['createdAt', 'desc']],
-            }
+            },
+            pagingDTO.sequelizeOption()
         );
         return Perfume.findAndCountAll(options).then((it: any) => {
             return new ListAndCountDTO(
@@ -323,7 +322,7 @@ class PerfumeDao {
      * 최근에 검색한 향수 조회
      *
      * @param {number} userIdx
-     * @param {PagingDTO} pagingDTO
+     * @param {PagingDTO} pagingDTO order is ignored
      * @returns {Promise<Perfume[]>}
      */
     async recentSearchPerfumeList(
@@ -333,18 +332,20 @@ class PerfumeDao {
         logger.debug(
             `${LOG_TAG} recentSearchPerfumeList(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
-        const options: { [key: string]: any } = _.merge({}, defaultOption, {
-            order: [
-                [
-                    { model: SearchHistory, as: 'SearchHistory' },
-                    'updatedAt',
-                    'desc',
+        const options: { [key: string]: any } = _.merge(
+            {},
+            defaultOption,
+            pagingDTO.sequelizeOption(),
+            {
+                order: [
+                    [
+                        { model: SearchHistory, as: 'SearchHistory' },
+                        'updatedAt',
+                        'desc',
+                    ],
                 ],
-            ],
-            attributes: PERFUME_THUMB_COLUMNS,
-            offset: (pagingDTO.pagingIndex - 1) * pagingDTO.pagingSize,
-            limit: pagingDTO.pagingSize,
-        });
+            }
+        );
         options.include.push({
             model: SearchHistory,
             as: 'SearchHistory',
@@ -383,15 +384,16 @@ class PerfumeDao {
         let perfumeList: PerfumeThumbDTO[] = (
             await sequelize.query(
                 SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT,
-                {
-                    bind: [gender, startYear, endYear],
-                    type: sequelize.QueryTypes.SELECT,
-                    offset: (pagingDTO.pagingIndex - 1) * pagingDTO.pagingSize,
-                    limit: pagingDTO.pagingSize,
-                    attributes: PERFUME_THUMB_COLUMNS,
-                    raw: true,
-                    nest: true,
-                }
+                Object.assign(
+                    {
+                        bind: [gender, startYear, endYear],
+                        type: sequelize.QueryTypes.SELECT,
+                        attributes: PERFUME_THUMB_COLUMNS,
+                        raw: true,
+                        nest: true,
+                    },
+                    pagingDTO.sequelizeOption()
+                )
             )
         ).map(PerfumeThumbDTO.createByJson);
         const result: ListAndCountDTO<PerfumeThumbDTO> = new ListAndCountDTO(

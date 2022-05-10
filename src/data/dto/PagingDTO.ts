@@ -33,6 +33,13 @@ class PagingDTO {
             .join(' ');
     }
 
+    public sequelizeOption(): any {
+        return {
+            offset: (this.pagingIndex - 1) * this.pagingSize,
+            limit: this.pagingSize,
+            order: this.order,
+        };
+    }
     static createByJson(json: any): PagingDTO {
         const { pagingSize, pagingIndex, order } = json;
         return new PagingDTO(
