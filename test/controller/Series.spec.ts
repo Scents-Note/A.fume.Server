@@ -42,7 +42,12 @@ describe('# Series Controller Test', () => {
                     expect(message).to.be.eq(MSG_GET_SERIES_ALL_SUCCESS);
                     expect(data.count).to.be.eq(1);
                     data.rows.forEach((item: SeriesDTO) => {
-                        expect.hasProperties.call(item, 'seriesIdx', 'name');
+                        expect.hasProperties.call(
+                            item,
+                            'seriesIdx',
+                            'name',
+                            'imageUrl'
+                        );
                     });
                     done();
                 })
