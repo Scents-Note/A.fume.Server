@@ -4,9 +4,11 @@ import { IngredientResponse } from '@response/ingredient';
 class SeriesResponse {
     seriesIdx: number;
     name: string;
-    constructor(seriesIdx: number, name: string) {
+    imageUrl: string;
+    constructor(seriesIdx: number, name: string, imageUrl: string) {
         this.seriesIdx = seriesIdx;
         this.name = name;
+        this.imageUrl = imageUrl;
     }
 
     public toString(): string {
@@ -14,7 +16,11 @@ class SeriesResponse {
     }
 
     static create(seriesDTO: SeriesDTO): SeriesResponse {
-        return new SeriesResponse(seriesDTO.seriesIdx, seriesDTO.name);
+        return new SeriesResponse(
+            seriesDTO.seriesIdx,
+            seriesDTO.name,
+            seriesDTO.imageUrl
+        );
     }
 }
 
