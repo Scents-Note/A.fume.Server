@@ -2,7 +2,7 @@ import { logger } from '@modules/winston';
 
 import { NotMatchedError } from '@errors';
 
-import { IngredientDTO, ListAndCountDTO } from '@dto/index';
+import { IngredientDTO, ListAndCountDTO, PagingDTO } from '@dto/index';
 
 const { Ingredient, Sequelize } = require('@sequelize');
 const { Op } = Sequelize;
@@ -74,26 +74,22 @@ class IngredientDao {
     /**
      * 재료 검색
      *
-     * @param {number} pagingIndex
-     * @param {number} pagingSize
-     * @param {array} order
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<ListAndCountDTO<IngredientDTO>>} listAndCountDTO<IngredientDTO>
      */
     async search(
-        pagingIndex: number,
-        pagingSize: number,
-        order: string[]
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<IngredientDTO>> {
-        logger.debug(
-            `${LOG_TAG} search(pagingIndex = ${pagingIndex}, paingSize = ${pagingSize}, order = ${order})`
-        );
-        return Ingredient.findAndCountAll({
-            offset: (pagingIndex - 1) * pagingSize,
-            limit: pagingSize,
-            order,
-            raw: true,
-            nest: true,
-        }).then((result: any) => {
+        logger.debug(`${LOG_TAG} search(pagingDTO = ${pagingDTO})`);
+        return Ingredient.findAndCountAll(
+            Object.assign(
+                {
+                    raw: true,
+                    nest: true,
+                },
+                pagingDTO.sequelizeOption
+            )
+        ).then((result: any) => {
             const { count, rows } = result;
             return new ListAndCountDTO<IngredientDTO>(
                 count,
