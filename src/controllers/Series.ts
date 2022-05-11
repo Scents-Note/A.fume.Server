@@ -109,10 +109,12 @@ const getSeriesAll: RequestHandler = (
     logger.debug(`${LOG_TAG} getSeriesAll(query = ${req.query})`);
     Series.getSeriesAll(PagingRequestDTO.createByJson(req.query))
         .then((result: ListAndCountDTO<SeriesDTO>) => {
-            return {
-                count: result.count,
-                rows: result.rows.map(SeriesResponse.create),
-            };
+            // remove etc by concept
+            result = removeEtc(result);
+            return new ListAndCountDTO<SeriesResponse>(
+                result.count,
+                result.rows.map(SeriesResponse.create)
+            );
         })
         .then((response: ListAndCountDTO<SeriesResponse>) => {
             LoggerHelper.logTruncated(
@@ -235,6 +237,18 @@ const getFilterSeries: RequestHandler = (
         })
         .catch((err: Error) => next(err));
 };
+
+function removeEtc(
+    result: ListAndCountDTO<SeriesDTO>
+): ListAndCountDTO<SeriesDTO> {
+    const filtered: SeriesDTO[] = result.rows.filter((seriesDTO) => {
+        return seriesDTO.seriesIdx != 1;
+    });
+    if (filtered.length + 1 == result.rows.length) {
+        return new ListAndCountDTO<SeriesDTO>(result.count - 1, filtered);
+    }
+    return result;
+}
 
 module.exports.getSeriesAll = getSeriesAll;
 module.exports.getIngredients = getIngredients;
