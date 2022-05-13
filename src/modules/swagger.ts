@@ -59,9 +59,8 @@ const options: swaggerJSDoc.Options = {
     apis: [
         './src/controllers/*.ts',
         './src/controllers/*.js',
-        './src/modules/swagger/*',
+        './src/middleware/auth.ts',
         './api/swagger.yaml',
-        './api/endpoints/*.yaml',
         './api/definitions/*.yaml',
     ],
 };
