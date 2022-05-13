@@ -41,7 +41,10 @@ class UserInputDTO {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
 
-    static createByRequest(request: UserInputRequest): UserInputDTO {
+    static createByRequest(
+        userIdx: number | undefined,
+        request: UserInputRequest
+    ): UserInputDTO {
         let genderCode: any = undefined;
         if (request.gender) {
             if (GenderMap[request.gender] == undefined) {
@@ -60,7 +63,7 @@ class UserInputDTO {
         }
 
         return new UserInputDTO(
-            request.userIdx,
+            userIdx,
             request.nickname,
             request.password,
             genderCode,

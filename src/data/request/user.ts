@@ -2,7 +2,6 @@ import { GRADE_USER } from '@utils/constants';
 import { GradeKey, GenderKey } from '@utils/enumType';
 
 interface UserInputRequest {
-    userIdx?: number;
     grade?: GradeKey;
     gender?: GenderKey;
     nickname?: string;
@@ -11,8 +10,28 @@ interface UserInputRequest {
     birth?: number;
 }
 
+/**
+ * @swagger
+ * definitions:
+ *   UserEditRequest:
+ *     type: object
+ *     properties:
+ *       password:
+ *         type: string
+ *       email:
+ *         type: string
+ *       nickname:
+ *         type: string
+ *       gender:
+ *         type: string
+ *         enum: [MAN, WOMAN]
+ *       birth:
+ *         type: integer
+ *       grade:
+ *         type: string
+ *         enum: [USER, MANAGER, SYSTEM_ADMIN]
+ *  */
 class UserEditRequest implements UserInputRequest {
-    userIdx: number;
     grade?: GradeKey;
     gender?: GenderKey;
     nickname?: string;
@@ -20,7 +39,6 @@ class UserEditRequest implements UserInputRequest {
     email?: string;
     birth?: number;
     constructor(
-        userIdx: number,
         nickname?: string,
         password?: string,
         gender?: GenderKey,
@@ -28,7 +46,6 @@ class UserEditRequest implements UserInputRequest {
         birth?: number,
         grade?: GradeKey
     ) {
-        this.userIdx = userIdx;
         this.grade = grade;
         this.gender = gender;
         this.nickname = nickname;
@@ -43,7 +60,6 @@ class UserEditRequest implements UserInputRequest {
 
     static createByJson(json: any): UserEditRequest {
         return new UserEditRequest(
-            json.userIdx,
             json.nickname,
             json.password,
             json.gender,
@@ -53,6 +69,34 @@ class UserEditRequest implements UserInputRequest {
         );
     }
 }
+
+/**
+ * @swagger
+ * definitions:
+ *   UserRegisterRequest:
+ *     type: object
+ *     properties:
+ *       password:
+ *         type: string
+ *         required: true
+ *       email:
+ *         type: string
+ *         required: true
+ *       nickname:
+ *         type: string
+ *         required: true
+ *       gender:
+ *         type: string
+ *         enum: [MAN, WOMAN]
+ *         required: true
+ *       birth:
+ *         type: integer
+ *         required: true
+ *       grade:
+ *         type: string
+ *         enum: [USER, MANAGER, SYSTEM_ADMIN]
+ *         required: true
+ *  */
 class UserRegisterRequest implements UserInputRequest {
     nickname: string;
     password: string;
