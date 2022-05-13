@@ -1,16 +1,4 @@
 ---
-swagger: "2.0"
-info:
-  description: 향수 정보 서비스 A.fume Server Api 문서
-  version: 1.0.0
-  title: Swagger A.fume Server
-  termsOfService: http://swagger.io/terms/
-  contact:
-    email: heesung6701@naver.com
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
-basePath: /A.fume/api/0.0.1
 tags:
 - name: perfume
   description: 향수 정보

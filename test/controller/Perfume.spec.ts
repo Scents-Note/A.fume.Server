@@ -18,6 +18,7 @@ import {
     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
     MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
     MSG_ABNORMAL_ACCESS,
+    BASE_PATH,
 } from '@utils/strings';
 
 import JwtController from '@libs/JwtController';
@@ -33,7 +34,7 @@ import { TokenPayloadDTO, ListAndCountDTO } from '@dto/index';
 
 import app from '@src/app';
 
-const basePath: string = '/A.fume/api/0.0.1';
+const basePath: string = BASE_PATH;
 
 const Perfume = require('@controllers/Perfume');
 import PerfumeThumbMockHelper from '../mock_helper/PerfumeThumbMockHelper';

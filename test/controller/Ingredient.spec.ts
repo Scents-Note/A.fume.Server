@@ -4,7 +4,7 @@ import { Done } from 'mocha';
 import request from 'supertest';
 dotenv.config();
 
-import { MSG_GET_SEARCH_INGREDIENT_SUCCESS } from '@utils/strings';
+import { MSG_GET_SEARCH_INGREDIENT_SUCCESS, BASE_PATH } from '@utils/strings';
 import StatusCode from '@utils/statusCode';
 
 import { IngredientDTO, ListAndCountDTO } from '@dto/index';
@@ -15,7 +15,7 @@ import app from '@src/app';
 
 const Ingredient = require('@controllers/Ingredient');
 
-const basePath = '/A.fume/api/0.0.1';
+const basePath: string = BASE_PATH;
 
 const mockIngredientService: any = {};
 Ingredient.setIngredientService(mockIngredientService);

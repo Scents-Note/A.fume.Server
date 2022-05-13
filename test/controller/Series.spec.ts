@@ -6,6 +6,7 @@ dotenv.config();
 import {
     MSG_GET_SERIES_ALL_SUCCESS,
     MSG_SEARCH_SERIES_LIST_SUCCESS,
+    BASE_PATH,
 } from '@utils/strings';
 
 import StatusCode from '@utils/statusCode';
@@ -19,7 +20,7 @@ import app from '@src/app';
 
 const expect = require('../utils/expect');
 
-const basePath = '/A.fume/api/0.0.1';
+const basePath: string = BASE_PATH;
 
 const Series = require('@controllers/Series');
 const mockSeriesService: any = {};

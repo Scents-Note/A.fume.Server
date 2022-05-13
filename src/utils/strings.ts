@@ -103,6 +103,10 @@ const MSG_CANT_USE_PASSWORD_BY_POLICY: string =
 
 const NO_AUTHORIZE: string = '권한이 없습니다.';
 
+const CURRENT_VERSION: string = process.env.npm_package_version || '0.0.2';
+/* TODO BASE PATH 는 MAJOR만 따르도록 수정할 것. 0.0.1 -> 1.0 -> 2.0 */
+const BASE_PATH: string = '/A.fume/api/0.0.1';
+
 export {
     NONE,
     COLOGNE,
@@ -170,4 +174,6 @@ export {
     MSG_WRONG_PASSWORD,
     MSG_CANT_USE_PASSWORD_BY_POLICY,
     NO_AUTHORIZE,
+    CURRENT_VERSION,
+    BASE_PATH,
 };
