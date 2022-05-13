@@ -30,26 +30,6 @@ const LOG_TAG: string = '[Series/Controller]';
 
 let Series = new SeriesService();
 let Ingredient = new IngredientService();
-/**
- * @swagger
- * definitions:
- *   SeriesInfo:
- *     type: object
- *     properties:
- *       name:
- *         type: string
- *       englishName:
- *         type: string
- *       description:
- *         type: string
- *       imageUrl:
- *         type: string
- *     example:
- *       name: 꿀
- *       englishName: Honey
- *       description: 화이트 허니, 허니
- *       imageUrl: http://
- *  */
 
 /**
  * @swagger
@@ -90,13 +70,7 @@ let Ingredient = new IngredientService();
  *                     type: array
  *                     items:
  *                       allOf:
- *                         - $ref: '#/definitions/SeriesInfo'
- *                         - type: object
- *                           properties:
- *                             seriesIdx:
- *                               type: integer
- *                           example:
- *                             seriesIdx: 222
+ *                       - $ref: '#/definitions/SeriesResponse'
  *         401:
  *           description: Token is missing or invalid
  *       x-swagger-router-controller: Series
@@ -199,15 +173,7 @@ const getIngredients: RequestHandler = (
  *                     type: array
  *                     items:
  *                       allOf:
- *                       - $ref: '#/definitions/SeriesInfo'
- *                       - type: object
- *                         properties:
- *                           ingredients:
- *                             type: array
- *                             items:
- *                               $ref: '#/definitions/IngredientInfo'
- *                         example:
- *                           ingredients: []
+ *                       - $ref: '#/definitions/SeriesFilterResponse'
  *       x-swagger-router-controller: Series
  *  */
 const getFilterSeries: RequestHandler = (
