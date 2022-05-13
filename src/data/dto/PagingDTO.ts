@@ -1,4 +1,4 @@
-import { PagingRequestDTO } from '@request/common';
+import { PagingRequestDTO } from '@src/controllers/definitions/request/common';
 import { DEFAULT_PAGE_SIZE } from '@src/utils/constants';
 
 type Ascending = 'DESC' | 'ASC';

@@ -21,14 +21,14 @@ import StatusCode from '@utils/statusCode';
 import PerfumeService from '@services/PerfumeService';
 import SearchHistoryService from '@services/SearchHistoryService';
 
-import { PerfumeSearchRequest } from '@request/index';
+import { PerfumeSearchRequest } from '@src/controllers/definitions/request/index';
 import {
     PerfumeDetailResponse,
     PerfumeResponse,
     PerfumeRecommendResponse,
 } from '@response/perfume';
 
-import { PagingRequestDTO } from '@request/index';
+import { PagingRequestDTO } from '@src/controllers/definitions/request/index';
 import { ResponseDTO, SimpleResponseDTO } from '@response/index';
 import {
     PerfumeIntegralDTO,

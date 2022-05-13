@@ -35,7 +35,7 @@ module.exports.setBrandService = (brandService: BrandService) => {
  *       produces:
  *       - application/json
  *       parameters:
- *       - name: itemSize
+ *       - name: requestSize
  *         in: query
  *         type: integer
  *         required: false

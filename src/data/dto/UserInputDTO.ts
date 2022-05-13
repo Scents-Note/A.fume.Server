@@ -1,6 +1,6 @@
 import { logger } from '@modules/winston';
 
-import { UserInputRequest } from '@request/user';
+import { UserInputRequest } from '@src/controllers/definitions/request/user';
 
 import { InvalidInputError } from '@src/utils/errors/errors';
 import { GenderMap, Gender, Grade, GradeMap } from '@utils/enumType';

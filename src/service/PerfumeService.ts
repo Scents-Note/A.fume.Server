@@ -17,7 +17,7 @@ import NoteDao from '@dao/NoteDao';
 import LikePerfumeDao from '@dao/LikePerfumeDao';
 import S3FileDao from '@dao/S3FileDao';
 
-import { PagingRequestDTO } from '@request/common';
+import { PagingRequestDTO } from '@src/controllers/definitions/request/common';
 
 import {
     PagingDTO,

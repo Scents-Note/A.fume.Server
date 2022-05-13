@@ -2,7 +2,7 @@ import { logger } from '@modules/winston';
 
 import BrandDao from '@dao/BrandDao';
 
-import { PagingRequestDTO } from '@request/common';
+import { PagingRequestDTO } from '@src/controllers/definitions/request/common';
 
 import {
     BrandFilterDTO,

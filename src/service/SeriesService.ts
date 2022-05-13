@@ -4,7 +4,7 @@ import IngredientDao from '@dao/IngredientDao';
 import SeriesDao from '@dao/SeriesDao';
 import NoteDao from '@dao/NoteDao';
 
-import { PagingRequestDTO } from '@request/common';
+import { PagingRequestDTO } from '@src/controllers/definitions/request/common';
 
 import {
     PagingDTO,
