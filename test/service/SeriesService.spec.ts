@@ -2,13 +2,12 @@ import dotenv from 'dotenv';
 import { Done } from 'mocha';
 dotenv.config();
 
-import { PagingRequestDTO } from '@request/common';
-
 import {
     ListAndCountDTO,
     SeriesDTO,
     SeriesFilterDTO,
     IngredientDTO,
+    PagingDTO,
 } from '@dto/index';
 
 import SeriesService from '@services/SeriesService';
@@ -26,6 +25,7 @@ const seriesService = new SeriesService(
     mockIngredientDAO,
     mockNoteDAO
 );
+const defaultPagingDTO: PagingDTO = PagingDTO.createByJson({});
 
 describe('# Series Service Test', () => {
     describe('# getSeriesByIdx Test', () => {
@@ -53,7 +53,7 @@ describe('# Series Service Test', () => {
                     SeriesHelper.createWithIdx(3),
                 ]);
             seriesService
-                .getSeriesAll(PagingRequestDTO.createByJson({}))
+                .getSeriesAll(defaultPagingDTO)
                 .then((result: ListAndCountDTO<SeriesDTO>) => {
                     expect(result).instanceOf(ListAndCountDTO);
                     done();
@@ -71,7 +71,7 @@ describe('# Series Service Test', () => {
                     SeriesHelper.createWithIdx(3),
                 ]);
             seriesService
-                .searchSeries(PagingRequestDTO.createByJson({}))
+                .searchSeries(defaultPagingDTO)
                 .then((result: ListAndCountDTO<SeriesDTO>) => {
                     expect(result).instanceOf(ListAndCountDTO);
                     done();
@@ -103,7 +103,7 @@ describe('# Series Service Test', () => {
                 }));
 
             seriesService
-                .getFilterSeries(PagingRequestDTO.createByJson({}))
+                .getFilterSeries(defaultPagingDTO)
                 .then((result: ListAndCountDTO<SeriesFilterDTO>) => {
                     expect(result).instanceOf(ListAndCountDTO);
                     result.rows.forEach((seriesFilterDTO: SeriesFilterDTO) => {

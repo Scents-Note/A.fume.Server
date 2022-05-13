@@ -16,6 +16,7 @@ import {
     SeriesDTO,
     SeriesFilterDTO,
     IngredientDTO,
+    PagingDTO,
 } from '@dto/index';
 
 import {
@@ -81,7 +82,10 @@ const getSeriesAll: RequestHandler = (
     next: NextFunction
 ): any => {
     logger.debug(`${LOG_TAG} getSeriesAll(query = ${req.query})`);
-    Series.getSeriesAll(PagingRequestDTO.createByJson(req.query))
+    const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
+        req.query
+    );
+    Series.getSeriesAll(pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<SeriesDTO>) => {
             // remove etc by concept
             result = removeEtc(result);
@@ -182,7 +186,10 @@ const getFilterSeries: RequestHandler = (
     next: NextFunction
 ) => {
     logger.debug(`${LOG_TAG} getFilterSeries(query = ${req.query})`);
-    Series.getFilterSeries(PagingRequestDTO.createByJson(req.query))
+    const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
+        req.query
+    );
+    Series.getFilterSeries(pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<SeriesFilterDTO>) => {
             return new ListAndCountDTO(
                 result.count,

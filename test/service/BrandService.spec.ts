@@ -7,8 +7,6 @@ import BrandService from '@services/BrandService';
 
 import BrandDao from '@dao/BrandDao';
 
-import { PagingRequestDTO } from '@request/common';
-
 import {
     BrandDTO,
     BrandFilterDTO,
@@ -37,7 +35,7 @@ const Brand: BrandService = new BrandService(mockBrandDAO);
 describe('# Brand Service Test', () => {
     describe('# searchBrand Test', () => {
         it('# success Test', (done: Done) => {
-            Brand.searchBrand(PagingRequestDTO.createByJson({}))
+            Brand.searchBrand(PagingDTO.createByJson({}))
                 .then((res: ListAndCountDTO<BrandDTO>) => {
                     expect(res.count).to.be.gt(0);
                     expect(res.rows.length).to.be.gt(0);

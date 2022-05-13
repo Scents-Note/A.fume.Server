@@ -10,8 +10,6 @@ import { NotMatchedError } from '@errors';
 
 import { GENDER_WOMAN } from '@utils/constants';
 
-import { PagingRequestDTO } from '@request/common';
-
 import {
     ListAndCountDTO,
     PagingDTO,
@@ -27,6 +25,8 @@ import {
 import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
 
 const Perfume: PerfumeService = new PerfumeService();
+
+const defaultPagingDTO: PagingDTO = PagingDTO.createByJson({});
 
 const mockS3FileDao: any = {};
 Perfume.setS3FileDao(mockS3FileDao);
@@ -345,9 +345,7 @@ describe('# Perfume Service Test', () => {
                     searchText: '',
                 }
             );
-            const pagingRequestDTO: PagingRequestDTO =
-                PagingRequestDTO.createByJson({});
-            Perfume.searchPerfume(perfumeSearchDTO, pagingRequestDTO)
+            Perfume.searchPerfume(perfumeSearchDTO, defaultPagingDTO)
                 .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     done();
@@ -368,9 +366,7 @@ describe('# Perfume Service Test', () => {
         });
 
         it('# recentSearch Test', (done: Done) => {
-            const pagingRequestDTO: PagingRequestDTO =
-                PagingRequestDTO.createByJson({});
-            Perfume.recentSearch(1, pagingRequestDTO)
+            Perfume.recentSearch(1, defaultPagingDTO)
                 .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     done();
@@ -417,9 +413,7 @@ describe('# Perfume Service Test', () => {
                     },
                 ];
             };
-            const pagingRequestDTO: PagingRequestDTO =
-                PagingRequestDTO.createByJson({});
-            Perfume.recommendByUser(1, pagingRequestDTO)
+            Perfume.recommendByUser(1, defaultPagingDTO)
                 .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     for (const item of result.rows) {
@@ -451,14 +445,13 @@ describe('# Perfume Service Test', () => {
         });
 
         it('# getNewPerfume Test', (done: Done) => {
-            const pagingDTO: PagingDTO = PagingDTO.createByJson({});
             mockLikePerfumeDao.readLikeInfo = async (
                 userIdx: number,
                 _: number[]
             ) => {
                 return [{ userIdx, perfumeIdx: 2 }];
             };
-            Perfume.getNewPerfume(1, pagingDTO)
+            Perfume.getNewPerfume(1, defaultPagingDTO)
                 .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     done();
@@ -467,8 +460,6 @@ describe('# Perfume Service Test', () => {
         });
 
         it('# getLikedPerfume Test', (done: Done) => {
-            const pagingRequestDTO: PagingRequestDTO =
-                PagingRequestDTO.createByJson({});
             mockLikePerfumeDao.readLikeInfo = async (
                 userIdx: number,
                 perfumeIdxList: number[]
@@ -478,7 +469,7 @@ describe('# Perfume Service Test', () => {
                     perfumeIdx,
                 }));
             };
-            Perfume.getLikedPerfume(1, pagingRequestDTO)
+            Perfume.getLikedPerfume(1, defaultPagingDTO)
                 .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     result.rows.forEach((item) => {

@@ -198,7 +198,7 @@ const searchPerfume: RequestHandler = (
         loginUserIdx,
         perfumeSearchRequest
     );
-    Perfume.searchPerfume(perfumeSearchDTO, pagingRequestDTO)
+    Perfume.searchPerfume(perfumeSearchDTO, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
             return new ListAndCountDTO<PerfumeResponse>(
                 result.count,
@@ -348,7 +348,7 @@ const getRecentPerfume: RequestHandler = (
     logger.debug(
         `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
     );
-    Perfume.recentSearch(loginUserIdx, pagingRequestDTO)
+    Perfume.recentSearch(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
             return new ListAndCountDTO<PerfumeResponse>(
                 result.count,
@@ -432,7 +432,7 @@ const recommendPersonalPerfume: RequestHandler = (
     logger.debug(
         `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
     );
-    Perfume.recommendByUser(loginUserIdx, pagingRequestDTO)
+    Perfume.recommendByUser(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return new ListAndCountDTO<PerfumeRecommendResponse>(
                 result.count,
@@ -516,7 +516,7 @@ const recommendCommonPerfume: RequestHandler = (
     logger.debug(
         `${LOG_TAG} recommendCommonPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
     );
-    Perfume.recommendByUser(loginUserIdx, pagingRequestDTO)
+    Perfume.recommendByUser(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return new ListAndCountDTO<PerfumeRecommendResponse>(
                 result.count,
@@ -663,8 +663,7 @@ const getNewPerfume: RequestHandler = (
     logger.debug(
         `${LOG_TAG} getNewPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
     );
-    const pagingDTO: PagingDTO = PagingDTO.create(pagingRequestDTO);
-    Perfume.getNewPerfume(loginUserIdx, pagingDTO)
+    Perfume.getNewPerfume(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
             return new ListAndCountDTO<PerfumeResponse>(
                 result.count,
@@ -751,7 +750,7 @@ const getLikedPerfume: RequestHandler = (
         );
         return;
     }
-    Perfume.getLikedPerfume(userIdx, pagingRequestDTO)
+    Perfume.getLikedPerfume(userIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
             return new ListAndCountDTO<PerfumeResponse>(
                 result.count,

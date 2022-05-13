@@ -2,8 +2,6 @@ import { logger } from '@modules/winston';
 
 import BrandDao from '@dao/BrandDao';
 
-import { PagingRequestDTO } from '@src/controllers/definitions/request/common';
-
 import {
     BrandFilterDTO,
     ListAndCountDTO,
@@ -21,16 +19,11 @@ class BrandService {
     /**
      * 브랜드 검색
      *
-     * @param {PagingRequestDTO} pagingRequestDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<ListAndCountDTO<BrandDTO>>} listAndCountDTO
      **/
-    searchBrand(
-        pagingRequestDTO: PagingRequestDTO
-    ): Promise<ListAndCountDTO<BrandDTO>> {
-        logger.debug(
-            `${LOG_TAG} searchBrand(pagingRequestDTO = ${pagingRequestDTO})`
-        );
-        const pagingDTO = PagingDTO.create(pagingRequestDTO);
+    searchBrand(pagingDTO: PagingDTO): Promise<ListAndCountDTO<BrandDTO>> {
+        logger.debug(`${LOG_TAG} searchBrand(pagingDTO = ${pagingDTO})`);
         return this.brandDao.search(pagingDTO);
     }
     /**

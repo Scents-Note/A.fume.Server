@@ -22,6 +22,7 @@ import PerfumeThumbMockHelper from '../mock_helper/PerfumeThumbMockHelper';
 const perfumeDao = new PerfumeDao();
 const { Note, Sequelize } = require('@sequelize');
 const { Op } = Sequelize;
+const defaultPagingDTO: PagingDTO = PagingDTO.createByJson({});
 
 describe('# perfumeDao Test', () => {
     before(async function () {
@@ -131,7 +132,7 @@ describe('# perfumeDao Test', () => {
             });
             it('# success case (empty filter)', (done: Done) => {
                 perfumeDao
-                    .search([], [], [], '', PagingDTO.createByJson({}))
+                    .search([], [], [], '', defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
                         expect(result.count).to.be.gt(3);
                         expect(result.rows.length).to.be.gt(3);
@@ -155,7 +156,7 @@ describe('# perfumeDao Test', () => {
             it('# success case (ingredient filter)', (done: Done) => {
                 const ingredients: number[] = [1, 2, 3, 4, 5];
                 perfumeDao
-                    .search([], ingredients, [], '', PagingDTO.createByJson({}))
+                    .search([], ingredients, [], '', defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
                         expect(result.count).to.be.gte(3);
                         expect(result.rows.length).to.gte(3);
@@ -193,7 +194,7 @@ describe('# perfumeDao Test', () => {
             it('# success case (brand filter)', (done: Done) => {
                 const brands: number[] = [1, 2, 3, 4];
                 perfumeDao
-                    .search(brands, [], [], '', PagingDTO.createByJson({}))
+                    .search(brands, [], [], '', defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
                         expect(result.count).to.be.gte(2);
                         expect(result.rows.length).to.gte(2);
@@ -276,7 +277,7 @@ describe('# perfumeDao Test', () => {
             });
             it('# read new Perfume', (done: Done) => {
                 perfumeDao
-                    .readPerfume(undefined, PagingDTO.createByJson({}))
+                    .readPerfume(undefined, defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
                         expect(result.count).to.be.gte(1);
                         expect(result.rows.length).gte(1);
@@ -301,7 +302,7 @@ describe('# perfumeDao Test', () => {
 
             it('# read likedPerfume', (done: Done) => {
                 perfumeDao
-                    .readLikedPerfume(1, PagingDTO.createByJson({}))
+                    .readLikedPerfume(1, defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
                         expect(result.count).to.be.gte(3);
                         expect(result.rows.length).to.be.gte(3);
@@ -314,7 +315,7 @@ describe('# perfumeDao Test', () => {
             });
             it('# recent search perfume List', (done) => {
                 perfumeDao
-                    .recentSearchPerfumeList(1, PagingDTO.createByJson({}))
+                    .recentSearchPerfumeList(1, defaultPagingDTO)
                     .then(
                         (result: ListAndCountDTO<PerfumeSearchHistoryDTO>) => {
                             expect(result.rows.length).gte(5);
@@ -376,7 +377,7 @@ describe('# perfumeDao Test', () => {
                     .recommendPerfumeByAgeAndGender(
                         GENDER_WOMAN,
                         20,
-                        PagingDTO.createByJson({})
+                        defaultPagingDTO
                     )
                     .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
                         expect(result.count).to.be.gte(3);

@@ -17,8 +17,6 @@ import NoteDao from '@dao/NoteDao';
 import LikePerfumeDao from '@dao/LikePerfumeDao';
 import S3FileDao from '@dao/S3FileDao';
 
-import { PagingRequestDTO } from '@src/controllers/definitions/request/common';
-
 import {
     PagingDTO,
     ListAndCountDTO,
@@ -123,17 +121,16 @@ class PerfumeService {
      * 향수 검색
      *
      * @param {PerfumeSearchDTO} perfumeSearchDTO
-     * @param {PagingRequestDTO} pagingRequestDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>}
      **/
     async searchPerfume(
         perfumeSearchDTO: PerfumeSearchDTO,
-        pagingRequestDTO: PagingRequestDTO
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeSearchResultDTO>> {
         logger.debug(
-            `${LOG_TAG} searchPerfume(perfumeSearchDTO = ${perfumeSearchDTO}, pagingRequestDTO = ${pagingRequestDTO})`
+            `${LOG_TAG} searchPerfume(perfumeSearchDTO = ${perfumeSearchDTO}, pagingDTO = ${pagingDTO})`
         );
-        const pagingDTO: PagingDTO = PagingDTO.create(pagingRequestDTO);
         return perfumeDao
             .search(
                 perfumeSearchDTO.brandIdxList,
@@ -234,21 +231,18 @@ class PerfumeService {
      * 유저의 최근 검색한 향수 조회
      *
      * @param {number} userIdx
-     * @param {PagingRequestDTO} pagingRequestDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>}
      **/
     async recentSearch(
         userIdx: number,
-        pagingRequestDTO: PagingRequestDTO
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
         logger.debug(
-            `${LOG_TAG} recentSearch(userIdx = ${userIdx}, pagingRequestDTO = ${pagingRequestDTO})`
+            `${LOG_TAG} recentSearch(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
         return perfumeDao
-            .recentSearchPerfumeList(
-                userIdx,
-                PagingDTO.create(pagingRequestDTO)
-            )
+            .recentSearchPerfumeList(userIdx, pagingDTO)
             .then(async (result) => {
                 const perfumeIdxList: number[] = result.rows.map(
                     (it) => it.perfumeIdx
@@ -271,25 +265,21 @@ class PerfumeService {
      * 유저 연령대 및 성별에 따른 향수 추천
      *
      * @param {number} userIdx
-     * @param {number} pagingRequestDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>}
      **/
     async recommendByUser(
         userIdx: number,
-        pagingRequestDTO: PagingRequestDTO
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
         logger.debug(
-            `${LOG_TAG} recommendByUser(userIdx = ${userIdx}, pagingRequestDTO = ${pagingRequestDTO})`
+            `${LOG_TAG} recommendByUser(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
         const { ageGroup, gender } = await this.getAgeGroupAndGender(userIdx);
 
         const recommendedListPromise: Promise<
             ListAndCountDTO<PerfumeThumbDTO>
-        > = this.recommendByGenderAgeAndGender(
-            gender,
-            ageGroup,
-            pagingRequestDTO
-        );
+        > = this.recommendByGenderAgeAndGender(gender, ageGroup, pagingDTO);
 
         return recommendedListPromise.then(
             async (result: ListAndCountDTO<PerfumeThumbDTO>) => {
@@ -326,21 +316,21 @@ class PerfumeService {
      *
      * @param {number} gender
      * @param {number} ageGroup
-     * @param {PagingRequestDTO} pagingRequestDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>}
      **/
     recommendByGenderAgeAndGender(
         gender: number,
         ageGroup: number,
-        pagingRequestDTO: PagingRequestDTO
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
         logger.debug(
-            `${LOG_TAG} recommendByGenderAgeAndGender(gender = ${gender}, ageGroup = ${ageGroup}, pagingRequestDTO = ${pagingRequestDTO})`
+            `${LOG_TAG} recommendByGenderAgeAndGender(gender = ${gender}, ageGroup = ${ageGroup}, pagingDTO = ${pagingDTO})`
         );
         return perfumeDao.recommendPerfumeByAgeAndGender(
             gender,
             ageGroup,
-            PagingDTO.create(pagingRequestDTO)
+            pagingDTO
         );
     }
 
@@ -384,17 +374,16 @@ class PerfumeService {
      * 유저가 좋아요한 향수 조회
      *
      * @param {number} userIdx
-     * @param {number} pagingRequestDTO
+     * @param {PagingDTO} pagpagingDTOingRequestDTO
      * @returns {Promise<Perfume[]>}
      **/
     getLikedPerfume(
         userIdx: number,
-        pagingRequestDTO: PagingRequestDTO
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
         logger.debug(
-            `${LOG_TAG} getLikedPerfume(userIdx = ${userIdx}, pagingRequestDTO = ${pagingRequestDTO})`
+            `${LOG_TAG} getLikedPerfume(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
-        const pagingDTO: PagingDTO = PagingDTO.create(pagingRequestDTO);
         return perfumeDao
             .readLikedPerfume(userIdx, pagingDTO)
             .then(async (result: ListAndCountDTO<PerfumeThumbDTO>) => {

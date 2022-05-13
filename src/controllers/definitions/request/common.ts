@@ -1,4 +1,7 @@
+import { PagingDTO } from '@src/data/dto';
 import { DEFAULT_PAGE_SIZE } from '@src/utils/constants';
+
+type Ascending = 'DESC' | 'ASC';
 
 class PagingRequestDTO {
     requestSize: number;
@@ -12,6 +15,35 @@ class PagingRequestDTO {
 
     public toString(): string {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
+    public toPageDTO(): PagingDTO {
+        return new PagingDTO(
+            this.lastPosition + 1,
+            this.requestSize,
+            this.getOrder()
+        );
+    }
+
+    private getOrder(): [string, string][] | undefined {
+        if (!this.sort) {
+            return undefined;
+        }
+        const order: [string, string][] = [];
+        const [key, _ascending] = this.sort.split('_');
+        let ascending: Ascending = 'ASC';
+        switch (_ascending) {
+            case 'desc':
+            case 'dsc':
+                ascending = 'DESC';
+                break;
+            case 'asc':
+            default:
+                ascending = 'ASC';
+                break;
+        }
+        order.push([key, ascending]);
+        return order;
     }
 
     static createByJson(json: any): PagingRequestDTO {

@@ -39,7 +39,7 @@ module.exports.setBrandService = (brandService: BrandService) => {
  *         in: query
  *         type: integer
  *         required: false
- *       - name: pagingIndex
+ *       - name: lastPosition
  *         in: query
  *         type: integer
  *         required: false
