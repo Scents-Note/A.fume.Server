@@ -1,3 +1,17 @@
+/**
+ * @swagger
+ * definitions:
+ *  IngredientResponse:
+ *     type: object
+ *     properties:
+ *       ingredientIdx:
+ *         type: number
+ *       name:
+ *         type: string
+ *     example:
+ *       ingredientIdx: 1
+ *       name: 씨쏠트
+ *  */
 class IngredientResponse {
     ingredientIdx: number;
     name: string;
