@@ -1,5 +1,9 @@
+import { logger } from '@modules/winston';
+
+import { InvalidInputError } from '@src/utils/errors/errors';
+import { GenderMap, GradeMap, GradeKey, GenderKey } from '@utils/enumType';
 import { GRADE_USER } from '@utils/constants';
-import { GradeKey, GenderKey } from '@utils/enumType';
+import { UserInputDTO } from '@src/data/dto';
 
 interface UserInputRequest {
     grade?: GradeKey;
@@ -56,6 +60,10 @@ class UserEditRequest implements UserInputRequest {
 
     public toString(): string {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
+    public toUserInputDTO(userIdx: number): UserInputDTO {
+        return createByRequest(userIdx, this);
     }
 
     static createByJson(json: any): UserEditRequest {
@@ -124,6 +132,10 @@ class UserRegisterRequest implements UserInputRequest {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
 
+    public toUserInputDTO(): UserInputDTO {
+        return createByRequest(undefined, this);
+    }
+
     static createByJson(json: any): UserRegisterRequest {
         return new UserRegisterRequest(
             json.nickname,
@@ -134,6 +146,41 @@ class UserRegisterRequest implements UserInputRequest {
             json.grade | GRADE_USER
         );
     }
+}
+
+const LOG_TAG: string = '[definition/UserInputRequest]';
+
+function createByRequest(
+    userIdx: number | undefined,
+    request: UserInputRequest
+): UserInputDTO {
+    let genderCode: any = undefined;
+    if (request.gender) {
+        if (GenderMap[request.gender] == undefined) {
+            logger.debug(`${LOG_TAG} invalid gender: ${request.gender}`);
+            throw new InvalidInputError();
+        }
+        genderCode = GenderMap[request.gender];
+    }
+    let gradeCode: number = GRADE_USER;
+    if (request.grade) {
+        if (GradeMap[request.grade] == undefined) {
+            logger.debug(`${LOG_TAG} invalid grade: ${request.grade}`);
+            throw new InvalidInputError();
+        }
+        gradeCode = GradeMap[request.grade];
+    }
+
+    return new UserInputDTO(
+        userIdx,
+        request.nickname,
+        request.password,
+        genderCode,
+        request.email,
+        request.birth,
+        gradeCode,
+        undefined
+    );
 }
 
 export { UserInputRequest, UserEditRequest, UserRegisterRequest };
