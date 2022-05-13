@@ -23,7 +23,7 @@ type Gender = { male: number; neutral: number; female: number };
 
 /**
  * @swagger
- * Definitions:
+ * definitions:
  *   NoteDict:
  *     type: object
  *     properties:

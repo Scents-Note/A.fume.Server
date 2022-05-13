@@ -36,6 +36,7 @@ import {
     PerfumeSearchResultDTO,
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
+    PerfumeSearchDTO,
 } from '@dto/index';
 
 const LOG_TAG: string = '[Perfume/Controller]';
@@ -132,26 +133,8 @@ const getPerfume: RequestHandler = (
  *       - in: body
  *         name: body
  *         schema:
- *           type: object
- *           properties:
- *             searchText:
- *               type: string
- *               example: 'Tom'
- *             keywordList:
- *               type: array
- *               items:
- *                 type: integer
- *               example: []
- *             ingredientList:
- *               type: array
- *               items:
- *                 type: integer
- *               example: []
- *             brandList:
- *               type: array
- *               items:
- *                 type: integer
- *               example: []
+ *           allOf:
+ *           - $ref: '#/definitions/PerfumeSearchRequest'
  *       - name: sort
  *         in: query
  *         type: string
@@ -207,7 +190,12 @@ const searchPerfume: RequestHandler = (
     logger.debug(
         `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, query = ${req.query}, body = ${req.body})`
     );
-    Perfume.searchPerfume(perfumeSearchRequest, pagingRequestDTO)
+
+    const perfumeSearchDTO: PerfumeSearchDTO = PerfumeSearchDTO.create(
+        loginUserIdx,
+        perfumeSearchRequest
+    );
+    Perfume.searchPerfume(perfumeSearchDTO, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
             return new ListAndCountDTO<PerfumeResponse>(
                 result.count,

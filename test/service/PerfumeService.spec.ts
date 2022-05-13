@@ -11,13 +11,13 @@ import { NotMatchedError } from '@errors';
 import { GENDER_WOMAN } from '@utils/constants';
 
 import { PagingRequestDTO } from '@request/common';
-import { PerfumeSearchRequest } from '@request/perfume';
 
 import {
     ListAndCountDTO,
     PerfumeSummaryDTO,
     PerfumeIntegralDTO,
     PerfumeSearchResultDTO,
+    PerfumeSearchDTO,
     PerfumeDefaultReviewDTO,
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
@@ -335,15 +335,22 @@ describe('# Perfume Service Test', () => {
             ) => {
                 return [{ userIdx, perfumeIdx: 2 }];
             };
-            const perfumeSearchRequestDTO: PerfumeSearchRequest =
-                new PerfumeSearchRequest([], [], [], '', 1);
+            const perfumeSearchDTO: PerfumeSearchDTO = PerfumeSearchDTO.create(
+                1,
+                {
+                    keywordList: [],
+                    brandList: [],
+                    ingredientList: [],
+                    searchText: '',
+                }
+            );
             const pagingRequestDTO: PagingRequestDTO =
                 PagingRequestDTO.createByJson({
                     pagingSize: 100,
                     pagingIndex: 1,
                     order: null,
                 });
-            Perfume.searchPerfume(perfumeSearchRequestDTO, pagingRequestDTO)
+            Perfume.searchPerfume(perfumeSearchDTO, pagingRequestDTO)
                 .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     done();
