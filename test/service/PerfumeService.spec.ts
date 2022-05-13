@@ -14,6 +14,7 @@ import { PagingRequestDTO } from '@request/common';
 
 import {
     ListAndCountDTO,
+    PagingDTO,
     PerfumeSummaryDTO,
     PerfumeIntegralDTO,
     PerfumeSearchResultDTO,
@@ -462,19 +463,14 @@ describe('# Perfume Service Test', () => {
         });
 
         it('# getNewPerfume Test', (done: Done) => {
-            const pagingRequestDTO: PagingRequestDTO =
-                PagingRequestDTO.createByJson({
-                    pagingSize: 100,
-                    pagingIndex: 1,
-                    order: null,
-                });
+            const pagingDTO: PagingDTO = PagingDTO.createByJson({});
             mockLikePerfumeDao.readLikeInfo = async (
                 userIdx: number,
                 _: number[]
             ) => {
                 return [{ userIdx, perfumeIdx: 2 }];
             };
-            Perfume.getNewPerfume(1, pagingRequestDTO)
+            Perfume.getNewPerfume(1, pagingDTO)
                 .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     done();

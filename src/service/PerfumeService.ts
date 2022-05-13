@@ -349,12 +349,12 @@ class PerfumeService {
      * 새로 추가된 향수 조회
      *
      * @param {number} userIdx
-     * @param {number} pagingRequestDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>}
      **/
     getNewPerfume(
         userIdx: number, // TODO userIdx 삭제하기
-        pagingRequestDTO: PagingRequestDTO
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
         logger.debug(
             `${LOG_TAG} getNewPerfume(userIdx = ${userIdx}, pagingRequestDTO = ${pagingRequestDTO})`

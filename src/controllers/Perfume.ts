@@ -37,6 +37,7 @@ import {
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
     PerfumeSearchDTO,
+    PagingDTO,
 } from '@dto/index';
 
 const LOG_TAG: string = '[Perfume/Controller]';
@@ -654,7 +655,8 @@ const getNewPerfume: RequestHandler = (
     logger.debug(
         `${LOG_TAG} getNewPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
     );
-    Perfume.getNewPerfume(loginUserIdx, pagingRequestDTO)
+    const pagingDTO: PagingDTO = PagingDTO.create(pagingRequestDTO);
+    Perfume.getNewPerfume(loginUserIdx, pagingDTO)
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
             return new ListAndCountDTO<PerfumeResponse>(
                 result.count,
