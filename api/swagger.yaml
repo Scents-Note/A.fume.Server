@@ -618,17 +618,6 @@ definitions:
       gender: 2
       access: true
       content: 시향노트 내용
-  IngredientMap:
-    type: object
-    properties:
-      top:
-        type: string
-      middle:
-        type: string
-      base:
-        type: string
-      single:
-        type: string
   ApiResponse:
     type: object
     properties:

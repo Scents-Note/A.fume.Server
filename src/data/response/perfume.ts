@@ -21,6 +21,21 @@ type Longevity = {
 
 type Gender = { male: number; neutral: number; female: number };
 
+/**
+ * @swagger
+ * Definitions:
+ *   NoteDict:
+ *     type: object
+ *     properties:
+ *       top:
+ *         type: string
+ *       middle:
+ *         type: string
+ *       base:
+ *         type: string
+ *       single:
+ *         type: string
+ */
 type NoteDict = {
     top: string;
     middle: string;
@@ -28,6 +43,114 @@ type NoteDict = {
     single: string;
 };
 
+/**
+ * @swagger
+ * definitions:
+ *   PerfumeDetailResponse:
+ *     properties:
+ *       story:
+ *         type: string
+ *       abundanceRate:
+ *         type: string
+ *         enum:
+ *         - None
+ *         - 오 드 코롱
+ *         - 코롱
+ *         - 오 드 뚜왈렛
+ *         - 오 드 퍼퓸
+ *         - 퍼퓸
+ *       imageUrls:
+ *         type: array
+ *         items:
+ *           type: string
+ *       volumeAndPrice:
+ *         type: array
+ *         items:
+ *           type: string
+ *       score:
+ *         type: number
+ *         description: 점수 평균 값
+ *         minimum: 0
+ *         maximum: 5
+ *       longevity:
+ *         type: object
+ *         description: 지속감
+ *         properties:
+ *           veryWeak:
+ *             type: number
+ *             minimum: 0
+ *             maximum: 100
+ *             description: 매우 약함
+ *           weak:
+ *             type: number
+ *             minimum: 0
+ *             maximum: 100
+ *             description: 약함
+ *           medium:
+ *             type: number
+ *             minimum: 0
+ *             maximum: 100
+ *             description: 보통
+ *           strong:
+ *             type: number
+ *             minimum: 0
+ *             maximum: 100
+ *             description: 강함
+ *           veryStrong:
+ *             type: number
+ *             minimum: 0
+ *             maximum: 100
+ *             description: 매우 강함
+ *       sillage:
+ *         type: object
+ *         description: 잔향감
+ *         properties:
+ *           light:
+ *             type: number
+ *             minimum: 0
+ *             maximum: 100
+ *             description: 약함
+ *           normal:
+ *             type: number
+ *             minimum: 0
+ *             maximum: 100
+ *             description: 보통
+ *           heavy:
+ *             type: number
+ *             minimum: 0
+ *             maximum: 100
+ *             description: 강함
+ *       seasonal:
+ *         type: object
+ *         properties:
+ *           spring:
+ *             type: number
+ *             minimum: 0
+ *             maximum: 100
+ *             description: 봄
+ *           summer:
+ *             type: number
+ *             minimum: 0
+ *             maximum: 100
+ *             description: 여름
+ *           fall:
+ *             type: number
+ *             minimum: 0
+ *             maximum: 100
+ *             description: 가을
+ *           winter:
+ *             type: number
+ *             minimum: 0
+ *             maximum: 100
+ *             description: 겨울
+ *       noteType:
+ *         type: integer
+ *         description: 0은 일반 노트, 1은 single 노트
+ *       ingredients:
+ *         $ref: '#/definitions/NoteDict'
+ *       reviewIdx:
+ *         type: number
+ * */
 class PerfumeDetailResponse {
     perfumeIdx: number;
     name: string;
@@ -126,6 +249,29 @@ class PerfumeDetailResponse {
     }
 }
 
+/**
+ * @swagger
+ * definitions:
+ *   PerfumeResponse:
+ *     type: object
+ *     properties:
+ *       perfumeIdx:
+ *         type: number
+ *       name:
+ *         type: string
+ *       brandName:
+ *         type: string
+ *       imageUrl:
+ *         type: string
+ *       isLiked:
+ *         type: boolean
+ *     example:
+ *       perfumeIdx: 1
+ *       name: 154 코롱
+ *       brandName: 154 kolon
+ *       imageUrl: https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554
+ *       isLiked: true
+ * */
 class PerfumeResponse {
     perfumeIdx: number;
     name: string;
@@ -161,6 +307,34 @@ class PerfumeResponse {
     }
 }
 
+/**
+ * @swagger
+ * definitions:
+ *   PerfumeRecommendResponse:
+ *     type: object
+ *     properties:
+ *       perfumeIdx:
+ *         type: number
+ *       name:
+ *         type: string
+ *       brandName:
+ *         type: string
+ *       imageUrl:
+ *         type: string
+ *       isLiked:
+ *         type: boolean
+ *       keywordList:
+ *         type: array
+ *         items:
+ *           type: string
+ *     example:
+ *       perfumeIdx: 1
+ *       name: 154 코롱
+ *       brandName: 154 kolon
+ *       imageUrl: https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554
+ *       isLiked: true
+ *       keyword: ['키워드', '키워드2']
+ * */
 class PerfumeRecommendResponse extends PerfumeResponse {
     keywordList: string[];
     constructor(
