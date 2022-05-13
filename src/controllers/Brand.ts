@@ -117,7 +117,6 @@ const getBrandAll: RequestHandler = (
  *                 example: Filter Brand 리스트 조회 성공
  *               data:
  *                 type: array
- * BrandFilterResponse
  *                 items:
  *                   allOf:
  *                   - $ref: '#/definitions/BrandFilterResponse'
