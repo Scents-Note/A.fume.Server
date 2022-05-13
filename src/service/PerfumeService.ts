@@ -31,7 +31,8 @@ import {
     NoteDictDTO,
     PerfumeDefaultReviewDTO,
 } from '@dto/index';
-import _ from 'lodash/fp';
+import fp from 'lodash/fp';
+import _ from 'lodash';
 
 const LOG_TAG: string = '[Perfume/Service]';
 
@@ -71,7 +72,7 @@ class PerfumeService {
         let _perfume: PerfumeDTO = await perfumeDao.readByPerfumeIdx(
             perfumeIdx
         );
-        const perfume: any = _.compose(
+        const perfume: any = fp.compose(
             ...commonJob,
             flatJob('PerfumeDetail')
         )(_perfume);
@@ -156,7 +157,7 @@ class PerfumeService {
                         (
                             item: PerfumeSearchResultDTO
                         ): PerfumeSearchResultDTO => {
-                            return _.compose(
+                            return fp.compose(
                                 ...commonJob,
                                 this.isLikeJob(likePerfumeList),
                                 PerfumeSearchResultDTO.createByJson
@@ -189,7 +190,7 @@ class PerfumeService {
                 const likePerfumeList: any[] =
                     await likePerfumeDao.readLikeInfo(userIdx, perfumeIdxList);
                 return result.convertType((item: PerfumeThumbDTO) => {
-                    return _.compose(
+                    return fp.compose(
                         ...commonJob,
                         this.isLikeJob(likePerfumeList),
                         PerfumeThumbDTO.createByJson
@@ -255,7 +256,7 @@ class PerfumeService {
                 const likePerfumeList: any[] =
                     await likePerfumeDao.readLikeInfo(userIdx, perfumeIdxList);
                 return result.convertType((item: PerfumeThumbDTO) => {
-                    return _.compose(
+                    return fp.compose(
                         ...commonJob,
                         this.isLikeJob(likePerfumeList),
                         PerfumeThumbDTO.createByJson
@@ -303,7 +304,7 @@ class PerfumeService {
                     await keywordDao.readAllOfPerfumeIdxList(perfumeIdxList);
 
                 return result.convertType((item: PerfumeThumbDTO) => {
-                    return _.compose(
+                    return fp.compose(
                         ...commonJob,
                         this.isLikeJob(likePerfumeList),
                         this.addKeyword(joinKeywordList),
@@ -369,7 +370,7 @@ class PerfumeService {
                             perfumeIdxList
                         );
                     return result.convertType((item: PerfumeThumbDTO) => {
-                        return _.compose(
+                        return fp.compose(
                             ...commonJob,
                             this.isLikeJob(likePerfumeList),
                             PerfumeThumbDTO.createByJson
@@ -402,7 +403,7 @@ class PerfumeService {
                 const likePerfumeList: any[] =
                     await likePerfumeDao.readLikeInfo(userIdx, perfumeIdxList);
                 return result.convertType((item: PerfumeThumbDTO) => {
-                    return _.compose(
+                    return fp.compose(
                         ...commonJob,
                         this.isLikeJob(likePerfumeList),
                         PerfumeThumbDTO.createByJson
@@ -519,13 +520,11 @@ class PerfumeService {
     }
 
     private isLikeJob(likePerfumeList: any[]): (obj: any) => any {
-        const likeMap: { [key: string]: boolean } = likePerfumeList.reduce(
-            (prev: { [key: string]: boolean }, cur: any) => {
-                prev[cur.perfumeIdx] = true;
-                return prev;
-            },
-            {}
-        );
+        const likeMap: { [key: string]: boolean } = _.chain(likePerfumeList)
+            .keyBy('perfumeIdx')
+            .mapValues(() => true)
+            .value();
+
         return (obj: any) => {
             const ret: any = Object.assign({}, obj);
             ret.isLiked = likeMap[obj.perfumeIdx] ? true : false;
@@ -534,14 +533,10 @@ class PerfumeService {
     }
 
     private addKeyword(joinKeywordList: any[]): (obj: any) => any {
-        const keywordMap: { [key: number]: string[] } = joinKeywordList.reduce(
-            (prev: { [key: number]: string[] }, cur: any) => {
-                if (!prev[cur.perfumeIdx]) prev[cur.perfumeIdx] = [];
-                prev[cur.perfumeIdx].push(cur.Keyword.name);
-                return prev;
-            },
-            {}
-        );
+        const keywordMap: { [key: number]: string[] } = _.chain(joinKeywordList)
+            .groupBy('perfumeIdx')
+            .mapValues((arr) => arr.map((it) => it.Keyword.name))
+            .value();
 
         return (obj: any) => {
             const ret: any = Object.assign({}, obj);
