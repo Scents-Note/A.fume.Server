@@ -25,8 +25,8 @@
                     "@libs" : "./src/lib",
                     "@middleware" : "./src/middleware",
                     "@configs" : "./src/config",
-                    "@request" : "./src/data/request",
-                    "@response" : "./src/data/response",
+                    "@request" : "./src/controllers/definitions/request",
+                    "@response" : "./src/controllers/definitions/response",
                     "@dto" : "./src/data/dto"
                 }
             }

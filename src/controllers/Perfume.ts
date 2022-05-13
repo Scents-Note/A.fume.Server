@@ -135,8 +135,7 @@ const getPerfume: RequestHandler = (
  *       - in: body
  *         name: body
  *         schema:
- *           allOf:
- *           - $ref: '#/definitions/PerfumeSearchRequest'
+ *           $ref: '#/definitions/PerfumeSearchRequest'
  *       - name: sort
  *         in: query
  *         type: string
@@ -190,7 +189,6 @@ const searchPerfume: RequestHandler = (
     logger.debug(
         `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, query = ${req.query}, body = ${req.body})`
     );
-
     const perfumeSearchDTO: PerfumeSearchDTO =
         perfumeSearchRequest.toPerfumeSearchDTO(loginUserIdx);
     Perfume.searchPerfume(perfumeSearchDTO, pagingRequestDTO.toPageDTO())
@@ -481,13 +479,7 @@ const recommendPersonalPerfume: RequestHandler = (
  *                     type: array
  *                     items:
  *                       allOf:
- *                       - $ref: '#/definitions/Perfume'
- *                       - type: object
- *                         properties:
- *                           isLiked:
- *                             type: boolean
- *                         example:
- *                           isLiked: true
+ *                       - $ref: '#/definitions/PerfumeRecommendResponse'
  *       x-swagger-router-controller: Perfume
  * */
 const recommendCommonPerfume: RequestHandler = (
@@ -554,7 +546,8 @@ const recommendCommonPerfume: RequestHandler = (
  *                   rows:
  *                     type: array
  *                     items:
- *                       $ref: '#/definitions/PerfumeResponse'
+ *                       allOf:
+ *                       - $ref: '#/definitions/PerfumeResponse'
  *         401:
  *           description: Token is missing or invalid
  *       x-swagger-router-controller: Perfume

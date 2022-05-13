@@ -57,11 +57,11 @@ const options: swaggerJSDoc.Options = {
         basePath: '/A.fume/api/0.0.1',
     },
     apis: [
+        './src/controllers/definitions/request/*.ts',
+        './src/controllers/definitions/response/*.ts',
         './src/controllers/*.ts',
         './src/controllers/*.js',
         './src/middleware/auth.ts',
-        './src/controller/definitions/request/*.ts',
-        './src/controller/definitions/response/*.ts',
         './api/swagger.yaml',
         './api/definitions/*.yaml',
     ],

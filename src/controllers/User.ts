@@ -61,8 +61,7 @@ let User: UserService = new UserService();
  *         description: Created user object
  *         required: true
  *         schema:
- *           allOf:
- *           - $ref: '#/definitions/UserRegisterRequest'
+ *           $ref: '#/definitions/UserRegisterRequest'
  *       responses:
  *         200:
  *           description: success
