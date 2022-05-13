@@ -15,8 +15,9 @@ class PagingRequestDTO {
     }
 
     static createByJson(json: any): PagingRequestDTO {
-        const pagingSize: number = json.pagingSize || DEFAULT_PAGE_SIZE;
-        const lastPosition: number = json.lastPosition || -1;
+        const pagingSize: number =
+            parseInt(json.pagingSize) || DEFAULT_PAGE_SIZE;
+        const lastPosition: number = parseInt(json.lastPosition) || -1;
         const sort: string = json.sort || 'createdAt_dsc';
         return new PagingRequestDTO(pagingSize, lastPosition, sort);
     }
