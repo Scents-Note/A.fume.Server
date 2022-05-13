@@ -97,16 +97,13 @@ class SeriesService {
                 },
                 new Map<number, IngredientDTO[]>()
             );
-        return new ListAndCountDTO<SeriesFilterDTO>(
-            result.count,
-            result.rows.map((it: SeriesDTO) => {
-                return SeriesFilterDTO.createByJson(
-                    Object.assign({}, it, {
-                        ingredients: ingredientMap.get(it.seriesIdx) || [],
-                    })
-                );
-            })
-        );
+        return result.convertType((it: SeriesDTO): SeriesFilterDTO => {
+            return SeriesFilterDTO.createByJson(
+                Object.assign({}, it, {
+                    ingredients: ingredientMap.get(it.seriesIdx) || [],
+                })
+            );
+        });
     }
 
     /**

@@ -88,10 +88,7 @@ const getSeriesAll: RequestHandler = (
         .then((result: ListAndCountDTO<SeriesDTO>) => {
             // remove etc by concept
             result = removeEtc(result);
-            return new ListAndCountDTO<SeriesResponse>(
-                result.count,
-                result.rows.map(SeriesResponse.create)
-            );
+            return result.convertType(SeriesResponse.create);
         })
         .then((response: ListAndCountDTO<SeriesResponse>) => {
             LoggerHelper.logTruncated(
@@ -117,10 +114,7 @@ const getIngredients: RequestHandler = (
     const seriesIdx: number = parseInt(req.params['seriesIdx']);
     Ingredient.getIngredientList(seriesIdx)
         .then((result: ListAndCountDTO<IngredientDTO>) => {
-            return new ListAndCountDTO(
-                result.count,
-                result.rows.map(IngredientResponse.createByJson)
-            );
+            return result.convertType(IngredientResponse.createByJson);
         })
         .then((response: ListAndCountDTO<IngredientResponse>) => {
             LoggerHelper.logTruncated(
@@ -190,10 +184,7 @@ const getFilterSeries: RequestHandler = (
     );
     Series.getFilterSeries(pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<SeriesFilterDTO>) => {
-            return new ListAndCountDTO(
-                result.count,
-                result.rows.map(SeriesFilterResponse.create)
-            );
+            return result.convertType(SeriesFilterResponse.create);
         })
         .then((response: ListAndCountDTO<SeriesFilterResponse>) => {
             LoggerHelper.logTruncated(

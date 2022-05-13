@@ -42,15 +42,6 @@ class PerfumeSearchRequest {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
 
-    static createByJson(json: any): PerfumeSearchRequest {
-        return new PerfumeSearchRequest(
-            json.keywordList,
-            json.brandList,
-            json.ingredientList,
-            json.searchText
-        );
-    }
-
     public toPerfumeSearchDTO(userIdx: number): PerfumeSearchDTO {
         return new PerfumeSearchDTO(
             this.keywordList,
@@ -58,6 +49,15 @@ class PerfumeSearchRequest {
             this.ingredientList,
             this.searchText,
             userIdx
+        );
+    }
+
+    static createByJson(json: any): PerfumeSearchRequest {
+        return new PerfumeSearchRequest(
+            json.keywordList,
+            json.brandList,
+            json.ingredientList,
+            json.searchText
         );
     }
 }

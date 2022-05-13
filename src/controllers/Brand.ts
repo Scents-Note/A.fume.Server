@@ -75,10 +75,7 @@ const getBrandAll: RequestHandler = (
     logger.debug(`${LOG_TAG} getBrandAll()`);
     Brand.getBrandAll()
         .then((result: ListAndCountDTO<BrandDTO>) => {
-            return new ListAndCountDTO<BrandResponse>(
-                result.count,
-                result.rows.map(BrandResponse.createByJson)
-            );
+            return result.convertType(BrandResponse.createByJson);
         })
         .then((response: ListAndCountDTO<BrandResponse>) => {
             LoggerHelper.logTruncated(

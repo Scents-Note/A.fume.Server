@@ -195,10 +195,7 @@ const searchPerfume: RequestHandler = (
         perfumeSearchRequest.toPerfumeSearchDTO(loginUserIdx);
     Perfume.searchPerfume(perfumeSearchDTO, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
-            return new ListAndCountDTO<PerfumeResponse>(
-                result.count,
-                result.rows.map(PerfumeResponse.createByJson)
-            );
+            return result.convertType(PerfumeResponse.createByJson);
         })
         .then((response: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
@@ -345,10 +342,7 @@ const getRecentPerfume: RequestHandler = (
     );
     Perfume.recentSearch(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-            return new ListAndCountDTO<PerfumeResponse>(
-                result.count,
-                result.rows.map(PerfumeResponse.createByJson)
-            );
+            return result.convertType(PerfumeResponse.createByJson);
         })
         .then((response: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
@@ -429,10 +423,7 @@ const recommendPersonalPerfume: RequestHandler = (
     );
     Perfume.recommendByUser(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-            return new ListAndCountDTO<PerfumeRecommendResponse>(
-                result.count,
-                result.rows.map(PerfumeRecommendResponse.createByJson)
-            );
+            return result.convertType(PerfumeRecommendResponse.createByJson);
         })
         .then((response: ListAndCountDTO<PerfumeRecommendResponse>) => {
             LoggerHelper.logTruncated(
@@ -513,10 +504,7 @@ const recommendCommonPerfume: RequestHandler = (
     );
     Perfume.recommendByUser(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-            return new ListAndCountDTO<PerfumeRecommendResponse>(
-                result.count,
-                result.rows.map(PerfumeRecommendResponse.createByJson)
-            );
+            return result.convertType(PerfumeRecommendResponse.createByJson);
         })
         .then((response: ListAndCountDTO<PerfumeRecommendResponse>) => {
             LoggerHelper.logTruncated(
@@ -580,10 +568,7 @@ const getSurveyPerfume: RequestHandler = (
     logger.debug(`${LOG_TAG} getSurveyPerfume(userIdx = ${loginUserIdx})`);
     Perfume.getSurveyPerfume(loginUserIdx)
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-            return new ListAndCountDTO<PerfumeResponse>(
-                result.count,
-                result.rows.map(PerfumeResponse.createByJson)
-            );
+            return result.convertType(PerfumeResponse.createByJson);
         })
         .then((response: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
@@ -660,10 +645,7 @@ const getNewPerfume: RequestHandler = (
     );
     Perfume.getNewPerfume(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-            return new ListAndCountDTO<PerfumeResponse>(
-                result.count,
-                result.rows.map(PerfumeResponse.createByJson)
-            );
+            return result.convertType(PerfumeResponse.createByJson);
         })
         .then((response: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
@@ -747,10 +729,7 @@ const getLikedPerfume: RequestHandler = (
     }
     Perfume.getLikedPerfume(userIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-            return new ListAndCountDTO<PerfumeResponse>(
-                result.count,
-                result.rows.map(PerfumeResponse.createByJson)
-            );
+            return result.convertType(PerfumeResponse.createByJson);
         })
         .then((response: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
