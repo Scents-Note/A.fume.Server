@@ -41,6 +41,8 @@ import {
 } from '@dto/index';
 
 const LOG_TAG: string = '[Perfume/Controller]';
+const DEFAULT_RECOMMEND_ITEM_SIZE: number = 7;
+const DEFAULT_NEWPERFUME_ITEM_SIZE: number = 7;
 
 let Perfume: PerfumeService = new PerfumeService();
 let SearchHistory: SearchHistoryService = new SearchHistoryService();
@@ -338,6 +340,7 @@ const getRecentPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
+    req.query.pagingSize = req.query.pagingSize || DEFAULT_NEWPERFUME_ITEM_SIZE;
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
@@ -420,6 +423,7 @@ const recommendPersonalPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
+    req.query.pagingSize = req.query.pagingSize || DEFAULT_RECOMMENT_SIZE;
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
@@ -649,7 +653,7 @@ const getNewPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
-    req.query.pagingSize = req.query.pagingSize || 7;
+    req.query.pagingSize = req.query.pagingSize || DEFAULT_RECOMMEND_ITEM_SIZE;
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
