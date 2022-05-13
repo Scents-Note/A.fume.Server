@@ -336,14 +336,12 @@ describe('# Perfume Service Test', () => {
             ) => {
                 return [{ userIdx, perfumeIdx: 2 }];
             };
-            const perfumeSearchDTO: PerfumeSearchDTO = PerfumeSearchDTO.create(
-                1,
-                {
-                    keywordList: [],
-                    brandList: [],
-                    ingredientList: [],
-                    searchText: '',
-                }
+            const perfumeSearchDTO: PerfumeSearchDTO = new PerfumeSearchDTO(
+                [],
+                [],
+                [],
+                '',
+                1
             );
             Perfume.searchPerfume(perfumeSearchDTO, defaultPagingDTO)
                 .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {

@@ -37,7 +37,6 @@ import {
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
     PerfumeSearchDTO,
-    PagingDTO,
 } from '@dto/index';
 
 const LOG_TAG: string = '[Perfume/Controller]';
@@ -184,9 +183,7 @@ const searchPerfume: RequestHandler = (
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx || -1;
     const perfumeSearchRequest: PerfumeSearchRequest =
-        PerfumeSearchRequest.createByJson(
-            Object.assign({ userIdx: loginUserIdx }, req.body)
-        );
+        PerfumeSearchRequest.createByJson(req.body);
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
@@ -194,10 +191,8 @@ const searchPerfume: RequestHandler = (
         `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, query = ${req.query}, body = ${req.body})`
     );
 
-    const perfumeSearchDTO: PerfumeSearchDTO = PerfumeSearchDTO.create(
-        loginUserIdx,
-        perfumeSearchRequest
-    );
+    const perfumeSearchDTO: PerfumeSearchDTO =
+        perfumeSearchRequest.toPerfumeSearchDTO(loginUserIdx);
     Perfume.searchPerfume(perfumeSearchDTO, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
             return new ListAndCountDTO<PerfumeResponse>(

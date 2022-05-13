@@ -1,3 +1,5 @@
+import { PerfumeSearchDTO } from '@src/data/dto';
+
 /**
  * @swagger
  * definitions:
@@ -46,6 +48,16 @@ class PerfumeSearchRequest {
             json.brandList,
             json.ingredientList,
             json.searchText
+        );
+    }
+
+    public toPerfumeSearchDTO(userIdx: number): PerfumeSearchDTO {
+        return new PerfumeSearchDTO(
+            this.keywordList,
+            this.brandList,
+            this.ingredientList,
+            this.searchText,
+            userIdx
         );
     }
 }

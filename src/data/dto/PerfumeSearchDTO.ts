@@ -21,22 +21,6 @@ class PerfumeSearchDTO {
     public toString(): string {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
-
-    static create(userIdx: number, perfumeSearchRequestDTO: any) {
-        const {
-            keywordList: keywordIdxList,
-            brandList: brandIdxList,
-            ingredientList: ingredientIdxList,
-            searchText,
-        } = perfumeSearchRequestDTO;
-        return new PerfumeSearchDTO(
-            keywordIdxList,
-            brandIdxList,
-            ingredientIdxList,
-            searchText,
-            userIdx
-        );
-    }
 }
 
 export { PerfumeSearchDTO };
