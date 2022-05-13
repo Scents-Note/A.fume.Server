@@ -342,13 +342,15 @@ class PerfumeService {
      * @returns {Promise<Perfume[]>}
      **/
     getNewPerfume(
-        userIdx: number, // TODO userIdx 삭제하기
+        userIdx: number,
         pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
         logger.debug(
             `${LOG_TAG} getNewPerfume(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
-        pagingDTO.order = [['createdAt', 'desc']];
+        pagingDTO = Object.assign(pagingDTO, {
+            order: [['createdAt', 'desc']],
+        });
         return perfumeDao
             .readPerfume(undefined, pagingDTO)
             .then(async (result: ListAndCountDTO<PerfumeThumbDTO>) => {

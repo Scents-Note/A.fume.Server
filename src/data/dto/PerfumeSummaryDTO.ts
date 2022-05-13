@@ -6,11 +6,11 @@ import {
 } from '@utils/constants';
 
 class PerfumeSummaryDTO {
-    score: number;
-    seasonal: number[];
-    sillage: number[];
-    longevity: number[];
-    gender: number[];
+    readonly score: number;
+    readonly seasonal: number[];
+    readonly sillage: number[];
+    readonly longevity: number[];
+    readonly gender: number[];
     constructor(
         score: number,
         seasonal: number[],
@@ -110,7 +110,7 @@ class PerfumeSummaryDTO {
         function calculate(defaultValue: number, userValue: number) {
             return userValue * (1 - defaultRate) + defaultValue * defaultRate;
         }
-        merged.score = calculate(defaultSummary.score, merged.score);
+        const mergedScore = calculate(defaultSummary.score, merged.score);
         for (let key in merged.seasonal) {
             merged.seasonal[key] = calculate(
                 defaultSummary.seasonal[key],
@@ -136,7 +136,7 @@ class PerfumeSummaryDTO {
             );
         }
         return new PerfumeSummaryDTO(
-            merged.score,
+            mergedScore,
             this.normalize(merged.seasonal),
             this.normalize(merged.sillage),
             this.normalize(merged.longevity),

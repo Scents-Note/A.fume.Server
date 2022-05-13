@@ -3,8 +3,8 @@ import { GRADE_MANAGER } from '@utils/constants';
 import { UserDTO } from '@dto/UserDTO';
 
 class UserAuthDTO {
-    isAuth: boolean;
-    isAdmin: boolean;
+    readonly isAuth: boolean;
+    readonly isAdmin: boolean;
     constructor(isAuth: boolean, isAdmin: boolean) {
         this.isAuth = isAuth;
         this.isAdmin = isAdmin;

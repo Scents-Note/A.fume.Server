@@ -1,9 +1,9 @@
 class PerfumeSearchDTO {
-    keywordIdxList: number[];
-    brandIdxList: number[];
-    ingredientIdxList: number[];
-    searchText: string;
-    userIdx: number;
+    readonly keywordIdxList: number[];
+    readonly brandIdxList: number[];
+    readonly ingredientIdxList: number[];
+    readonly searchText: string;
+    readonly userIdx: number;
     constructor(
         keywordIdxList: number[],
         brandIdxList: number[],

@@ -1,14 +1,14 @@
 import { BrandDTO } from '@dto/BrandDTO';
 
 class PerfumeThumbDTO {
-    perfumeIdx: number;
-    name: string;
-    brandName: string;
-    isLiked: boolean;
-    imageUrl: string;
-    createdAt: Date;
-    updatedAt: Date;
-    Brand: BrandDTO;
+    readonly perfumeIdx: number;
+    readonly name: string;
+    readonly brandName: string;
+    readonly isLiked: boolean;
+    readonly imageUrl: string;
+    readonly createdAt: Date;
+    readonly updatedAt: Date;
+    readonly Brand: BrandDTO;
     constructor(
         perfumeIdx: number,
         name: string,

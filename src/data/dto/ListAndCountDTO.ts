@@ -1,6 +1,6 @@
 class ListAndCountDTO<Type> {
-    count: number;
-    rows: Type[];
+    readonly count: number;
+    readonly rows: Type[];
     constructor(count: number, rows: Type[]) {
         this.count = count;
         this.rows = rows;

@@ -28,13 +28,13 @@ import { GenderInvMap, GenderKey } from '@utils/enumType';
  *         example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZWZyZXNoVG9rZW4iOnsidXNlcklkeCI6MSwiZW1haWwiOiJoZWUueW91bkBzYW1zdW5nLmNvbSIsIm5pY2tuYW1lIjoi7L-87Lm066eoIiwiZ2VuZGVyIjoxLCJwaG9uZSI6IjAxMC0yMDgxLTM4MTgiLCJiaXJ0aCI6MTk5NSwiZ3JhZGUiOjAsImFjY2Vzc1RpbWUiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoiLCJjcmVhdGVkQXQiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoiLCJ1cGRhdGVkQXQiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoifSwiaWF0IjoxNjA5ODUxODIzLCJleHAiOjE2MTE1Nzk4MjMsImlzcyI6ImFmdW1lLWphY2twb3QifQ.Vb9-KO1DWOBhuVAoBzh0USybt5b5YpZqfqG1OU3snUY
  *  */
 class LoginResponse {
-    userIdx: number;
-    nickname: string;
-    gender: GenderKey;
-    email: string;
-    birth: number;
-    token: string;
-    refreshToken: string;
+    readonly userIdx: number;
+    readonly nickname: string;
+    readonly gender: GenderKey;
+    readonly email: string;
+    readonly birth: number;
+    readonly token: string;
+    readonly refreshToken: string;
     constructor(
         userIdx: number,
         nickname: string,
@@ -86,8 +86,8 @@ class LoginResponse {
  *         example: false
  *  */
 class UserAuthResponse {
-    isAuth: boolean;
-    isAdmin: boolean;
+    readonly isAuth: boolean;
+    readonly isAdmin: boolean;
     constructor(isAuth: boolean, isAdmin: boolean) {
         this.isAuth = isAuth;
         this.isAdmin = isAdmin;
@@ -120,9 +120,9 @@ class UserAuthResponse {
  *       refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZWZyZXNoVG9rZW4iOnsidXNlcklkeCI6MSwiZW1haWwiOiJoZWUueW91bkBzYW1zdW5nLmNvbSIsIm5pY2tuYW1lIjoi7L-87Lm066eoIiwiZ2VuZGVyIjoxLCJwaG9uZSI6IjAxMC0yMDgxLTM4MTgiLCJiaXJ0aCI6MTk5NSwiZ3JhZGUiOjAsImFjY2Vzc1RpbWUiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoiLCJjcmVhdGVkQXQiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoiLCJ1cGRhdGVkQXQiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoifSwiaWF0IjoxNjA5ODUxODIzLCJleHAiOjE2MTE1Nzk4MjMsImlzcyI6ImFmdW1lLWphY2twb3QifQ.Vb9-KO1DWOBhuVAoBzh0USybt5b5YpZqfqG1OU3snUY
  *  */
 class UserRegisterResponse {
-    userIdx: number;
-    token: string;
-    refreshToken: string;
+    readonly userIdx: number;
+    readonly token: string;
+    readonly refreshToken: string;
     constructor(userIdx: number, token: string, refreshToken: string) {
         this.userIdx = userIdx;
         this.token = token;
@@ -170,11 +170,11 @@ class UserRegisterResponse {
  *       birth: 1995
  *  */
 class UserResponse {
-    userIdx: number;
-    nickname: string;
-    gender: GenderKey;
-    email: string;
-    birth: number;
+    readonly userIdx: number;
+    readonly nickname: string;
+    readonly gender: GenderKey;
+    readonly email: string;
+    readonly birth: number;
     constructor(
         userIdx: number,
         nickname: string,

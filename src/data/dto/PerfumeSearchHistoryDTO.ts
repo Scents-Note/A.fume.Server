@@ -2,15 +2,15 @@ import { BrandDTO } from '@dto/BrandDTO';
 import { PerfumeThumbDTO } from '@dto/PerfumeThumbDTO';
 
 type SearchHistory = {
-    userIdx: number;
-    perfumeIdx: number;
-    count: number;
-    createdAt: Date;
-    updatedAt: Date;
+    readonly userIdx: number;
+    readonly perfumeIdx: number;
+    readonly count: number;
+    readonly createdAt: Date;
+    readonly updatedAt: Date;
 };
 
 class PerfumeSearchHistoryDTO extends PerfumeThumbDTO {
-    SearchHistory: SearchHistory;
+    readonly SearchHistory: SearchHistory;
     constructor(
         perfumeIdx: number,
         name: string,

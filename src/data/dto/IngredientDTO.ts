@@ -1,12 +1,12 @@
 class IngredientDTO {
-    ingredientIdx: number;
-    name: string;
-    englishName: string;
-    description: string;
-    imageUrl: string;
-    seriesIdx: number;
-    createdAt: string;
-    updatedAt: string;
+    readonly ingredientIdx: number;
+    readonly name: string;
+    readonly englishName: string;
+    readonly description: string;
+    readonly imageUrl: string;
+    readonly seriesIdx: number;
+    readonly createdAt: string;
+    readonly updatedAt: string;
     constructor(
         ingredientIdx: number,
         name: string,

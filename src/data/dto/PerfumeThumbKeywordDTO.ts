@@ -1,10 +1,10 @@
 class PerfumeThumbKeywordDTO {
-    perfumeIdx: number;
-    name: string;
-    brandName: string;
-    isLiked: boolean;
-    imageUrl: string;
-    keywordList: string[];
+    readonly perfumeIdx: number;
+    readonly name: string;
+    readonly brandName: string;
+    readonly isLiked: boolean;
+    readonly imageUrl: string;
+    readonly keywordList: string[];
     constructor(
         perfumeIdx: number,
         name: string,

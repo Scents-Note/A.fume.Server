@@ -1,9 +1,9 @@
 class SearchHistoryDTO {
-    userIdx: number;
-    perfumeIdx: number;
-    count: number;
-    createdAt: Date;
-    updatedAt: Date;
+    readonly userIdx: number;
+    readonly perfumeIdx: number;
+    readonly count: number;
+    readonly createdAt: Date;
+    readonly updatedAt: Date;
     constructor(
         userIdx: number,
         perfumeIdx: number,

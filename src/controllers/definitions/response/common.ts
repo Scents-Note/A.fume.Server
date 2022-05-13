@@ -1,5 +1,5 @@
 class SimpleResponseDTO {
-    message: string;
+    readonly message: string;
     constructor(message: string) {
         this.message = message;
     }
@@ -10,7 +10,7 @@ class SimpleResponseDTO {
 }
 
 class ResponseDTO<Type> extends SimpleResponseDTO {
-    data: Type;
+    readonly data: Type;
     constructor(message: string, data: Type) {
         super(message);
         this.data = data;

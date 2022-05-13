@@ -1,14 +1,14 @@
 import { Gender, Grade } from '@utils/enumType';
 
 class UserInputDTO {
-    userIdx?: number;
-    nickname?: string;
-    password?: string;
-    gender?: Gender;
-    email?: string;
-    birth?: number;
-    grade?: Grade;
-    accessTime?: string;
+    readonly userIdx?: number;
+    readonly nickname?: string;
+    readonly password?: string;
+    readonly gender?: Gender;
+    readonly email?: string;
+    readonly birth?: number;
+    readonly grade?: Grade;
+    readonly accessTime?: string;
     constructor(
         userIdx?: number,
         nickname?: string,

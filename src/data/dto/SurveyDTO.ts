@@ -1,8 +1,8 @@
 class SurveyDTO {
-    userIdx: number;
-    surveyKeywordList: number[];
-    surveyPerfumeList: number[];
-    surveySeriesList: number[];
+    readonly userIdx: number;
+    readonly surveyKeywordList: number[];
+    readonly surveyPerfumeList: number[];
+    readonly surveySeriesList: number[];
     constructor(
         userIdx: number,
         surveyKeywordList: number[],

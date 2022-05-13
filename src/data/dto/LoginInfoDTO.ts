@@ -1,13 +1,13 @@
 import { Gender } from '@utils/enumType';
 
 class LoginInfoDTO {
-    userIdx: number;
-    nickname: string;
-    gender: Gender;
-    email: string;
-    birth: number;
-    token: string;
-    refreshToken: string;
+    readonly userIdx: number;
+    readonly nickname: string;
+    readonly gender: Gender;
+    readonly email: string;
+    readonly birth: number;
+    readonly token: string;
+    readonly refreshToken: string;
     constructor(
         userIdx: number,
         nickname: string,

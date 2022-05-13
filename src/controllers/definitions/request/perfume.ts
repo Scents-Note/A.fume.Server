@@ -23,10 +23,10 @@ import { PerfumeSearchDTO } from '@src/data/dto';
  *           type: integer
  * */
 class PerfumeSearchRequest {
-    keywordList: number[];
-    brandList: number[];
-    ingredientList: number[];
-    searchText: string;
+    readonly keywordList: number[];
+    readonly brandList: number[];
+    readonly ingredientList: number[];
+    readonly searchText: string;
     constructor(
         keywordList: number[],
         brandList: number[],

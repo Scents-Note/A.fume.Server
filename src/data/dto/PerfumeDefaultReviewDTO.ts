@@ -21,13 +21,13 @@ type Keyword = {
     name: string;
 };
 class PerfumeDefaultReviewDTO {
-    perfumeIdx: number;
-    rating: number;
-    seasonal: Seasonal;
-    gender: Gender;
-    sillage: Sillage;
-    longevity: Longevity;
-    keywordList: Keyword[];
+    readonly perfumeIdx: number;
+    readonly rating: number;
+    readonly seasonal: Seasonal;
+    readonly gender: Gender;
+    readonly sillage: Sillage;
+    readonly longevity: Longevity;
+    readonly keywordList: Keyword[];
     constructor(
         perfumeIdx: number,
         rating: number,

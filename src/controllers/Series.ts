@@ -16,7 +16,6 @@ import {
     SeriesDTO,
     SeriesFilterDTO,
     IngredientDTO,
-    PagingDTO,
 } from '@dto/index';
 
 import {

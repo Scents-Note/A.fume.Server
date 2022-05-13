@@ -1,14 +1,14 @@
 import { BrandDTO } from '@dto/BrandDTO';
 
 class PerfumeDTO {
-    perfumeIdx: number;
-    name: string;
-    brandName: string;
-    story: string;
-    abundanceRate: number;
-    volumeAndPrice: { [key: string]: number }[];
-    imageUrl: string;
-    Brand: BrandDTO;
+    readonly perfumeIdx: number;
+    readonly name: string;
+    readonly brandName: string;
+    readonly story: string;
+    readonly abundanceRate: number;
+    readonly volumeAndPrice: { [key: string]: number }[];
+    readonly imageUrl: string;
+    readonly Brand: BrandDTO;
     constructor(
         perfumeIdx: number,
         name: string,

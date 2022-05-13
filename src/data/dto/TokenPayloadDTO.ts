@@ -1,9 +1,9 @@
 class TokenPayloadDTO {
-    userIdx: number;
-    nickname: string;
-    gender: string;
-    email: string;
-    birth: number;
+    readonly userIdx: number;
+    readonly nickname: string;
+    readonly gender: string;
+    readonly email: string;
+    readonly birth: number;
     constructor(
         userIdx: number,
         nickname: string,

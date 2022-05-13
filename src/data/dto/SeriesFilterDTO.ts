@@ -2,7 +2,7 @@ import { SeriesDTO } from '@dto/SeriesDTO';
 import { IngredientDTO } from '@dto/IngredientDTO';
 
 class SeriesFilterDTO extends SeriesDTO {
-    ingredients: IngredientDTO[];
+    readonly ingredients: IngredientDTO[];
     constructor(
         seriesIdx: number,
         name: string,

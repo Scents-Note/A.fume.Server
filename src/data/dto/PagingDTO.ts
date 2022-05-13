@@ -1,9 +1,9 @@
 import { DEFAULT_PAGE_SIZE } from '@src/utils/constants';
 
 class PagingDTO {
-    offset: number;
-    limit: number;
-    order: string[][] | undefined;
+    readonly offset: number;
+    readonly limit: number;
+    readonly order: string[][] | undefined;
     constructor(offset: number, limit: number, order: string[][] | undefined) {
         this.offset = offset;
         this.limit = limit;

@@ -36,12 +36,12 @@ interface UserInputRequest {
  *         enum: [USER, MANAGER, SYSTEM_ADMIN]
  *  */
 class UserEditRequest implements UserInputRequest {
-    grade?: GradeKey;
-    gender?: GenderKey;
-    nickname?: string;
-    password?: string;
-    email?: string;
-    birth?: number;
+    readonly grade?: GradeKey;
+    readonly gender?: GenderKey;
+    readonly nickname?: string;
+    readonly password?: string;
+    readonly email?: string;
+    readonly birth?: number;
     constructor(
         nickname?: string,
         password?: string,
@@ -106,12 +106,12 @@ class UserEditRequest implements UserInputRequest {
  *         required: true
  *  */
 class UserRegisterRequest implements UserInputRequest {
-    nickname: string;
-    password: string;
-    gender: GenderKey;
-    birth: number;
-    email: string;
-    grade: GradeKey;
+    readonly nickname: string;
+    readonly password: string;
+    readonly gender: GenderKey;
+    readonly birth: number;
+    readonly email: string;
+    readonly grade: GradeKey;
     constructor(
         nickname: string,
         password: string,

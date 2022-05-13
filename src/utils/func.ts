@@ -3,13 +3,12 @@ import { ListAndCountDTO } from '@dto/index';
 
 type Convert = (obj: any) => any;
 function updateRows(result: ListAndCountDTO<Object>, ...jobs: Convert[]) {
-    const rows = result.rows;
-    result.rows = rows.map((it: any) => {
+    const updatedRows = result.rows.map((it: any) => {
         return jobs.reduce((prev: any, cur: any) => {
             return cur(prev);
         }, it);
     });
-    return result;
+    return new ListAndCountDTO<Object>(result.count, updatedRows);
 }
 
 function updateList(result: any[], ...jobs: Convert[]) {

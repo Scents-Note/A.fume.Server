@@ -1,12 +1,12 @@
-import { PagingDTO } from '@src/data/dto';
-import { DEFAULT_PAGE_SIZE } from '@src/utils/constants';
+import { PagingDTO } from '@dto/index';
+import { DEFAULT_PAGE_SIZE } from '@utils/constants';
 
 type Ascending = 'DESC' | 'ASC';
 
 class PagingRequestDTO {
-    requestSize: number;
-    lastPosition: number;
-    sort: string;
+    readonly requestSize: number;
+    readonly lastPosition: number;
+    readonly sort: string;
     constructor(requestSize: number, lastPosition: number, sort: string) {
         this.requestSize = requestSize;
         this.lastPosition = lastPosition;

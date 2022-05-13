@@ -19,9 +19,9 @@ import { IngredientResponse } from '@response/ingredient';
  *       imageUrl: http://
  *  */
 class SeriesResponse {
-    seriesIdx: number;
-    name: string;
-    imageUrl: string;
+    readonly seriesIdx: number;
+    readonly name: string;
+    readonly imageUrl: string;
     constructor(seriesIdx: number, name: string, imageUrl: string) {
         this.seriesIdx = seriesIdx;
         this.name = name;
@@ -64,9 +64,9 @@ class SeriesResponse {
  *       ingredients: []
  *  */
 class SeriesFilterResponse {
-    seriesIdx: number;
-    name: string;
-    ingredients: IngredientResponse[];
+    readonly seriesIdx: number;
+    readonly name: string;
+    readonly ingredients: IngredientResponse[];
     constructor(
         seriesIdx: number,
         name: string,
