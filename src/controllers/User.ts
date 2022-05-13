@@ -61,8 +61,7 @@ let User: UserService = new UserService();
  *         description: Created user object
  *         required: true
  *         schema:
- *           allOf:
- *           - $ref: '#/definitions/UserRegisterRequest'
+ *           $ref: '#/definitions/UserRegisterRequest'
  *       responses:
  *         200:
  *           description: success
@@ -92,9 +91,7 @@ const registerUser: RequestHandler = (
         next(new UnAuthorizedError());
         return;
     }
-    User.createUser(
-        UserInputDTO.createByRequest(undefined, userRegisterRequest)
-    )
+    User.createUser(userRegisterRequest.toUserInputDTO())
         .then((result: UserInputDTO) => {
             return UserRegisterResponse.createByJson(result);
         })
@@ -599,7 +596,7 @@ const updateUser: RequestHandler = (
         return;
     }
     const userEditRequest = UserEditRequest.createByJson(req.body);
-    User.updateUser(UserInputDTO.createByRequest(tokenUserIdx, userEditRequest))
+    User.updateUser(userEditRequest.toUserInputDTO(userIdx))
         .then((result: UserResponse) => {
             return UserResponse.createByJson(result);
         })

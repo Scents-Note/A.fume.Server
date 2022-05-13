@@ -1,11 +1,11 @@
 class SeriesDTO {
-    seriesIdx: number;
-    name: string;
-    englishName: string;
-    description: string;
-    imageUrl: string;
-    createdAt: string;
-    updatedAt: string;
+    readonly seriesIdx: number;
+    readonly name: string;
+    readonly englishName: string;
+    readonly description: string;
+    readonly imageUrl: string;
+    readonly createdAt: string;
+    readonly updatedAt: string;
     constructor(
         seriesIdx: number,
         name: string,

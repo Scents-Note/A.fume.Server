@@ -152,23 +152,23 @@ type NoteDict = {
  *         type: number
  * */
 class PerfumeDetailResponse {
-    perfumeIdx: number;
-    name: string;
-    brandName: string;
-    story: string;
-    abundanceRate: number;
-    volumeAndPrice: string[];
-    imageUrls: string[];
-    score: number;
-    seasonal: Seasonal;
-    sillage: Sillage;
-    longevity: Longevity;
-    gender: Gender;
-    isLiked: boolean;
-    Keywords: string[];
-    noteType: number;
-    ingredients: NoteDict;
-    reviewIdx: number;
+    readonly perfumeIdx: number;
+    readonly name: string;
+    readonly brandName: string;
+    readonly story: string;
+    readonly abundanceRate: number;
+    readonly volumeAndPrice: string[];
+    readonly imageUrls: string[];
+    readonly score: number;
+    readonly seasonal: Seasonal;
+    readonly sillage: Sillage;
+    readonly longevity: Longevity;
+    readonly gender: Gender;
+    readonly isLiked: boolean;
+    readonly Keywords: string[];
+    readonly noteType: number;
+    readonly ingredients: NoteDict;
+    readonly reviewIdx: number;
     constructor(
         perfumeIdx: number,
         name: string,
@@ -273,11 +273,11 @@ class PerfumeDetailResponse {
  *       isLiked: true
  * */
 class PerfumeResponse {
-    perfumeIdx: number;
-    name: string;
-    brandName: string;
-    imageUrl: string;
-    isLiked: boolean;
+    readonly perfumeIdx: number;
+    readonly name: string;
+    readonly brandName: string;
+    readonly imageUrl: string;
+    readonly isLiked: boolean;
     constructor(
         perfumeIdx: number,
         name: string,
@@ -336,7 +336,7 @@ class PerfumeResponse {
  *       keyword: ['키워드', '키워드2']
  * */
 class PerfumeRecommendResponse extends PerfumeResponse {
-    keywordList: string[];
+    readonly keywordList: string[];
     constructor(
         perfumeIdx: number,
         name: string,

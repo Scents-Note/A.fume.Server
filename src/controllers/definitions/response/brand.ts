@@ -15,8 +15,8 @@ import { BrandFilterDTO } from '@dto/index';
  *       name: (테스트)조말론
  *  */
 class BrandResponse {
-    brandIdx: number;
-    name: string;
+    readonly brandIdx: number;
+    readonly name: string;
     constructor(brandIdx: number, name: string) {
         this.brandIdx = brandIdx;
         this.name = name;
@@ -50,8 +50,8 @@ class BrandResponse {
  *           - $ref: '#/definitions/BrandResponse'
  * */
 class BrandFilterResponse {
-    firstInitial: string;
-    brands: BrandResponse[];
+    readonly firstInitial: string;
+    readonly brands: BrandResponse[];
     constructor(firstInitial: string, brands: BrandResponse[]) {
         this.firstInitial = firstInitial;
         this.brands = brands;

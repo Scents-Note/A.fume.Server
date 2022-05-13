@@ -37,7 +37,6 @@ import {
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
     PerfumeSearchDTO,
-    PagingDTO,
 } from '@dto/index';
 
 const LOG_TAG: string = '[Perfume/Controller]';
@@ -136,8 +135,7 @@ const getPerfume: RequestHandler = (
  *       - in: body
  *         name: body
  *         schema:
- *           allOf:
- *           - $ref: '#/definitions/PerfumeSearchRequest'
+ *           $ref: '#/definitions/PerfumeSearchRequest'
  *       - name: sort
  *         in: query
  *         type: string
@@ -184,26 +182,18 @@ const searchPerfume: RequestHandler = (
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx || -1;
     const perfumeSearchRequest: PerfumeSearchRequest =
-        PerfumeSearchRequest.createByJson(
-            Object.assign({ userIdx: loginUserIdx }, req.body)
-        );
+        PerfumeSearchRequest.createByJson(req.body);
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
     logger.debug(
         `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, query = ${req.query}, body = ${req.body})`
     );
-
-    const perfumeSearchDTO: PerfumeSearchDTO = PerfumeSearchDTO.create(
-        loginUserIdx,
-        perfumeSearchRequest
-    );
-    Perfume.searchPerfume(perfumeSearchDTO, pagingRequestDTO)
+    const perfumeSearchDTO: PerfumeSearchDTO =
+        perfumeSearchRequest.toPerfumeSearchDTO(loginUserIdx);
+    Perfume.searchPerfume(perfumeSearchDTO, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
-            return new ListAndCountDTO<PerfumeResponse>(
-                result.count,
-                result.rows.map(PerfumeResponse.createByJson)
-            );
+            return result.convertType(PerfumeResponse.createByJson);
         })
         .then((response: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
@@ -348,12 +338,9 @@ const getRecentPerfume: RequestHandler = (
     logger.debug(
         `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
     );
-    Perfume.recentSearch(loginUserIdx, pagingRequestDTO)
+    Perfume.recentSearch(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-            return new ListAndCountDTO<PerfumeResponse>(
-                result.count,
-                result.rows.map(PerfumeResponse.createByJson)
-            );
+            return result.convertType(PerfumeResponse.createByJson);
         })
         .then((response: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
@@ -432,12 +419,9 @@ const recommendPersonalPerfume: RequestHandler = (
     logger.debug(
         `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
     );
-    Perfume.recommendByUser(loginUserIdx, pagingRequestDTO)
+    Perfume.recommendByUser(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-            return new ListAndCountDTO<PerfumeRecommendResponse>(
-                result.count,
-                result.rows.map(PerfumeRecommendResponse.createByJson)
-            );
+            return result.convertType(PerfumeRecommendResponse.createByJson);
         })
         .then((response: ListAndCountDTO<PerfumeRecommendResponse>) => {
             LoggerHelper.logTruncated(
@@ -495,13 +479,7 @@ const recommendPersonalPerfume: RequestHandler = (
  *                     type: array
  *                     items:
  *                       allOf:
- *                       - $ref: '#/definitions/Perfume'
- *                       - type: object
- *                         properties:
- *                           isLiked:
- *                             type: boolean
- *                         example:
- *                           isLiked: true
+ *                       - $ref: '#/definitions/PerfumeRecommendResponse'
  *       x-swagger-router-controller: Perfume
  * */
 const recommendCommonPerfume: RequestHandler = (
@@ -516,12 +494,9 @@ const recommendCommonPerfume: RequestHandler = (
     logger.debug(
         `${LOG_TAG} recommendCommonPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
     );
-    Perfume.recommendByUser(loginUserIdx, pagingRequestDTO)
+    Perfume.recommendByUser(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-            return new ListAndCountDTO<PerfumeRecommendResponse>(
-                result.count,
-                result.rows.map(PerfumeRecommendResponse.createByJson)
-            );
+            return result.convertType(PerfumeRecommendResponse.createByJson);
         })
         .then((response: ListAndCountDTO<PerfumeRecommendResponse>) => {
             LoggerHelper.logTruncated(
@@ -571,7 +546,8 @@ const recommendCommonPerfume: RequestHandler = (
  *                   rows:
  *                     type: array
  *                     items:
- *                       $ref: '#/definitions/PerfumeResponse'
+ *                       allOf:
+ *                       - $ref: '#/definitions/PerfumeResponse'
  *         401:
  *           description: Token is missing or invalid
  *       x-swagger-router-controller: Perfume
@@ -585,10 +561,7 @@ const getSurveyPerfume: RequestHandler = (
     logger.debug(`${LOG_TAG} getSurveyPerfume(userIdx = ${loginUserIdx})`);
     Perfume.getSurveyPerfume(loginUserIdx)
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-            return new ListAndCountDTO<PerfumeResponse>(
-                result.count,
-                result.rows.map(PerfumeResponse.createByJson)
-            );
+            return result.convertType(PerfumeResponse.createByJson);
         })
         .then((response: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
@@ -663,13 +636,9 @@ const getNewPerfume: RequestHandler = (
     logger.debug(
         `${LOG_TAG} getNewPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
     );
-    const pagingDTO: PagingDTO = PagingDTO.create(pagingRequestDTO);
-    Perfume.getNewPerfume(loginUserIdx, pagingDTO)
+    Perfume.getNewPerfume(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-            return new ListAndCountDTO<PerfumeResponse>(
-                result.count,
-                result.rows.map(PerfumeResponse.createByJson)
-            );
+            return result.convertType(PerfumeResponse.createByJson);
         })
         .then((response: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(
@@ -751,12 +720,9 @@ const getLikedPerfume: RequestHandler = (
         );
         return;
     }
-    Perfume.getLikedPerfume(userIdx, pagingRequestDTO)
+    Perfume.getLikedPerfume(userIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-            return new ListAndCountDTO<PerfumeResponse>(
-                result.count,
-                result.rows.map(PerfumeResponse.createByJson)
-            );
+            return result.convertType(PerfumeResponse.createByJson);
         })
         .then((response: ListAndCountDTO<PerfumeResponse>) => {
             LoggerHelper.logTruncated(

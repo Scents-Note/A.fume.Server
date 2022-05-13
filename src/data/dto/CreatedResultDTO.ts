@@ -1,6 +1,6 @@
 class CreatedResultDTO<Type> {
-    idx: number;
-    created: Type;
+    readonly idx: number;
+    readonly created: Type;
     constructor(idx: number, created: Type) {
         this.idx = idx;
         this.created = created;

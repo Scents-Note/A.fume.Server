@@ -1,12 +1,9 @@
-import { PagingRequestDTO } from '@request/common';
 import { DEFAULT_PAGE_SIZE } from '@src/utils/constants';
 
-type Ascending = 'DESC' | 'ASC';
-
 class PagingDTO {
-    offset: number;
-    limit: number;
-    order: string[][] | undefined;
+    readonly offset: number;
+    readonly limit: number;
+    readonly order: string[][] | undefined;
     constructor(offset: number, limit: number, order: string[][] | undefined) {
         this.offset = offset;
         this.limit = limit;
@@ -46,33 +43,6 @@ class PagingDTO {
         order?: string[][];
     }): PagingDTO {
         return new PagingDTO(offset || 0, limit || DEFAULT_PAGE_SIZE, order);
-    }
-
-    static create(pagingRequestDTO: PagingRequestDTO): PagingDTO {
-        const { requestSize, lastPosition, sort } = pagingRequestDTO;
-        return new PagingDTO(
-            lastPosition + 1,
-            requestSize,
-            sort ? this.parseSortToOrder(sort) : undefined
-        );
-    }
-
-    private static parseSortToOrder(sort: string): [string, string][] {
-        const order: [string, string][] = [];
-        const [key, _ascending] = sort.split('_');
-        let ascending: Ascending = 'ASC';
-        switch (_ascending) {
-            case 'desc':
-            case 'dsc':
-                ascending = 'DESC';
-                break;
-            case 'asc':
-            default:
-                ascending = 'ASC';
-                break;
-        }
-        order.push([key, ascending]);
-        return order;
     }
 }
 

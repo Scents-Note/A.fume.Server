@@ -10,8 +10,6 @@ import { NotMatchedError } from '@errors';
 
 import { GENDER_WOMAN } from '@utils/constants';
 
-import { PagingRequestDTO } from '@request/common';
-
 import {
     ListAndCountDTO,
     PagingDTO,
@@ -27,6 +25,8 @@ import {
 import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
 
 const Perfume: PerfumeService = new PerfumeService();
+
+const defaultPagingDTO: PagingDTO = PagingDTO.createByJson({});
 
 const mockS3FileDao: any = {};
 Perfume.setS3FileDao(mockS3FileDao);
@@ -246,27 +246,27 @@ describe('# Perfume Service Test', () => {
                             userSummary.score * (1 - defaultReviewRate);
                         expect(it.score).to.be.eq(expectedScore);
                         expect(it.seasonal).to.be.deep.eq({
-                            spring: 2,
-                            summer: 2,
-                            fall: 49,
-                            winter: 47,
+                            spring: 2.5,
+                            summer: 2.5,
+                            fall: 47.5,
+                            winter: 47.5,
                         });
                         expect(it.sillage).to.be.deep.eq({
-                            light: 3,
-                            medium: 48,
-                            heavy: 49,
+                            light: 3.33,
+                            medium: 48.34,
+                            heavy: 48.33,
                         });
                         expect(it.longevity).to.be.deep.eq({
-                            veryWeak: 1,
-                            weak: 1,
-                            normal: 1,
-                            strong: 50,
+                            veryWeak: 2,
+                            weak: 2,
+                            normal: 2,
+                            strong: 47,
                             veryStrong: 47,
                         });
                         expect(it.gender).to.be.deep.eq({
-                            male: 3,
-                            neutral: 48,
-                            female: 49,
+                            male: 3.33,
+                            neutral: 48.34,
+                            female: 48.33,
                         });
                         done();
                     })
@@ -336,18 +336,14 @@ describe('# Perfume Service Test', () => {
             ) => {
                 return [{ userIdx, perfumeIdx: 2 }];
             };
-            const perfumeSearchDTO: PerfumeSearchDTO = PerfumeSearchDTO.create(
-                1,
-                {
-                    keywordList: [],
-                    brandList: [],
-                    ingredientList: [],
-                    searchText: '',
-                }
+            const perfumeSearchDTO: PerfumeSearchDTO = new PerfumeSearchDTO(
+                [],
+                [],
+                [],
+                '',
+                1
             );
-            const pagingRequestDTO: PagingRequestDTO =
-                PagingRequestDTO.createByJson({});
-            Perfume.searchPerfume(perfumeSearchDTO, pagingRequestDTO)
+            Perfume.searchPerfume(perfumeSearchDTO, defaultPagingDTO)
                 .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     done();
@@ -368,9 +364,7 @@ describe('# Perfume Service Test', () => {
         });
 
         it('# recentSearch Test', (done: Done) => {
-            const pagingRequestDTO: PagingRequestDTO =
-                PagingRequestDTO.createByJson({});
-            Perfume.recentSearch(1, pagingRequestDTO)
+            Perfume.recentSearch(1, defaultPagingDTO)
                 .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     done();
@@ -417,9 +411,7 @@ describe('# Perfume Service Test', () => {
                     },
                 ];
             };
-            const pagingRequestDTO: PagingRequestDTO =
-                PagingRequestDTO.createByJson({});
-            Perfume.recommendByUser(1, pagingRequestDTO)
+            Perfume.recommendByUser(1, defaultPagingDTO)
                 .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     for (const item of result.rows) {
@@ -451,14 +443,13 @@ describe('# Perfume Service Test', () => {
         });
 
         it('# getNewPerfume Test', (done: Done) => {
-            const pagingDTO: PagingDTO = PagingDTO.createByJson({});
             mockLikePerfumeDao.readLikeInfo = async (
                 userIdx: number,
                 _: number[]
             ) => {
                 return [{ userIdx, perfumeIdx: 2 }];
             };
-            Perfume.getNewPerfume(1, pagingDTO)
+            Perfume.getNewPerfume(1, defaultPagingDTO)
                 .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     done();
@@ -467,8 +458,6 @@ describe('# Perfume Service Test', () => {
         });
 
         it('# getLikedPerfume Test', (done: Done) => {
-            const pagingRequestDTO: PagingRequestDTO =
-                PagingRequestDTO.createByJson({});
             mockLikePerfumeDao.readLikeInfo = async (
                 userIdx: number,
                 perfumeIdxList: number[]
@@ -478,7 +467,7 @@ describe('# Perfume Service Test', () => {
                     perfumeIdx,
                 }));
             };
-            Perfume.getLikedPerfume(1, pagingRequestDTO)
+            Perfume.getLikedPerfume(1, defaultPagingDTO)
                 .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     result.rows.forEach((item) => {

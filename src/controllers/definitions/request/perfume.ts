@@ -1,3 +1,5 @@
+import { PerfumeSearchDTO } from '@src/data/dto';
+
 /**
  * @swagger
  * definitions:
@@ -21,10 +23,10 @@
  *           type: integer
  * */
 class PerfumeSearchRequest {
-    keywordList: number[];
-    brandList: number[];
-    ingredientList: number[];
-    searchText: string;
+    readonly keywordList: number[];
+    readonly brandList: number[];
+    readonly ingredientList: number[];
+    readonly searchText: string;
     constructor(
         keywordList: number[],
         brandList: number[],
@@ -38,6 +40,16 @@ class PerfumeSearchRequest {
     }
     public toString(): string {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
+    public toPerfumeSearchDTO(userIdx: number): PerfumeSearchDTO {
+        return new PerfumeSearchDTO(
+            this.keywordList,
+            this.brandList,
+            this.ingredientList,
+            this.searchText,
+            userIdx
+        );
     }
 
     static createByJson(json: any): PerfumeSearchRequest {

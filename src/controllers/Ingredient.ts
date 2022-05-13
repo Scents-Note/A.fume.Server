@@ -67,10 +67,7 @@ const getIngredientAll: RequestHandler = (
     logger.debug(`${LOG_TAG} getIngredientAll()`);
     Ingredient.getIngredientAll()
         .then((result: ListAndCountDTO<IngredientDTO>) => {
-            return new ListAndCountDTO<IngredientResponse>(
-                result.count,
-                result.rows.map(IngredientResponse.createByJson)
-            );
+            return result.convertType(IngredientResponse.createByJson);
         })
         .then((response: ListAndCountDTO<IngredientResponse>) => {
             LoggerHelper.logTruncated(

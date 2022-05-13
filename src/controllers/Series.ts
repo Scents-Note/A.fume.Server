@@ -81,14 +81,14 @@ const getSeriesAll: RequestHandler = (
     next: NextFunction
 ): any => {
     logger.debug(`${LOG_TAG} getSeriesAll(query = ${req.query})`);
-    Series.getSeriesAll(PagingRequestDTO.createByJson(req.query))
+    const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
+        req.query
+    );
+    Series.getSeriesAll(pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<SeriesDTO>) => {
             // remove etc by concept
             result = removeEtc(result);
-            return new ListAndCountDTO<SeriesResponse>(
-                result.count,
-                result.rows.map(SeriesResponse.create)
-            );
+            return result.convertType(SeriesResponse.create);
         })
         .then((response: ListAndCountDTO<SeriesResponse>) => {
             LoggerHelper.logTruncated(
@@ -114,10 +114,7 @@ const getIngredients: RequestHandler = (
     const seriesIdx: number = parseInt(req.params['seriesIdx']);
     Ingredient.getIngredientList(seriesIdx)
         .then((result: ListAndCountDTO<IngredientDTO>) => {
-            return new ListAndCountDTO(
-                result.count,
-                result.rows.map(IngredientResponse.createByJson)
-            );
+            return result.convertType(IngredientResponse.createByJson);
         })
         .then((response: ListAndCountDTO<IngredientResponse>) => {
             LoggerHelper.logTruncated(
@@ -146,7 +143,7 @@ const getIngredients: RequestHandler = (
  *       produces:
  *       - application/json
  *       parameters:
- *       - name: itemSize
+ *       - name: requestSize
  *         in: query
  *         type: integer
  *         required: false
@@ -182,12 +179,12 @@ const getFilterSeries: RequestHandler = (
     next: NextFunction
 ) => {
     logger.debug(`${LOG_TAG} getFilterSeries(query = ${req.query})`);
-    Series.getFilterSeries(PagingRequestDTO.createByJson(req.query))
+    const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
+        req.query
+    );
+    Series.getFilterSeries(pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<SeriesFilterDTO>) => {
-            return new ListAndCountDTO(
-                result.count,
-                result.rows.map(SeriesFilterResponse.create)
-            );
+            return result.convertType(SeriesFilterResponse.create);
         })
         .then((response: ListAndCountDTO<SeriesFilterResponse>) => {
             LoggerHelper.logTruncated(

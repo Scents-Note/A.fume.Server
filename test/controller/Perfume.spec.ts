@@ -96,10 +96,7 @@ describe('# Perfume Controller Test', () => {
         describe('# searchPerfume Test', () => {
             it('success case', (done: Done) => {
                 mockPerfumeService.searchPerfume = async () => {
-                    return {
-                        rows: mockPerfumeList,
-                        count: 204,
-                    };
+                    return new ListAndCountDTO(204, mockPerfumeList);
                 };
 
                 request(app)
@@ -149,10 +146,7 @@ describe('# Perfume Controller Test', () => {
         describe('# getLikedPerfume Test', () => {
             it('# success case', (done: Done) => {
                 mockPerfumeService.getLikedPerfume = async () => {
-                    return {
-                        rows: mockPerfumeList,
-                        count: 204,
-                    };
+                    return new ListAndCountDTO(204, mockPerfumeList);
                 };
 
                 request(app)
@@ -191,10 +185,7 @@ describe('# Perfume Controller Test', () => {
         describe('# getRecentPerfume Test', () => {
             it('success case', (done: Done) => {
                 mockPerfumeService.recentSearch = async () => {
-                    return {
-                        rows: mockPerfumeList,
-                        count: 20,
-                    };
+                    return new ListAndCountDTO(20, mockPerfumeList);
                 };
 
                 request(app)
@@ -232,10 +223,7 @@ describe('# Perfume Controller Test', () => {
         describe('# recommendPersonalPerfume Test', () => {
             it('success case', (done: Done) => {
                 mockPerfumeService.recommendByUser = async () => {
-                    return {
-                        rows: mockPerfumeKeywordList,
-                        count: 20,
-                    };
+                    return new ListAndCountDTO(20, mockPerfumeKeywordList);
                 };
 
                 request(app)
@@ -273,10 +261,7 @@ describe('# Perfume Controller Test', () => {
         describe('# recommendCommonPerfume Test', () => {
             it('success case', (done: Done) => {
                 mockPerfumeService.recommendByUser = async () => {
-                    return {
-                        rows: mockPerfumeKeywordList,
-                        count: 20,
-                    };
+                    return new ListAndCountDTO(20, mockPerfumeKeywordList);
                 };
 
                 request(app)
@@ -299,10 +284,7 @@ describe('# Perfume Controller Test', () => {
         describe('# getSurveyPerfume Test', () => {
             it('success case', (done: Done) => {
                 mockPerfumeService.getSurveyPerfume = async () => {
-                    return {
-                        rows: mockPerfumeList,
-                        count: 20,
-                    };
+                    return new ListAndCountDTO(20, mockPerfumeList);
                 };
 
                 request(app)
@@ -326,10 +308,7 @@ describe('# Perfume Controller Test', () => {
         describe('# getNewPerfume Test', () => {
             it('success case', (done: Done) => {
                 mockPerfumeService.getNewPerfume = async () => {
-                    return {
-                        rows: mockPerfumeList,
-                        count: 20,
-                    };
+                    return new ListAndCountDTO(20, mockPerfumeList);
                 };
 
                 request(app)

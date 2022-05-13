@@ -35,11 +35,11 @@ module.exports.setBrandService = (brandService: BrandService) => {
  *       produces:
  *       - application/json
  *       parameters:
- *       - name: itemSize
+ *       - name: requestSize
  *         in: query
  *         type: integer
  *         required: false
- *       - name: pagingIndex
+ *       - name: lastPosition
  *         in: query
  *         type: integer
  *         required: false
@@ -75,10 +75,7 @@ const getBrandAll: RequestHandler = (
     logger.debug(`${LOG_TAG} getBrandAll()`);
     Brand.getBrandAll()
         .then((result: ListAndCountDTO<BrandDTO>) => {
-            return new ListAndCountDTO<BrandResponse>(
-                result.count,
-                result.rows.map(BrandResponse.createByJson)
-            );
+            return result.convertType(BrandResponse.createByJson);
         })
         .then((response: ListAndCountDTO<BrandResponse>) => {
             LoggerHelper.logTruncated(

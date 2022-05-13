@@ -1,22 +1,14 @@
-import { logger } from '@modules/winston';
-
-import { UserInputRequest } from '@request/user';
-
-import { InvalidInputError } from '@src/utils/errors/errors';
-import { GenderMap, Gender, Grade, GradeMap } from '@utils/enumType';
-import { GRADE_USER } from '@utils/constants';
-
-const LOG_TAG: string = '[data/UserInputDTO]';
+import { Gender, Grade } from '@utils/enumType';
 
 class UserInputDTO {
-    userIdx?: number;
-    nickname?: string;
-    password?: string;
-    gender?: Gender;
-    email?: string;
-    birth?: number;
-    grade?: Grade;
-    accessTime?: string;
+    readonly userIdx?: number;
+    readonly nickname?: string;
+    readonly password?: string;
+    readonly gender?: Gender;
+    readonly email?: string;
+    readonly birth?: number;
+    readonly grade?: Grade;
+    readonly accessTime?: string;
     constructor(
         userIdx?: number,
         nickname?: string,
@@ -39,39 +31,6 @@ class UserInputDTO {
 
     public toString(): string {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
-    }
-
-    static createByRequest(
-        userIdx: number | undefined,
-        request: UserInputRequest
-    ): UserInputDTO {
-        let genderCode: any = undefined;
-        if (request.gender) {
-            if (GenderMap[request.gender] == undefined) {
-                logger.debug(`${LOG_TAG} invalid gender: ${request.gender}`);
-                throw new InvalidInputError();
-            }
-            genderCode = GenderMap[request.gender];
-        }
-        let gradeCode: number = GRADE_USER;
-        if (request.grade) {
-            if (GradeMap[request.grade] == undefined) {
-                logger.debug(`${LOG_TAG} invalid grade: ${request.grade}`);
-                throw new InvalidInputError();
-            }
-            gradeCode = GradeMap[request.grade];
-        }
-
-        return new UserInputDTO(
-            userIdx,
-            request.nickname,
-            request.password,
-            genderCode,
-            request.email,
-            request.birth,
-            gradeCode,
-            undefined
-        );
     }
 }
 

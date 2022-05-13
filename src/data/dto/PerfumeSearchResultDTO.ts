@@ -7,16 +7,16 @@ type Score = {
 };
 
 class PerfumeSearchResultDTO {
-    perfumeIdx: number;
-    name: string;
-    brandName: string;
-    isLiked: boolean;
-    imageUrl: string;
-    Brand: BrandDTO;
-    brandIdx: number;
-    createdAt: Date;
-    updatedAt: Date;
-    Score: Score;
+    readonly perfumeIdx: number;
+    readonly name: string;
+    readonly brandName: string;
+    readonly isLiked: boolean;
+    readonly imageUrl: string;
+    readonly Brand: BrandDTO;
+    readonly brandIdx: number;
+    readonly createdAt: Date;
+    readonly updatedAt: Date;
+    readonly Score: Score;
     constructor(
         perfumeIdx: number,
         name: string,

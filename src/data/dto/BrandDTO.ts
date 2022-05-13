@@ -1,12 +1,12 @@
 class BrandDTO {
-    brandIdx: number;
-    name: string;
-    englishName: string;
-    firstInitial: string;
-    imageUrl: string;
-    description: string;
-    createdAt: string;
-    updatedAt: string;
+    readonly brandIdx: number;
+    readonly name: string;
+    readonly englishName: string;
+    readonly firstInitial: string;
+    readonly imageUrl: string;
+    readonly description: string;
+    readonly createdAt: string;
+    readonly updatedAt: string;
     constructor(
         brandIdx: number,
         name: string,

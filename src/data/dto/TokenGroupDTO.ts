@@ -1,7 +1,7 @@
 class TokenGroupDTO {
-    userIdx: number;
-    token: string;
-    refreshToken: string;
+    readonly userIdx: number;
+    readonly token: string;
+    readonly refreshToken: string;
     constructor(userIdx: number, token: string, refreshToken: string) {
         this.userIdx = userIdx;
         this.token = token;

@@ -20,9 +20,12 @@ class UserDao {
         userInputDTO: UserInputDTO
     ): Promise<CreatedResultDTO<UserDTO>> {
         logger.debug(`${LOG_TAG} create(userInputDTO = ${userInputDTO})`);
-        userInputDTO.accessTime =
-            userInputDTO.accessTime || sequelize.literal('CURRENT_TIMESTAMP');
-        return User.create({ ...userInputDTO })
+        return User.create(
+            Object.assign(
+                { accessTime: sequelize.literal('CURRENT_TIMESTAMP') },
+                { ...userInputDTO }
+            )
+        )
             .then((it: UserDTO) => {
                 /* TODO Change after apply ts */
                 // new CreatedResultDTO<UserDTO></UserDTO>(it.userIdx, new UserDTO(it))

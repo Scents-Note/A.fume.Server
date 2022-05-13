@@ -4,8 +4,6 @@ import IngredientDao from '@dao/IngredientDao';
 import SeriesDao from '@dao/SeriesDao';
 import NoteDao from '@dao/NoteDao';
 
-import { PagingRequestDTO } from '@request/common';
-
 import {
     PagingDTO,
     IngredientDTO,
@@ -46,47 +44,37 @@ class SeriesService {
     /**
      * 계열 전체 목록 조회
      *
-     * @param {PagingRequestDTO} pagingRequestDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<ListAndCountDTO<SeriesDTO>>} listAndCountDTO
      **/
-    getSeriesAll(
-        pagingRequestDTO: PagingRequestDTO
-    ): Promise<ListAndCountDTO<SeriesDTO>> {
-        logger.debug(
-            `${LOG_TAG} getSeriesAll(pagingRequestDTO = ${pagingRequestDTO})`
-        );
-        return this.seriesDao.readAll(PagingDTO.create(pagingRequestDTO));
+    getSeriesAll(pagingDTO: PagingDTO): Promise<ListAndCountDTO<SeriesDTO>> {
+        logger.debug(`${LOG_TAG} getSeriesAll(pagingDTO = ${pagingDTO})`);
+        return this.seriesDao.readAll(pagingDTO);
     }
 
     /**
      * 계열 검색
      *
-     * @param {PagingRequestDTO} pagingRequestDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<ListAndCountDTO<SeriesDTO>>} listAndCountDTO
      **/
-    searchSeries(
-        pagingRequestDTO: PagingRequestDTO
-    ): Promise<ListAndCountDTO<SeriesDTO>> {
-        logger.debug(
-            `${LOG_TAG} searchSeries(pagingRequestDTO = ${pagingRequestDTO})`
-        );
-        return this.seriesDao.search(PagingDTO.create(pagingRequestDTO));
+    searchSeries(pagingDTO: PagingDTO): Promise<ListAndCountDTO<SeriesDTO>> {
+        logger.debug(`${LOG_TAG} searchSeries(pagingDTO = ${pagingDTO})`);
+        return this.seriesDao.search(pagingDTO);
     }
 
     /**
      * 필터에서 보여주는 Series 조회
      *
-     * @param {pagingDTO} pagingDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<ListAndCountDTO<SeriesFilterDTO>>} listAndCountDTO
      */
     async getFilterSeries(
-        pagingRequestDTO: PagingRequestDTO
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<SeriesFilterDTO>> {
-        logger.debug(
-            `${LOG_TAG} getFilterSeries(pagingRequestDTO = ${pagingRequestDTO})`
-        );
+        logger.debug(`${LOG_TAG} getFilterSeries(pagingDTO = ${pagingDTO})`);
         const result: ListAndCountDTO<SeriesDTO> = await this.seriesDao.readAll(
-            PagingDTO.create(pagingRequestDTO)
+            pagingDTO
         );
         const seriesIdxList: number[] = result.rows.map(
             (it: SeriesDTO) => it.seriesIdx
@@ -109,16 +97,13 @@ class SeriesService {
                 },
                 new Map<number, IngredientDTO[]>()
             );
-        return new ListAndCountDTO<SeriesFilterDTO>(
-            result.count,
-            result.rows.map((it: SeriesDTO) => {
-                return SeriesFilterDTO.createByJson(
-                    Object.assign({}, it, {
-                        ingredients: ingredientMap.get(it.seriesIdx) || [],
-                    })
-                );
-            })
-        );
+        return result.convertType((it: SeriesDTO): SeriesFilterDTO => {
+            return SeriesFilterDTO.createByJson(
+                Object.assign({}, it, {
+                    ingredients: ingredientMap.get(it.seriesIdx) || [],
+                })
+            );
+        });
     }
 
     /**

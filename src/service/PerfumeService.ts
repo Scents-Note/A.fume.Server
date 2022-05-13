@@ -2,7 +2,7 @@ import { logger } from '@modules/winston';
 
 import { NotMatchedError, FailedToCreateError } from '@errors';
 
-import { updateRows, removeKeyJob, flatJob } from '@utils/func';
+import { removeKeyJob, flatJob } from '@utils/func';
 import {
     GENDER_WOMAN,
     PERFUME_NOTE_TYPE_SINGLE,
@@ -16,8 +16,6 @@ import PerfumeDefaultReviewDao from '@dao/PerfumeDefaultReviewDao';
 import NoteDao from '@dao/NoteDao';
 import LikePerfumeDao from '@dao/LikePerfumeDao';
 import S3FileDao from '@dao/S3FileDao';
-
-import { PagingRequestDTO } from '@request/common';
 
 import {
     PagingDTO,
@@ -33,6 +31,8 @@ import {
     NoteDictDTO,
     PerfumeDefaultReviewDTO,
 } from '@dto/index';
+import fp from 'lodash/fp';
+import _ from 'lodash';
 
 const LOG_TAG: string = '[Perfume/Service]';
 
@@ -72,10 +72,10 @@ class PerfumeService {
         let _perfume: PerfumeDTO = await perfumeDao.readByPerfumeIdx(
             perfumeIdx
         );
-        const perfume: any = [...commonJob, flatJob('PerfumeDetail')].reduce(
-            (prev, cur) => cur(prev),
-            _perfume
-        );
+        const perfume: any = fp.compose(
+            ...commonJob,
+            flatJob('PerfumeDetail')
+        )(_perfume);
 
         const defaultReviewDTO: PerfumeDefaultReviewDTO | null =
             await defaultReviewDao
@@ -123,17 +123,16 @@ class PerfumeService {
      * 향수 검색
      *
      * @param {PerfumeSearchDTO} perfumeSearchDTO
-     * @param {PagingRequestDTO} pagingRequestDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>}
      **/
     async searchPerfume(
         perfumeSearchDTO: PerfumeSearchDTO,
-        pagingRequestDTO: PagingRequestDTO
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeSearchResultDTO>> {
         logger.debug(
-            `${LOG_TAG} searchPerfume(perfumeSearchDTO = ${perfumeSearchDTO}, pagingRequestDTO = ${pagingRequestDTO})`
+            `${LOG_TAG} searchPerfume(perfumeSearchDTO = ${perfumeSearchDTO}, pagingDTO = ${pagingDTO})`
         );
-        const pagingDTO: PagingDTO = PagingDTO.create(pagingRequestDTO);
         return perfumeDao
             .search(
                 perfumeSearchDTO.brandIdxList,
@@ -142,25 +141,31 @@ class PerfumeService {
                 perfumeSearchDTO.searchText,
                 pagingDTO
             )
-            .then(async (result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
-                const perfumeIdxList: number[] = result.rows.map(
-                    (it) => it.perfumeIdx
-                );
-                const likePerfumeList: any[] =
-                    await likePerfumeDao.readLikeInfo(
-                        perfumeSearchDTO.userIdx,
-                        perfumeIdxList
+            .then(
+                async (
+                    result: ListAndCountDTO<PerfumeSearchResultDTO>
+                ): Promise<ListAndCountDTO<PerfumeSearchResultDTO>> => {
+                    const perfumeIdxList: number[] = result.rows.map(
+                        (it) => it.perfumeIdx
                     );
-                updateRows(
-                    result,
-                    ...commonJob,
-                    this.isLikeJob(likePerfumeList)
-                );
-                return new ListAndCountDTO<PerfumeSearchResultDTO>(
-                    result.count,
-                    result.rows
-                );
-            });
+                    const likePerfumeList: any[] =
+                        await likePerfumeDao.readLikeInfo(
+                            perfumeSearchDTO.userIdx,
+                            perfumeIdxList
+                        );
+                    return result.convertType(
+                        (
+                            item: PerfumeSearchResultDTO
+                        ): PerfumeSearchResultDTO => {
+                            return fp.compose(
+                                ...commonJob,
+                                this.isLikeJob(likePerfumeList),
+                                PerfumeSearchResultDTO.createByJson
+                            )(item);
+                        }
+                    );
+                }
+            );
     }
 
     /**
@@ -184,15 +189,13 @@ class PerfumeService {
                 );
                 const likePerfumeList: any[] =
                     await likePerfumeDao.readLikeInfo(userIdx, perfumeIdxList);
-                updateRows(
-                    result,
-                    ...commonJob,
-                    this.isLikeJob(likePerfumeList)
-                );
-                return new ListAndCountDTO<PerfumeThumbDTO>(
-                    result.count,
-                    result.rows.map(PerfumeThumbDTO.createByJson)
-                );
+                return result.convertType((item: PerfumeThumbDTO) => {
+                    return fp.compose(
+                        ...commonJob,
+                        this.isLikeJob(likePerfumeList),
+                        PerfumeThumbDTO.createByJson
+                    )(item);
+                });
             });
     }
 
@@ -234,36 +237,31 @@ class PerfumeService {
      * 유저의 최근 검색한 향수 조회
      *
      * @param {number} userIdx
-     * @param {PagingRequestDTO} pagingRequestDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>}
      **/
     async recentSearch(
         userIdx: number,
-        pagingRequestDTO: PagingRequestDTO
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
         logger.debug(
-            `${LOG_TAG} recentSearch(userIdx = ${userIdx}, pagingRequestDTO = ${pagingRequestDTO})`
+            `${LOG_TAG} recentSearch(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
         return perfumeDao
-            .recentSearchPerfumeList(
-                userIdx,
-                PagingDTO.create(pagingRequestDTO)
-            )
+            .recentSearchPerfumeList(userIdx, pagingDTO)
             .then(async (result) => {
                 const perfumeIdxList: number[] = result.rows.map(
                     (it) => it.perfumeIdx
                 );
                 const likePerfumeList: any[] =
                     await likePerfumeDao.readLikeInfo(userIdx, perfumeIdxList);
-                updateRows(
-                    result,
-                    ...commonJob,
-                    this.isLikeJob(likePerfumeList)
-                );
-                return new ListAndCountDTO<PerfumeThumbDTO>(
-                    result.count,
-                    result.rows.map(PerfumeThumbDTO.createByJson)
-                );
+                return result.convertType((item: PerfumeThumbDTO) => {
+                    return fp.compose(
+                        ...commonJob,
+                        this.isLikeJob(likePerfumeList),
+                        PerfumeThumbDTO.createByJson
+                    )(item);
+                });
             });
     }
 
@@ -271,28 +269,26 @@ class PerfumeService {
      * 유저 연령대 및 성별에 따른 향수 추천
      *
      * @param {number} userIdx
-     * @param {number} pagingRequestDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>}
      **/
     async recommendByUser(
         userIdx: number,
-        pagingRequestDTO: PagingRequestDTO
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
         logger.debug(
-            `${LOG_TAG} recommendByUser(userIdx = ${userIdx}, pagingRequestDTO = ${pagingRequestDTO})`
+            `${LOG_TAG} recommendByUser(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
         const { ageGroup, gender } = await this.getAgeGroupAndGender(userIdx);
 
         const recommendedListPromise: Promise<
             ListAndCountDTO<PerfumeThumbDTO>
-        > = this.recommendByGenderAgeAndGender(
-            gender,
-            ageGroup,
-            pagingRequestDTO
-        );
+        > = this.recommendByGenderAgeAndGender(gender, ageGroup, pagingDTO);
 
         return recommendedListPromise.then(
-            async (result: ListAndCountDTO<PerfumeThumbDTO>) => {
+            async (
+                result: ListAndCountDTO<PerfumeThumbDTO>
+            ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> => {
                 const perfumeIdxList: number[] = result.rows.map(
                     (it: PerfumeThumbDTO) => it.perfumeIdx
                 );
@@ -307,16 +303,14 @@ class PerfumeService {
                 const joinKeywordList: any[] =
                     await keywordDao.readAllOfPerfumeIdxList(perfumeIdxList);
 
-                updateRows(
-                    result,
-                    ...commonJob,
-                    this.isLikeJob(likePerfumeList),
-                    this.addKeyword(joinKeywordList)
-                );
-                return new ListAndCountDTO<PerfumeThumbKeywordDTO>(
-                    result.count,
-                    result.rows.map(PerfumeThumbKeywordDTO.createByJson)
-                );
+                return result.convertType((item: PerfumeThumbDTO) => {
+                    return fp.compose(
+                        ...commonJob,
+                        this.isLikeJob(likePerfumeList),
+                        this.addKeyword(joinKeywordList),
+                        PerfumeThumbKeywordDTO.createByJson
+                    )(item);
+                });
             }
         );
     }
@@ -326,21 +320,21 @@ class PerfumeService {
      *
      * @param {number} gender
      * @param {number} ageGroup
-     * @param {PagingRequestDTO} pagingRequestDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>}
      **/
     recommendByGenderAgeAndGender(
         gender: number,
         ageGroup: number,
-        pagingRequestDTO: PagingRequestDTO
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
         logger.debug(
-            `${LOG_TAG} recommendByGenderAgeAndGender(gender = ${gender}, ageGroup = ${ageGroup}, pagingRequestDTO = ${pagingRequestDTO})`
+            `${LOG_TAG} recommendByGenderAgeAndGender(gender = ${gender}, ageGroup = ${ageGroup}, pagingDTO = ${pagingDTO})`
         );
         return perfumeDao.recommendPerfumeByAgeAndGender(
             gender,
             ageGroup,
-            PagingDTO.create(pagingRequestDTO)
+            pagingDTO
         );
     }
 
@@ -352,49 +346,54 @@ class PerfumeService {
      * @returns {Promise<Perfume[]>}
      **/
     getNewPerfume(
-        userIdx: number, // TODO userIdx 삭제하기
+        userIdx: number,
         pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
         logger.debug(
             `${LOG_TAG} getNewPerfume(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
-        pagingDTO.order = [['createdAt', 'desc']];
+        pagingDTO = Object.assign(pagingDTO, {
+            order: [['createdAt', 'desc']],
+        });
         return perfumeDao
             .readPerfume(undefined, pagingDTO)
-            .then(async (result: ListAndCountDTO<PerfumeThumbDTO>) => {
-                const perfumeIdxList: number[] = result.rows.map(
-                    (it: PerfumeThumbDTO) => it.perfumeIdx
-                );
-                const likePerfumeList: any[] =
-                    await likePerfumeDao.readLikeInfo(userIdx, perfumeIdxList);
-                updateRows(
-                    result,
-                    ...commonJob,
-                    this.isLikeJob(likePerfumeList)
-                );
-
-                return new ListAndCountDTO<PerfumeThumbDTO>(
-                    result.count,
-                    result.rows.map(PerfumeThumbDTO.createByJson)
-                );
-            });
+            .then(
+                async (
+                    result: ListAndCountDTO<PerfumeThumbDTO>
+                ): Promise<ListAndCountDTO<PerfumeThumbDTO>> => {
+                    const perfumeIdxList: number[] = result.rows.map(
+                        (it: PerfumeThumbDTO) => it.perfumeIdx
+                    );
+                    const likePerfumeList: any[] =
+                        await likePerfumeDao.readLikeInfo(
+                            userIdx,
+                            perfumeIdxList
+                        );
+                    return result.convertType((item: PerfumeThumbDTO) => {
+                        return fp.compose(
+                            ...commonJob,
+                            this.isLikeJob(likePerfumeList),
+                            PerfumeThumbDTO.createByJson
+                        )(item);
+                    });
+                }
+            );
     }
 
     /**
      * 유저가 좋아요한 향수 조회
      *
      * @param {number} userIdx
-     * @param {number} pagingRequestDTO
+     * @param {PagingDTO} pagpagingDTOingRequestDTO
      * @returns {Promise<Perfume[]>}
      **/
     getLikedPerfume(
         userIdx: number,
-        pagingRequestDTO: PagingRequestDTO
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
         logger.debug(
-            `${LOG_TAG} getLikedPerfume(userIdx = ${userIdx}, pagingRequestDTO = ${pagingRequestDTO})`
+            `${LOG_TAG} getLikedPerfume(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
-        const pagingDTO: PagingDTO = PagingDTO.create(pagingRequestDTO);
         return perfumeDao
             .readLikedPerfume(userIdx, pagingDTO)
             .then(async (result: ListAndCountDTO<PerfumeThumbDTO>) => {
@@ -403,15 +402,13 @@ class PerfumeService {
                 );
                 const likePerfumeList: any[] =
                     await likePerfumeDao.readLikeInfo(userIdx, perfumeIdxList);
-                updateRows(
-                    result,
-                    ...commonJob,
-                    this.isLikeJob(likePerfumeList)
-                );
-                return new ListAndCountDTO<PerfumeThumbDTO>(
-                    result.count,
-                    result.rows.map(PerfumeThumbDTO.createByJson)
-                );
+                return result.convertType((item: PerfumeThumbDTO) => {
+                    return fp.compose(
+                        ...commonJob,
+                        this.isLikeJob(likePerfumeList),
+                        PerfumeThumbDTO.createByJson
+                    )(item);
+                });
             });
     }
 
@@ -523,13 +520,11 @@ class PerfumeService {
     }
 
     private isLikeJob(likePerfumeList: any[]): (obj: any) => any {
-        const likeMap: { [key: string]: boolean } = likePerfumeList.reduce(
-            (prev: { [key: string]: boolean }, cur: any) => {
-                prev[cur.perfumeIdx] = true;
-                return prev;
-            },
-            {}
-        );
+        const likeMap: { [key: string]: boolean } = _.chain(likePerfumeList)
+            .keyBy('perfumeIdx')
+            .mapValues(() => true)
+            .value();
+
         return (obj: any) => {
             const ret: any = Object.assign({}, obj);
             ret.isLiked = likeMap[obj.perfumeIdx] ? true : false;
@@ -538,14 +533,10 @@ class PerfumeService {
     }
 
     private addKeyword(joinKeywordList: any[]): (obj: any) => any {
-        const keywordMap: { [key: number]: string[] } = joinKeywordList.reduce(
-            (prev: { [key: number]: string[] }, cur: any) => {
-                if (!prev[cur.perfumeIdx]) prev[cur.perfumeIdx] = [];
-                prev[cur.perfumeIdx].push(cur.Keyword.name);
-                return prev;
-            },
-            {}
-        );
+        const keywordMap: { [key: number]: string[] } = _.chain(joinKeywordList)
+            .groupBy('perfumeIdx')
+            .mapValues((arr) => arr.map((it) => it.Keyword.name))
+            .value();
 
         return (obj: any) => {
             const ret: any = Object.assign({}, obj);
