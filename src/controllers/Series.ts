@@ -43,7 +43,7 @@ let Ingredient = new IngredientService();
  *       produces:
  *       - application/json
  *       parameters:
- *       - name: pagingSize
+ *       - name: requestSize
  *         in: query
  *         type: integer
  *         required: false
@@ -146,7 +146,7 @@ const getIngredients: RequestHandler = (
  *       produces:
  *       - application/json
  *       parameters:
- *       - name: pagingSize
+ *       - name: itemSize
  *         in: query
  *         type: integer
  *         required: false

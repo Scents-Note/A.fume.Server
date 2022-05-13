@@ -22,9 +22,7 @@ const {
     LikePerfume,
     SearchHistory,
     sequelize,
-    Sequelize,
 } = require('@sequelize');
-const { Op } = Sequelize;
 
 const { ranking } = require('@mongoose');
 
@@ -214,29 +212,25 @@ class PerfumeDao {
     }
 
     /**
-     * 새로 등록된 향수 조회
+     * 향수 조회
      *
-     * @param {Date} fromDate
+     * @param {condition} condition
      * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>} perfumeList
      */
-    async readNewPerfume(
-        fromDate: Date,
+    async readPerfume(
+        sequelizeOption: any,
         pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
-        pagingDTO.order = [['createdAt', 'desc']];
         logger.debug(
-            `${LOG_TAG} readNewPerfume(fromDate = ${fromDate}, pagingDTO = ${pagingDTO})`
+            `${LOG_TAG} readNewPerfume(sequelizeOption = ${JSON.stringify(
+                sequelizeOption
+            )}, pagingDTO = ${pagingDTO})`
         );
         const options: { [key: string]: any } = Object.assign(
             {},
             defaultOption,
             {
-                where: {
-                    createdAt: {
-                        [Op.gte]: fromDate,
-                    },
-                },
                 attributes: PERFUME_THUMB_COLUMNS,
                 include: [
                     {
@@ -245,7 +239,8 @@ class PerfumeDao {
                     },
                 ],
             },
-            pagingDTO.sequelizeOption()
+            pagingDTO.sequelizeOption(),
+            sequelizeOption
         );
         return Perfume.findAndCountAll(options).then((it: any) => {
             return new ListAndCountDTO(
