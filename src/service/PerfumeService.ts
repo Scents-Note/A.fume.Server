@@ -18,7 +18,6 @@ import LikePerfumeDao from '@dao/LikePerfumeDao';
 import S3FileDao from '@dao/S3FileDao';
 
 import { PagingRequestDTO } from '@request/common';
-import { PerfumeSearchRequest } from '@request/perfume';
 
 import {
     PagingDTO,
@@ -123,20 +122,18 @@ class PerfumeService {
     /**
      * 향수 검색
      *
-     * @param {PerfumeSearchRequest} perfumeSearchRequest
+     * @param {PerfumeSearchDTO} perfumeSearchDTO
      * @param {PagingRequestDTO} pagingRequestDTO
      * @returns {Promise<Perfume[]>}
      **/
     async searchPerfume(
-        perfumeSearchRequest: PerfumeSearchRequest,
+        perfumeSearchDTO: PerfumeSearchDTO,
         pagingRequestDTO: PagingRequestDTO
     ): Promise<ListAndCountDTO<PerfumeSearchResultDTO>> {
         logger.debug(
-            `${LOG_TAG} searchPerfume(perfumeSearchRequest = ${perfumeSearchRequest}, pagingRequestDTO = ${pagingRequestDTO})`
+            `${LOG_TAG} searchPerfume(perfumeSearchDTO = ${perfumeSearchDTO}, pagingRequestDTO = ${pagingRequestDTO})`
         );
         const pagingDTO: PagingDTO = PagingDTO.create(pagingRequestDTO);
-        const perfumeSearchDTO: PerfumeSearchDTO =
-            PerfumeSearchDTO.create(perfumeSearchRequest);
         return perfumeDao
             .search(
                 perfumeSearchDTO.brandIdxList,

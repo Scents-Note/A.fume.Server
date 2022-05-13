@@ -1,17 +1,36 @@
+/**
+ * @swagger
+ * definitions:
+ *   PerfumeSearchRequest:
+ *     type: object
+ *     properties:
+ *       searchText:
+ *         type: string
+ *         example: 'Tom'
+ *       keywordList:
+ *         type: array
+ *         items:
+ *           type: integer
+ *       ingredientList:
+ *         type: array
+ *         items:
+ *           type: integer
+ *       brandList:
+ *         type: array
+ *         items:
+ *           type: integer
+ * */
 class PerfumeSearchRequest {
     keywordList: number[];
     brandList: number[];
     ingredientList: number[];
     searchText: string;
-    userIdx: number;
     constructor(
         keywordList: number[],
         brandList: number[],
         ingredientList: number[],
-        searchText: string,
-        userIdx: number
+        searchText: string
     ) {
-        this.userIdx = userIdx;
         this.keywordList = keywordList;
         this.brandList = brandList;
         this.ingredientList = ingredientList;
@@ -26,8 +45,7 @@ class PerfumeSearchRequest {
             json.keywordList,
             json.brandList,
             json.ingredientList,
-            json.searchText,
-            json.userIdx
+            json.searchText
         );
     }
 }

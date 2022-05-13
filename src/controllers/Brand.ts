@@ -22,29 +22,6 @@ const LOG_TAG: string = '[Brand/Controller]';
 module.exports.setBrandService = (brandService: BrandService) => {
     Brand = brandService;
 };
-/**
- * @swagger
- * definitions:
- *  BrandInfo:
- *     type: object
- *     properties:
- *       name:
- *         type: string
- *       englishName:
- *         type: string
- *       firstInitial:
- *         type: string
- *       description:
- *         type: string
- *       imageUrl:
- *         type: string
- *     example:
- *       name: (테스트)조말론
- *       englishName: (테스트)Jo Malone
- *       firstInitial: ㅌ
- *       description: (테스트)런던 브랜드
- *       imageUrl: (테스트)
- *  */
 
 /**
  * @swagger
@@ -85,13 +62,7 @@ module.exports.setBrandService = (brandService: BrandService) => {
  *                     type: array
  *                     items:
  *                       allOf:
- *                       - $ref: '#/definitions/BrandInfo'
- *                       - type: object
- *                         properties:
- *                           brandIdx:
- *                             type: integer
- *                         example:
- *                           brandIdx: 1
+ *                       - $ref: '#/definitions/BrandResponse'
  *         401:
  *           description: Token is missing or invalid
  *       x-swagger-router-controller: Brand
@@ -147,22 +118,9 @@ const getBrandAll: RequestHandler = (
  *               data:
  *                 type: array
  *                 items:
- *                   type: object
- *                   properties:
- *                     firstInitial:
- *                       type: string
- *                       example: ㄷ
- *                     brands:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           brandIdx:
- *                             type: integer
- *                             example: 10
- *                           name:
- *                             type: string
- *                             example: 다비도프
+ *                   allOf:
+ *                   - $ref: '#/definitions/BrandFilterResponse'
+ *
  *
  *       x-swagger-router-controller: Brand
  *  */

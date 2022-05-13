@@ -22,13 +22,12 @@ class PerfumeSearchDTO {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
 
-    static create(perfumeSearchRequestDTO: any) {
+    static create(userIdx: number, perfumeSearchRequestDTO: any) {
         const {
             keywordList: keywordIdxList,
             brandList: brandIdxList,
             ingredientList: ingredientIdxList,
             searchText,
-            userIdx,
         } = perfumeSearchRequestDTO;
         return new PerfumeSearchDTO(
             keywordIdxList,

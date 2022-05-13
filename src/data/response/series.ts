@@ -1,6 +1,23 @@
 import { SeriesFilterDTO, SeriesDTO } from '@dto/index';
 import { IngredientResponse } from '@response/ingredient';
 
+/**
+ * @swagger
+ * definitions:
+ *   SeriesResponse:
+ *     type: object
+ *     properties:
+ *       seriesIdx:
+ *         type: number
+ *       name:
+ *         type: string
+ *       imageUrl:
+ *         type: string
+ *     example:
+ *       seriesIdx: 1
+ *       name: 꿀
+ *       imageUrl: http://
+ *  */
 class SeriesResponse {
     seriesIdx: number;
     name: string;
@@ -24,6 +41,28 @@ class SeriesResponse {
     }
 }
 
+/**
+ * @swagger
+ * definitions:
+ *   SeriesFilterResponse:
+ *     type: object
+ *     properties:
+ *       seriesIdx:
+ *         type: number
+ *       name:
+ *         type: string
+ *       imageUrl:
+ *         type: string
+ *       ingredients:
+ *         type: array
+ *       items:
+ *         $ref: '#/definitions/IngredientResponse'
+ *     example:
+ *       seriesIdx: 1
+ *       name: 꿀
+ *       imageUrl: http://
+ *       ingredients: []
+ *  */
 class SeriesFilterResponse {
     seriesIdx: number;
     name: string;

@@ -36,6 +36,7 @@ import {
     PerfumeSearchResultDTO,
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
+    PerfumeSearchDTO,
 } from '@dto/index';
 
 const LOG_TAG: string = '[Perfume/Controller]';
@@ -43,6 +44,42 @@ const LOG_TAG: string = '[Perfume/Controller]';
 let Perfume: PerfumeService = new PerfumeService();
 let SearchHistory: SearchHistoryService = new SearchHistoryService();
 
+/**
+ * @swagger
+ *   /perfume/{perfumeIdx}:
+ *     get:
+ *       tags:
+ *       - perfume
+ *       summary: 향수 세부 정보 조회
+ *       operationId: getPerfume
+ *       security:
+ *         - userToken: []
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: perfumeIdx
+ *         in: path
+ *         required: true
+ *         type: integer
+ *         format: int64
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 향수 세부 조회 성공
+ *               data:
+ *                 allOf:
+ *                 - $ref: '#/definitions/PerfumeDetailResponse'
+ *         401:
+ *           description: Token is missing or invalid
+ *         404:
+ *           description: Perfume not found
+ *       x-swagger-router-controller: Perfume
+ * */
 const getPerfume: RequestHandler = (
     req: Request | any,
     res: Response,
@@ -79,6 +116,64 @@ const getPerfume: RequestHandler = (
         .catch((err: Error) => next(err));
 };
 
+/**
+ * @swagger
+ *   /perfume/search:
+ *     post:
+ *       tags:
+ *       - perfume
+ *       summary: 향수 검색
+ *       description: 카테코리(키워드, 브랜드, 재료)는 AND 검색이며 카테고리 내 선택은 OR 검색이다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
+ *       operationId: searchPerfume
+ *       security:
+ *         - userToken: []
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - in: body
+ *         name: body
+ *         schema:
+ *           allOf:
+ *           - $ref: '#/definitions/PerfumeSearchRequest'
+ *       - name: sort
+ *         in: query
+ *         type: string
+ *         enum:
+ *         - createdAt_asc
+ *         - createdAt_desc
+ *         required: false
+ *       - name: pagingSize
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       - name: lastPosition
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 향수 검색 성공
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   count:
+ *                     type: integer
+ *                     example: 1
+ *                   rows:
+ *                     type: array
+ *                     items:
+ *                       allOf:
+ *                       - $ref: '#/definitions/PerfumeResponse'
+ *         401:
+ *           description: Token is missing or invalid
+ *       x-swagger-router-controller: Perfume
+ * */
 const searchPerfume: RequestHandler = (
     req: Request | any,
     res: Response,
@@ -95,7 +190,12 @@ const searchPerfume: RequestHandler = (
     logger.debug(
         `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, query = ${req.query}, body = ${req.body})`
     );
-    Perfume.searchPerfume(perfumeSearchRequest, pagingRequestDTO)
+
+    const perfumeSearchDTO: PerfumeSearchDTO = PerfumeSearchDTO.create(
+        loginUserIdx,
+        perfumeSearchRequest
+    );
+    Perfume.searchPerfume(perfumeSearchDTO, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
             return new ListAndCountDTO<PerfumeResponse>(
                 result.count,
@@ -117,6 +217,46 @@ const searchPerfume: RequestHandler = (
         .catch((err: Error) => next(err));
 };
 
+/**
+ * @swagger
+ *   /perfume/{perfumeIdx}/like:
+ *     post:
+ *       tags:
+ *       - perfume
+ *       summary: 향수 좋아요
+ *       description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 향수 좋아요 / 좋아요 취소를 수행한다. <br/> 반환 되는 정보 [최종 좋아요 상태]
+ *       security:
+ *         - userToken: []
+ *       x-security-scopes:
+ *         - user
+ *       operationId: likePerfume
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: perfumeIdx
+ *         in: path
+ *         required: true
+ *         type: integer
+ *         format: int64
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 향수 세부 조회 성공
+ *               data:
+ *                 type: boolean
+ *                 example: true
+ *                 description: 요청 이후 좋아요 상태
+ *         401:
+ *           description: Token is missing or invalid
+ *         404:
+ *           description: Perfume not found
+ *       x-swagger-router-controller: Perfume
+ * */
 const likePerfume: RequestHandler = (
     req: Request | any,
     res: Response,
@@ -143,6 +283,54 @@ const likePerfume: RequestHandler = (
         .catch((err: Error) => next(err));
 };
 
+/**
+ * @swagger
+ *   /perfume/recent:
+ *     get:
+ *       tags:
+ *       - perfume
+ *       summary: 최근 조회한 향수 조회
+ *       description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 최근에 향수 세부 보기를 수행한 향수들을 조회한다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
+ *       operationId: getRecentPerfume
+ *       security:
+ *       - userToken: []
+ *       x-security-scopes:
+ *       - user
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: pagingSize
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       - name: lastPosition
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 향수 검색 성공
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   count:
+ *                     type: integer
+ *                     example: 1
+ *                   rows:
+ *                     type: array
+ *                     items:
+ *                       allOf:
+ *                       - $ref: '#/definitions/PerfumeResponse'
+ *         401:
+ *           description: Token is missing or invalid
+ *       x-swagger-router-controller: Perfume
+ * */
 const getRecentPerfume: RequestHandler = (
     req: Request | any,
     res: Response,
@@ -177,6 +365,54 @@ const getRecentPerfume: RequestHandler = (
         .catch((err: Error) => next(err));
 };
 
+/**
+ * @swagger
+ *   /perfume/recommend/personal:
+ *     get:
+ *       tags:
+ *       - perfume
+ *       summary: 향수 개인 맞춤 추천
+ *       description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 데이터를 활용해서 향수를 추천해준다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
+ *       operationId: recommendPersonalPerfume
+ *       security:
+ *         - userToken: []
+ *       x-security-scopes:
+ *         - user
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: pagingSize
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       - name: lastPosition
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 향수 검색 성공
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   count:
+ *                     type: integer
+ *                     example: 1
+ *                   rows:
+ *                     type: array
+ *                     items:
+ *                       allOf:
+ *                       - $ref: '#/definitions/PerfumeRecommendResponse'
+ *         401:
+ *           description: Token is missing or invalid
+ *       x-swagger-router-controller: Perfume
+ * */
 const recommendPersonalPerfume: RequestHandler = (
     req: Request | any,
     res: Response,
@@ -211,6 +447,56 @@ const recommendPersonalPerfume: RequestHandler = (
         .catch((err: Error) => next(err));
 };
 
+/**
+ * @swagger
+ *   /perfume/recommend/common:
+ *     get:
+ *       tags:
+ *       - perfume
+ *       summary: 향수 일반 추천 (성별, 나이 반영)
+ *       description: 유저 연령, 성별에 따른 향수를 추천해준다. (로그인 이전의 경우 20대 여성 기본 값) <br/> 반환 되는 정보 [향수, 좋아요 여부]
+ *       operationId: recommendCommonPerfume
+ *       security:
+ *         - userToken: []
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: pagingSize
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       - name: lastPosition
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 향수 검색 성공
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   count:
+ *                     type: integer
+ *                     example: 1
+ *                   rows:
+ *                     type: array
+ *                     items:
+ *                       allOf:
+ *                       - $ref: '#/definitions/Perfume'
+ *                       - type: object
+ *                         properties:
+ *                           isLiked:
+ *                             type: boolean
+ *                         example:
+ *                           isLiked: true
+ *       x-swagger-router-controller: Perfume
+ * */
 const recommendCommonPerfume: RequestHandler = (
     req: Request | any,
     res: Response,
@@ -245,6 +531,44 @@ const recommendCommonPerfume: RequestHandler = (
         .catch((err: Error) => next(err));
 };
 
+/**
+ * @swagger
+ *   /perfume/survey:
+ *     get:
+ *       tags:
+ *       - perfume
+ *       summary: 서베이 추천 향수 조회
+ *       description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저의 성별에 따라서 다른 향수 리스트를 반환한다. <br/> 반환 되는 정보 [향수]
+ *       operationId: getSurveyPerfume
+ *       security:
+ *         - userToken: []
+ *       x-security-scopes:
+ *         - user
+ *       produces:
+ *       - application/json
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 서베이 추천 향수 조회 성공
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   count:
+ *                     type: integer
+ *                     example: 1
+ *                   rows:
+ *                     type: array
+ *                     items:
+ *                       $ref: '#/definitions/PerfumeResponse'
+ *         401:
+ *           description: Token is missing or invalid
+ *       x-swagger-router-controller: Perfume
+ * */
 const getSurveyPerfume: RequestHandler = (
     req: Request | any,
     res: Response,
@@ -274,6 +598,50 @@ const getSurveyPerfume: RequestHandler = (
         .catch((err: Error) => next(err));
 };
 
+/**
+ * @swagger
+ *   /perfume/new:
+ *     get:
+ *       tags:
+ *       - perfume
+ *       summary: 새로 등록한 향수 조회
+ *       description: 최근에 서버에 등록된 향수를 조회한다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
+ *       operationId: getNewPerfume
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: pagingSize
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       - name: lastPosition
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 향수 검색 성공
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   count:
+ *                     type: integer
+ *                     example: 1
+ *                   rows:
+ *                     type: array
+ *                     items:
+ *                       allOf:
+ *                       - $ref: '#/definitions/PerfumeResponse'
+ *         401:
+ *           description: Token is missing or invalid
+ *       x-swagger-router-controller: Perfume
+ * */
 const getNewPerfume: RequestHandler = (
     req: Request | any,
     res: Response,
@@ -308,6 +676,52 @@ const getNewPerfume: RequestHandler = (
         .catch((err: Error) => next(err));
 };
 
+/**
+ * @swagger
+ *   /user/{userIdx}/perfume/liked:
+ *     get:
+ *       tags:
+ *       - perfume
+ *       summary: read user's likedPerfume
+ *       description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저가 좋아요한 향수 조회 <br/> 반환 되는 정보 [향수]
+ *       operationId: getLikedPerfume
+ *       security:
+ *         - userToken: []
+ *       x-security-scopes:
+ *         - user
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: userIdx
+ *         in: path
+ *         required: true
+ *         type: string
+ *       - name: pagingSize
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       - name: lastPosition
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       responses:
+ *         200:
+ *           description: successful operation
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 유저가 좋아요한 향수 조회 성공
+ *               data:
+ *                 type: array
+ *                 items:
+ *                   allOf:
+ *                   - $ref: '#/definitions/PerfumeResponse'
+ *         default:
+ *           description: successful operation
+ *       x-swagger-router-controller: Perfume
+ * */
 const getLikedPerfume: RequestHandler = (
     req: Request | any,
     res: Response,

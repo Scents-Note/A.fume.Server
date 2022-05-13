@@ -51,13 +51,15 @@ class SeriesDao {
      */
     async readAll(pagingDTO: PagingDTO): Promise<ListAndCountDTO<SeriesDTO>> {
         logger.debug(`${LOG_TAG} readAll(pagingDTO = ${pagingDTO})`);
-        return Series.findAndCountAll({
-            offset: (pagingDTO.pagingIndex - 1) * pagingDTO.pagingSize,
-            limit: pagingDTO.pagingSize,
-            order: pagingDTO.order,
-            raw: true,
-            nest: true,
-        }).then((it: any) => {
+        return Series.findAndCountAll(
+            Object.assign(
+                {
+                    raw: true,
+                    nest: true,
+                },
+                pagingDTO.sequelizeOption()
+            )
+        ).then((it: any) => {
             return new ListAndCountDTO<SeriesDTO>(
                 it.count,
                 it.rows.map(SeriesDTO.createByJson)
@@ -73,13 +75,15 @@ class SeriesDao {
      */
     async search(pagingDTO: PagingDTO): Promise<ListAndCountDTO<SeriesDTO>> {
         logger.debug(`${LOG_TAG} search(pagingDTO = ${pagingDTO})`);
-        return Series.findAndCountAll({
-            offset: (pagingDTO.pagingIndex - 1) * pagingDTO.pagingSize,
-            limit: pagingDTO.pagingSize,
-            order: pagingDTO.order,
-            raw: true,
-            nest: true,
-        }).then((it: any) => {
+        return Series.findAndCountAll(
+            Object.assign(
+                {
+                    raw: true,
+                    nest: true,
+                },
+                pagingDTO.sequelizeOption()
+            )
+        ).then((it: any) => {
             return new ListAndCountDTO<SeriesDTO>(
                 it.count,
                 it.rows.map(SeriesDTO.createByJson)

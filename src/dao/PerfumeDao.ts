@@ -130,7 +130,7 @@ class PerfumeDao {
                 `searchText = ${searchText}, ` +
                 `pagingDTO = ${pagingDTO}`
         );
-        let orderCondition = pagingDTO.sqlQuery(SQL_ORDER_DEFAULT);
+        let orderCondition = pagingDTO.sqlOrderQuery(SQL_ORDER_DEFAULT);
 
         let whereCondition: string = '';
         if (
@@ -202,8 +202,8 @@ class PerfumeDao {
                     keywords: keywordIdxList,
                     brands: brandIdxList,
                     ingredients: ingredientIdxList,
-                    limit: pagingDTO.pagingSize,
-                    offset: (pagingDTO.pagingIndex - 1) * pagingDTO.pagingSize,
+                    limit: pagingDTO.limit,
+                    offset: pagingDTO.offset,
                 },
                 type: sequelize.QueryTypes.SELECT,
                 raw: true,
@@ -294,11 +294,14 @@ class PerfumeDao {
         logger.debug(
             `${LOG_TAG} readLikedPerfume(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
-        const options: { [key: string]: any } = _.merge({}, defaultOption, {
-            offset: (pagingDTO.pagingIndex - 1) * pagingDTO.pagingSize,
-            limit: pagingDTO.pagingSize,
-            attributes: PERFUME_THUMB_COLUMNS,
-        });
+        const options: { [key: string]: any } = _.merge(
+            {},
+            defaultOption,
+            pagingDTO.sequelizeOption(),
+            {
+                attributes: PERFUME_THUMB_COLUMNS,
+            }
+        );
         options.include.push({
             model: LikePerfume,
             as: 'LikePerfume',
