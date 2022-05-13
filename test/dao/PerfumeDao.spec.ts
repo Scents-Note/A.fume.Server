@@ -275,20 +275,25 @@ describe('# perfumeDao Test', () => {
                     .catch((err: Error) => done(err));
             });
             it('# read new Perfume', (done: Done) => {
-                const fromDate: Date = new Date();
-                fromDate.setDate(fromDate.getDate() - 7);
                 perfumeDao
-                    .readNewPerfume(fromDate, PagingDTO.createByJson({}))
+                    .readPerfume(undefined, PagingDTO.createByJson({}))
                     .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
                         expect(result.count).to.be.gte(1);
                         expect(result.rows.length).gte(1);
                         for (const perfume of result.rows) {
                             expect(perfume.createdAt).to.be.ok;
-                            expect(perfume.createdAt.getTime()).to.be.gte(
-                                fromDate.getTime()
-                            );
                             PerfumeThumbMockHelper.validTest.call(perfume);
                         }
+                        const expectPerfumeIdxListStr: string = result.rows
+                            .sort((it) => it.createdAt.getTime())
+                            .map((it) => it.perfumeIdx)
+                            .join(',');
+                        const actualPerfumeIdxListStr: string = result.rows
+                            .map((it) => it.perfumeIdx)
+                            .join(',');
+                        expect(actualPerfumeIdxListStr).to.be.eq(
+                            expectPerfumeIdxListStr
+                        );
                         done();
                     })
                     .catch((err: Error) => done(err));

@@ -357,12 +357,11 @@ class PerfumeService {
         pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
         logger.debug(
-            `${LOG_TAG} getNewPerfume(userIdx = ${userIdx}, pagingRequestDTO = ${pagingRequestDTO})`
+            `${LOG_TAG} getNewPerfume(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
-        const fromDate: Date = new Date();
-        fromDate.setDate(fromDate.getDate() - 7);
+        pagingDTO.order = [['createdAt', 'desc']];
         return perfumeDao
-            .readNewPerfume(fromDate, PagingDTO.create(pagingRequestDTO))
+            .readPerfume(undefined, pagingDTO)
             .then(async (result: ListAndCountDTO<PerfumeThumbDTO>) => {
                 const perfumeIdxList: number[] = result.rows.map(
                     (it: PerfumeThumbDTO) => it.perfumeIdx
