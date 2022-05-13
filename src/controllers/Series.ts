@@ -5,7 +5,7 @@ import { logger, LoggerHelper } from '@modules/winston';
 import IngredientService from '@services/IngredientService';
 import SeriesService from '@services/SeriesService';
 
-import { PagingRequestDTO } from '@src/controllers/definitions/request/common';
+import { PagingRequestDTO } from '@request/common';
 
 import { ResponseDTO } from '@response/common';
 import { SeriesResponse, SeriesFilterResponse } from '@response/series';

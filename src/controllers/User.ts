@@ -24,10 +24,7 @@ import StatusCode from '@utils/statusCode';
 
 import UserService from '@services/UserService';
 
-import {
-    UserRegisterRequest,
-    UserEditRequest,
-} from '@src/controllers/definitions/request/user';
+import { UserRegisterRequest, UserEditRequest } from '@request/user';
 
 import { ResponseDTO, SimpleResponseDTO } from '@response/common';
 
