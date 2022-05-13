@@ -1,11 +1,11 @@
 import { DEFAULT_PAGE_SIZE } from '@src/utils/constants';
 
 class PagingRequestDTO {
-    pagingSize: number;
+    requestSize: number;
     lastPosition: number;
     sort: string;
-    constructor(pagingSize: number, lastPosition: number, sort: string) {
-        this.pagingSize = pagingSize;
+    constructor(requestSize: number, lastPosition: number, sort: string) {
+        this.requestSize = requestSize;
         this.lastPosition = lastPosition;
         this.sort = sort;
     }
@@ -15,11 +15,11 @@ class PagingRequestDTO {
     }
 
     static createByJson(json: any): PagingRequestDTO {
-        const pagingSize: number =
-            parseInt(json.pagingSize) || DEFAULT_PAGE_SIZE;
+        const requestSize: number =
+            parseInt(json.requestSize) || DEFAULT_PAGE_SIZE;
         const lastPosition: number = parseInt(json.lastPosition) || -1;
         const sort: string = json.sort || 'createdAt_dsc';
-        return new PagingRequestDTO(pagingSize, lastPosition, sort);
+        return new PagingRequestDTO(requestSize, lastPosition, sort);
     }
 }
 

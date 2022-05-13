@@ -49,10 +49,10 @@ class PagingDTO {
     }
 
     static create(pagingRequestDTO: PagingRequestDTO): PagingDTO {
-        const { pagingSize, lastPosition, sort } = pagingRequestDTO;
+        const { requestSize, lastPosition, sort } = pagingRequestDTO;
         return new PagingDTO(
             lastPosition + 1,
-            pagingSize,
+            requestSize,
             sort ? this.parseSortToOrder(sort) : undefined
         );
     }

@@ -326,8 +326,7 @@ class PerfumeService {
      *
      * @param {number} gender
      * @param {number} ageGroup
-     * @param {number} pagingIndex
-     * @param {number} pagingSize
+     * @param {PagingRequestDTO} pagingRequestDTO
      * @returns {Promise<Perfume[]>}
      **/
     recommendByGenderAgeAndGender(

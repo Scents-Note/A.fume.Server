@@ -35,7 +35,7 @@ module.exports.setBrandService = (brandService: BrandService) => {
  *       produces:
  *       - application/json
  *       parameters:
- *       - name: pagingSize
+ *       - name: itemSize
  *         in: query
  *         type: integer
  *         required: false

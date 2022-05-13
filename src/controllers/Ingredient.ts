@@ -27,7 +27,7 @@ let Ingredient: IngredientService = new IngredientService();
  *       produces:
  *       - application/json
  *       parameters:
- *       - name: pagingSize
+ *       - name: requestSize
  *         in: query
  *         type: integer
  *         required: false
