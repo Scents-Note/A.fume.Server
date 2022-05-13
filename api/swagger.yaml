@@ -79,7 +79,7 @@ paths:
         in: query
         type: integer
         required: false
-      - name: pagingIndex
+      - name: lastPosition
         in: query
         type: integer
         required: false
@@ -130,7 +130,7 @@ paths:
         in: query
         type: integer
         required: false
-      - name: pagingIndex
+      - name: lastPosition
         in: query
         type: integer
         required: false
@@ -177,7 +177,7 @@ paths:
         in: query
         type: integer
         required: false
-      - name: pagingIndex
+      - name: lastPosition
         in: query
         type: integer
         required: false
@@ -261,7 +261,7 @@ paths:
         in: query
         type: integer
         required: false
-      - name: pagingIndex
+      - name: lastPosition
         in: query
         type: integer
         required: false
@@ -310,7 +310,7 @@ paths:
         in: query
         type: integer
         required: false
-      - name: pagingIndex
+      - name: lastPosition
         in: query
         type: integer
         required: false
@@ -869,7 +869,7 @@ paths:
         in: query
         type: integer
         required: false
-      - name: pagingIndex
+      - name: lastPosition
         in: query
         type: integer
         required: false
@@ -924,7 +924,7 @@ paths:
         in: query
         type: integer
         required: false
-      - name: pagingIndex
+      - name: lastPosition
         in: query
         type: integer
         required: false

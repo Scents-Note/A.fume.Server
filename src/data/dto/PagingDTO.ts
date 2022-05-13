@@ -4,22 +4,18 @@ import { DEFAULT_PAGE_SIZE } from '@src/utils/constants';
 type Ascending = 'DESC' | 'ASC';
 
 class PagingDTO {
-    pagingSize: number;
-    pagingIndex: number;
+    offset: number;
+    limit: number;
     order: string[][] | undefined;
-    constructor(
-        pagingSize: number,
-        pagingIndex: number,
-        order: string[][] | undefined
-    ) {
-        this.pagingSize = pagingSize;
-        this.pagingIndex = pagingIndex;
+    constructor(offset: number, limit: number, order: string[][] | undefined) {
+        this.offset = offset;
+        this.limit = limit;
         this.order = order;
     }
     public toString(): string {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
-    public sqlQuery(defaultQuery: string): string {
+    public sqlOrderQuery(defaultQuery: string): string {
         if (!this.order || this.order.length == 0) {
             return defaultQuery;
         }
@@ -35,25 +31,28 @@ class PagingDTO {
 
     public sequelizeOption(): any {
         return {
-            offset: (this.pagingIndex - 1) * this.pagingSize,
-            limit: this.pagingSize,
+            offset: this.offset,
+            limit: this.limit,
             order: this.order,
         };
     }
-    static createByJson(json: any): PagingDTO {
-        const { pagingSize, pagingIndex, order } = json;
-        return new PagingDTO(
-            pagingSize || DEFAULT_PAGE_SIZE,
-            pagingIndex || 1,
-            order
-        );
+    static createByJson({
+        offset,
+        limit,
+        order,
+    }: {
+        offset?: number;
+        limit?: number;
+        order?: string[][];
+    }): PagingDTO {
+        return new PagingDTO(offset || 0, limit || DEFAULT_PAGE_SIZE, order);
     }
 
     static create(pagingRequestDTO: PagingRequestDTO): PagingDTO {
-        const { pagingSize, pagingIndex, sort } = pagingRequestDTO;
+        const { pagingSize, lastPosition, sort } = pagingRequestDTO;
         return new PagingDTO(
+            lastPosition + 1,
             pagingSize,
-            pagingIndex,
             sort ? this.parseSortToOrder(sort) : undefined
         );
     }
