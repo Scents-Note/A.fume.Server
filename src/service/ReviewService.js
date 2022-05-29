@@ -11,9 +11,11 @@ const {
 
 import UserDao from '@dao/UserDao';
 import LikePerfumeDao from '@dao/LikePerfumeDao';
+import PerfumeDao from '@dao/PerfumeDao';
 
 const userDao = new UserDao();
 const likePerfumeDao = new LikePerfumeDao();
+const perfumeDao = new PerfumeDao();
 
 const discordHook = require('../utils/discordHook')
 
@@ -36,6 +38,9 @@ exports.postReview = async ({
     keywordList,
 }) => {
     try {
+        // 해당 perfumeIdx를 가진 향수가 존재하는지 여부 조회 (없으면 notFound에러 발생)
+        await perfumeDao.readByPerfumeIdx(perfumeIdx);
+
         // 데이터 변환
         const translationResult = await InputIntToDBIntOfReview({
             longevity,
