@@ -14,7 +14,7 @@ class PerfumeDefaultReviewDao {
      *
      * @param {number} perfumeIdx
      * @returns {Promise<PerfumeDefaultReviewDTO>} perfumeDefaultReviewDTO
-     * @throws {NotMatchedError} it is occurred when nothing matched with perfumeIdx
+     * @throws {NotMatchedError} if there is no PerfumeDefaultReview
      */
     async readByPerfumeIdx(
         perfumeIdx: number

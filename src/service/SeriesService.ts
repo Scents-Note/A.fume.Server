@@ -35,6 +35,7 @@ class SeriesService {
      *
      * @param {integer} seriesIdx
      * @returns {Promise<SeriesDTO>} seriesDTO
+     * @throws {NotMatchedError} if there is no series
      **/
     getSeriesByIdx(seriesIdx: number): Promise<SeriesDTO> {
         logger.debug(`${LOG_TAG} getSeriesByIdx(seriesIdx = ${seriesIdx})`);

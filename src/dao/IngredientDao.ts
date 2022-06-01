@@ -15,7 +15,7 @@ class IngredientDao {
      *
      * @param {number} ingredientIdx
      * @return {Promise<IngredientDTO>} ingredientDTO
-     * @throws {NotMatchedError}
+     * @throws {NotMatchedError} if there is no ingredient
      */
     async readByIdx(ingredientIdx: number): Promise<IngredientDTO> {
         logger.debug(`${LOG_TAG} readByIdx(ingredientIdx = ${ingredientIdx})`);
@@ -34,7 +34,7 @@ class IngredientDao {
      *
      * @param {string} ingredientName
      * @return {Promise<IngredientDTO>} ingredientDTO
-     * @throws {NotMatchedError}
+     * @throws {NotMatchedError} if there is no ingredient
      */
     async readByName(ingredientName: string): Promise<IngredientDTO> {
         logger.debug(
@@ -54,7 +54,7 @@ class IngredientDao {
      *
      * @param {IngredientDTO} where
      * @return {Promise<ListAndCountDTO>} listAndCountDTO
-     * @throws {NotMatchedError}
+     * @throws {NotMatchedError} if there is no ingredient
      */
     async readAll(where: any): Promise<ListAndCountDTO<IngredientDTO>> {
         logger.debug(`${LOG_TAG} readAll(where = ${JSON.stringify(where)})`);
@@ -127,7 +127,7 @@ class IngredientDao {
      *
      * @param {Object} condition
      * @returns {Promise<IngredientDTO>} ingredientDTO
-     * @throws {NotMatchedError}
+     * @throws {NotMatchedError} if there is no ingredient
      */
     async findIngredient(condition: any): Promise<IngredientDTO> {
         logger.debug(

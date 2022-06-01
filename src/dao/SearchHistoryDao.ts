@@ -14,7 +14,7 @@ class SearchHistoryDao {
      * @param {number} userIdx
      * @param {number} perfumeIdx
      * @return {Promise<SearchHistoryDTO>}
-     * @throws {NotMatchedError} if there is no matched item.
+     * @throws {NotMatchedError} if there is no SearchHistory
      */
     async read(userIdx: number, perfumeIdx: number): Promise<SearchHistoryDTO> {
         logger.debug(
@@ -63,6 +63,7 @@ class SearchHistoryDao {
      * @param {number} perfumeIdx
      * @param {number} count
      * @return {Promise<number>} affectedRows
+     * @throws {NotMatchedError} if there is no SearchHistory
      */
     async update(
         userIdx: number,

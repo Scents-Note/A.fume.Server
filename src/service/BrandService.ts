@@ -41,6 +41,7 @@ class BrandService {
      *
      * @param {number} brandIdx
      * @returns {Promise<BrandDTO>} brandDTO
+     * @throws {NotMatchedError} if there is no Brand
      **/
     getBrandByIdx(brandIdx: number): Promise<BrandDTO> {
         logger.debug(`${LOG_TAG} getBrandByIdx(brandIdx = ${brandIdx})`);

@@ -255,6 +255,7 @@ class PerfumeDao {
      *
      * @param {number} perfumeIdx
      * @returns {Promise<Perfume>}
+     * @throws {NotMatchedError} if there is no Perfume
      */
     async readByPerfumeIdx(perfumeIdx: number): Promise<PerfumeDTO> {
         logger.debug(`${LOG_TAG} readByPerfumeIdx(perfumeIdx = ${perfumeIdx})`);
