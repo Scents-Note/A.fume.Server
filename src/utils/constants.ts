@@ -1,6 +1,5 @@
 import {
     NONE,
-    COLOGNE,
     EAU_DE_COLOGNE,
     EAU_DE_TOILETTE,
     EAU_DE_PERFUME,
@@ -34,7 +33,7 @@ const GRADE_MANAGER: number = 1;
 const GRADE_SYSTEM_ADMIN: number = 9;
 const ABUNDANCE_RATE_LIST: string[] = [
     NONE,
-    COLOGNE,
+    EAU_DE_COLOGNE,
     EAU_DE_COLOGNE,
     EAU_DE_TOILETTE,
     EAU_DE_PERFUME,
