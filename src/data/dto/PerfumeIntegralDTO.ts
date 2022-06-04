@@ -1,4 +1,4 @@
-import { ABUNDANCE_RATE_LIST } from '@utils/constants';
+import { ABUNDANCE_RATE_STR_DICT } from '@utils/constants';
 
 type VolumeAndPrice = { volume: string; price: number }[];
 
@@ -104,7 +104,7 @@ class PerfumeIntegralDTO {
         reviewIdx: number
     ) {
         perfumeDTO.abundanceRate =
-            ABUNDANCE_RATE_LIST[perfumeDTO.abundanceRate];
+            ABUNDANCE_RATE_STR_DICT[perfumeDTO.abundanceRate];
         const perfume: { [key: string]: any } = Object.assign(
             {
                 keywordList,
