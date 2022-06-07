@@ -207,15 +207,9 @@ class PerfumeSummaryDTO {
             obj,
             (value: number) =>
                 total != 0
-                    ? toFixedNumber((value * 100) / total)
-                    : toFixedNumber(100 / entries.length)
+                    ? Math.floor((value * 100) / total)
+                    : Math.floor(100 / entries.length)
         );
-        const remain: number = 100 - _.chain(result).values().sum().value();
-        const max: number = _.chain(result).values().max().value();
-        const maxKey: string =
-            _.findKey(result, (it) => it == max) ||
-            Object.entries(result)[0][0];
-        result[maxKey] += remain;
         return result;
     }
 }
