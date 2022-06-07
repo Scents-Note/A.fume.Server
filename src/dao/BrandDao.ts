@@ -13,6 +13,7 @@ class BrandDao {
      *
      * @param {number} brandIdx
      * @returns {Promise<BrandDTO>}
+     * @throws {NotMatchedError} if there is no brand
      */
     async read(brandIdx: number): Promise<BrandDTO> {
         logger.debug(`${LOG_TAG} read(brandIdx = ${brandIdx})`);
@@ -71,6 +72,7 @@ class BrandDao {
      *
      * @param {Object} condition
      * @returns {Promise<BrandDTO>}
+     * @throws {NotMatchedError} if there is no brand
      */
     async findBrand(condition: any): Promise<BrandDTO> {
         logger.debug(

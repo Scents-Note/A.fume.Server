@@ -61,6 +61,7 @@ class PerfumeService {
      * @param {number} perfumeIdx
      * @param {number} userIdx
      * @returns {Promise<Perfume>}
+     * @throws {NotMatchedError} if there is no Perfume
      **/
     async getPerfumeById(
         perfumeIdx: number,
@@ -205,6 +206,7 @@ class PerfumeService {
      * @param {number} userIdx
      * @param {number} perfumeIdx
      * @returns {Promise}
+     * @throws {FailedToCreateError} if failed to create likePerfume
      **/
     likePerfume(userIdx: number, perfumeIdx: number): Promise<boolean> {
         logger.debug(
@@ -384,7 +386,7 @@ class PerfumeService {
      * 유저가 좋아요한 향수 조회
      *
      * @param {number} userIdx
-     * @param {PagingDTO} pagpagingDTOingRequestDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>}
      **/
     getLikedPerfume(
