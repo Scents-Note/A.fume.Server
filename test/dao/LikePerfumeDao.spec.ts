@@ -7,12 +7,12 @@ import {
     DuplicatedEntryError,
     NotMatchedError,
     UnExpectedError,
-} from '../../src/utils/errors/errors';
+} from '@errors';
 
-import LikePerfumeDao from '../../src/dao/LikePerfumeDao';
+import LikePerfumeDao from '@dao/LikePerfumeDao';
 
 const likePerfumeDao = new LikePerfumeDao();
-const { LikePerfume } = require('../../src/models');
+const { LikePerfume } = require('@sequelize');
 
 describe('# likePerfumeDao Test', () => {
     before(async function () {

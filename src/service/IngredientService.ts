@@ -1,7 +1,14 @@
-import IngredientDao from '../dao/IngredientDao';
-import ingredientConditionDTO from '../data/dto/IngredientConditionDTO';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
-import IngredientDTO from '../data/dto/IngredientDTO';
+import { logger } from '@modules/winston';
+
+import IngredientDao from '@dao/IngredientDao';
+
+import {
+    IngredientConditionDTO,
+    ListAndCountDTO,
+    IngredientDTO,
+} from '@dto/index';
+
+const LOG_TAG: string = '[Ingredient/Service]';
 
 class IngredientService {
     ingredientDao: IngredientDao;
@@ -16,6 +23,7 @@ class IngredientService {
      * @returns {Promise<ListAndCountDTO<IngredientDTO>>} ListAndCountDTO<IngredientDTO>
      **/
     getIngredientAll(): Promise<ListAndCountDTO<IngredientDTO>> {
+        logger.debug(`${LOG_TAG} getIngredientAll()`);
         return this.ingredientDao.readAll({});
     }
 
@@ -26,8 +34,11 @@ class IngredientService {
      * @returns {Promise<IngredientDTO>} ingredientDTO
      **/
     findIngredient(
-        ingredientConditionDTO: ingredientConditionDTO
+        ingredientConditionDTO: IngredientConditionDTO
     ): Promise<IngredientDTO> {
+        logger.debug(
+            `${LOG_TAG} findIngredient(ingredientConditionDTO = ${ingredientConditionDTO})`
+        );
         return this.ingredientDao.findIngredient(ingredientConditionDTO);
     }
 
@@ -40,6 +51,7 @@ class IngredientService {
     getIngredientList(
         seriesIdx: number
     ): Promise<ListAndCountDTO<IngredientDTO>> {
+        logger.debug(`${LOG_TAG} getIngredientList(seriesIdx = ${seriesIdx})`);
         return this.ingredientDao.readAll({ seriesIdx });
     }
 

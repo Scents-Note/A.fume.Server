@@ -1,16 +1,26 @@
-import SeriesFilterDTO from '../dto/SeriesFilterDTO';
-import SeriesDTO from '../dto/SeriesDTO';
-import { IngredientResponse } from '../response/ingredient';
+import { SeriesFilterDTO, SeriesDTO } from '@dto/index';
+import { IngredientResponse } from '@response/ingredient';
 
 class SeriesResponse {
     seriesIdx: number;
     name: string;
-    constructor(seriesIdx: number, name: string) {
+    imageUrl: string;
+    constructor(seriesIdx: number, name: string, imageUrl: string) {
         this.seriesIdx = seriesIdx;
         this.name = name;
+        this.imageUrl = imageUrl;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static create(seriesDTO: SeriesDTO): SeriesResponse {
-        return new SeriesResponse(seriesDTO.seriesIdx, seriesDTO.name);
+        return new SeriesResponse(
+            seriesDTO.seriesIdx,
+            seriesDTO.name,
+            seriesDTO.imageUrl
+        );
     }
 }
 
@@ -26,6 +36,10 @@ class SeriesFilterResponse {
         this.seriesIdx = seriesIdx;
         this.name = name;
         this.ingredients = ingredients;
+    }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
 
     static create(seriesFilterDTO: SeriesFilterDTO) {

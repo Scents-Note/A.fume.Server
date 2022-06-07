@@ -23,6 +23,11 @@ class SeriesDTO {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): SeriesDTO {
         const seriesIdx: number = json.seriesIdx;
         const name: string = json.name;
@@ -43,4 +48,4 @@ class SeriesDTO {
     }
 }
 
-export default SeriesDTO;
+export { SeriesDTO };

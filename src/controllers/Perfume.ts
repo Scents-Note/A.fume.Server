@@ -1,23 +1,6 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
-import StatusCode from '../utils/statusCode';
-import PerfumeService from '../service/PerfumeService';
-import SearchHistoryService from '../service/SearchHistoryService';
-
-import { PerfumeSearchRequest } from '../data/request/perfume';
-import {
-    PerfumeDetailResponse,
-    PerfumeResponse,
-    PerfumeRecommendResponse,
-} from '../data/response/perfume';
-
-import { PagingRequestDTO } from '../data/request/common';
-import { ResponseDTO, SimpleResponseDTO } from '../data/response/common';
-import PerfumeIntegralDTO from '../data/dto/PerfumeIntegralDTO';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
-import PerfumeSearchResultDTO from '../data/dto/PerfumeSearchResultDTO';
-import PerfumeThumbDTO from '../data/dto/PerfumeThumbDTO';
-import PerfumeThumbKeywordDTO from '../data/dto/PerfumeThumbKeywordDTO';
+import { logger, LoggerHelper } from '@modules/winston';
 
 import {
     MSG_GET_PERFUME_DETAIL_SUCCESS,
@@ -31,7 +14,31 @@ import {
     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
     MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
     MSG_ABNORMAL_ACCESS,
-} from '../utils/strings';
+} from '@utils/strings';
+
+import StatusCode from '@utils/statusCode';
+
+import PerfumeService from '@services/PerfumeService';
+import SearchHistoryService from '@services/SearchHistoryService';
+
+import { PerfumeSearchRequest } from '@request/index';
+import {
+    PerfumeDetailResponse,
+    PerfumeResponse,
+    PerfumeRecommendResponse,
+} from '@response/perfume';
+
+import { PagingRequestDTO } from '@request/index';
+import { ResponseDTO, SimpleResponseDTO } from '@response/index';
+import {
+    PerfumeIntegralDTO,
+    ListAndCountDTO,
+    PerfumeSearchResultDTO,
+    PerfumeThumbDTO,
+    PerfumeThumbKeywordDTO,
+} from '@dto/index';
+
+const LOG_TAG: string = '[Perfume/Controller]';
 
 let Perfume: PerfumeService = new PerfumeService();
 let SearchHistory: SearchHistoryService = new SearchHistoryService();
@@ -47,6 +54,9 @@ const getPerfume: RequestHandler = (
         return;
     }
     const loginUserIdx: number = req.middlewareToken.loginUserIdx || -1;
+    logger.debug(
+        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, params = ${req.params})`
+    );
     Promise.all([
         Perfume.getPerfumeById(perfumeIdx, loginUserIdx),
         SearchHistory.incrementCount(loginUserIdx, perfumeIdx),
@@ -54,11 +64,15 @@ const getPerfume: RequestHandler = (
         .then(([result, _]: [PerfumeIntegralDTO, void]) => {
             return PerfumeDetailResponse.createByPerfumeIntegralDTO(result);
         })
-        .then((data: PerfumeDetailResponse) => {
+        .then((response: PerfumeDetailResponse) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} getPerfume's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<PerfumeDetailResponse>(
                     MSG_GET_PERFUME_DETAIL_SUCCESS,
-                    data
+                    response
                 )
             );
         })
@@ -78,6 +92,9 @@ const searchPerfume: RequestHandler = (
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
+    logger.debug(
+        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, query = ${req.query}, body = ${req.body})`
+    );
     Perfume.searchPerfume(perfumeSearchRequest, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
             return new ListAndCountDTO<PerfumeResponse>(
@@ -85,11 +102,15 @@ const searchPerfume: RequestHandler = (
                 result.rows.map(PerfumeResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeResponse>) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} searchPerfume's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     MSG_GET_SEARCH_PERFUME_SUCCESS,
-                    data
+                    response
                 )
             );
         })
@@ -103,8 +124,15 @@ const likePerfume: RequestHandler = (
 ): any => {
     const perfumeIdx: number = req.params['perfumeIdx'];
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
+    logger.debug(
+        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, params = ${req.params})`
+    );
     Perfume.likePerfume(loginUserIdx, perfumeIdx)
         .then((result: boolean) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} likePerfume's result = ${result}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<boolean>(
                     result ? LIKE_PERFUME : LIKE_PERFUME_CANCEL,
@@ -124,6 +152,9 @@ const getRecentPerfume: RequestHandler = (
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
+    logger.debug(
+        `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
+    );
     Perfume.recentSearch(loginUserIdx, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
             return new ListAndCountDTO<PerfumeResponse>(
@@ -131,11 +162,15 @@ const getRecentPerfume: RequestHandler = (
                 result.rows.map(PerfumeResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeResponse>) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} getRecentPerfume's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     MSG_GET_RECENT_SEARCH_PERFUME_SUCCESS,
-                    data
+                    response
                 )
             );
         })
@@ -151,6 +186,9 @@ const recommendPersonalPerfume: RequestHandler = (
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
+    logger.debug(
+        `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
+    );
     Perfume.recommendByUser(loginUserIdx, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return new ListAndCountDTO<PerfumeRecommendResponse>(
@@ -158,11 +196,15 @@ const recommendPersonalPerfume: RequestHandler = (
                 result.rows.map(PerfumeRecommendResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeRecommendResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeRecommendResponse>) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} recommendPersonalPerfume's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeRecommendResponse>>(
                     MSG_GET_RECOMMEND_PERFUME_BY_USER,
-                    data
+                    response
                 )
             );
         })
@@ -178,6 +220,9 @@ const recommendCommonPerfume: RequestHandler = (
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
+    logger.debug(
+        `${LOG_TAG} recommendCommonPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
+    );
     Perfume.recommendByUser(loginUserIdx, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return new ListAndCountDTO<PerfumeRecommendResponse>(
@@ -185,11 +230,15 @@ const recommendCommonPerfume: RequestHandler = (
                 result.rows.map(PerfumeRecommendResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeRecommendResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeRecommendResponse>) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} recommendCommonPerfume's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeRecommendResponse>>(
                     MSG_GET_RECOMMEND_PERFUME_BY_AGE_AND_GENDER,
-                    data
+                    response
                 )
             );
         })
@@ -202,6 +251,7 @@ const getSurveyPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
+    logger.debug(`${LOG_TAG} getSurveyPerfume(userIdx = ${loginUserIdx})`);
     Perfume.getSurveyPerfume(loginUserIdx)
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
             return new ListAndCountDTO<PerfumeResponse>(
@@ -209,11 +259,15 @@ const getSurveyPerfume: RequestHandler = (
                 result.rows.map(PerfumeResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeResponse>) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} getSurveyPerfume's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     MSG_GET_PERFUME_FOR_SURVEY_SUCCESS,
-                    data
+                    response
                 )
             );
         })
@@ -229,6 +283,9 @@ const getNewPerfume: RequestHandler = (
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
+    logger.debug(
+        `${LOG_TAG} getNewPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
+    );
     Perfume.getNewPerfume(loginUserIdx, pagingRequestDTO)
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
             return new ListAndCountDTO<PerfumeResponse>(
@@ -236,11 +293,15 @@ const getNewPerfume: RequestHandler = (
                 result.rows.map(PerfumeResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeResponse>) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} getNewPerfume's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
-                    data
+                    response
                 )
             );
         })
@@ -257,6 +318,9 @@ const getLikedPerfume: RequestHandler = (
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
+    logger.debug(
+        `${LOG_TAG} getLikedPerfume(userIdx = ${userIdx}, loginUserIdx = ${loginUserIdx}, query = ${req.query})`
+    );
     if (loginUserIdx != userIdx) {
         res.status(StatusCode.FORBIDDEN).json(
             new SimpleResponseDTO(MSG_ABNORMAL_ACCESS)
@@ -270,11 +334,15 @@ const getLikedPerfume: RequestHandler = (
                 result.rows.map(PerfumeResponse.createByJson)
             );
         })
-        .then((data: ListAndCountDTO<PerfumeResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeResponse>) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} getLikedPerfume's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
-                    data
+                    response
                 )
             );
         })

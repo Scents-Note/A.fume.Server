@@ -1,7 +1,17 @@
-import { GradeKey, GenderKey } from '../../utils/enumType';
-const { GRADE_USER } = require('../../utils/constantUtil');
+import { GRADE_USER } from '@utils/constants';
+import { GradeKey, GenderKey } from '@utils/enumType';
 
-class UserEditRequest {
+interface UserInputRequest {
+    userIdx?: number;
+    grade?: GradeKey;
+    gender?: GenderKey;
+    nickname?: string;
+    password?: string;
+    email?: string;
+    birth?: number;
+}
+
+class UserEditRequest implements UserInputRequest {
     userIdx: number;
     grade?: GradeKey;
     gender?: GenderKey;
@@ -27,6 +37,10 @@ class UserEditRequest {
         this.birth = birth;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): UserEditRequest {
         return new UserEditRequest(
             json.userIdx,
@@ -39,7 +53,7 @@ class UserEditRequest {
         );
     }
 }
-class UserRegisterRequest {
+class UserRegisterRequest implements UserInputRequest {
     nickname: string;
     password: string;
     gender: GenderKey;
@@ -61,6 +75,11 @@ class UserRegisterRequest {
         this.email = email;
         this.birth = birth;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): UserRegisterRequest {
         return new UserRegisterRequest(
             json.nickname,
@@ -73,4 +92,4 @@ class UserRegisterRequest {
     }
 }
 
-export { UserEditRequest, UserRegisterRequest };
+export { UserInputRequest, UserEditRequest, UserRegisterRequest };

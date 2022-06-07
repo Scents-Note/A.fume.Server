@@ -1,10 +1,19 @@
 import _ from 'lodash';
-import { NotMatchedError } from '../utils/errors/errors';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
-import PerfumeDTO from '../data/dto/PerfumeDTO';
-import PerfumeThumbDTO from '../data/dto/PerfumeThumbDTO';
-import PerfumeSearchResultDTO from '../data/dto/PerfumeSearchResultDTO';
-import PerfumeSearchHistoryDTO from '../data/dto/PerfumeSearchHistoryDTO';
+
+import { logger } from '@modules/winston';
+
+import { NotMatchedError } from '@errors';
+
+import {
+    ListAndCountDTO,
+    PerfumeDTO,
+    PerfumeThumbDTO,
+    PerfumeSearchResultDTO,
+    PerfumeSearchHistoryDTO,
+    PagingDTO,
+} from '@dto/index';
+
+const LOG_TAG: string = '[Perfume/DAO]';
 
 const {
     Perfume,
@@ -14,10 +23,10 @@ const {
     SearchHistory,
     sequelize,
     Sequelize,
-} = require('../models');
+} = require('@sequelize');
 const { Op } = Sequelize;
 
-const { ranking } = require('../mongoose_models');
+const { ranking } = require('@mongoose');
 
 const PERFUME_THUMB_COLUMNS: string[] = [
     'perfumeIdx',
@@ -104,9 +113,7 @@ class PerfumeDao {
      * @param {number[]} ingredientIdxList
      * @param {number[]} keywordIdxList
      * @param {string} searchText
-     * @param {number} pagingIndex
-     * @param {number} pagingSize
-     * @param {array} sort - 정렬 조건
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>} perfumeList
      */
     async search(
@@ -114,23 +121,16 @@ class PerfumeDao {
         ingredientIdxList: number[],
         keywordIdxList: number[],
         searchText: string,
-        pagingIndex: number,
-        pagingSize: number,
-        order: any[] = []
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeSearchResultDTO>> {
-        let orderCondition = '';
-        if (!order || order.length == 0) {
-            orderCondition = SQL_ORDER_DEFAULT;
-        } else {
-            orderCondition = order
-                .map((it: any) => {
-                    if (it.fn) {
-                        return `${it.fn}(${it.args})`;
-                    }
-                    return `${it[0]} ${it[1]}`;
-                })
-                .join(' ');
-        }
+        logger.debug(
+            `${LOG_TAG} search(brandIdxList = ${brandIdxList}, ` +
+                `ingredientIdxList = ${ingredientIdxList}, ` +
+                `keywordList = ${keywordIdxList}, ` +
+                `searchText = ${searchText}, ` +
+                `pagingDTO = ${pagingDTO}`
+        );
+        let orderCondition = pagingDTO.sqlQuery(SQL_ORDER_DEFAULT);
 
         let whereCondition: string = '';
         if (
@@ -149,23 +149,31 @@ class PerfumeDao {
                 SQL_SEARCH_KEYWORD_CONDITION,
                 SQL_SEARCH_BRAND_CONDITION,
             ];
-            whereCondition =
-                'WHERE ' +
-                arr
-                    .reduce((prev: string[], cur: number[], index: number) => {
-                        if (cur.length > 0) {
-                            prev.push(conditionSQL[index]);
-                        }
-                        return prev;
-                    }, [])
-                    .join(' AND ');
+            whereCondition = arr
+                .reduce((prev: string[], cur: number[], index: number) => {
+                    if (cur.length > 0) {
+                        prev.push(conditionSQL[index]);
+                    }
+                    return prev;
+                }, [])
+                .join(' AND ');
         }
         if (searchText && searchText.length > 0) {
-            whereCondition = `${whereCondition} AND ( p.name LIKE '%${searchText}%'`;
+            if (whereCondition.length) {
+                whereCondition = `${whereCondition} AND `;
+            }
+            whereCondition = `${whereCondition} (MATCH(p.name) AGAINST('${searchText}*' IN BOOLEAN MODE)`;
             if (brandIdxList.length == 0) {
-                whereCondition = `${whereCondition} OR b.name LIKE '%${searchText}%'`;
+                whereCondition = `${whereCondition} OR (MATCH(b.name) AGAINST ('${searchText}*' IN BOOLEAN MODE))`;
             }
             whereCondition = `${whereCondition} )`;
+            orderCondition =
+                `case when MATCH(p.name) AGAINST('${searchText}') then 0 ` +
+                `when MATCH(p.name) AGAINST('${searchText}*' IN BOOLEAN MODE) then 1 ` +
+                `else 2 end, ${orderCondition}`;
+        }
+        if (whereCondition.length > 0) {
+            whereCondition = `WHERE ${whereCondition}`;
         }
         const countSQL: string = SQL_SEARCH_PERFUME_SELECT_COUNT.replace(
             ':whereCondition',
@@ -194,8 +202,8 @@ class PerfumeDao {
                     keywords: keywordIdxList,
                     brands: brandIdxList,
                     ingredients: ingredientIdxList,
-                    limit: pagingSize,
-                    offset: (pagingIndex - 1) * pagingSize,
+                    limit: pagingDTO.pagingSize,
+                    offset: (pagingDTO.pagingIndex - 1) * pagingDTO.pagingSize,
                 },
                 type: sequelize.QueryTypes.SELECT,
                 raw: true,
@@ -209,15 +217,17 @@ class PerfumeDao {
      * 새로 등록된 향수 조회
      *
      * @param {Date} fromDate
-     * @param {number} pagingIndex
-     * @param {number} pagingSize
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>} perfumeList
      */
     async readNewPerfume(
         fromDate: Date,
-        pagingIndex: number,
-        pagingSize: number
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        pagingDTO.order = [['createdAt', 'desc']];
+        logger.debug(
+            `${LOG_TAG} readNewPerfume(fromDate = ${fromDate}, pagingDTO = ${pagingDTO})`
+        );
         const options: { [key: string]: any } = Object.assign(
             {},
             defaultOption,
@@ -234,10 +244,8 @@ class PerfumeDao {
                         as: 'Brand',
                     },
                 ],
-                offset: (pagingIndex - 1) * pagingSize,
-                limit: pagingSize,
-                order: [['createdAt', 'desc']],
-            }
+            },
+            pagingDTO.sequelizeOption()
         );
         return Perfume.findAndCountAll(options).then((it: any) => {
             return new ListAndCountDTO(
@@ -254,6 +262,7 @@ class PerfumeDao {
      * @returns {Promise<Perfume>}
      */
     async readByPerfumeIdx(perfumeIdx: number): Promise<PerfumeDTO> {
+        logger.debug(`${LOG_TAG} readByPerfumeIdx(perfumeIdx = ${perfumeIdx})`);
         const options = _.merge({}, defaultOption, {
             where: { perfumeIdx },
         });
@@ -275,18 +284,19 @@ class PerfumeDao {
      * 위시 리스트에 속하는 향수 조회
      *
      * @param {number} userIdx
-     * @param {number} pagingIndex
-     * @param {number} pagingSize
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>} perfumeList
      */
     async readLikedPerfume(
         userIdx: number,
-        pagingIndex: number,
-        pagingSize: number
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        logger.debug(
+            `${LOG_TAG} readLikedPerfume(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
+        );
         const options: { [key: string]: any } = _.merge({}, defaultOption, {
-            offset: (pagingIndex - 1) * pagingSize,
-            limit: pagingSize,
+            offset: (pagingDTO.pagingIndex - 1) * pagingDTO.pagingSize,
+            limit: pagingDTO.pagingSize,
             attributes: PERFUME_THUMB_COLUMNS,
         });
         options.include.push({
@@ -312,27 +322,30 @@ class PerfumeDao {
      * 최근에 검색한 향수 조회
      *
      * @param {number} userIdx
-     * @param {number} pagingIndex
-     * @param {number} pagingSize
+     * @param {PagingDTO} pagingDTO order is ignored
      * @returns {Promise<Perfume[]>}
      */
     async recentSearchPerfumeList(
         userIdx: number,
-        pagingIndex: number,
-        pagingSize: number
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeSearchHistoryDTO>> {
-        const options: { [key: string]: any } = _.merge({}, defaultOption, {
-            order: [
-                [
-                    { model: SearchHistory, as: 'SearchHistory' },
-                    'updatedAt',
-                    'desc',
+        logger.debug(
+            `${LOG_TAG} recentSearchPerfumeList(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
+        );
+        const options: { [key: string]: any } = _.merge(
+            {},
+            defaultOption,
+            pagingDTO.sequelizeOption(),
+            {
+                order: [
+                    [
+                        { model: SearchHistory, as: 'SearchHistory' },
+                        'updatedAt',
+                        'desc',
+                    ],
                 ],
-            ],
-            attributes: PERFUME_THUMB_COLUMNS,
-            offset: (pagingIndex - 1) * pagingSize,
-            limit: pagingSize,
-        });
+            }
+        );
         options.include.push({
             model: SearchHistory,
             as: 'SearchHistory',
@@ -354,31 +367,33 @@ class PerfumeDao {
      *
      * @param {string} gender
      * @param {number} ageGroup
-     * @param {number} pagingIndex
-     * @param {number} pagingSize
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>}
      */
     async recommendPerfumeByAgeAndGender(
-        gender: string,
+        gender: number,
         ageGroup: number,
-        pagingIndex: number,
-        pagingSize: number
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        logger.debug(
+            `${LOG_TAG} recommendPerfumeByAgeAndGender(gender = ${gender}, ageGroup = ${ageGroup}, pagingDTO = ${pagingDTO})`
+        );
         const today: Date = new Date();
         const startYear: number = today.getFullYear() - ageGroup - 8;
         const endYear: number = today.getFullYear() - ageGroup + 1;
         let perfumeList: PerfumeThumbDTO[] = (
             await sequelize.query(
                 SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT,
-                {
-                    bind: [gender, startYear, endYear],
-                    type: sequelize.QueryTypes.SELECT,
-                    offset: (pagingIndex - 1) * pagingSize,
-                    limit: pagingSize,
-                    attributes: PERFUME_THUMB_COLUMNS,
-                    raw: true,
-                    nest: true,
-                }
+                Object.assign(
+                    {
+                        bind: [gender, startYear, endYear],
+                        type: sequelize.QueryTypes.SELECT,
+                        attributes: PERFUME_THUMB_COLUMNS,
+                        raw: true,
+                        nest: true,
+                    },
+                    pagingDTO.sequelizeOption()
+                )
             )
         ).map(PerfumeThumbDTO.createByJson);
         const result: ListAndCountDTO<PerfumeThumbDTO> = new ListAndCountDTO(
@@ -404,6 +419,9 @@ class PerfumeDao {
         gender: string,
         ageGroup: number
     ): Promise<PerfumeThumbDTO[]> {
+        logger.debug(
+            `${LOG_TAG} recommendPerfumeByAgeAndGenderCached(gender = ${gender}, ageGroup = ${ageGroup})`
+        );
         return ranking.findItem({ gender, ageGroup });
     }
 
@@ -416,6 +434,7 @@ class PerfumeDao {
     async readPerfumeSurvey(
         gender: number
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        logger.debug(`${LOG_TAG} readPerfumeSurvey(gender = ${gender})`);
         const options = _.merge({}, defaultOption);
         options.include.push({
             model: PerfumeSurvey,
@@ -439,6 +458,7 @@ class PerfumeDao {
      * @returns {Promise<Perfume[]>}
      */
     async readAll(): Promise<PerfumeThumbDTO[]> {
+        logger.debug(`${LOG_TAG} readAll()`);
         return Perfume.findAll();
     }
 }

@@ -1,6 +1,11 @@
-import { NotMatchedError, DuplicatedEntryError } from '../utils/errors/errors';
-const { LikePerfume, Sequelize } = require('../models');
+import { logger } from '@modules/winston';
+
+import { NotMatchedError, DuplicatedEntryError } from '@errors';
+
+const { LikePerfume, Sequelize } = require('@sequelize');
 const { Op } = Sequelize;
+
+const LOG_TAG: string = '[Ingredient/DAO]';
 
 class LikePerfumeDao {
     /**
@@ -14,6 +19,9 @@ class LikePerfumeDao {
         userIdx: number,
         perfumeIdx: number
     ): Promise<{ userIdx: number; perfumeIdx: number }> {
+        logger.debug(
+            `${LOG_TAG} create(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx})`
+        );
         return LikePerfume.create({ userIdx, perfumeIdx })
             .then((it: { userIdx: number; perfumeIdx: number }) => {
                 return { userIdx: it.userIdx, perfumeIdx: it.perfumeIdx };
@@ -40,6 +48,9 @@ class LikePerfumeDao {
         userIdx: number,
         perfumeIdx: number
     ): Promise<{ userIdx: number; perfumeIdx: number }> {
+        logger.debug(
+            `${LOG_TAG} read(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx})`
+        );
         return LikePerfume.findOne({
             where: { userIdx, perfumeIdx },
         }).then((it: any) => {
@@ -58,6 +69,9 @@ class LikePerfumeDao {
      * @returns {Promise}
      */
     delete(userIdx: number, perfumeIdx: number): Promise<number> {
+        logger.debug(
+            `${LOG_TAG} delete(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx})`
+        );
         return LikePerfume.destroy({
             where: { userIdx, perfumeIdx },
             raw: true,
@@ -75,6 +89,7 @@ class LikePerfumeDao {
      * @returns {Promise}
      */
     deleteByUserIdx(userIdx: number): Promise<void> {
+        logger.debug(`${LOG_TAG} deleteByUserIdx(userIdx = ${userIdx})`);
         return LikePerfume.destroy({
             where: {
                 userIdx,
@@ -93,6 +108,11 @@ class LikePerfumeDao {
         userIdx: number,
         perfumeIdxList: number[]
     ): Promise<{ userIdx: number; perfumeIdx: number }[]> {
+        logger.debug(
+            `${LOG_TAG} readLikeInfo(userIdx = ${userIdx}, perfumeIdxList = ${perfumeIdxList.join(
+                ', '
+            )})`
+        );
         return LikePerfume.findAll({
             where: {
                 userIdx,

@@ -1,5 +1,5 @@
-import BrandDTO from './BrandDTO';
-import PerfumeThumbDTO from './PerfumeThumbDTO';
+import { BrandDTO } from '@dto/BrandDTO';
+import { PerfumeThumbDTO } from '@dto/PerfumeThumbDTO';
 
 type SearchHistory = {
     userIdx: number;
@@ -25,18 +25,22 @@ class PerfumeSearchHistoryDTO extends PerfumeThumbDTO {
         this.SearchHistory = SearchHistory;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): PerfumeSearchHistoryDTO {
         return new PerfumeSearchHistoryDTO(
             json.perfumeIdx,
             json.name,
-            json.brandName,
             json.isLiked,
             json.imageUrl,
             json.createdAt,
             json.updatedAt,
+            json.Brand,
             json.SearchHistory
         );
     }
 }
 
-export default PerfumeSearchHistoryDTO;
+export { PerfumeSearchHistoryDTO };

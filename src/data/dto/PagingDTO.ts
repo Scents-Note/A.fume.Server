@@ -1,4 +1,5 @@
-import { PagingRequestDTO } from '../request/common';
+import { PagingRequestDTO } from '@request/common';
+import { DEFAULT_PAGE_SIZE } from '@src/utils/constants';
 
 type Ascending = 'DESC' | 'ASC';
 
@@ -14,6 +15,38 @@ class PagingDTO {
         this.pagingSize = pagingSize;
         this.pagingIndex = pagingIndex;
         this.order = order;
+    }
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+    public sqlQuery(defaultQuery: string): string {
+        if (!this.order || this.order.length == 0) {
+            return defaultQuery;
+        }
+        return this.order
+            .map((it: any) => {
+                if (it.fn) {
+                    return `${it.fn}(${it.args})`;
+                }
+                return `${it[0]} ${it[1]}`;
+            })
+            .join(' ');
+    }
+
+    public sequelizeOption(): any {
+        return {
+            offset: (this.pagingIndex - 1) * this.pagingSize,
+            limit: this.pagingSize,
+            order: this.order,
+        };
+    }
+    static createByJson(json: any): PagingDTO {
+        const { pagingSize, pagingIndex, order } = json;
+        return new PagingDTO(
+            pagingSize || DEFAULT_PAGE_SIZE,
+            pagingIndex || 1,
+            order
+        );
     }
 
     static create(pagingRequestDTO: PagingRequestDTO): PagingDTO {
@@ -44,4 +77,4 @@ class PagingDTO {
     }
 }
 
-export default PagingDTO;
+export { PagingDTO };

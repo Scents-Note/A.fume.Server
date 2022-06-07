@@ -3,8 +3,9 @@ import { expect } from 'chai';
 import { Done } from 'mocha';
 dotenv.config();
 
-import PerfumeDefaultReviewDao from '../../src/dao/PerfumeDefaultReviewDao';
-import PerfumeDefaultReviewDTO from '../../src/data/dto/PerfumeDefaultReviewDTO';
+import PerfumeDefaultReviewDao from '@dao/PerfumeDefaultReviewDao';
+
+import { PerfumeDefaultReviewDTO } from '@dto/index';
 
 const perfumeDefaultReviewDao = new PerfumeDefaultReviewDao();
 

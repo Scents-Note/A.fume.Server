@@ -5,6 +5,10 @@ class CreatedResultDTO<Type> {
         this.idx = idx;
         this.created = created;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
 }
 
-export default CreatedResultDTO;
+export { CreatedResultDTO };

@@ -1,9 +1,10 @@
 import swaggerUi from 'swagger-ui-express';
-import swaggerJsdoc, { SwaggerDefinition } from 'swagger-jsdoc';
+import swaggerJSDoc, { SwaggerDefinition } from 'swagger-jsdoc';
 import { RequestHandler, Request, Response, NextFunction } from 'express';
 import _ from 'lodash';
-import properties from '../utils/properties';
-import swaggerJSDoc from 'swagger-jsdoc';
+
+import properties from '@properties';
+import { logger } from '@modules/winston';
 
 const parseurl: any = require('parseurl');
 
@@ -65,7 +66,7 @@ const options: swaggerJSDoc.Options = {
     ],
 };
 
-const specs: SwaggerDefinition = swaggerJsdoc(options) as SwaggerDefinition;
+const specs: SwaggerDefinition = swaggerJSDoc(options) as SwaggerDefinition;
 
 type ApiCache = { [key: string]: any };
 
@@ -91,7 +92,7 @@ function initApiCache() {
             case 'patch':
                 return apiCaches.delete;
             default:
-                console.log('Not Implemented for ' + method);
+                logger.error('Not Implemented for ' + method);
                 return () => {};
         }
     };
@@ -113,10 +114,9 @@ for (const _endpoint in specs.paths) {
     for (const _method in specs.paths[_endpoint]) {
         const method = _method.toLowerCase();
         const parameters = specs.paths[_endpoint][method];
-        // TODO 해당 정보는 file로 로깅하기
-        // console.log(
-        //     `x-security-scopes | [${method}] ${expressPath} : ${parameters['x-security-scopes']}`
-        // );
+        logger.info(
+            `x-security-scopes | [${method}] ${expressPath} : ${parameters['x-security-scopes']}`
+        );
         const apiCache: ApiCache = getApiCache(method);
         apiCache[cacheKey] = parameters;
         apiCache[cacheKey].re = re;

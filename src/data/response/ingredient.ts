@@ -6,6 +6,10 @@ class IngredientResponse {
         this.name = name;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: {
         ingredientIdx: number;
         name: string;

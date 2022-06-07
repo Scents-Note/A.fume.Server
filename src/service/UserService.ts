@@ -1,18 +1,27 @@
+import { logger } from '@modules/winston';
+
 import {
     WrongPasswordError,
     PasswordPolicyError,
     NotMatchedError,
-} from '../utils/errors/errors';
-import UserDao from '../dao/UserDao';
-import { encrypt, decrypt } from '../lib/crypto';
-import JwtController from '../lib/JwtController';
-import TokenPayloadDTO from '../data/dto/TokenPayloadDTO';
-import LoginInfoDTO from '../data/dto/LoginInfoDTO';
-import TokenGroupDTO from '../data/dto/TokenGroupDTO';
-import UserAuthDTO from '../data/dto/UserAuthDTO';
-import UserDTO from '../data/dto/UserDTO';
-import UserInputDTO from '../data/dto/UserInputDTO';
-import SurveyDTO from '../data/dto/SurveyDTO';
+} from '@errors';
+
+import UserDao from '@dao/UserDao';
+
+import { encrypt as _encrypt, decrypt as _decrypt } from '@libs/crypto';
+import JwtController from '@libs/JwtController';
+
+import {
+    TokenPayloadDTO,
+    LoginInfoDTO,
+    TokenGroupDTO,
+    UserAuthDTO,
+    UserInputDTO,
+    UserDTO,
+    SurveyDTO,
+} from '@dto/index';
+
+const LOG_TAG: string = '[User/Service]';
 
 class UserService {
     userDao: UserDao;
@@ -20,7 +29,7 @@ class UserService {
     jwt: any;
     constructor(userDao?: UserDao, crypto?: any, jwt?: any) {
         this.userDao = userDao || new UserDao();
-        this.crypto = crypto || { encrypt, decrypt };
+        this.crypto = crypto || { encrypt: _encrypt, decrypt: _decrypt };
         this.jwt = jwt || {
             create: JwtController.create,
             publish: JwtController.publish,
@@ -35,7 +44,7 @@ class UserService {
      * @returns {Promise}
      **/
     async createUser(userInputDTO: UserInputDTO) {
-        userInputDTO.password = this.crypto.encrypt(userInputDTO.password);
+        logger.debug(`${LOG_TAG} createUser(userInputDTO = ${userInputDTO})`);
         return this.userDao
             .create(userInputDTO)
             .then(() => {
@@ -61,6 +70,7 @@ class UserService {
      * @returns {Promise}
      */
     deleteUser(userIdx: number) {
+        logger.debug(`${LOG_TAG} deleteUser(userIdx = ${userIdx})`);
         return this.userDao.delete(userIdx);
     }
 
@@ -71,6 +81,7 @@ class UserService {
      * @returns {Promise<UserDTO>}
      **/
     async getUserByIdx(userIdx: number): Promise<UserDTO> {
+        logger.debug(`${LOG_TAG} getUserByIdx(userIdx = ${userIdx})`);
         return this.userDao.readByIdx(userIdx);
     }
 
@@ -81,6 +92,7 @@ class UserService {
      * @returns {Promise<UserAuthDTO>}
      **/
     async authUser(token: string): Promise<UserAuthDTO> {
+        logger.debug(`${LOG_TAG} authUser(token = ${token})`);
         return new Promise((resolve, _) => {
             try {
                 const payload: any = this.jwt.verify(token);
@@ -111,9 +123,20 @@ class UserService {
      * @param {string} password
      * @returns {LoginInfoDTO} - 토큰 정보
      **/
-    async loginUser(email: string, password: string): Promise<LoginInfoDTO> {
+    async loginUser(
+        email: string,
+        encryptPassword: string
+    ): Promise<LoginInfoDTO> {
+        logger.debug(
+            `${LOG_TAG} authUser(email = ${email}, encrypt_password = ${encryptPassword})`
+        );
         const user: UserDTO = await this.userDao.read({ email });
-        if (this.crypto.decrypt(user.password) != password) {
+        console.log(user.password);
+        console.log(encryptPassword);
+        if (
+            this.crypto.decrypt(user.password) !=
+            this.crypto.decrypt(encryptPassword)
+        ) {
             throw new WrongPasswordError();
         }
         this.userDao.updateAccessTime(user.userIdx);
@@ -144,6 +167,7 @@ class UserService {
      * @returns {UserDTO} UserDTO
      **/
     async updateUser(userInputDTO: UserInputDTO): Promise<UserDTO> {
+        logger.debug(`${LOG_TAG} authUser(userInputDTO = ${userInputDTO})`);
         await this.userDao.update(userInputDTO);
         const user: UserDTO = await this.userDao.readByIdx(
             userInputDTO.userIdx!!
@@ -164,15 +188,19 @@ class UserService {
         prevPassword: string,
         newPassword: string
     ) {
-        const user = await this.userDao.readByIdx(userIdx);
-        const dbPassword = this.crypto.decrypt(user.password);
-        if (dbPassword !== prevPassword) {
+        const encryptPrevPassword: string = this.crypto.encrypt(prevPassword);
+        const encryptNewPassword: string = this.crypto.encrypt(newPassword);
+        logger.debug(
+            `${LOG_TAG} authUser(userIdx = ${userIdx}, prevPassword = ${prevPassword}, newPassword = ${newPassword})`
+        );
+        const user: UserDTO = await this.userDao.readByIdx(userIdx);
+        if (user.password !== encryptPrevPassword) {
             throw new WrongPasswordError();
         }
-        if (dbPassword === newPassword) {
+        if (user.password === encryptNewPassword) {
             throw new PasswordPolicyError();
         }
-        const password = this.crypto.encrypt(newPassword);
+        const password: string = encryptNewPassword;
         return this.userDao.update({
             userIdx,
             password,
@@ -186,6 +214,7 @@ class UserService {
      * @returns {boolean}
      **/
     async validateEmail(email: string): Promise<boolean> {
+        logger.debug(`${LOG_TAG} validateEmail(email = ${email})`);
         try {
             await this.userDao.read({ email });
             return false;
@@ -204,6 +233,7 @@ class UserService {
      * @returns {boolean}
      **/
     async validateName(nickname: string): Promise<boolean> {
+        logger.debug(`${LOG_TAG} validateName(nickname = ${nickname})`);
         try {
             await this.userDao.read({ nickname });
             return false;
@@ -222,6 +252,7 @@ class UserService {
      * @returns {boolean}
      **/
     async addSurvey(surveyDTO: SurveyDTO) {
+        logger.debug(`${LOG_TAG} addSurvey(surveyDTO = ${surveyDTO})`);
         return this.userDao.postSurvey(surveyDTO);
     }
 }

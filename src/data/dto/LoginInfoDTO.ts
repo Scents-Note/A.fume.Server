@@ -1,4 +1,4 @@
-import { Gender } from '../../utils/enumType';
+import { Gender } from '@utils/enumType';
 
 class LoginInfoDTO {
     userIdx: number;
@@ -26,6 +26,10 @@ class LoginInfoDTO {
         this.refreshToken = refreshToken;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): LoginInfoDTO {
         return new LoginInfoDTO(
             json.userIdx,
@@ -39,4 +43,4 @@ class LoginInfoDTO {
     }
 }
 
-export default LoginInfoDTO;
+export { LoginInfoDTO };

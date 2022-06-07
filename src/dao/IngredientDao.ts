@@ -1,9 +1,13 @@
-import IngredientDTO from '../data/dto/IngredientDTO';
-import { NotMatchedError } from '../utils/errors/errors';
-import ListAndCountDTO from '../data/dto/ListAndCountDTO';
+import { logger } from '@modules/winston';
 
-const { Ingredient, Sequelize } = require('../models');
+import { NotMatchedError } from '@errors';
+
+import { IngredientDTO, ListAndCountDTO, PagingDTO } from '@dto/index';
+
+const { Ingredient, Sequelize } = require('@sequelize');
 const { Op } = Sequelize;
+
+const LOG_TAG: string = '[Ingredient/DAO]';
 
 class IngredientDao {
     /**
@@ -14,6 +18,7 @@ class IngredientDao {
      * @throws {NotMatchedError}
      */
     async readByIdx(ingredientIdx: number): Promise<IngredientDTO> {
+        logger.debug(`${LOG_TAG} readByIdx(ingredientIdx = ${ingredientIdx})`);
         const result: any = await Ingredient.findByPk(ingredientIdx, {
             nest: true,
             raw: true,
@@ -32,6 +37,9 @@ class IngredientDao {
      * @throws {NotMatchedError}
      */
     async readByName(ingredientName: string): Promise<IngredientDTO> {
+        logger.debug(
+            `${LOG_TAG} readByName(ingredientName = ${ingredientName})`
+        );
         const result = await Ingredient.findOne({
             where: { name: ingredientName },
         });
@@ -49,6 +57,7 @@ class IngredientDao {
      * @throws {NotMatchedError}
      */
     async readAll(where: any): Promise<ListAndCountDTO<IngredientDTO>> {
+        logger.debug(`${LOG_TAG} readAll(where = ${JSON.stringify(where)})`);
         const result = await Ingredient.findAndCountAll({
             where,
             nest: true,
@@ -65,23 +74,22 @@ class IngredientDao {
     /**
      * 재료 검색
      *
-     * @param {number} pagingIndex
-     * @param {number} pagingSize
-     * @param {array} order
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<ListAndCountDTO<IngredientDTO>>} listAndCountDTO<IngredientDTO>
      */
     async search(
-        pagingIndex: number,
-        pagingSize: number,
-        order: string[]
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<IngredientDTO>> {
-        return Ingredient.findAndCountAll({
-            offset: (pagingIndex - 1) * pagingSize,
-            limit: pagingSize,
-            order,
-            raw: true,
-            nest: true,
-        }).then((result: any) => {
+        logger.debug(`${LOG_TAG} search(pagingDTO = ${pagingDTO})`);
+        return Ingredient.findAndCountAll(
+            Object.assign(
+                {
+                    raw: true,
+                    nest: true,
+                },
+                pagingDTO.sequelizeOption
+            )
+        ).then((result: any) => {
             const { count, rows } = result;
             return new ListAndCountDTO<IngredientDTO>(
                 count,
@@ -99,6 +107,9 @@ class IngredientDao {
     async readBySeriesIdxList(
         seriesIdxList: number[]
     ): Promise<IngredientDTO[]> {
+        logger.debug(
+            `${LOG_TAG} readBySeriesIdxList(seriesIdxList = ${seriesIdxList})`
+        );
         return Ingredient.findAll({
             where: {
                 seriesIdx: {
@@ -119,6 +130,11 @@ class IngredientDao {
      * @throws {NotMatchedError}
      */
     async findIngredient(condition: any): Promise<IngredientDTO> {
+        logger.debug(
+            `${LOG_TAG} findIngredient(condition = ${JSON.stringify(
+                condition
+            )})`
+        );
         // reason for converting json is remove key that has undefined value
         condition = JSON.parse(JSON.stringify(condition));
         return Ingredient.findOne({

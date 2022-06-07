@@ -1,21 +1,10 @@
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 
-import { ResponseDTO, SimpleResponseDTO } from '../data/response/common';
-import StatusCode from '../utils/statusCode';
+import { logger, LoggerHelper } from '@modules/winston';
 
-import {
-    UserResponse,
-    UserRegisterResponse,
-    UserAuthResponse,
-    LoginResponse,
-} from '../data/response/user';
+import { UnAuthorizedError } from '@errors';
 
-import UserService from '../service/UserService';
-
-import { UserRegisterRequest, UserEditRequest } from '../data/request/user';
-import UserAuthDTO from '../data/dto/UserAuthDTO';
-import { UnAuthorizedError } from '../utils/errors/errors';
-import { GenderMap } from '../utils/enumType';
+import { GRADE_USER } from '@utils/constants';
 
 import {
     MSG_REGISTER_SUCCESS,
@@ -29,18 +18,29 @@ import {
     MSG_DUPLICATE_CHECK_NAME_AVAILABLE,
     MSG_DUPLICATE_CHECK_NAME_UNAVAILABLE,
     MSG_POST_SURVEY_SUCCESS,
-} from '../utils/strings';
-import UserInputDTO from '../data/dto/UserInputDTO';
-import LoginInfoDTO from '../data/dto/LoginInfoDTO';
-import SurveyDTO from '../data/dto/SurveyDTO';
+} from '@utils/strings';
 
-const { GRADE_USER } = require('../utils/constantUtil');
+import StatusCode from '@utils/statusCode';
+
+import UserService from '@services/UserService';
+
+import { UserRegisterRequest, UserEditRequest } from '@request/user';
+
+import { ResponseDTO, SimpleResponseDTO } from '@response/common';
+
+import {
+    UserResponse,
+    UserRegisterResponse,
+    UserAuthResponse,
+    LoginResponse,
+} from '@response/user';
+
+import { UserAuthDTO, UserInputDTO, LoginInfoDTO, SurveyDTO } from '@dto/index';
+
+const LOG_TAG: string = '[User/Controller]';
 
 let User: UserService = new UserService();
 
-module.exports.setUserService = (userService: any) => {
-    User = userService;
-};
 /**
  * @swagger
  * definitions:
@@ -126,6 +126,7 @@ const registerUser: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} registerUser(body = ${req.body})`);
     const userRegisterRequest: UserRegisterRequest =
         UserRegisterRequest.createByJson(req.body);
 
@@ -133,11 +134,15 @@ const registerUser: RequestHandler = (
         next(new UnAuthorizedError());
         return;
     }
-    User.createUser(UserInputDTO.createByJson(userRegisterRequest))
+    User.createUser(UserInputDTO.createByRequest(userRegisterRequest))
         .then((result: UserInputDTO) => {
             return UserRegisterResponse.createByJson(result);
         })
         .then((response: UserRegisterResponse) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} registerUser's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<UserRegisterResponse>(
                     MSG_REGISTER_SUCCESS,
@@ -217,6 +222,7 @@ const loginUser: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} loginUser(body = ${req.body})`);
     const email: string = req.body.email;
     const password: string = req.body.password;
     User.loginUser(email, password)
@@ -224,6 +230,10 @@ const loginUser: RequestHandler = (
             return LoginResponse.createByJson(result);
         })
         .then((response: LoginResponse) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} loginUser's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<LoginResponse>(MSG_LOGIN_SUCCESS, response)
             );
@@ -272,9 +282,16 @@ const changePassword: RequestHandler = (
     next: NextFunction
 ) => {
     const userIdx = req.middlewareToken.loginUserIdx;
+    logger.debug(
+        `${LOG_TAG} changePassword(userIdx = ${userIdx}, body = ${req.body})`
+    );
     const { prevPassword, newPassword } = req.body;
     User.changePassword(userIdx, prevPassword, newPassword)
         .then(() => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} changePassword success`
+            );
             res.status(StatusCode.OK).json(
                 new SimpleResponseDTO(MSG_CHANGE_PASSWORD_SUCCESS)
             );
@@ -325,12 +342,17 @@ const authUser: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} authUser(body = ${req.body})`);
     const { token } = req.body;
     User.authUser(token)
         .then((result: UserAuthDTO) => {
             return UserAuthResponse.createByJson(result);
         })
         .then((response: UserAuthResponse) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} authUser's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<UserAuthResponse>(
                     MSG_GET_AUTHORIZE_INFO,
@@ -377,9 +399,14 @@ const validateEmail: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} validateEmail(query = ${req.query})`);
     const email: string = req.query.email as string;
     User.validateEmail(email)
         .then((response: boolean) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} validateEmail's result = ${response}`
+            );
             if (response) {
                 res.status(StatusCode.OK).json(
                     new ResponseDTO<boolean>(
@@ -435,7 +462,12 @@ const validateName: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
+    logger.debug(`${LOG_TAG} validateName(query = ${req.query})`);
     if (!req.query.nickname) {
+        LoggerHelper.logTruncated(
+            logger.debug,
+            `${LOG_TAG} validateName's result = false`
+        );
         res.status(StatusCode.CONFLICT).json(
             new ResponseDTO<boolean>(
                 MSG_DUPLICATE_CHECK_NAME_UNAVAILABLE,
@@ -447,6 +479,10 @@ const validateName: RequestHandler = (
     const nickname: string = decodeURIComponent(req.query.nickname + '');
     User.validateName(nickname)
         .then((response: boolean) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} validateName's result = ${response}`
+            );
             if (response) {
                 res.status(StatusCode.OK).json(
                     new ResponseDTO<boolean>(
@@ -515,6 +551,9 @@ const postSurvey: RequestHandler = (
     next: NextFunction
 ) => {
     const userIdx: number = req.middlewareToken.loginUserIdx;
+    logger.debug(
+        `${LOG_TAG} postSurvey(userIdx = ${userIdx}, body = ${req.body})`
+    );
     const {
         keywordList,
         perfumeList,
@@ -532,6 +571,10 @@ const postSurvey: RequestHandler = (
     );
     User.addSurvey(surveyDTO)
         .then(() => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} postSurvey success`
+            );
             res.status(StatusCode.OK).json(
                 new SimpleResponseDTO(MSG_POST_SURVEY_SUCCESS)
             );
@@ -615,21 +658,26 @@ const updateUser: RequestHandler = (
 ) => {
     const userIdx = req.params['userIdx'];
     const tokenUserIdx = req.middlewareToken.loginUserIdx;
+    logger.debug(
+        `${LOG_TAG} updateUser(userIdx = ${tokenUserIdx}, params = ${req.params}, body = ${req.body})`
+    );
     if (userIdx != tokenUserIdx) {
+        logger.warn('userIdx and tokenUserIdx is not same');
         next(new UnAuthorizedError());
         return;
     }
     const userEditRequest = UserEditRequest.createByJson(
         Object.assign({ userIdx }, req.body)
     );
-    if (userEditRequest.gender) {
-        userEditRequest.gender = GenderMap[userEditRequest.gender];
-    }
-    User.updateUser(UserInputDTO.createByJson(userEditRequest))
+    User.updateUser(UserInputDTO.createByRequest(userEditRequest))
         .then((result: UserResponse) => {
             return UserResponse.createByJson(result);
         })
         .then((response: UserResponse) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} updateUser's result = ${response}`
+            );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<UserResponse>(MSG_MODIFY_USER_SUCCESS, response)
             );
@@ -666,13 +714,22 @@ const deleteUser: RequestHandler = (
     next: NextFunction
 ) => {
     const userIdx = req.params['userIdx'];
+    logger.debug(`${LOG_TAG} deleteUser(params = ${req.params})`);
     User.deleteUser(userIdx)
         .then((_: any) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} deleteUser success`
+            );
             res.status(StatusCode.OK).json(
                 new SimpleResponseDTO(MSG_DELETE_USER_SUCCESS)
             );
         })
         .catch((err: Error) => next(err));
+};
+
+module.exports.setUserService = (userService: any) => {
+    User = userService;
 };
 
 module.exports.registerUser = registerUser;

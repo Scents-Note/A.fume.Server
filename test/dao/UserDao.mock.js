@@ -1,5 +1,4 @@
-import CreatedResultDTO from '../../src/data/dto/CreatedResultDTO';
-import UserDTO from '../../src/data/dto/UserDTO';
+import { CreatedResultDTO, UserDTO } from '@dto/index';
 
 module.exports.create = async ({
     nickname,
@@ -31,7 +30,7 @@ module.exports.read = async (where) => {
     return UserDTO.createByJson({
         userIdx: 1,
         nickname: 'user1',
-        password: 'test',
+        password: 'encrypted',
         gender: 2,
         email: 'email1@afume.com',
         birth: 1995,
@@ -46,7 +45,7 @@ module.exports.readByIdx = async (userIdx) => {
     return UserDTO.createByJson({
         userIdx,
         nickname: 'user1',
-        password: 'test',
+        password: 'encrypted',
         gender: 2,
         email: 'email1@afume.com',
         birth: 1995,

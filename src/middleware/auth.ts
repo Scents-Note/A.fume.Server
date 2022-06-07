@@ -1,6 +1,9 @@
-import JwtController from '../lib/JwtController';
-import { InvalidTokenError, UnAuthorizedError } from '../utils/errors/errors';
 import express from 'express';
+
+import { InvalidTokenError, UnAuthorizedError } from '@errors';
+
+import JwtController from '@libs/JwtController';
+import { encrypt } from '@libs/crypto';
 
 /**
  * 로그인 토큰을 읽어서 userIdx를 req.middlewareToken에 추가
@@ -38,4 +41,22 @@ function verifyTokenMiddleware(
     return next(null);
 }
 
-export { verifyTokenMiddleware };
+/**
+ * body의 password 암호화
+ *
+ * @param {*} req
+ * @param {*} authOrSecDef
+ * @param {*} token
+ * @param {*} callback
+ */
+function encryptPassword(
+    req: express.Request | any,
+    _res: express.Response,
+    next: express.NextFunction
+) {
+    if (req.body.password) {
+        req.body.password = encrypt(req.body.password);
+    }
+    return next(null);
+}
+export { verifyTokenMiddleware, encryptPassword };

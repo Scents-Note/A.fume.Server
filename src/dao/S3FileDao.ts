@@ -1,5 +1,10 @@
-import { getImageList } from '../lib/s3';
-import properties from '../utils/properties';
+import properties from '@properties';
+
+import { getImageList } from '@libs/s3';
+
+import { logger } from '@modules/winston';
+
+const LOG_TAG: string = '[S3File/DAO]';
 
 const REGEX_IMAGE: RegExp = /\.jpg$|\.png$/i;
 
@@ -9,6 +14,7 @@ class S3FileDao {
         this.s3Url = s3Url ?? properties.AWS_S3_URL;
     }
     getS3ImageList(perfumeIdx: number): Promise<string[]> {
+        logger.debug(`${LOG_TAG} getS3ImageList(perfumeIdx = ${perfumeIdx})`);
         return getImageList({
             Bucket: 'afume',
             Prefix: `perfume/${perfumeIdx}/`,

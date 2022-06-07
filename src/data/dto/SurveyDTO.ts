@@ -14,6 +14,10 @@ class SurveyDTO {
         this.surveyPerfumeList = surveyPerfumeList;
         this.surveySeriesList = surveySeriesList;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
 }
 
-export default SurveyDTO;
+export { SurveyDTO };

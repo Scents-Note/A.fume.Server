@@ -1,5 +1,5 @@
-import IngredientDTO from './IngredientDTO';
-import SeriesDTO from './SeriesDTO';
+import { SeriesDTO } from '@dto/SeriesDTO';
+import { IngredientDTO } from '@dto/IngredientDTO';
 
 class SeriesFilterDTO extends SeriesDTO {
     ingredients: IngredientDTO[];
@@ -25,6 +25,10 @@ class SeriesFilterDTO extends SeriesDTO {
         this.ingredients = ingredients;
     }
 
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
     static createByJson(json: any): SeriesFilterDTO {
         const seriesIdx: number = json.seriesIdx;
         const name: string = json.name;
@@ -47,4 +51,4 @@ class SeriesFilterDTO extends SeriesDTO {
     }
 }
 
-export default SeriesFilterDTO;
+export { SeriesFilterDTO };

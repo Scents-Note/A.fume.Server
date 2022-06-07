@@ -1,4 +1,4 @@
-import BrandDTO from './BrandDTO';
+import { BrandDTO } from '@dto/BrandDTO';
 
 class BrandFilterDTO {
     firstInitial: string;
@@ -7,6 +7,10 @@ class BrandFilterDTO {
         this.firstInitial = firstInitial;
         this.brands = brands;
     }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
 }
 
-export default BrandFilterDTO;
+export { BrandFilterDTO };
