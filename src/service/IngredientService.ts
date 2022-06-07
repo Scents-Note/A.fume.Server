@@ -21,6 +21,7 @@ class IngredientService {
      * 향료 목록 조회
      *
      * @returns {Promise<ListAndCountDTO<IngredientDTO>>} ListAndCountDTO<IngredientDTO>
+     * @throws {NotMatchedError} if there is no Ingredient
      **/
     getIngredientAll(): Promise<ListAndCountDTO<IngredientDTO>> {
         logger.debug(`${LOG_TAG} getIngredientAll()`);
@@ -32,6 +33,7 @@ class IngredientService {
      *
      * @param {IngredientConditionDTO} ingredientConditionDTO
      * @returns {Promise<IngredientDTO>} ingredientDTO
+     * @throws {NotMatchedError} if there is no Ingredient
      **/
     findIngredient(
         ingredientConditionDTO: IngredientConditionDTO
@@ -47,6 +49,7 @@ class IngredientService {
      *
      * @param {number} seriesIdx
      * @returns {Promise<ListAndCountDTO<IngredientDTO>>} ListAndCountDTO<IngredientDTO>
+     * @throws {NotMatchedError} if there is no Ingredient
      */
     getIngredientList(
         seriesIdx: number

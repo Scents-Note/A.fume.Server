@@ -14,6 +14,7 @@ class SeriesDao {
      *
      * @param {number} seriesIdx
      * @return {Promise<SeriesDTO>} seriesDTO
+     * @throws {NotMatchedError} if there is no Series
      */
     async readByIdx(seriesIdx: number): Promise<SeriesDTO> {
         logger.debug(`${LOG_TAG} readByIdx(seriesIdx = ${seriesIdx})`);
@@ -29,6 +30,7 @@ class SeriesDao {
      *
      * @param {string} seriesName
      * @return {Promise<SeriesDTO>} seriesDTO
+     * @throws {NotMatchedError} if there is no Series
      */
     async readByName(seriesName: string): Promise<SeriesDTO> {
         logger.debug(`${LOG_TAG} readByName(seriesIdx = ${seriesName})`);

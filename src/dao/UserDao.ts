@@ -15,6 +15,7 @@ class UserDao {
      *
      * @param {UserInputDTO} UserInputDTO
      * @return {CreatedResultDTO<UserDTO>} createdResultDTO
+     * @throws {DuplicatedEntryError} if it can be make user because of ER_DUP_ENTRY
      */
     async create(
         userInputDTO: UserInputDTO
@@ -50,6 +51,7 @@ class UserDao {
      *
      * @param {Object} whereObj
      * @returns {Promise<UserDTO>} UserDTO
+     * @throws {NotMatchedError} if there is no User
      */
     async read(where: any) {
         logger.debug(`${LOG_TAG} read(where = ${JSON.stringify(where)})`);
@@ -65,6 +67,7 @@ class UserDao {
      *
      * @param {number} userIdx
      * @returns {Promise<UserDTO>} UserDTO
+     * @throws {NotMatchedError} if there is no User
      */
     async readByIdx(userIdx: number) {
         logger.debug(`${LOG_TAG} readByIdx(userIdx = ${userIdx})`);
@@ -80,6 +83,7 @@ class UserDao {
      *
      * @param {Object} User
      * @return {Promise<number>} affectedRows
+     * @throws {NotMatchedError} if there is no User
      */
     async update(userInputDTO: UserInputDTO): Promise<number> {
         logger.debug(`${LOG_TAG} update(userInputDTO = ${userInputDTO})`);
@@ -101,6 +105,7 @@ class UserDao {
      *
      * @param {number} userIdx
      * @return {Promise<number>} affectedRows
+     * @throws {NotMatchedError} if there is no User
      */
     async updateAccessTime(userIdx: number) {
         logger.debug(`${LOG_TAG} updateAccessTime(userIdx = ${userIdx})`);

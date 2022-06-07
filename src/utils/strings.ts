@@ -10,7 +10,6 @@ const _all: string = '전체';
 const _search: string = '검색';
 
 const NONE: string = 'None';
-const COLOGNE: string = '코롱';
 const EAU_DE_COLOGNE: string = '오 드 코롱';
 const EAU_DE_TOILETTE: string = '오 드 뚜왈렛';
 const EAU_DE_PERFUME: string = '오 드 퍼퓸';
@@ -109,7 +108,6 @@ const BASE_PATH: string = '/A.fume/api/0.0.1';
 
 export {
     NONE,
-    COLOGNE,
     EAU_DE_COLOGNE,
     EAU_DE_TOILETTE,
     EAU_DE_PERFUME,
