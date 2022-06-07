@@ -207,8 +207,8 @@ class PerfumeSummaryDTO {
             obj,
             (value: number) =>
                 total != 0
-                    ? parseInt('' + (value * 100) / total)
-                    : parseInt('' + 100 / entries.length)
+                    ? Math.floor((value * 100) / total)
+                    : Math.floor(100 / entries.length)
         );
         return result;
     }
