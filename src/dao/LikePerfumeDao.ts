@@ -76,7 +76,8 @@ class LikePerfumeDao {
             where: { userIdx, perfumeIdx },
             raw: true,
             nest: true,
-        }).then((it: number) => { // The number of destroyed rows
+        }).then((it: number) => {
+            if (it == 0) throw new NotMatchedError();
             return it;
         });
     }

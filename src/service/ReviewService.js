@@ -1,4 +1,4 @@
-import { UnAuthorizedError } from '../utils/errors/errors';
+import { NotMatchedError, UnAuthorizedError } from '../utils/errors/errors';
 
 const reviewDao = require('../dao/ReviewDao.js');
 const likeReviewDao = require('../dao/LikeReviewDao');
@@ -64,9 +64,14 @@ exports.postReview = async ({
                 keywordDao.create({ reviewIdx, keywordIdx: it, perfumeIdx });
             })
         );
-        await likePerfumeDao.delete(userIdx, perfumeIdx);
+        try {
+            await likePerfumeDao.delete(userIdx, perfumeIdx);
+        }
+        catch (err) {
+            if (err instanceof NotMatchedError) {}
+            else throw err;
+        }
         return reviewIdx;
-
     } catch (err) {
         console.log(err)
         throw err;
