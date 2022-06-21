@@ -132,4 +132,22 @@ describe('# ingredientDao Test', () => {
                 .catch((err: Error) => done(err));
         });
     });
+
+    describe('# category Test', () => {
+        it('# getCategory test', (done: Done) => {
+            ingredientDao
+                .getCategoryList()
+                .then((result: any) => {
+                    expect(result).to.be.deep.eq([
+                        '카테고리1',
+                        '카테고리2',
+                        '카테고리3',
+                        '카테고리4',
+                        '카테고리5',
+                    ]);
+                    done();
+                })
+                .catch((err: Error) => done(err));
+        });
+    });
 });

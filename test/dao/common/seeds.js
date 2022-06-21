@@ -62,6 +62,7 @@ module.exports = () => {
                 englishName: 'ingredient english-name',
                 description: '재료 설명 텍스트',
                 imageUrl: 'image-url',
+                category: '카테고리' + i,
             }),
             Perfume.upsert({
                 perfumeIdx: i,

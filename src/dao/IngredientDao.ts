@@ -148,6 +148,27 @@ class IngredientDao {
             return IngredientDTO.createByJson(result);
         });
     }
+
+    /**
+     * 재료 카테고리 리스트 조회
+     *
+     * @returns {Promise<String[]>} listAndCountDTO<String>
+     */
+    async getCategoryList(): Promise<String[]> {
+        logger.debug(`${LOG_TAG} getCategoryList()`);
+        return Ingredient.findAll({
+            attributes: [
+                [
+                    Sequelize.fn('DISTINCT', Sequelize.col('category')),
+                    'category',
+                ],
+            ],
+            raw: true,
+            nest: true,
+        }).then((result: any[]) => {
+            return result.map((it) => it.category);
+        });
+    }
 }
 
 export default IngredientDao;
