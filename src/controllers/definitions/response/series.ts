@@ -1,5 +1,4 @@
-import { SeriesFilterDTO, SeriesDTO } from '@dto/index';
-import { IngredientResponse } from '@response/ingredient';
+import { SeriesFilterDTO, SeriesDTO, IngredientDTO } from '@dto/index';
 
 /**
  * @swagger
@@ -55,22 +54,24 @@ class SeriesResponse {
  *         type: string
  *       ingredients:
  *         type: array
- *       items:
- *         $ref: '#/definitions/IngredientResponse'
+ *         items:
+ *           type: object
+ *           properties:
+ *             category: string
  *     example:
  *       seriesIdx: 1
  *       name: 꿀
  *       imageUrl: http://
- *       ingredients: []
+ *       ingredients: [{category: '오렌지}, {category: '사과'}}]
  *  */
 class SeriesFilterResponse {
     readonly seriesIdx: number;
     readonly name: string;
-    readonly ingredients: IngredientResponse[];
+    readonly ingredients: { category: string }[];
     constructor(
         seriesIdx: number,
         name: string,
-        ingredients: IngredientResponse[]
+        ingredients: { category: string }[]
     ) {
         this.seriesIdx = seriesIdx;
         this.name = name;
@@ -81,11 +82,13 @@ class SeriesFilterResponse {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
 
-    static create(seriesFilterDTO: SeriesFilterDTO) {
+    static create(seriesFilterDTO: SeriesFilterDTO): SeriesFilterResponse {
         return new SeriesFilterResponse(
             seriesFilterDTO.seriesIdx,
             seriesFilterDTO.name,
-            seriesFilterDTO.ingredients.map(IngredientResponse.createByJson)
+            seriesFilterDTO.ingredients.map((it: IngredientDTO) => {
+                return { category: it.category };
+            })
         );
     }
 }
