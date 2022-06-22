@@ -1,4 +1,4 @@
-import { SeriesFilterDTO, SeriesDTO, IngredientDTO } from '@dto/index';
+import { SeriesFilterDTO, SeriesDTO } from '@dto/index';
 
 /**
  * @swagger
@@ -52,7 +52,7 @@ class SeriesResponse {
  *         type: string
  *       imageUrl:
  *         type: string
- *       ingredients:
+ *       ingredientCategoryList:
  *         type: array
  *         items:
  *           type: object
@@ -67,15 +67,15 @@ class SeriesResponse {
 class SeriesFilterResponse {
     readonly seriesIdx: number;
     readonly name: string;
-    readonly ingredients: { category: string }[];
+    readonly ingredientCategoryList: { category: string }[];
     constructor(
         seriesIdx: number,
         name: string,
-        ingredients: { category: string }[]
+        ingredientCategoryList: { category: string }[]
     ) {
         this.seriesIdx = seriesIdx;
         this.name = name;
-        this.ingredients = ingredients;
+        this.ingredientCategoryList = ingredientCategoryList;
     }
 
     public toString(): string {
@@ -86,8 +86,8 @@ class SeriesFilterResponse {
         return new SeriesFilterResponse(
             seriesFilterDTO.seriesIdx,
             seriesFilterDTO.name,
-            seriesFilterDTO.ingredients.map((it: IngredientDTO) => {
-                return { category: it.category };
+            seriesFilterDTO.ingredientCategoryList.map((it: string) => {
+                return { category: it };
             })
         );
     }
