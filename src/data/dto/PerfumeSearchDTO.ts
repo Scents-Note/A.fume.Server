@@ -1,20 +1,20 @@
 class PerfumeSearchDTO {
     readonly keywordIdxList: number[];
     readonly brandIdxList: number[];
-    readonly ingredientIdxList: number[];
+    readonly ingredientCategoryList: string[];
     readonly searchText: string;
     readonly userIdx: number;
     constructor(
         keywordIdxList: number[],
         brandIdxList: number[],
-        ingredientIdxList: number[],
+        ingredientCategoryList: string[],
         searchText: string,
         userIdx: number
     ) {
         this.userIdx = userIdx;
         this.keywordIdxList = keywordIdxList;
         this.brandIdxList = brandIdxList;
-        this.ingredientIdxList = ingredientIdxList;
+        this.ingredientCategoryList = ingredientCategoryList;
         this.searchText = searchText;
     }
 
