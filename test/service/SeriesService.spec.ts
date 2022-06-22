@@ -82,8 +82,6 @@ describe('# Series Service Test', () => {
 
     describe('# getFilterSeries Test', () => {
         it('# success Test', (done: Done) => {
-            const isNoteCountOver10 = (ingredientIdx: number): boolean =>
-                ingredientIdx % 2 == 1;
             mockIngredientDAO.readBySeriesIdxList = async (
                 _: number[]
             ): Promise<IngredientDTO[]> => {
@@ -96,27 +94,11 @@ describe('# Series Service Test', () => {
                     ret.push(IngredientMockHelper.createWithIdx(i, 3));
                 return ret;
             };
-            mockNoteDAO.getIngredientCountList = async (_: number[]) =>
-                [...new Array(10)].map((_, index) => ({
-                    ingredientIdx: index + 1,
-                    count: isNoteCountOver10(index + 1) ? 100 : 4,
-                }));
 
             seriesService
                 .getFilterSeries(defaultPagingDTO)
                 .then((result: ListAndCountDTO<SeriesFilterDTO>) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.rows.forEach((seriesFilterDTO: SeriesFilterDTO) => {
-                        seriesFilterDTO.ingredients.forEach(
-                            (ingredientDTO: IngredientDTO) => {
-                                expect(
-                                    isNoteCountOver10(
-                                        ingredientDTO.ingredientIdx
-                                    )
-                                ).to.be.eq(true);
-                            }
-                        );
-                    });
                     expect(result.rows.length).to.be.eq(3);
                     done();
                 })

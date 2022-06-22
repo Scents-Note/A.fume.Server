@@ -1,8 +1,7 @@
 import { SeriesDTO } from '@dto/SeriesDTO';
-import { IngredientDTO } from '@dto/IngredientDTO';
 
 class SeriesFilterDTO extends SeriesDTO {
-    readonly ingredients: IngredientDTO[];
+    readonly ingredientCategoryList: string[];
     constructor(
         seriesIdx: number,
         name: string,
@@ -11,7 +10,7 @@ class SeriesFilterDTO extends SeriesDTO {
         imageUrl: string,
         createdAt: string,
         updatedAt: string,
-        ingredients: IngredientDTO[]
+        ingredientCategoryList: string[]
     ) {
         super(
             seriesIdx,
@@ -22,7 +21,7 @@ class SeriesFilterDTO extends SeriesDTO {
             createdAt,
             updatedAt
         );
-        this.ingredients = ingredients;
+        this.ingredientCategoryList = ingredientCategoryList;
     }
 
     public toString(): string {
@@ -37,7 +36,7 @@ class SeriesFilterDTO extends SeriesDTO {
         const imageUrl: string = json.imageUrl;
         const createdAt: string = json.createdAt;
         const updatedAt: string = json.updatedAt;
-        const ingredients: IngredientDTO[] = json.ingredients;
+        const ingredientCategoryList: string[] = json.ingredientCategoryList;
         return new SeriesFilterDTO(
             seriesIdx,
             name,
@@ -46,7 +45,7 @@ class SeriesFilterDTO extends SeriesDTO {
             imageUrl,
             createdAt,
             updatedAt,
-            ingredients
+            ingredientCategoryList
         );
     }
 }

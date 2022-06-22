@@ -11,10 +11,9 @@ import {
     SeriesDTO,
     SeriesFilterDTO,
 } from '@dto/index';
+import _ from 'lodash';
 
 const LOG_TAG: string = '[Series/Service]';
-
-const FILTER_INGREDIENT_LIMIT_USED_COUNT: number = 10;
 
 class SeriesService {
     seriesDao: SeriesDao;
@@ -82,26 +81,24 @@ class SeriesService {
         );
         const ingredientList: IngredientDTO[] =
             await this.ingredientDao.readBySeriesIdxList(seriesIdxList);
-        const ingredientFilteredList: IngredientDTO[] =
-            await this.filterByUsedCount(ingredientList);
-        const ingredientMap: Map<number, IngredientDTO[]> =
-            ingredientFilteredList.reduce(
-                (
-                    prev: Map<number, IngredientDTO[]>,
-                    cur: IngredientDTO
-                ): Map<number, IngredientDTO[]> => {
-                    if (!prev.has(cur.seriesIdx)) {
-                        prev.set(cur.seriesIdx, []);
-                    }
-                    prev.get(cur.seriesIdx)!!.push(cur);
-                    return prev;
-                },
-                new Map<number, IngredientDTO[]>()
-            );
+        const ingredientCategoryMap: { [key: number]: string[] } = _.chain(
+            ingredientList
+        )
+            .groupBy('seriesIdx')
+            .mapValues((arr) =>
+                Array.from(
+                    new Set(
+                        arr.map((it) => it.category).filter((it) => it != null)
+                    ).values()
+                )
+            )
+            .value();
+
         return result.convertType((it: SeriesDTO): SeriesFilterDTO => {
             return SeriesFilterDTO.createByJson(
                 Object.assign({}, it, {
-                    ingredients: ingredientMap.get(it.seriesIdx) || [],
+                    ingredientCategoryList:
+                        ingredientCategoryMap[it.seriesIdx] || [],
                 })
             );
         });
@@ -118,32 +115,6 @@ class SeriesService {
             `${LOG_TAG} findSeriesByEnglishName(englishName = ${englishName})`
         );
         return this.seriesDao.findSeries({ englishName });
-    }
-
-    private async filterByUsedCount(
-        ingredientList: IngredientDTO[]
-    ): Promise<IngredientDTO[]> {
-        const ingredientIdxList: number[] = ingredientList.map(
-            (it: IngredientDTO) => it.ingredientIdx
-        );
-        const countMap: Map<number, number> = (
-            await this.noteDao.getIngredientCountList(ingredientIdxList)
-        ).reduce(
-            (
-                prev: Map<number, number>,
-                cur: { ingredientIdx: number; count: number }
-            ): Map<number, number> => {
-                prev.set(cur.ingredientIdx, cur.count);
-                return prev;
-            },
-            new Map<number, number>()
-        );
-        return ingredientList.filter((it: IngredientDTO) => {
-            return (
-                (countMap.get(it.ingredientIdx) || 0) >
-                FILTER_INGREDIENT_LIMIT_USED_COUNT
-            );
-        });
     }
 }
 
