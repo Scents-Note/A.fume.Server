@@ -169,6 +169,27 @@ class IngredientDao {
             return result.map((it) => it.category);
         });
     }
+
+    /**
+     * 카테고리 리스트에 해당하는 ingredientIdx 리스트 조회
+     *
+     * @param {string[]} categoryList
+     * @returns {Promise<IngredientDTO[]>} listAndCountDTO<IngredientDTO>
+     */
+    async getIngredientIdxByCategories(
+        categoryList: string[]
+    ): Promise<IngredientDTO[]> {
+        logger.debug(`${LOG_TAG} getCategoryList()`);
+        return Ingredient.findAll({
+            raw: true,
+            nest: true,
+            where: {
+                category: {
+                    [Op.in]: categoryList,
+                },
+            },
+        });
+    }
 }
 
 export default IngredientDao;
