@@ -86,7 +86,7 @@ describe('# Series Controller Test', () => {
                             item,
                             'seriesIdx',
                             'name',
-                            'ingredientCategoryList'
+                            'ingredients'
                         );
                     });
                     done();

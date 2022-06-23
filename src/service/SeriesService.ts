@@ -10,6 +10,7 @@ import {
     ListAndCountDTO,
     SeriesDTO,
     SeriesFilterDTO,
+    IngredientCategoryDTO,
 } from '@dto/index';
 import _ from 'lodash';
 
@@ -81,16 +82,22 @@ class SeriesService {
         );
         const ingredientList: IngredientDTO[] =
             await this.ingredientDao.readBySeriesIdxList(seriesIdxList);
-        const ingredientCategoryMap: { [key: number]: number[] } = _.chain(
-            ingredientList
-        )
+        const ingredientCategoryMap: {
+            [key: number]: IngredientCategoryDTO[];
+        } = _.chain(ingredientList)
             .groupBy('seriesIdx')
             .mapValues((arr) =>
                 Array.from(
                     new Set(
                         arr
-                            .map((it) => it.categoryIdx)
-                            .filter((it) => it != null)
+                            .map(
+                                (it) =>
+                                    new IngredientCategoryDTO(
+                                        it.categoryIdx,
+                                        it.name
+                                    )
+                            )
+                            .filter((it) => it.idx != null)
                     ).values()
                 )
             )
