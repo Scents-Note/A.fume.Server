@@ -81,14 +81,16 @@ class SeriesService {
         );
         const ingredientList: IngredientDTO[] =
             await this.ingredientDao.readBySeriesIdxList(seriesIdxList);
-        const ingredientCategoryMap: { [key: number]: string[] } = _.chain(
+        const ingredientCategoryMap: { [key: number]: number[] } = _.chain(
             ingredientList
         )
             .groupBy('seriesIdx')
             .mapValues((arr) =>
                 Array.from(
                     new Set(
-                        arr.map((it) => it.category).filter((it) => it != null)
+                        arr
+                            .map((it) => it.categoryIdx)
+                            .filter((it) => it != null)
                     ).values()
                 )
             )
