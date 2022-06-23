@@ -9,6 +9,13 @@ module.exports = (sequelize, DataTypes) => {
                 onUpdate: 'CASCADE',
                 onDelete: 'CASCADE',
             });
+
+            this.hasOne(models.IngredientCategories, {
+                foreignKey: 'categoryIdx',
+                as: 'IngredientCategories',
+                onUpdate: 'CASCADE',
+                onDelete: 'SET NULL',
+            });
         }
     }
     Ingredient.init(
@@ -37,8 +44,8 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.STRING,
                 allowNull: false,
             },
-            category: {
-                type: DataTypes.STRING,
+            categoryIdx: {
+                type: DataTypes.INTEGER,
                 allowNull: true,
             },
         },

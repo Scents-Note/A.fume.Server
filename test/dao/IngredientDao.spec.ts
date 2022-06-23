@@ -151,7 +151,7 @@ describe('# ingredientDao Test', () => {
         });
         it('# getIngredientIdxByCategories test', (done: Done) => {
             ingredientDao
-                .getIngredientIdxByCategories(['카테고리1', '카테고리2'])
+                .getIngredientIdxByCategories([1, 2])
                 .then((result: any) => {
                     expect(
                         result.map((it: IngredientDTO) => it.ingredientIdx)

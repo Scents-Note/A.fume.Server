@@ -177,15 +177,15 @@ class IngredientDao {
      * @returns {Promise<IngredientDTO[]>} listAndCountDTO<IngredientDTO>
      */
     async getIngredientIdxByCategories(
-        categoryList: string[]
+        categoryIdxList: number[]
     ): Promise<IngredientDTO[]> {
-        logger.debug(`${LOG_TAG} getCategoryList()`);
+        logger.debug(`${LOG_TAG} getIngredientIdxByCategories()`);
         return Ingredient.findAll({
             raw: true,
             nest: true,
             where: {
-                category: {
-                    [Op.in]: categoryList,
+                categoryIdx: {
+                    [Op.in]: categoryIdxList,
                 },
             },
         });
