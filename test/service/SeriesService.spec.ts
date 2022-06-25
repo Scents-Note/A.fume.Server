@@ -7,6 +7,7 @@ import {
     SeriesDTO,
     SeriesFilterDTO,
     IngredientDTO,
+    IngredientCategoryDTO,
     PagingDTO,
 } from '@dto/index';
 
@@ -19,10 +20,12 @@ import SeriesHelper from '../mock_helper/SeriesMockHelper';
 
 const mockSeriesDAO: any = {};
 const mockIngredientDAO: any = {};
+const mockIngredientCategoryDao: any = {};
 const mockNoteDAO: any = {};
 const seriesService = new SeriesService(
     mockSeriesDAO,
     mockIngredientDAO,
+    mockIngredientCategoryDao,
     mockNoteDAO
 );
 const defaultPagingDTO: PagingDTO = PagingDTO.createByJson({});
@@ -85,13 +88,26 @@ describe('# Series Service Test', () => {
             mockIngredientDAO.readBySeriesIdxList = async (
                 _: number[]
             ): Promise<IngredientDTO[]> => {
-                const ret = [];
+                const ret: any[] = [];
                 for (let i = 1; i <= 5; i++)
                     ret.push(IngredientMockHelper.createWithIdx(i, 1));
                 for (let i = 6; i <= 7; i++)
                     ret.push(IngredientMockHelper.createWithIdx(i, 2));
                 for (let i = 8; i <= 10; i++)
                     ret.push(IngredientMockHelper.createWithIdx(i, 3));
+                return ret;
+            };
+            mockIngredientCategoryDao.readAll = async () => {
+                const ret: any[] = [];
+                for (let i = 1; i <= 10; i++) {
+                    ret.push(
+                        IngredientCategoryDTO.createByJson({
+                            idx: i,
+                            name: '카테고리1',
+                            usedCountOnPerfume: 10,
+                        })
+                    );
+                }
                 return ret;
             };
 

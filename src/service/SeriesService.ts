@@ -1,6 +1,8 @@
 import { logger } from '@modules/winston';
+import _, { Dictionary } from 'lodash';
 
 import IngredientDao from '@dao/IngredientDao';
+import IngredientCategoryDao from '@src/dao/IngredientCategoryDao';
 import SeriesDao from '@dao/SeriesDao';
 import NoteDao from '@dao/NoteDao';
 
@@ -12,21 +14,26 @@ import {
     SeriesFilterDTO,
     IngredientCategoryDTO,
 } from '@dto/index';
-import _ from 'lodash';
+import { THRESHOLD_CATEGORY } from '@src/utils/constants';
+import { Op } from 'sequelize';
 
 const LOG_TAG: string = '[Series/Service]';
 
 class SeriesService {
     seriesDao: SeriesDao;
     ingredientDao: IngredientDao;
+    ingredientCategoryDao: IngredientCategoryDao;
     noteDao: any;
     constructor(
         seriesDao?: SeriesDao,
         ingredientDao?: IngredientDao,
+        ingredientCategoryDao?: IngredientCategoryDao,
         noteDao?: any
     ) {
         this.seriesDao = seriesDao ?? new SeriesDao();
         this.ingredientDao = ingredientDao ?? new IngredientDao();
+        this.ingredientCategoryDao =
+            ingredientCategoryDao ?? new IngredientCategoryDao();
         this.noteDao = noteDao ?? new NoteDao();
     }
 
@@ -82,6 +89,18 @@ class SeriesService {
         );
         const ingredientList: IngredientDTO[] =
             await this.ingredientDao.readBySeriesIdxList(seriesIdxList);
+        const categoryList: IngredientCategoryDTO[] =
+            await this.ingredientCategoryDao.readAll({
+                usedCountOnPerfume: {
+                    [Op.gte]: THRESHOLD_CATEGORY,
+                },
+            });
+        const categoryMap: Dictionary<IngredientCategoryDTO> = _.chain(
+            categoryList
+        )
+            .groupBy('id')
+            .mapValues((it) => it[0])
+            .value();
         const ingredientCategoryMap: {
             [key: number]: IngredientCategoryDTO[];
         } = _.chain(ingredientList)
@@ -90,15 +109,8 @@ class SeriesService {
                 Array.from(
                     new Set(
                         arr
-                            .map(
-                                (it) =>
-                                    new IngredientCategoryDTO(
-                                        it.categoryIdx,
-                                        it.name,
-                                        0 /* TODO */
-                                    )
-                            )
-                            .filter((it) => it.idx != null)
+                            .map((it) => categoryMap[it.categoryIdx] ?? null)
+                            .filter((it) => it.id != null)
                     ).values()
                 )
             )
