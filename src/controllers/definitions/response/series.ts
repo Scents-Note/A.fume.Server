@@ -46,27 +46,24 @@ class SeriesResponse {
  *   IngredientCategory:
  *     type: object
  *     properties:
- *       idx:
+ *       ingredientIdx:
  *         type: number
  *       name:
  *         type: string
  *     example:
- *       idx: 1
+ *       ingredientIdx: 1
  *       name: 꿀
  *  */
 class IngredientCategoryResponse {
-    readonly idx: number;
+    readonly ingredientIdx: number;
     readonly name: string;
-    constructor(idx: number, name: string) {
-        this.idx = idx;
+    constructor(ingredientIdx: number, name: string) {
+        this.ingredientIdx = ingredientIdx;
         this.name = name;
     }
 
     public toString(): string {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
-    }
-    static createByJson(json: any): IngredientCategoryResponse {
-        return new IngredientCategoryResponse(json.idx, json.name);
     }
 }
 
