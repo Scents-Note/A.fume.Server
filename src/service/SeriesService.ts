@@ -16,6 +16,7 @@ import {
 } from '@dto/index';
 import { THRESHOLD_CATEGORY } from '@src/utils/constants';
 import { Op } from 'sequelize';
+import { ETC } from '@src/utils/strings';
 
 const LOG_TAG: string = '[Series/Service]';
 
@@ -82,7 +83,12 @@ class SeriesService {
     ): Promise<ListAndCountDTO<SeriesFilterDTO>> {
         logger.debug(`${LOG_TAG} getFilterSeries(pagingDTO = ${pagingDTO})`);
         const result: ListAndCountDTO<SeriesDTO> = await this.seriesDao.readAll(
-            pagingDTO
+            pagingDTO,
+            {
+                name: {
+                    [Op.not]: ETC,
+                },
+            }
         );
         const seriesIdxList: number[] = result.rows.map(
             (it: SeriesDTO) => it.seriesIdx

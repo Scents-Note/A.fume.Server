@@ -17,6 +17,7 @@ import expect from '../utils/expect';
 
 import IngredientMockHelper from '../mock_helper/IngredientMockHelper';
 import SeriesHelper from '../mock_helper/SeriesMockHelper';
+import { ETC } from '@src/utils/strings';
 
 const mockSeriesDAO: any = {};
 const mockIngredientDAO: any = {};
@@ -116,6 +117,11 @@ describe('# Series Service Test', () => {
                 .then((result: ListAndCountDTO<SeriesFilterDTO>) => {
                     expect(result).instanceOf(ListAndCountDTO);
                     expect(result.rows.length).to.be.eq(3);
+                    expect(
+                        result.rows.filter(
+                            (it: SeriesFilterDTO) => it.name == ETC
+                        ).length
+                    ).to.be.eq(0);
                     done();
                 })
                 .catch((err: Error) => done(err));
