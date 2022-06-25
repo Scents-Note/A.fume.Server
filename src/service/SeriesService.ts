@@ -94,7 +94,8 @@ class SeriesService {
                                 (it) =>
                                     new IngredientCategoryDTO(
                                         it.categoryIdx,
-                                        it.name
+                                        it.name,
+                                        0 /* TODO */
                                     )
                             )
                             .filter((it) => it.idx != null)
