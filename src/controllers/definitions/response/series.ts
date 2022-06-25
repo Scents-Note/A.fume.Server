@@ -1,4 +1,4 @@
-import { SeriesFilterDTO, SeriesDTO, IngredientCategoryDTO } from '@dto/index';
+import { SeriesFilterDTO, SeriesDTO } from '@dto/index';
 
 /**
  * @swagger
@@ -43,6 +43,36 @@ class SeriesResponse {
 /**
  * @swagger
  * definitions:
+ *   IngredientCategory:
+ *     type: object
+ *     properties:
+ *       idx:
+ *         type: number
+ *       name:
+ *         type: string
+ *     example:
+ *       idx: 1
+ *       name: 꿀
+ *  */
+class IngredientCategoryResponse {
+    readonly idx: number;
+    readonly name: string;
+    constructor(idx: number, name: string) {
+        this.idx = idx;
+        this.name = name;
+    }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+    static createByJson(json: any): IngredientCategoryResponse {
+        return new IngredientCategoryResponse(json.idx, json.name);
+    }
+}
+
+/**
+ * @swagger
+ * definitions:
  *   SeriesFilterResponse:
  *     type: object
  *     properties:
@@ -52,26 +82,19 @@ class SeriesResponse {
  *         type: string
  *       imageUrl:
  *         type: string
- *       ingredientCategoryList:
+ *       ingredientList:
  *         type: array
  *         items:
- *           type: object
- *           properties:
- *             category: string
- *     example:
- *       seriesIdx: 1
- *       name: 꿀
- *       imageUrl: http://
- *       ingredients: [{idx: 1, category: '오렌지}, {idx:2, category: '사과'}}]
+ *           $ref: '#/definitions/IngredientCategory'
  *  */
 class SeriesFilterResponse {
     readonly seriesIdx: number;
     readonly name: string;
-    readonly ingredients: IngredientCategoryDTO[];
+    readonly ingredients: IngredientCategoryResponse[];
     constructor(
         seriesIdx: number,
         name: string,
-        ingredients: IngredientCategoryDTO[]
+        ingredients: IngredientCategoryResponse[]
     ) {
         this.seriesIdx = seriesIdx;
         this.name = name;
@@ -86,9 +109,11 @@ class SeriesFilterResponse {
         return new SeriesFilterResponse(
             seriesFilterDTO.seriesIdx,
             seriesFilterDTO.name,
-            seriesFilterDTO.ingredientCategoryList
+            seriesFilterDTO.ingredientCategoryList.map((it) => {
+                return new IngredientCategoryResponse(it.id, it.name);
+            })
         );
     }
 }
 
-export { SeriesResponse, SeriesFilterResponse };
+export { SeriesResponse, SeriesFilterResponse, IngredientCategoryResponse };
