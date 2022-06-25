@@ -110,7 +110,7 @@ class SeriesService {
                     new Set(
                         arr
                             .map((it) => categoryMap[it.categoryIdx] ?? null)
-                            .filter((it) => it.id != null)
+                            .filter((it) => it != null)
                     ).values()
                 )
             )
