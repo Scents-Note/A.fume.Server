@@ -13,10 +13,10 @@ import { PerfumeSearchDTO } from '@src/data/dto';
  *         type: array
  *         items:
  *           type: integer
- *       ingredientCategoryList:
+ *       ingredientList:
  *         type: array
  *         items:
- *           type: string
+ *           type: integer
  *       brandList:
  *         type: array
  *         items:
@@ -25,17 +25,17 @@ import { PerfumeSearchDTO } from '@src/data/dto';
 class PerfumeSearchRequest {
     readonly keywordList: number[];
     readonly brandList: number[];
-    readonly ingredientCategoryList: number[];
+    readonly ingredientList: number[];
     readonly searchText: string;
     constructor(
         keywordList: number[],
         brandList: number[],
-        ingredientCategoryList: number[],
+        ingredientList: number[],
         searchText: string
     ) {
         this.keywordList = keywordList;
         this.brandList = brandList;
-        this.ingredientCategoryList = ingredientCategoryList;
+        this.ingredientList = ingredientList;
         this.searchText = searchText;
     }
     public toString(): string {
@@ -46,7 +46,7 @@ class PerfumeSearchRequest {
         return new PerfumeSearchDTO(
             this.keywordList,
             this.brandList,
-            this.ingredientCategoryList,
+            this.ingredientList,
             this.searchText,
             userIdx
         );
@@ -56,7 +56,7 @@ class PerfumeSearchRequest {
         return new PerfumeSearchRequest(
             json.keywordList,
             json.brandList,
-            json.ingredientCategoryList,
+            json.ingredientList,
             json.searchText
         );
     }
