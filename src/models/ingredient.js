@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
                 onDelete: 'CASCADE',
             });
 
-            this.hasOne(models.IngredientCategories, {
+            this.belongsTo(models.IngredientCategories, {
                 foreignKey: 'categoryIdx',
                 as: 'IngredientCategories',
                 onUpdate: 'CASCADE',
