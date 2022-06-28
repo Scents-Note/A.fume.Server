@@ -29,13 +29,16 @@ import {
     UserDTO,
     NoteDictDTO,
     PerfumeDefaultReviewDTO,
+    IngredientDTO,
 } from '@dto/index';
 import fp from 'lodash/fp';
 import _ from 'lodash';
+import IngredientDao from '@src/dao/IngredientDao';
 
 const LOG_TAG: string = '[Perfume/Service]';
 
 let perfumeDao: PerfumeDao = new PerfumeDao();
+let ingredientDao: IngredientDao = new IngredientDao();
 let reviewDao = require('@dao/ReviewDao.js');
 let noteDao: NoteDao = new NoteDao();
 let likePerfumeDao: LikePerfumeDao = new LikePerfumeDao();
@@ -132,14 +135,25 @@ class PerfumeService {
         logger.debug(
             `${LOG_TAG} searchPerfume(perfumeSearchDTO = ${perfumeSearchDTO}, pagingDTO = ${pagingDTO})`
         );
-        return perfumeDao
-            .search(
-                perfumeSearchDTO.brandIdxList,
-                perfumeSearchDTO.ingredientIdxList,
-                perfumeSearchDTO.keywordIdxList,
-                perfumeSearchDTO.searchText,
-                pagingDTO
+        return ingredientDao
+            .getIngredientIdxByCategories(
+                perfumeSearchDTO.ingredientCategoryList
             )
+            .then((ingredientList: IngredientDTO[]) => {
+                return ingredientList.map(
+                    (it: IngredientDTO) => it.ingredientIdx
+                );
+            })
+            .then((ingredientIdxList: number[]) => {
+                return perfumeDao.search(
+                    perfumeSearchDTO.brandIdxList,
+                    ingredientIdxList,
+                    perfumeSearchDTO.keywordIdxList,
+                    perfumeSearchDTO.searchText,
+                    pagingDTO
+                );
+            })
+
             .then(
                 async (
                     result: ListAndCountDTO<PerfumeSearchResultDTO>

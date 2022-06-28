@@ -148,6 +148,9 @@ npm run test-each ./test/...
 
 * 0.0.3
     * default review 컨셉 제거 (Keyword는 유지)
+    * ingredient category 개념 추가
+        - Ingredient_category table 추가
+        - ingredient Model에 category_idx 추가
 
 * 0.0.2
     * paging방식 lastPosition + pagingSize로 변경

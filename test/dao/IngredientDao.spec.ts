@@ -132,4 +132,18 @@ describe('# ingredientDao Test', () => {
                 .catch((err: Error) => done(err));
         });
     });
+
+    describe('# category Test', () => {
+        it('# getIngredientIdxByCategories test', (done: Done) => {
+            ingredientDao
+                .getIngredientIdxByCategories([1, 2])
+                .then((result: any) => {
+                    expect(
+                        result.map((it: IngredientDTO) => it.ingredientIdx)
+                    ).to.be.deep.eq([1, 2]);
+                    done();
+                })
+                .catch((err: Error) => done(err));
+        });
+    });
 });
