@@ -100,7 +100,7 @@ class PerfumeSummaryDTO {
             .value();
         const cnt: number = _.chain(reviewList).filter(isNumber).size().value();
         reviewList
-            .map((it) => {
+            .map((it: any) => {
                 it.seasonal = SEASONAL_LIST[it.seasonal || 0];
                 it.sillage = SILLAGE_LIST[it.sillage || 0];
                 it.longevity = LONGEVITY_LIST[it.longevity || 0];
@@ -120,16 +120,16 @@ class PerfumeSummaryDTO {
                     seasonal: Seasonal;
                     gender: Gender;
                 }) => {
-                    if (longevityCountMap[longevity]) {
+                    if (longevity in longevityCountMap) {
                         longevityCountMap[longevity]++;
                     }
-                    if (sillageCountMap[sillage]) {
+                    if (sillage in sillageCountMap) {
                         sillageCountMap[sillage]++;
                     }
-                    if (seasonalCountMap[seasonal]) {
+                    if (seasonal in seasonalCountMap) {
                         seasonalCountMap[seasonal]++;
                     }
-                    if (genderCountMap[gender]) {
+                    if (gender in genderCountMap) {
                         genderCountMap[gender]++;
                     }
                 }
@@ -150,51 +150,6 @@ class PerfumeSummaryDTO {
             <SillageMap>this.normalize(defaultReviewDTO.sillage),
             <LongevityMap>this.normalize(defaultReviewDTO.longevity),
             <GenderMap>this.normalize(defaultReviewDTO.gender)
-        );
-    }
-
-    static merge(
-        defaultSummary: PerfumeSummaryDTO,
-        userSummary: PerfumeSummaryDTO,
-        defaultRate: number
-    ): PerfumeSummaryDTO {
-        function calculate(defaultValue: number, userValue: number): number {
-            return toFixedNumber(
-                userValue * (1 - defaultRate) + defaultValue * defaultRate
-            );
-        }
-        const mergedScore = calculate(defaultSummary.score, userSummary.score);
-        const mergedSeasonal: SeasonalMap = _.mapValues<SeasonalMap, number>(
-            userSummary.seasonal,
-            (value: number, key: string) => {
-                return calculate(defaultSummary.seasonal[<Seasonal>key], value);
-            }
-        );
-        const mergedLongevity: LongevityMap = _.mapValues<LongevityMap, number>(
-            userSummary.longevity,
-            (value: number, key: string) => {
-                return calculate(
-                    defaultSummary.longevity[<Longevity>key],
-                    value
-                );
-            }
-        );
-        const mergedSillage: SillageMap = _.mapValues<SillageMap, number>(
-            userSummary.sillage,
-            (value: number, key: string) =>
-                calculate(defaultSummary.sillage[<Sillage>key], value)
-        );
-        const mergedGender: GenderMap = _.mapValues<GenderMap, number>(
-            userSummary.gender,
-            (value: number, key: string) =>
-                calculate(defaultSummary.gender[<Gender>key], value)
-        );
-        return new PerfumeSummaryDTO(
-            mergedScore,
-            <SeasonalMap>this.normalize(mergedSeasonal),
-            <SillageMap>this.normalize(mergedSillage),
-            <LongevityMap>this.normalize(mergedLongevity),
-            <GenderMap>this.normalize(mergedGender)
         );
     }
 

@@ -66,7 +66,6 @@ const PERFUME_NOTE_TYPE_SINGLE: number = 1;
 const PERFUME_NOTE_TYPE_NORMAL: number = 0;
 const MIN_SCORE: number = 0;
 const MAX_SCORE: number = 10;
-const DEFAULT_REVIEW_THRESHOLD: number = 10;
 const DEFAULT_PAGE_SIZE: number = 100;
 const THRESHOLD_CATEGORY: number = 10;
 
@@ -90,7 +89,6 @@ export {
     PERFUME_NOTE_TYPE_NORMAL,
     MIN_SCORE,
     MAX_SCORE,
-    DEFAULT_REVIEW_THRESHOLD,
     DEFAULT_PAGE_SIZE,
     THRESHOLD_CATEGORY,
 };

@@ -7,7 +7,6 @@ import {
     GENDER_WOMAN,
     PERFUME_NOTE_TYPE_SINGLE,
     PERFUME_NOTE_TYPE_NORMAL,
-    DEFAULT_REVIEW_THRESHOLD,
 } from '@utils/constants';
 
 import UserDao from '@dao/UserDao';
@@ -104,8 +103,7 @@ class PerfumeService {
 
         const { noteType, noteDictDTO } = await this.generateNote(perfumeIdx);
         const perfumeSummaryDTO: PerfumeSummaryDTO = await this.generateSummary(
-            perfumeIdx,
-            defaultReviewDTO
+            perfumeIdx
         );
 
         const reviewIdx: number = await reviewDao
@@ -460,10 +458,6 @@ class PerfumeService {
         defaultReviewDao = dao;
     }
 
-    getDefaultReviewRate(x: number) {
-        return 1 - Math.max(0, x / DEFAULT_REVIEW_THRESHOLD);
-    }
-
     private async getAgeGroupAndGender(
         userIdx: number
     ): Promise<{ gender: number; ageGroup: number }> {
@@ -505,22 +499,11 @@ class PerfumeService {
     }
 
     private async generateSummary(
-        perfumeIdx: number,
-        defaultReviewDTO: any
+        perfumeIdx: number
     ): Promise<PerfumeSummaryDTO> {
         const reviewList = await reviewDao.readAllOfPerfume(perfumeIdx);
         const userSummary = PerfumeSummaryDTO.createByReviewList(reviewList);
-        if (!defaultReviewDTO) {
-            return userSummary;
-        }
-        const defaultSummary =
-            PerfumeSummaryDTO.createByDefault(defaultReviewDTO);
-        const defaultReviewRate = this.getDefaultReviewRate(reviewList.length);
-        return PerfumeSummaryDTO.merge(
-            defaultSummary,
-            userSummary,
-            defaultReviewRate
-        );
+        return userSummary;
     }
 
     private isLike(userIdx: number, perfumeIdx: number): Promise<boolean> {

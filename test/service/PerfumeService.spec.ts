@@ -159,31 +159,6 @@ describe('# Perfume Service Test', () => {
                 };
                 const mockDefaultReview: any =
                     PerfumeDefaultReviewDTO.createByJson({
-                        perfumeIdx: 1,
-                        rating: 5,
-                        seasonal: {
-                            spring: 0,
-                            summer: 0,
-                            fall: 100,
-                            winter: 100,
-                        },
-                        sillage: {
-                            light: 0,
-                            medium: 100,
-                            heavy: 100,
-                        },
-                        longevity: {
-                            veryWeak: 0,
-                            weak: 0,
-                            normal: 0,
-                            strong: 100,
-                            veryStrong: 100,
-                        },
-                        gender: {
-                            male: 0,
-                            neutral: 100,
-                            female: 100,
-                        },
                         keywordList: [
                             { id: 3, name: '키워드3' },
                             { id: 1, name: '키워드1' },
@@ -231,42 +206,34 @@ describe('# Perfume Service Test', () => {
                             '키워드4',
                         ]);
                         expect(it.reviewIdx).to.be.eq(expectedReviewIdx);
-                        const defaultReviewRate: number =
-                            Perfume.getDefaultReviewRate(mockReviewList.length);
-                        const defaultSummary: PerfumeSummaryDTO =
-                            PerfumeSummaryDTO.createByDefault(
-                                mockDefaultReview
-                            );
                         const userSummary: PerfumeSummaryDTO =
                             PerfumeSummaryDTO.createByReviewList(
                                 mockReviewList
                             );
-                        const expectedScore: number =
-                            defaultSummary.score * defaultReviewRate +
-                            userSummary.score * (1 - defaultReviewRate);
+                        const expectedScore: number = userSummary.score;
                         expect(it.score).to.be.eq(expectedScore);
                         expect(it.seasonal).to.be.deep.eq({
-                            spring: 2,
-                            summer: 2,
-                            fall: 47,
-                            winter: 47,
+                            spring: 100,
+                            summer: 0,
+                            fall: 0,
+                            winter: 0,
                         });
                         expect(it.sillage).to.be.deep.eq({
-                            light: 3,
-                            medium: 48,
-                            heavy: 48,
+                            light: 100,
+                            medium: 0,
+                            heavy: 0,
                         });
                         expect(it.longevity).to.be.deep.eq({
-                            veryWeak: 2,
-                            weak: 2,
-                            normal: 2,
-                            strong: 47,
-                            veryStrong: 47,
+                            veryWeak: 100,
+                            weak: 0,
+                            normal: 0,
+                            strong: 0,
+                            veryStrong: 0,
                         });
                         expect(it.gender).to.be.deep.eq({
-                            male: 3,
-                            neutral: 48,
-                            female: 48,
+                            male: 100,
+                            neutral: 0,
+                            female: 0,
                         });
                         done();
                     })
