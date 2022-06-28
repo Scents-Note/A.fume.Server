@@ -100,7 +100,7 @@ class PerfumeSummaryDTO {
             .value();
         const cnt: number = _.chain(reviewList).filter(isNumber).size().value();
         reviewList
-            .map((it) => {
+            .map((it: any) => {
                 it.seasonal = SEASONAL_LIST[it.seasonal || 0];
                 it.sillage = SILLAGE_LIST[it.sillage || 0];
                 it.longevity = LONGEVITY_LIST[it.longevity || 0];
@@ -120,16 +120,16 @@ class PerfumeSummaryDTO {
                     seasonal: Seasonal;
                     gender: Gender;
                 }) => {
-                    if (longevityCountMap[longevity]) {
+                    if (longevity in longevityCountMap) {
                         longevityCountMap[longevity]++;
                     }
-                    if (sillageCountMap[sillage]) {
+                    if (sillage in sillageCountMap) {
                         sillageCountMap[sillage]++;
                     }
-                    if (seasonalCountMap[seasonal]) {
+                    if (seasonal in seasonalCountMap) {
                         seasonalCountMap[seasonal]++;
                     }
-                    if (genderCountMap[gender]) {
+                    if (gender in genderCountMap) {
                         genderCountMap[gender]++;
                     }
                 }
