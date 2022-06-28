@@ -153,51 +153,6 @@ class PerfumeSummaryDTO {
         );
     }
 
-    static merge(
-        defaultSummary: PerfumeSummaryDTO,
-        userSummary: PerfumeSummaryDTO,
-        defaultRate: number
-    ): PerfumeSummaryDTO {
-        function calculate(defaultValue: number, userValue: number): number {
-            return toFixedNumber(
-                userValue * (1 - defaultRate) + defaultValue * defaultRate
-            );
-        }
-        const mergedScore = calculate(defaultSummary.score, userSummary.score);
-        const mergedSeasonal: SeasonalMap = _.mapValues<SeasonalMap, number>(
-            userSummary.seasonal,
-            (value: number, key: string) => {
-                return calculate(defaultSummary.seasonal[<Seasonal>key], value);
-            }
-        );
-        const mergedLongevity: LongevityMap = _.mapValues<LongevityMap, number>(
-            userSummary.longevity,
-            (value: number, key: string) => {
-                return calculate(
-                    defaultSummary.longevity[<Longevity>key],
-                    value
-                );
-            }
-        );
-        const mergedSillage: SillageMap = _.mapValues<SillageMap, number>(
-            userSummary.sillage,
-            (value: number, key: string) =>
-                calculate(defaultSummary.sillage[<Sillage>key], value)
-        );
-        const mergedGender: GenderMap = _.mapValues<GenderMap, number>(
-            userSummary.gender,
-            (value: number, key: string) =>
-                calculate(defaultSummary.gender[<Gender>key], value)
-        );
-        return new PerfumeSummaryDTO(
-            mergedScore,
-            <SeasonalMap>this.normalize(mergedSeasonal),
-            <SillageMap>this.normalize(mergedSillage),
-            <LongevityMap>this.normalize(mergedLongevity),
-            <GenderMap>this.normalize(mergedGender)
-        );
-    }
-
     private static normalize(obj: { [key: string]: number }): {
         [key: string]: number;
     } {
