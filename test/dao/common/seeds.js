@@ -7,6 +7,7 @@ const {
     LikePerfume,
     LikeReview,
     Ingredient,
+    IngredientCategories,
     SearchHistory,
     PerfumeSurvey,
     Keyword,
@@ -49,6 +50,10 @@ module.exports = () => {
             Keyword.upsert({
                 id: i,
                 name: `키워드${i}`,
+            }),
+            IngredientCategories.upsert({
+                idx: i,
+                name: '카테고리' + i,
             })
         );
     }
@@ -62,6 +67,7 @@ module.exports = () => {
                 englishName: 'ingredient english-name',
                 description: '재료 설명 텍스트',
                 imageUrl: 'image-url',
+                categoryIdx: i,
             }),
             Perfume.upsert({
                 perfumeIdx: i,

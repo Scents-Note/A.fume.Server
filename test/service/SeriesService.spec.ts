@@ -7,6 +7,7 @@ import {
     SeriesDTO,
     SeriesFilterDTO,
     IngredientDTO,
+    IngredientCategoryDTO,
     PagingDTO,
 } from '@dto/index';
 
@@ -16,13 +17,16 @@ import expect from '../utils/expect';
 
 import IngredientMockHelper from '../mock_helper/IngredientMockHelper';
 import SeriesHelper from '../mock_helper/SeriesMockHelper';
+import { ETC } from '@src/utils/strings';
 
 const mockSeriesDAO: any = {};
 const mockIngredientDAO: any = {};
+const mockIngredientCategoryDao: any = {};
 const mockNoteDAO: any = {};
 const seriesService = new SeriesService(
     mockSeriesDAO,
     mockIngredientDAO,
+    mockIngredientCategoryDao,
     mockNoteDAO
 );
 const defaultPagingDTO: PagingDTO = PagingDTO.createByJson({});
@@ -82,12 +86,10 @@ describe('# Series Service Test', () => {
 
     describe('# getFilterSeries Test', () => {
         it('# success Test', (done: Done) => {
-            const isNoteCountOver10 = (ingredientIdx: number): boolean =>
-                ingredientIdx % 2 == 1;
             mockIngredientDAO.readBySeriesIdxList = async (
                 _: number[]
             ): Promise<IngredientDTO[]> => {
-                const ret = [];
+                const ret: any[] = [];
                 for (let i = 1; i <= 5; i++)
                     ret.push(IngredientMockHelper.createWithIdx(i, 1));
                 for (let i = 6; i <= 7; i++)
@@ -96,28 +98,30 @@ describe('# Series Service Test', () => {
                     ret.push(IngredientMockHelper.createWithIdx(i, 3));
                 return ret;
             };
-            mockNoteDAO.getIngredientCountList = async (_: number[]) =>
-                [...new Array(10)].map((_, index) => ({
-                    ingredientIdx: index + 1,
-                    count: isNoteCountOver10(index + 1) ? 100 : 4,
-                }));
+            mockIngredientCategoryDao.readAll = async () => {
+                const ret: any[] = [];
+                for (let i = 1; i <= 10; i++) {
+                    ret.push(
+                        IngredientCategoryDTO.createByJson({
+                            idx: i,
+                            name: '카테고리1',
+                            usedCountOnPerfume: 10,
+                        })
+                    );
+                }
+                return ret;
+            };
 
             seriesService
                 .getFilterSeries(defaultPagingDTO)
                 .then((result: ListAndCountDTO<SeriesFilterDTO>) => {
                     expect(result).instanceOf(ListAndCountDTO);
-                    result.rows.forEach((seriesFilterDTO: SeriesFilterDTO) => {
-                        seriesFilterDTO.ingredients.forEach(
-                            (ingredientDTO: IngredientDTO) => {
-                                expect(
-                                    isNoteCountOver10(
-                                        ingredientDTO.ingredientIdx
-                                    )
-                                ).to.be.eq(true);
-                            }
-                        );
-                    });
                     expect(result.rows.length).to.be.eq(3);
+                    expect(
+                        result.rows.filter(
+                            (it: SeriesFilterDTO) => it.name == ETC
+                        ).length
+                    ).to.be.eq(0);
                     done();
                 })
                 .catch((err: Error) => done(err));

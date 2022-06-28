@@ -169,6 +169,7 @@ const getIngredients: RequestHandler = (
  *                   rows:
  *                     type: array
  *                     items:
+ *                       type: object
  *                       allOf:
  *                       - $ref: '#/definitions/SeriesFilterResponse'
  *       x-swagger-router-controller: Series
