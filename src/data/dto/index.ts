@@ -9,7 +9,6 @@ export * from './LoginInfoDTO';
 export * from './NoteDictDTO';
 export * from './NoteDTO';
 export * from './PagingDTO';
-export * from './PerfumeDefaultReviewDTO';
 export * from './PerfumeDTO';
 export * from './PerfumeIntegralDTO';
 export * from './PerfumeSearchDTO';

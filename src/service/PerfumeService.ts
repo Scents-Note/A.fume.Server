@@ -11,7 +11,6 @@ import {
 
 import UserDao from '@dao/UserDao';
 import PerfumeDao from '@dao/PerfumeDao';
-import PerfumeDefaultReviewDao from '@dao/PerfumeDefaultReviewDao';
 import NoteDao from '@dao/NoteDao';
 import LikePerfumeDao from '@dao/LikePerfumeDao';
 import S3FileDao from '@dao/S3FileDao';
@@ -28,7 +27,6 @@ import {
     PerfumeSearchResultDTO,
     UserDTO,
     NoteDictDTO,
-    PerfumeDefaultReviewDTO,
     IngredientDTO,
 } from '@dto/index';
 import fp from 'lodash/fp';
@@ -43,7 +41,6 @@ let reviewDao = require('@dao/ReviewDao.js');
 let noteDao: NoteDao = new NoteDao();
 let likePerfumeDao: LikePerfumeDao = new LikePerfumeDao();
 let keywordDao = require('@dao/KeywordDao.js');
-let defaultReviewDao: PerfumeDefaultReviewDao = new PerfumeDefaultReviewDao();
 let s3FileDao: S3FileDao = new S3FileDao();
 let userDao: UserDao = new UserDao();
 
@@ -80,20 +77,12 @@ class PerfumeService {
             flatJob('PerfumeDetail')
         )(_perfume);
 
-        const defaultReviewDTO: PerfumeDefaultReviewDTO | null =
-            await defaultReviewDao
-                .readByPerfumeIdx(perfumeIdx)
-                .catch((_: Error) => {
-                    return null;
-                });
         perfume.isLiked = await this.isLike(userIdx, perfumeIdx);
         const keywordList: string[] = [
             ...new Set<string>(
-                (await keywordDao.readAllOfPerfume(perfumeIdx))
-                    .concat(
-                        defaultReviewDTO ? defaultReviewDTO.keywordList : []
-                    )
-                    .map((it: any) => it.name)
+                (await keywordDao.readAllOfPerfume(perfumeIdx)).map(
+                    (it: any) => it.name
+                )
             ),
         ];
         const imageUrls: string[] = [
@@ -452,10 +441,6 @@ class PerfumeService {
 
     setS3FileDao(dao: S3FileDao) {
         s3FileDao = dao;
-    }
-
-    setDefaultReviewDao(dao: PerfumeDefaultReviewDao) {
-        defaultReviewDao = dao;
     }
 
     private async getAgeGroupAndGender(

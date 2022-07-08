@@ -143,16 +143,6 @@ class PerfumeSummaryDTO {
         );
     }
 
-    static createByDefault(defaultReviewDTO: any): PerfumeSummaryDTO {
-        return new PerfumeSummaryDTO(
-            defaultReviewDTO.rating,
-            <SeasonalMap>this.normalize(defaultReviewDTO.seasonal),
-            <SillageMap>this.normalize(defaultReviewDTO.sillage),
-            <LongevityMap>this.normalize(defaultReviewDTO.longevity),
-            <GenderMap>this.normalize(defaultReviewDTO.gender)
-        );
-    }
-
     private static normalize(obj: { [key: string]: number }): {
         [key: string]: number;
     } {
