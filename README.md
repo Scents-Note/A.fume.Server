@@ -151,6 +151,7 @@ npm run test-each ./test/...
     * ingredient category 개념 추가
         - Ingredient_category table 추가
         - ingredient Model에 category_idx 추가
+    * 추천 정보가 존재하지 않는 경우 random 데이터 반환
 
 * 0.0.2
     * paging방식 lastPosition + pagingSize로 변경
