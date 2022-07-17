@@ -470,7 +470,7 @@ class PerfumeDao {
      */
     async getPerfumesByRandom(
         pagingDTO: PagingDTO
-    ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+    ): Promise<[PerfumeThumbDTO]> {
         logger.debug(
             `${LOG_TAG} recommendPerfumeByRandom(pagingDTO = ${pagingDTO})`
         );
@@ -482,11 +482,8 @@ class PerfumeDao {
                 order: Sequelize.literal('rand()'),
             }
         );
-        return Perfume.findAndCountAll(options).then((it: any) => {
-            return new ListAndCountDTO(
-                it.count,
-                it.rows.map(PerfumeThumbDTO.createByJson)
-            );
+        return Perfume.findAll(options).then((rows: [any]) => {
+            return rows.map(PerfumeThumbDTO.createByJson);
         });
     }
 }
