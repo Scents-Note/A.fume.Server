@@ -273,20 +273,29 @@ class PerfumeService {
      *
      * @param {number} userIdx
      * @param {PagingDTO} pagingDTO
+     * @param {number} ageGroup
+     * @param {Gender} gender
      * @returns {Promise<Perfume[]>}
      **/
     async recommendByUser(
         userIdx: number,
-        pagingDTO: PagingDTO
+        pagingDTO: PagingDTO,
+        ageGroup?: number,
+        gender?: number
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
         logger.debug(
             `${LOG_TAG} recommendByUser(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
-        const { ageGroup, gender } = await this.getAgeGroupAndGender(userIdx);
+        const defaultUserInfo: { ageGroup: number; gender: number } =
+            await this.getAgeGroupAndGender(userIdx);
 
         const recommendedListPromise: Promise<
             ListAndCountDTO<PerfumeThumbDTO>
-        > = this.recommendByGenderAgeAndGender(gender, ageGroup, pagingDTO);
+        > = this.recommendByGenderAgeAndGender(
+            gender || defaultUserInfo.gender,
+            ageGroup || defaultUserInfo.ageGroup,
+            pagingDTO
+        );
 
         return recommendedListPromise.then(
             (

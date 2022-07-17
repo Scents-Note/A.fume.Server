@@ -39,6 +39,7 @@ import {
     PerfumeSearchDTO,
     PagingDTO,
 } from '@dto/index';
+import { GenderMap } from '@src/utils/enumType';
 
 const LOG_TAG: string = '[Perfume/Controller]';
 const DEFAULT_RECOMMEND_REQUEST_SIZE: number = 7;
@@ -458,6 +459,17 @@ const recommendPersonalPerfume: RequestHandler = (
  *       produces:
  *       - application/json
  *       parameters:
+ *       - name: age
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       - name: gender
+ *         in: query
+ *         type: string
+ *         enum:
+ *         - MAN
+ *         - WOMAN
+ *         required: false
  *       - name: requestSize
  *         in: query
  *         type: integer
@@ -494,14 +506,18 @@ const recommendCommonPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
+    req.query.requestSize =
+        req.query.requestSize || DEFAULT_RECOMMEND_REQUEST_SIZE;
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
+    const ageGroup: number = Math.floor(req.query.age / 10) * 10;
+    const gender: number = GenderMap[req.query.gender];
     logger.debug(
         `${LOG_TAG} recommendCommonPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
     );
     const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
-    Perfume.recommendByUser(loginUserIdx, pagingDTO)
+    Perfume.recommendByUser(loginUserIdx, pagingDTO, ageGroup, gender)
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             if (result.rows.length > 0) {
                 return result;
