@@ -22,6 +22,7 @@ const {
     LikePerfume,
     SearchHistory,
     sequelize,
+    Sequelize,
 } = require('@sequelize');
 
 const { ranking } = require('@mongoose');
@@ -459,6 +460,31 @@ class PerfumeDao {
     async readAll(): Promise<PerfumeThumbDTO[]> {
         logger.debug(`${LOG_TAG} readAll()`);
         return Perfume.findAll();
+    }
+
+    /**
+     * 랜덤 향수 조회
+     *
+     * @param {PagingDTO} pagingDTO
+     * @returns {Promise<Perfume[]>}
+     */
+    async getPerfumesByRandom(
+        pagingDTO: PagingDTO
+    ): Promise<[PerfumeThumbDTO]> {
+        logger.debug(
+            `${LOG_TAG} recommendPerfumeByRandom(pagingDTO = ${pagingDTO})`
+        );
+        const options: { [key: string]: any } = _.merge(
+            {},
+            defaultOption,
+            pagingDTO.sequelizeOption(),
+            {
+                order: Sequelize.literal('rand()'),
+            }
+        );
+        return Perfume.findAll(options).then((rows: [any]) => {
+            return rows.map(PerfumeThumbDTO.createByJson);
+        });
     }
 }
 

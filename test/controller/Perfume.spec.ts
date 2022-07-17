@@ -30,7 +30,11 @@ import {
     PerfumeRecommendResponse,
 } from '@response/perfume';
 
-import { TokenPayloadDTO, ListAndCountDTO } from '@dto/index';
+import {
+    TokenPayloadDTO,
+    ListAndCountDTO,
+    PerfumeThumbKeywordDTO,
+} from '@dto/index';
 
 import app from '@src/app';
 
@@ -40,6 +44,7 @@ const Perfume = require('@controllers/Perfume');
 import PerfumeThumbMockHelper from '../mock_helper/PerfumeThumbMockHelper';
 import PerfumeThumbKeywordMockHelper from '../mock_helper/PerfumeThumbKeywordMockHelper';
 import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
+import _ from 'lodash';
 
 const user1tokenPerfume: string = JwtController.create(
     new TokenPayloadDTO(1, 'nickname', 'MAN', 'email', 1995)
@@ -244,14 +249,32 @@ describe('# Perfume Controller Test', () => {
                     .catch((err: Error) => done(err));
             });
 
-            it('# Fail: no token', (done: Done) => {
+            it('# with no token', (done: Done) => {
+                const expectResult: PerfumeThumbKeywordDTO[] = _.range(
+                    0,
+                    7
+                ).map((_: any) => PerfumeThumbKeywordMockHelper.createMock({}));
+                mockPerfumeService.getPerfumesByRandom = async () => {
+                    return new ListAndCountDTO(
+                        expectResult.length,
+                        expectResult
+                    );
+                };
                 request(app)
                     .get(`${basePath}/perfume/recommend/personal`)
                     .expect((res: request.Response) => {
-                        expect(res.status).to.be.eq(StatusCode.UNAUTHORIZED);
-                        const responseDTO: SimpleResponseDTO = res.body;
+                        expect(res.status).to.be.eq(StatusCode.OK);
+                        const responseDTO: ResponseDTO<
+                            ListAndCountDTO<PerfumeThumbKeywordDTO>
+                        > = res.body;
                         expect(responseDTO.message).to.be.eq(
-                            '유효하지 않는 토큰입니다.'
+                            MSG_GET_RECOMMEND_PERFUME_BY_USER
+                        );
+                        expect(responseDTO.data.count).to.be.eq(
+                            expectResult.length
+                        );
+                        expect(responseDTO.data.rows).to.be.deep.eq(
+                            expectResult
                         );
                         done();
                     })

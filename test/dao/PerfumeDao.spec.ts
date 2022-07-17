@@ -19,6 +19,7 @@ import {
 
 import BrandHelper from '../mock_helper/BrandHelper';
 import PerfumeThumbMockHelper from '../mock_helper/PerfumeThumbMockHelper';
+import _ from 'lodash';
 const perfumeDao = new PerfumeDao();
 const { Note, Sequelize } = require('@sequelize');
 const { Op } = Sequelize;
@@ -385,6 +386,31 @@ describe('# perfumeDao Test', () => {
                         for (const perfume of result.rows) {
                             PerfumeThumbMockHelper.validTest.call(perfume);
                         }
+                        done();
+                    })
+                    .catch((err: Error) => done(err));
+            });
+        });
+
+        describe('# random Test', () => {
+            it('# get perfumes by random', (done: Done) => {
+                Promise.all([
+                    perfumeDao.getPerfumesByRandom(defaultPagingDTO),
+                    perfumeDao.getPerfumesByRandom(defaultPagingDTO),
+                ])
+                    .then((result: [[PerfumeThumbDTO], [PerfumeThumbDTO]]) => {
+                        const result1: [PerfumeThumbDTO] = result[0];
+                        const result2: [PerfumeThumbDTO] = result[1];
+                        expect(
+                            _.zip(result1, result2).filter(
+                                (
+                                    it: [
+                                        PerfumeThumbDTO | undefined,
+                                        PerfumeThumbDTO | undefined
+                                    ]
+                                ) => _.isEqual(it[0], it[1])
+                            ).length
+                        ).to.be.lessThan(defaultPagingDTO.limit);
                         done();
                     })
                     .catch((err: Error) => done(err));

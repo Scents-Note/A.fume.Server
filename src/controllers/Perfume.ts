@@ -37,7 +37,9 @@ import {
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
     PerfumeSearchDTO,
+    PagingDTO,
 } from '@dto/index';
+import { GenderMap } from '@src/utils/enumType';
 
 const LOG_TAG: string = '[Perfume/Controller]';
 const DEFAULT_RECOMMEND_REQUEST_SIZE: number = 7;
@@ -336,7 +338,7 @@ const getRecentPerfume: RequestHandler = (
         req.query
     );
     logger.debug(
-        `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
+        `${LOG_TAG} getRecentPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
     );
     Perfume.recentSearch(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
@@ -364,12 +366,8 @@ const getRecentPerfume: RequestHandler = (
  *       tags:
  *       - perfume
  *       summary: 향수 개인 맞춤 추천
- *       description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 데이터를 활용해서 향수를 추천해준다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
+ *       description: 데이터를 활용해서 향수를 추천해준다. <br/> 반환 되는 정보 [향수, 좋아요 여부] <br/> <h3> 미 로그인 시 랜덤 기반 향수 추천 </h3> <br/>
  *       operationId: recommendPersonalPerfume
- *       security:
- *         - userToken: []
- *       x-security-scopes:
- *         - user
  *       produces:
  *       - application/json
  *       parameters:
@@ -401,8 +399,6 @@ const getRecentPerfume: RequestHandler = (
  *                     items:
  *                       allOf:
  *                       - $ref: '#/definitions/PerfumeRecommendResponse'
- *         401:
- *           description: Token is missing or invalid
  *       x-swagger-router-controller: Perfume
  * */
 const recommendPersonalPerfume: RequestHandler = (
@@ -419,7 +415,18 @@ const recommendPersonalPerfume: RequestHandler = (
     logger.debug(
         `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
     );
-    Perfume.recommendByUser(loginUserIdx, pagingRequestDTO.toPageDTO())
+    const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
+    return (
+        loginUserIdx > 0
+            ? Perfume.recommendByUser(loginUserIdx, pagingDTO)
+            : Perfume.getPerfumesByRandom(pagingDTO)
+    )
+        .then((it: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
+            if (it.rows.length > 0) {
+                return it;
+            }
+            return Perfume.getPerfumesByRandom(pagingDTO);
+        })
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return result.convertType(PerfumeRecommendResponse.createByJson);
         })
@@ -452,6 +459,17 @@ const recommendPersonalPerfume: RequestHandler = (
  *       produces:
  *       - application/json
  *       parameters:
+ *       - name: age
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       - name: gender
+ *         in: query
+ *         type: string
+ *         enum:
+ *         - MAN
+ *         - WOMAN
+ *         required: false
  *       - name: requestSize
  *         in: query
  *         type: integer
@@ -488,13 +506,24 @@ const recommendCommonPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
+    req.query.requestSize =
+        req.query.requestSize || DEFAULT_RECOMMEND_REQUEST_SIZE;
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query
     );
+    const ageGroup: number = Math.floor(req.query.age / 10) * 10;
+    const gender: number = GenderMap[req.query.gender];
     logger.debug(
         `${LOG_TAG} recommendCommonPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
     );
-    Perfume.recommendByUser(loginUserIdx, pagingRequestDTO.toPageDTO())
+    const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
+    Perfume.recommendByUser(loginUserIdx, pagingDTO, ageGroup, gender)
+        .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
+            if (result.rows.length > 0) {
+                return result;
+            }
+            return Perfume.getPerfumesByRandom(pagingDTO);
+        })
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return result.convertType(PerfumeRecommendResponse.createByJson);
         })

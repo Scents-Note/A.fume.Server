@@ -273,47 +273,35 @@ class PerfumeService {
      *
      * @param {number} userIdx
      * @param {PagingDTO} pagingDTO
+     * @param {number} ageGroup
+     * @param {Gender} gender
      * @returns {Promise<Perfume[]>}
      **/
     async recommendByUser(
         userIdx: number,
-        pagingDTO: PagingDTO
+        pagingDTO: PagingDTO,
+        ageGroup?: number,
+        gender?: number
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
         logger.debug(
             `${LOG_TAG} recommendByUser(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
-        const { ageGroup, gender } = await this.getAgeGroupAndGender(userIdx);
+        const defaultUserInfo: { ageGroup: number; gender: number } =
+            await this.getAgeGroupAndGender(userIdx);
 
         const recommendedListPromise: Promise<
             ListAndCountDTO<PerfumeThumbDTO>
-        > = this.recommendByGenderAgeAndGender(gender, ageGroup, pagingDTO);
+        > = this.recommendByGenderAgeAndGender(
+            gender || defaultUserInfo.gender,
+            ageGroup || defaultUserInfo.ageGroup,
+            pagingDTO
+        );
 
         return recommendedListPromise.then(
-            async (
+            (
                 result: ListAndCountDTO<PerfumeThumbDTO>
             ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> => {
-                const perfumeIdxList: number[] = result.rows.map(
-                    (it: PerfumeThumbDTO) => it.perfumeIdx
-                );
-                let likePerfumeList: any[] = [];
-                if (userIdx > -1) {
-                    likePerfumeList = await likePerfumeDao.readLikeInfo(
-                        userIdx,
-                        perfumeIdxList
-                    );
-                }
-
-                const joinKeywordList: any[] =
-                    await keywordDao.readAllOfPerfumeIdxList(perfumeIdxList);
-
-                return result.convertType((item: PerfumeThumbDTO) => {
-                    return fp.compose(
-                        ...commonJob,
-                        this.isLikeJob(likePerfumeList),
-                        this.addKeyword(joinKeywordList),
-                        PerfumeThumbKeywordDTO.createByJson
-                    )(item);
-                });
+                return this.convertToThumbKeyword(result, userIdx);
             }
         );
     }
@@ -413,6 +401,34 @@ class PerfumeService {
                     )(item);
                 });
             });
+    }
+
+    /**
+     * 랜덤 향수 조회
+     *
+     * @param {PagingDTO} pagingDTO
+     * @returns {Promise<PerfumeThumbKeywordDTO[]>}
+     **/
+    getPerfumesByRandom(
+        pagingDTO: PagingDTO
+    ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
+        logger.debug(
+            `${LOG_TAG} getPerfumesByRandom(pagingDTO = ${pagingDTO})`
+        );
+        return perfumeDao
+            .getPerfumesByRandom(pagingDTO)
+            .then(
+                (
+                    result: [PerfumeThumbDTO]
+                ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> => {
+                    return this.convertToThumbKeyword(
+                        new ListAndCountDTO<PerfumeThumbDTO>(
+                            result.length,
+                            result
+                        )
+                    );
+                }
+            );
     }
 
     setPerfumeDao(dao: PerfumeDao) {
@@ -527,6 +543,35 @@ class PerfumeService {
             ret.keywordList = keywordMap[obj.perfumeIdx] || [];
             return ret;
         };
+    }
+
+    private async convertToThumbKeyword(
+        result: ListAndCountDTO<PerfumeThumbDTO>,
+        userIdx: number = -1
+    ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
+        const perfumeIdxList: number[] = result.rows.map(
+            (it: PerfumeThumbDTO) => it.perfumeIdx
+        );
+        let likePerfumeList: any[] = [];
+        if (userIdx > -1) {
+            likePerfumeList = await likePerfumeDao.readLikeInfo(
+                userIdx,
+                perfumeIdxList
+            );
+        }
+
+        const joinKeywordList: any[] = await keywordDao.readAllOfPerfumeIdxList(
+            perfumeIdxList
+        );
+
+        return result.convertType((item: PerfumeThumbDTO) => {
+            return fp.compose(
+                ...commonJob,
+                this.isLikeJob(likePerfumeList),
+                this.addKeyword(joinKeywordList),
+                PerfumeThumbKeywordDTO.createByJson
+            )(item);
+        });
     }
 }
 
