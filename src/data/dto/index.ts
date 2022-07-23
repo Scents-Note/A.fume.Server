@@ -17,6 +17,7 @@ export * from './PerfumeSearchResultDTO';
 export * from './PerfumeSummaryDTO';
 export * from './PerfumeThumbDTO';
 export * from './PerfumeThumbKeywordDTO';
+export * from './InquireHistoryDTO';
 export * from './SearchHistoryDTO';
 export * from './SeriesDTO';
 export * from './SeriesFilterDTO';

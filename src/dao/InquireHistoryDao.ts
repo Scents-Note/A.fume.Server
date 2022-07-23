@@ -1,4 +1,5 @@
 import { logger } from '@modules/winston';
+import { InquireHistoryDTO } from '@src/data/dto/InquireHistoryDTO';
 
 const LOG_TAG: string = '[SearchHistory/DAO]';
 
@@ -29,6 +30,28 @@ class InquireHistoryDao {
             .catch((_: Error) => {
                 return false;
             });
+    }
+
+    /**
+     * 향수 조회 기록 조회
+     * @param {[key: string]: string} whereCondition
+     * @return {Promise<InquireHistoryDTO[]>}
+     */
+    async findAll(
+        whereCondition: {
+            [key: string]: string;
+        } = {}
+    ): Promise<InquireHistoryDTO[]> {
+        logger.debug(
+            `${LOG_TAG} read(where = ${JSON.stringify(whereCondition)})`
+        );
+        return InquireHistory.findAll({
+            where: whereCondition,
+            raw: true,
+            nest: true,
+        }).then((rows: any[]) => {
+            return rows.map(InquireHistoryDTO.createByJson);
+        });
     }
 }
 

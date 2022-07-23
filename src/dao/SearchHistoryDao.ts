@@ -82,6 +82,29 @@ class SearchHistoryDao {
         }
         return affectedRows;
     }
+
+    /**
+     * SearchHistory 대용량 삽입
+     * @return {Promise}
+     */
+    async bulkInsert(
+        searchHistories: SearchHistoryDTO[],
+        transaction?: any
+    ): Promise<void> {
+        const result = SearchHistory.bulkCreate(searchHistories, {
+            transaction,
+        });
+        console.log(result);
+        return result;
+    }
+
+    /**
+     * SearchHistory 초기화
+     */
+    async clear(transaction?: any): Promise<void> {
+        await SearchHistory.destroy({ transaction });
+        return;
+    }
 }
 
 export default SearchHistoryDao;
