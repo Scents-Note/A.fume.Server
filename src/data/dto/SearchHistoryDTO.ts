@@ -2,14 +2,14 @@ class SearchHistoryDTO {
     readonly userIdx: number;
     readonly perfumeIdx: number;
     readonly count: number;
-    readonly createdAt: Date;
-    readonly updatedAt: Date;
+    readonly createdAt?: Date;
+    readonly updatedAt?: Date;
     constructor(
         userIdx: number,
         perfumeIdx: number,
         count: number,
-        createdAt: Date,
-        updatedAt: Date
+        createdAt?: Date,
+        updatedAt?: Date
     ) {
         this.userIdx = userIdx;
         this.perfumeIdx = perfumeIdx;
@@ -26,8 +26,8 @@ class SearchHistoryDTO {
         userIdx: number;
         perfumeIdx: number;
         count: number;
-        createdAt: Date;
-        updatedAt: Date;
+        createdAt?: Date;
+        updatedAt?: Date;
     }) {
         return new SearchHistoryDTO(
             json.userIdx,

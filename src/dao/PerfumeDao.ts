@@ -482,7 +482,7 @@ class PerfumeDao {
                 order: Sequelize.literal('rand()'),
             }
         );
-        return Perfume.findAll(options).then((rows: [any]) => {
+        return Perfume.findAll(options).then((rows: any[]) => {
             return rows.map(PerfumeThumbDTO.createByJson);
         });
     }
