@@ -10,7 +10,7 @@ function reloadSearchHistory() {
     return searchHistoryService.reloadSearchHistory();
 }
 
-const debug: boolean = true;
+const debug: boolean = false;
 
 class SchedulerManager {
     tasks = [
