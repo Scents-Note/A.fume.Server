@@ -94,7 +94,6 @@ class SearchHistoryDao {
         const result = SearchHistory.bulkCreate(searchHistories, {
             transaction,
         });
-        console.log(result);
         return result;
     }
 
@@ -102,7 +101,7 @@ class SearchHistoryDao {
      * SearchHistory 초기화
      */
     async clear(transaction?: any): Promise<void> {
-        await SearchHistory.destroy({ transaction });
+        await SearchHistory.destroy({ where: {}, transaction });
         return;
     }
 }
