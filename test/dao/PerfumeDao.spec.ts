@@ -13,7 +13,7 @@ import {
     ListAndCountDTO,
     PerfumeThumbDTO,
     PerfumeSearchResultDTO,
-    PerfumeSearchHistoryDTO,
+    PerfumeInquireHistoryDTO,
     PagingDTO,
 } from '@dto/index';
 
@@ -318,7 +318,7 @@ describe('# perfumeDao Test', () => {
                 perfumeDao
                     .recentSearchPerfumeList(1, defaultPagingDTO)
                     .then(
-                        (result: ListAndCountDTO<PerfumeSearchHistoryDTO>) => {
+                        (result: ListAndCountDTO<PerfumeInquireHistoryDTO>) => {
                             expect(result.rows.length).gte(5);
                             result.rows.forEach((element: any) => {
                                 for (const key in element) {
@@ -328,29 +328,29 @@ describe('# perfumeDao Test', () => {
 
                             const originString: string = result.rows
                                 .map(
-                                    (it: PerfumeSearchHistoryDTO) =>
+                                    (it: PerfumeInquireHistoryDTO) =>
                                         it.perfumeIdx
                                 )
                                 .toString();
                             const sortedString: string = result.rows
                                 .sort(
                                     (
-                                        a: PerfumeSearchHistoryDTO,
-                                        b: PerfumeSearchHistoryDTO
+                                        a: PerfumeInquireHistoryDTO,
+                                        b: PerfumeInquireHistoryDTO
                                     ) =>
-                                        a.SearchHistory.createdAt >
-                                        b.SearchHistory.createdAt
+                                        a.InquireHistory.createdAt >
+                                        b.InquireHistory.createdAt
                                             ? -1
                                             : 1
                                 )
                                 .map(
-                                    (it: PerfumeSearchHistoryDTO) =>
+                                    (it: PerfumeInquireHistoryDTO) =>
                                         it.perfumeIdx
                                 )
                                 .toString();
                             expect(sortedString).to.be.eq(originString);
                             for (const obj of result.rows) {
-                                expect(obj.SearchHistory.userIdx).to.be.eq(1);
+                                expect(obj.InquireHistory.userIdx).to.be.eq(1);
                             }
                             done();
                         }
