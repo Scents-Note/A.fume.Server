@@ -100,7 +100,11 @@ const getPerfume: RequestHandler = (
     );
     Promise.all([
         Perfume.getPerfumeById(perfumeIdx, loginUserIdx),
-        SearchHistory.incrementCount(loginUserIdx, perfumeIdx),
+        SearchHistory.recordInquire(
+            loginUserIdx,
+            perfumeIdx,
+            '' /* 향후 경로가 다양화 되면 경로 기록 용 */
+        ),
     ])
         .then(([result, _]: [PerfumeIntegralDTO, void]) => {
             return PerfumeDetailResponse.createByPerfumeIntegralDTO(result);

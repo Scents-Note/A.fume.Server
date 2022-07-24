@@ -27,7 +27,8 @@
                     "@configs" : "./src/config",
                     "@request" : "./src/controllers/definitions/request",
                     "@response" : "./src/controllers/definitions/response",
-                    "@dto" : "./src/data/dto"
+                    "@dto" : "./src/data/dto",
+                    "@schedules" : "./src/schedules"
                 }
             }
         ]

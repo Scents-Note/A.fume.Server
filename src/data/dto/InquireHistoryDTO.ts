@@ -1,19 +1,19 @@
-class SearchHistoryDTO {
+class InquireHistoryDTO {
     readonly userIdx: number;
     readonly perfumeIdx: number;
-    readonly count: number;
+    readonly routes: string;
     readonly createdAt?: Date;
     readonly updatedAt?: Date;
     constructor(
         userIdx: number,
         perfumeIdx: number,
-        count: number,
+        routes: string,
         createdAt?: Date,
         updatedAt?: Date
     ) {
         this.userIdx = userIdx;
         this.perfumeIdx = perfumeIdx;
-        this.count = count;
+        this.routes = routes;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -25,18 +25,18 @@ class SearchHistoryDTO {
     static createByJson(json: {
         userIdx: number;
         perfumeIdx: number;
-        count: number;
+        routes: string;
         createdAt?: Date;
         updatedAt?: Date;
     }) {
-        return new SearchHistoryDTO(
+        return new InquireHistoryDTO(
             json.userIdx,
             json.perfumeIdx,
-            json.count,
+            json.routes,
             json.createdAt,
             json.updatedAt
         );
     }
 }
 
-export { SearchHistoryDTO };
+export { InquireHistoryDTO };
