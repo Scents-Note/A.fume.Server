@@ -19,6 +19,7 @@ const {
     Perfume,
     PerfumeSurvey,
     Brand,
+    InquireHistory,
     LikePerfume,
     SearchHistory,
     sequelize,
@@ -332,33 +333,44 @@ class PerfumeDao {
         logger.debug(
             `${LOG_TAG} recentSearchPerfumeList(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
-        const options: { [key: string]: any } = _.merge(
-            {},
-            defaultOption,
-            pagingDTO.sequelizeOption(),
-            {
-                order: [
+        return InquireHistory.findAndCountAll(
+            _.merge({}, pagingDTO.sequelizeOption(), {
+                attributes: [
                     [
-                        { model: SearchHistory, as: 'SearchHistory' },
-                        'updatedAt',
-                        'desc',
+                        Sequelize.fn(
+                            'max',
+                            Sequelize.col('InquireHistory.created_at')
+                        ),
+                        'inquireAt',
                     ],
                 ],
-            }
-        );
-        options.include.push({
-            model: SearchHistory,
-            as: 'SearchHistory',
-            where: {
-                userIdx,
-            },
-            required: true,
-        });
-        return Perfume.findAndCountAll(options).then((it: any) => {
-            return new ListAndCountDTO(
-                it.count,
-                it.rows.map(PerfumeSearchHistoryDTO.createByJson)
-            );
+                where: {
+                    userIdx,
+                },
+                include: [
+                    {
+                        model: Perfume,
+                        as: 'Perfume',
+                        required: true,
+                        include: [
+                            {
+                                model: Brand,
+                                as: 'Brand',
+                                required: true,
+                            },
+                        ],
+                        raw: true,
+                        nest: true,
+                    },
+                ],
+                order: [[sequelize.col('inquireAt'), 'desc']],
+                group: ['InquireHistory.perfume_idx'],
+            })
+        ).then((it: any) => {
+            const rows: PerfumeSearchHistoryDTO[] = it.rows
+                .map((it: any) => it.Perfume)
+                .map(PerfumeSearchHistoryDTO.createByJson);
+            return new ListAndCountDTO(it.count.length, rows);
         });
     }
 

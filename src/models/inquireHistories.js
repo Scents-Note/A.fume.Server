@@ -1,7 +1,16 @@
 'use strict';
 const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-    class InquireHistory extends Model {}
+    class InquireHistory extends Model {
+        static associate(models) {
+            this.belongsTo(models.Perfume, {
+                as: 'Perfume',
+                foreignKey: 'perfumeIdx',
+                onUpdate: 'CASCADE',
+                onDelete: 'CASCADE',
+            });
+        }
+    }
     InquireHistory.init(
         {
             userIdx: {
