@@ -1,11 +1,11 @@
 import { logger } from '@modules/winston';
 
-import SearchHistoryDao from '@dao/SearchHistoryDao';
+import ReportsDao from '@dao/ReportsDao';
 
 import InquireHistoryDao from '@src/dao/InquireHistoryDao';
 import { InquireHistoryDTO } from '@src/data/dto/InquireHistoryDTO';
 import _ from 'lodash';
-import { SearchHistoryDTO } from '@src/data/dto';
+import { ReportUserInquirePerfumeDTO } from '@src/data/dto';
 
 /* TODO Service에서 Sequelize Dependency 제거 해야함 */
 const { sequelize } = require('../models');
@@ -13,13 +13,13 @@ const { sequelize } = require('../models');
 const LOG_TAG: string = '[SearchHistory/Service]';
 
 class SearchHistoryService {
-    searchHistoryDao: SearchHistoryDao;
+    reportsDao: ReportsDao;
     inquireHistoryDao: InquireHistoryDao;
     constructor(
-        searchHistoryDao?: SearchHistoryDao,
+        searchHistoryDao?: ReportsDao,
         inquireHistoryDao?: InquireHistoryDao
     ) {
-        this.searchHistoryDao = searchHistoryDao || new SearchHistoryDao();
+        this.reportsDao = searchHistoryDao || new ReportsDao();
         this.inquireHistoryDao = inquireHistoryDao || new InquireHistoryDao();
     }
     /**
@@ -51,26 +51,37 @@ class SearchHistoryService {
 
         return this.inquireHistoryDao
             .findAll()
-            .then((result: InquireHistoryDTO[]): SearchHistoryDTO[] => {
-                return _.chain(result)
-                    .countBy(
-                        (it: InquireHistoryDTO) =>
-                            it.userIdx + '/' + it.perfumeIdx
-                    )
-                    .map((count: number, key: string) => {
-                        const splitted: number[] = key
-                            .split('/')
-                            .map((it) => parseInt(it));
-                        const userIdx: number = splitted[0];
-                        const perfumeIdx: number = splitted[1];
-                        return new SearchHistoryDTO(userIdx, perfumeIdx, count);
-                    })
-                    .value();
-            })
-            .then(async (searchHistories: SearchHistoryDTO[]) => {
+            .then(
+                (
+                    result: InquireHistoryDTO[]
+                ): ReportUserInquirePerfumeDTO[] => {
+                    return _.chain(result)
+                        .countBy(
+                            (it: InquireHistoryDTO) =>
+                                it.userIdx + '/' + it.perfumeIdx
+                        )
+                        .map((count: number, key: string) => {
+                            const splitted: number[] = key
+                                .split('/')
+                                .map((it) => parseInt(it));
+                            const userIdx: number = splitted[0];
+                            const perfumeIdx: number = splitted[1];
+                            return new ReportUserInquirePerfumeDTO(
+                                userIdx,
+                                perfumeIdx,
+                                count
+                            );
+                        })
+                        .value();
+                }
+            )
+            .then(async (searchHistories: ReportUserInquirePerfumeDTO[]) => {
                 await sequelize.transaction(async (t: any) => {
-                    await this.searchHistoryDao.clear(t);
-                    await this.searchHistoryDao.bulkInsert(searchHistories, t);
+                    await this.reportsDao.clearUserInquirePerfume(t);
+                    await this.reportsDao.bulkInsertUserInquirePerfume(
+                        searchHistories,
+                        t
+                    );
                 });
                 return;
             });

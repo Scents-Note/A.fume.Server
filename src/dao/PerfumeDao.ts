@@ -9,7 +9,7 @@ import {
     PerfumeDTO,
     PerfumeThumbDTO,
     PerfumeSearchResultDTO,
-    PerfumeSearchHistoryDTO,
+    PerfumeInquireHistoryDTO,
     PagingDTO,
 } from '@dto/index';
 
@@ -19,8 +19,8 @@ const {
     Perfume,
     PerfumeSurvey,
     Brand,
+    InquireHistory,
     LikePerfume,
-    SearchHistory,
     sequelize,
     Sequelize,
 } = require('@sequelize');
@@ -39,7 +39,7 @@ const PERFUME_THUMB_COLUMNS: string[] = [
 
 const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT: string =
     'SELECT ' +
-    'COUNT(*) AS "SearchHistory.weight", ' +
+    'COUNT(*) AS "score", ' +
     'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.created_at AS createdAt, p.updated_at AS updatedAt, ' +
     'b.brand_idx AS "Brand.brandIdx", ' +
     'b.name AS "Brand.name", ' +
@@ -49,13 +49,13 @@ const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT: string =
     'b.description AS "Brand.description", ' +
     'b.created_at AS "Brand.createdAt", ' +
     'b.updated_at AS "Brand.updatedAt"' +
-    'FROM search_histories sh ' +
-    'INNER JOIN perfumes p ON sh.perfume_idx = p.perfume_idx ' +
+    'FROM report_user_inquire_perfume ruip ' +
+    'INNER JOIN perfumes p ON ruip.perfume_idx = p.perfume_idx ' +
     'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
-    'INNER JOIN users u ON sh.user_idx = u.user_idx ' +
+    'INNER JOIN users u ON ruip.user_idx = u.user_idx ' +
     'WHERE u.gender = $1 AND (u.birth BETWEEN $2 AND $3) ' +
-    'GROUP BY sh.perfume_idx ' +
-    'ORDER BY "SearchHistory.weight" DESC ';
+    'GROUP BY ruip.perfume_idx ' +
+    'ORDER BY "score" DESC ';
 
 const SQL_SEARCH_PERFUME_SELECT: string =
     'SELECT ' +
@@ -328,37 +328,66 @@ class PerfumeDao {
     async recentSearchPerfumeList(
         userIdx: number,
         pagingDTO: PagingDTO
-    ): Promise<ListAndCountDTO<PerfumeSearchHistoryDTO>> {
+    ): Promise<ListAndCountDTO<PerfumeInquireHistoryDTO>> {
         logger.debug(
             `${LOG_TAG} recentSearchPerfumeList(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
-        const options: { [key: string]: any } = _.merge(
-            {},
-            defaultOption,
-            pagingDTO.sequelizeOption(),
-            {
-                order: [
-                    [
-                        { model: SearchHistory, as: 'SearchHistory' },
-                        'updatedAt',
-                        'desc',
+        return InquireHistory.findAndCountAll(
+            _.merge({}, pagingDTO.sequelizeOption(), {
+                attributes: {
+                    include: [
+                        [
+                            Sequelize.fn(
+                                'max',
+                                Sequelize.col('InquireHistory.created_at')
+                            ),
+                            'inquireAt',
+                        ],
                     ],
+                },
+                where: {
+                    userIdx,
+                },
+                include: [
+                    {
+                        model: Perfume,
+                        as: 'Perfume',
+                        required: true,
+                        include: [
+                            {
+                                model: Brand,
+                                as: 'Brand',
+                                required: true,
+                            },
+                        ],
+                        raw: true,
+                        nest: true,
+                    },
                 ],
-            }
-        );
-        options.include.push({
-            model: SearchHistory,
-            as: 'SearchHistory',
-            where: {
-                userIdx,
-            },
-            required: true,
-        });
-        return Perfume.findAndCountAll(options).then((it: any) => {
-            return new ListAndCountDTO(
-                it.count,
-                it.rows.map(PerfumeSearchHistoryDTO.createByJson)
-            );
+                order: [[sequelize.col('inquireAt'), 'desc']],
+                group: ['InquireHistory.perfume_idx'],
+            })
+        ).then((it: any) => {
+            const rows: PerfumeInquireHistoryDTO[] = it.rows
+                .map((json: any) => {
+                    return {
+                        perfumeIdx: json.Perfume.perfumeIdx,
+                        name: json.Perfume.name,
+                        isLiked: json.Perfume.isLiked,
+                        imageUrl: json.Perfume.imageUrl,
+                        createdAt: json.Perfume.createdAt,
+                        updatedAt: json.Perfume.updatedAt,
+                        Brand: json.Perfume.Brand,
+                        InquireHistory: {
+                            userIdx: json.userIdx,
+                            perfumeIdx: json.perfumeIdx,
+                            createdAt: json.createdAt,
+                            updatedAt: json.updatedAt,
+                        },
+                    };
+                })
+                .map(PerfumeInquireHistoryDTO.createByJson);
+            return new ListAndCountDTO(it.count.length, rows);
         });
     }
 

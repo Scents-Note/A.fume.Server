@@ -8,7 +8,8 @@ const {
     LikeReview,
     Ingredient,
     IngredientCategories,
-    SearchHistory,
+    InquireHistory,
+    ReportUserInquirePerfume,
     PerfumeSurvey,
     Keyword,
     JoinPerfumeKeyword,
@@ -84,8 +85,8 @@ module.exports = () => {
     for (let i = 1; i <= 5; i++) {
         thirdJob.push(
             LikePerfume.upsert({ userIdx: 1, perfumeIdx: i }),
-            SearchHistory.upsert({ userIdx: i, perfumeIdx: i }),
-            SearchHistory.upsert({ userIdx: 1, perfumeIdx: i }),
+            InquireHistory.upsert({ userIdx: i, perfumeIdx: i }),
+            InquireHistory.upsert({ userIdx: 1, perfumeIdx: i }),
             PerfumeSurvey.upsert({ perfumeIdx: i, gender: GENDER_WOMAN }),
             Review.upsert({
                 id: i,
@@ -112,8 +113,16 @@ module.exports = () => {
         fourthJob.push(
             LikeReview.upsert({ reviewIdx: i, userIdx: i }),
             JoinReviewKeyword.upsert({ reviewIdx: i, keywordIdx: i }),
-            SearchHistory.upsert({ userIdx: i, perfumeIdx: i, count: 1 }),
-            SearchHistory.upsert({ userIdx: 1, perfumeIdx: i, count: 1 }),
+            ReportUserInquirePerfume.upsert({
+                userIdx: i,
+                perfumeIdx: i,
+                count: 1,
+            }),
+            ReportUserInquirePerfume.upsert({
+                userIdx: 1,
+                perfumeIdx: i,
+                count: 1,
+            }),
             PerfumeSurvey.upsert({ perfumeIdx: i, gender: GENDER_WOMAN }),
             Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: (i % 4) + 1 }),
             Note.upsert({ perfumeIdx: 1, ingredientIdx: i, type: 1 }),

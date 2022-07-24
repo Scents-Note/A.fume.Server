@@ -2,25 +2,28 @@ import { logger } from '@modules/winston';
 
 import { NotMatchedError } from '@errors';
 
-import { SearchHistoryDTO } from '@dto/index';
+import { ReportUserInquirePerfumeDTO } from '@dto/index';
 
 const LOG_TAG: string = '[SearchHistory/DAO]';
 
-const { SearchHistory } = require('@sequelize');
+const { ReportUserInquirePerfume } = require('@sequelize');
 
-class SearchHistoryDao {
+class ReportsDao {
     /**
      * 향수 조회 기록 조회
      * @param {number} userIdx
      * @param {number} perfumeIdx
-     * @return {Promise<SearchHistoryDTO>}
+     * @return {Promise<ReportUserInquirePerfumeDTO>}
      * @throws {NotMatchedError} if there is no SearchHistory
      */
-    async read(userIdx: number, perfumeIdx: number): Promise<SearchHistoryDTO> {
+    async readUserInquirePerfume(
+        userIdx: number,
+        perfumeIdx: number
+    ): Promise<ReportUserInquirePerfumeDTO> {
         logger.debug(
-            `${LOG_TAG} read(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx})`
+            `${LOG_TAG} readUserInquirePerfume(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx})`
         );
-        return SearchHistory.findOne({
+        return ReportUserInquirePerfume.findOne({
             where: { userIdx, perfumeIdx },
             raw: true,
             nest: true,
@@ -28,7 +31,7 @@ class SearchHistoryDao {
             if (it == null) {
                 throw new NotMatchedError();
             }
-            return SearchHistoryDTO.createByJson(it);
+            return ReportUserInquirePerfumeDTO.createByJson(it);
         });
     }
 
@@ -38,22 +41,22 @@ class SearchHistoryDao {
      * @param {number} perfumeIdx
      * @return {Promise}
      */
-    async create(
+    async createUserInquirePerfume(
         userIdx: number,
         perfumeIdx: number,
         count: number
-    ): Promise<SearchHistoryDTO> {
+    ): Promise<ReportUserInquirePerfumeDTO> {
         logger.debug(
-            `${LOG_TAG} create(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx}, count = ${count})`
+            `${LOG_TAG} createUserInquirePerfume(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx}, count = ${count})`
         );
-        return SearchHistory.create(
+        return ReportUserInquirePerfume.create(
             { userIdx, perfumeIdx, count },
             { raw: true, nest: true }
         )
             .then((result: any) => {
                 return result.dataValues;
             })
-            .then(SearchHistoryDTO.createByJson);
+            .then(ReportUserInquirePerfumeDTO.createByJson);
     }
 
     /**
@@ -65,15 +68,15 @@ class SearchHistoryDao {
      * @return {Promise<number>} affectedRows
      * @throws {NotMatchedError} if there is no SearchHistory
      */
-    async update(
+    async updateUserInquirePerfume(
         userIdx: number,
         perfumeIdx: number,
         count: number
     ): Promise<number> {
         logger.debug(
-            `${LOG_TAG} update(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx}, count = ${count})`
+            `${LOG_TAG} updateUserInquirePerfume(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx}, count = ${count})`
         );
-        const [affectedRows]: [number] = await SearchHistory.update(
+        const [affectedRows]: [number] = await ReportUserInquirePerfume.update(
             { count },
             { where: { userIdx, perfumeIdx } }
         );
@@ -87,11 +90,14 @@ class SearchHistoryDao {
      * SearchHistory 대용량 삽입
      * @return {Promise}
      */
-    async bulkInsert(
-        searchHistories: SearchHistoryDTO[],
+    async bulkInsertUserInquirePerfume(
+        searchHistories: ReportUserInquirePerfumeDTO[],
         transaction?: any
     ): Promise<void> {
-        const result = SearchHistory.bulkCreate(searchHistories, {
+        logger.debug(
+            `${LOG_TAG} bulkInsertUserInquirePerfume(searchHistories: ${searchHistories}, transaction: ${transaction})`
+        );
+        const result = ReportUserInquirePerfume.bulkCreate(searchHistories, {
             transaction,
         });
         return result;
@@ -100,10 +106,13 @@ class SearchHistoryDao {
     /**
      * SearchHistory 초기화
      */
-    async clear(transaction?: any): Promise<void> {
-        await SearchHistory.destroy({ where: {}, transaction });
+    async clearUserInquirePerfume(transaction?: any): Promise<void> {
+        logger.debug(
+            `${LOG_TAG} clearUserInquirePerfume(transaction: ${transaction})`
+        );
+        await ReportUserInquirePerfume.destroy({ where: {}, transaction });
         return;
     }
 }
 
-export default SearchHistoryDao;
+export default ReportsDao;

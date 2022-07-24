@@ -1,4 +1,4 @@
-class SearchHistoryDTO {
+class ReportUserInquirePerfumeDTO {
     readonly userIdx: number;
     readonly perfumeIdx: number;
     readonly count: number;
@@ -29,7 +29,7 @@ class SearchHistoryDTO {
         createdAt?: Date;
         updatedAt?: Date;
     }) {
-        return new SearchHistoryDTO(
+        return new ReportUserInquirePerfumeDTO(
             json.userIdx,
             json.perfumeIdx,
             json.count,
@@ -39,4 +39,4 @@ class SearchHistoryDTO {
     }
 }
 
-export { SearchHistoryDTO };
+export { ReportUserInquirePerfumeDTO };
