@@ -48,12 +48,12 @@ const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT: string =
     'b.image_url AS "Brand.imageUrl", ' +
     'b.description AS "Brand.description", ' +
     'b.created_at AS "Brand.createdAt", ' +
-    'b.updated_at AS "Brand.updatedAt"' +
+    'b.updated_at AS "Brand.updatedAt" ' +
     'FROM report_user_inquire_perfume ruip ' +
     'INNER JOIN perfumes p ON ruip.perfume_idx = p.perfume_idx ' +
     'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
     'INNER JOIN users u ON ruip.user_idx = u.user_idx ' +
-    'WHERE u.gender = $1 AND (u.birth BETWEEN $2 AND $3) ' +
+    'WHERE (u.gender = $1 AND (u.birth BETWEEN $2 AND $3)) AND p.deleted_at IS NULL ' +
     'GROUP BY ruip.perfume_idx ' +
     'ORDER BY "score" DESC ';
 
@@ -73,7 +73,7 @@ const SQL_SEARCH_PERFUME_SELECT: string =
     '(IFNULL((SELECT COUNT(jpk.keyword_idx) FROM join_perfume_keywords jpk WHERE jpk.perfume_idx = p.perfume_idx AND jpk.keyword_idx IN (:keywords) GROUP BY jpk.perfume_idx), 0) + IFNULL((SELECT COUNT(n.ingredient_idx) FROM notes n WHERE n.perfume_idx = p.perfume_idx AND n.ingredient_idx IN (:ingredients) GROUP BY n.perfume_idx), 0)) AS "Score.total" ' +
     'FROM perfumes p ' +
     'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
-    ':whereCondition ' +
+    'WHERE p.deleted_at IS NULL AND (:whereCondition) ' +
     'ORDER BY :orderCondition ' +
     'LIMIT :limit ' +
     'OFFSET :offset';
@@ -90,7 +90,7 @@ const SQL_SEARCH_PERFUME_SELECT_COUNT: string =
     'COUNT(p.perfume_idx) as count ' +
     'FROM perfumes p ' +
     'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
-    ':whereCondition ';
+    'WHERE p.deleted_at IS NULL AND (:whereCondition) ';
 
 const defaultOption: { [key: string]: any } = {
     include: [
@@ -171,16 +171,13 @@ class PerfumeDao {
                 `when MATCH(p.name) AGAINST('${searchText}*' IN BOOLEAN MODE) then 1 ` +
                 `else 2 end, ${orderCondition}`;
         }
-        if (whereCondition.length > 0) {
-            whereCondition = `WHERE ${whereCondition}`;
-        }
         const countSQL: string = SQL_SEARCH_PERFUME_SELECT_COUNT.replace(
             ':whereCondition',
-            whereCondition
+            whereCondition.length > 0 ? whereCondition : 'TRUE'
         );
         const selectSQL: string = SQL_SEARCH_PERFUME_SELECT.replace(
             ':whereCondition',
-            whereCondition
+            whereCondition.length > 0 ? whereCondition : 'TRUE'
         ).replace(':orderCondition', orderCondition);
 
         if (ingredientIdxList.length == 0) ingredientIdxList.push(-1);
