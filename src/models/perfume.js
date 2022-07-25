@@ -58,6 +58,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             modelName: 'Perfume',
+            paranoid: true,
             timestamps: true,
             underscored: true,
             sequelize,

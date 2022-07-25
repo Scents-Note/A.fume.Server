@@ -38,6 +38,7 @@ module.exports = (sequelize, DataTypes) => {
             modelName: 'Brand',
             timestamps: true,
             underscored: true,
+            paranoid: true,
             sequelize,
         }
     );
