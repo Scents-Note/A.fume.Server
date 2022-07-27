@@ -71,6 +71,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             modelName: 'Review',
+            paranoid: true,
             timestamps: true,
             underscored: true,
             sequelize,
