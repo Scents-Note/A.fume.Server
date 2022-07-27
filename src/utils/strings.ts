@@ -99,6 +99,9 @@ const MSG_EXPIRED_TOKEN: string = '만료된 토큰입니다.';
 const MSG_WRONG_PASSWORD: string = '비밀번호가 잘못되었습니다';
 const MSG_CANT_USE_PASSWORD_BY_POLICY: string =
     '사용할 수 없는 패스워드입니다. 패스워드 정책을 확인해주세요.';
+const MSG_GET_SUPPORTABLE_YES: string = '현재 apk Version은 이용 가능합니다.';
+const MSG_GET_SUPPORTABLE_NO: string =
+    '현재 apk Version은 업데이트가 필요합니다.';
 
 const NO_AUTHORIZE: string = '권한이 없습니다.';
 
@@ -171,6 +174,8 @@ export {
     MSG_EXPIRED_TOKEN,
     MSG_WRONG_PASSWORD,
     MSG_CANT_USE_PASSWORD_BY_POLICY,
+    MSG_GET_SUPPORTABLE_YES,
+    MSG_GET_SUPPORTABLE_NO,
     NO_AUTHORIZE,
     CURRENT_VERSION,
     BASE_PATH,

@@ -14,7 +14,8 @@ tags:
   description: 키워드
 - name: user
   description: 사용자
-
+- name: system
+  description: system 정보
 schemes:
 #- https
 - http
