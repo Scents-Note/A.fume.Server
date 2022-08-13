@@ -2,7 +2,7 @@ name: Execute Mocha Test
 
 on:
   pull_request:
-    branches: [ dev, main ]
+    branches: [ dev, main, production-1, production-2 ]
 
 jobs:
   build:
