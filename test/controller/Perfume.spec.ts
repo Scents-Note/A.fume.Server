@@ -85,7 +85,7 @@ describe('# Perfume Controller Test', () => {
             mockPerfumeService.getPerfumeById = async () => {
                 return PerfumeIntegralMockHelper.createMock({});
             };
-            mockSearchHistoryService.incrementCount = async () => {};
+            mockSearchHistoryService.recordInquire = async () => {};
 
             request(app)
                 .get(`${basePath}/perfume/1`)

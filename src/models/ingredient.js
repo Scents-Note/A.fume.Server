@@ -52,6 +52,7 @@ module.exports = (sequelize, DataTypes) => {
         {
             sequelize,
             modelName: 'Ingredient',
+            paranoid: true,
             timestamps: true,
             underscored: true,
         }

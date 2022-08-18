@@ -1,44 +1,89 @@
 import { logger } from '@modules/winston';
 
-import { NotMatchedError } from '@errors';
+import ReportsDao from '@dao/ReportsDao';
 
-import SearchHistoryDao from '@dao/SearchHistoryDao';
+import InquireHistoryDao from '@src/dao/InquireHistoryDao';
+import { InquireHistoryDTO } from '@src/data/dto/InquireHistoryDTO';
+import _ from 'lodash';
+import { ReportUserInquirePerfumeDTO } from '@src/data/dto';
 
-import { SearchHistoryDTO } from '@dto/index';
+/* TODO Service에서 Sequelize Dependency 제거 해야함 */
+const { sequelize } = require('../models');
 
 const LOG_TAG: string = '[SearchHistory/Service]';
 
 class SearchHistoryService {
-    searchHistoryDao: SearchHistoryDao;
-    constructor(searchHistoryDao?: SearchHistoryDao) {
-        this.searchHistoryDao = searchHistoryDao || new SearchHistoryDao();
+    reportsDao: ReportsDao;
+    inquireHistoryDao: InquireHistoryDao;
+    constructor(
+        searchHistoryDao?: ReportsDao,
+        inquireHistoryDao?: InquireHistoryDao
+    ) {
+        this.reportsDao = searchHistoryDao || new ReportsDao();
+        this.inquireHistoryDao = inquireHistoryDao || new InquireHistoryDao();
     }
     /**
-     * 향수 조회 정보 업데이트
+     * 향수 조회 정보 기록
      *
      * @param {number} userIdx
      * @param {number} perfumeIdx
-     * @returns {Promise}
+     * @returns {Promise<void>}
      **/
-    async incrementCount(userIdx: number, perfumeIdx: number): Promise<void> {
+    async recordInquire(
+        userIdx: number,
+        perfumeIdx: number,
+        routes: string
+    ): Promise<void> {
         logger.debug(
-            `${LOG_TAG} incrementCount(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx})`
+            `${LOG_TAG} recordInquireHistory(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx}, routes = ${routes})`
         );
         if (userIdx == -1) return;
-        this.searchHistoryDao
-            .read(userIdx, perfumeIdx)
-            .then((result: SearchHistoryDTO) => {
-                return this.searchHistoryDao.update(
-                    userIdx,
-                    perfumeIdx,
-                    result.count + 1
-                );
-            })
-            .catch((err: Error) => {
-                if (err instanceof NotMatchedError) {
-                    return this.searchHistoryDao.create(userIdx, perfumeIdx, 1);
+        this.inquireHistoryDao.create(userIdx, perfumeIdx, routes);
+    }
+
+    /**
+     * SearchHistory 최신화
+     *
+     * @returns {Promise<void>}
+     **/
+    async reloadSearchHistory(): Promise<void> {
+        logger.debug(`${LOG_TAG} reloadSearchHistory()`);
+
+        return this.inquireHistoryDao
+            .findAll()
+            .then(
+                (
+                    result: InquireHistoryDTO[]
+                ): ReportUserInquirePerfumeDTO[] => {
+                    return _.chain(result)
+                        .countBy(
+                            (it: InquireHistoryDTO) =>
+                                it.userIdx + '/' + it.perfumeIdx
+                        )
+                        .map((count: number, key: string) => {
+                            const splitted: number[] = key
+                                .split('/')
+                                .map((it) => parseInt(it));
+                            const userIdx: number = splitted[0];
+                            const perfumeIdx: number = splitted[1];
+                            return new ReportUserInquirePerfumeDTO(
+                                userIdx,
+                                perfumeIdx,
+                                count
+                            );
+                        })
+                        .value();
                 }
-                throw err;
+            )
+            .then(async (searchHistories: ReportUserInquirePerfumeDTO[]) => {
+                await sequelize.transaction(async (t: any) => {
+                    await this.reportsDao.clearUserInquirePerfume(t);
+                    await this.reportsDao.bulkInsertUserInquirePerfume(
+                        searchHistories,
+                        t
+                    );
+                });
+                return;
             });
     }
 }

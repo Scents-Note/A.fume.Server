@@ -14,6 +14,7 @@ const NULLABLE_ENV_MAP: { [key: string]: any } = {
     CORS_ALLOW_LIST: '',
     SERVER_IP: 'localhost',
     PORT: '8080',
+    LOG_PATH: 'logs',
 };
 
 type Properties = {
@@ -44,6 +45,7 @@ type Properties = {
     NODE_ENV: string;
     CORS_ALLOW_LIST: string;
     SERVER_IP: string;
+    LOG_PATH: string;
 };
 const properties: { [key: string]: any } = {};
 

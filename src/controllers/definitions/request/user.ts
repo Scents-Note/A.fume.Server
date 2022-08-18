@@ -87,23 +87,28 @@ class UserEditRequest implements UserInputRequest {
  *       password:
  *         type: string
  *         required: true
+ *         example: 1234
  *       email:
  *         type: string
  *         required: true
+ *         example: heesung6701@naver.com
  *       nickname:
  *         type: string
  *         required: true
+ *         example: quokkaman
  *       gender:
  *         type: string
  *         enum: [MAN, WOMAN]
  *         required: true
+ *         example: MAN
  *       birth:
  *         type: integer
  *         required: true
+ *         example: 1995
  *       grade:
  *         type: string
  *         enum: [USER, MANAGER, SYSTEM_ADMIN]
- *         required: true
+ *         example: USER
  *  */
 class UserRegisterRequest implements UserInputRequest {
     readonly nickname: string;

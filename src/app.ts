@@ -14,6 +14,7 @@ import { HttpError } from '@errors';
 import statusCode from '@utils/statusCode';
 import { verifyTokenMiddleware, encryptPassword } from '@middleware/auth';
 import { swaggerRouter } from '@controllers/index';
+import SchedulerManager from '@schedules/index';
 
 const {
     swaggerUi,
@@ -99,6 +100,7 @@ app.use(function (
     res.end();
 });
 
-require('./lib/cron.js');
+const scheduleManager = new SchedulerManager();
+scheduleManager.start();
 
 export default app;

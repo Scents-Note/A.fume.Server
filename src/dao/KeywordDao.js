@@ -100,7 +100,7 @@ module.exports.deleteReviewKeyword = async ({ reviewIdx, perfumeIdx }) => {
 module.exports.readAll = (pagingIndex = 1, pagingSize = 10) => {
     return Keyword.findAndCountAll({
         attributes: {
-            exclude: ['createdAt', 'updatedAt'],
+            exclude: ['createdAt', 'updatedAt', 'deletedAt'],
         },
         offset: (pagingIndex - 1) * pagingSize,
         limit: pagingSize,

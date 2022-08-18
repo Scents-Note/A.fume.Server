@@ -3,10 +3,10 @@ import winstonDaily from 'winston-daily-rotate-file';
 
 import properties from '@properties';
 
-const errorDir: string = 'logs/error';
-const logDir: string = 'logs/info';
-const httpDir: string = 'logs/http';
-const debugDir: string = 'logs/debug';
+const errorDir: string = `${properties.LOG_PATH}/error`;
+const logDir: string = `${properties.LOG_PATH}/info`;
+const httpDir: string = `${properties.LOG_PATH}/http`;
+const debugDir: string = `${properties.LOG_PATH}/debug`;
 const { combine, timestamp, printf, colorize, simple } = winston.format;
 
 const logFormat: winston.Logform.Format = printf(

@@ -3,23 +3,22 @@ import { expect } from 'chai';
 import { Done } from 'mocha';
 dotenv.config();
 
-import SearchHistoryDao from '@dao/SearchHistoryDao';
+import ReportsDao from '../../src/dao/ReportsDao';
+import { ReportUserInquirePerfumeDTO } from '../../src/data/dto';
 
-import { SearchHistoryDTO } from '@dto/index';
+const { ReportUserInquirePerfume } = require('@sequelize');
 
-const { SearchHistory } = require('@sequelize');
+const reportsDao = new ReportsDao();
 
-const searchHistoryDao = new SearchHistoryDao();
-
-describe('# searchHistoryDao Test', () => {
+describe('# ReportsDap Test', () => {
     before(async function () {
         await require('./common/presets.js')(this);
     });
     describe('# read Test', () => {
         it('# success case', (done: Done) => {
-            searchHistoryDao
-                .read(1, 1)
-                .then((result: SearchHistoryDTO) => {
+            reportsDao
+                .readUserInquirePerfume(1, 1)
+                .then((result: ReportUserInquirePerfumeDTO) => {
                     expect(result.userIdx).to.be.eq(1);
                     expect(result.perfumeIdx).to.be.eq(1);
                     expect(result.count).to.be.eq(1);
@@ -32,14 +31,14 @@ describe('# searchHistoryDao Test', () => {
     });
     describe('# create Test', () => {
         before(async () => {
-            await SearchHistory.destroy({
+            await ReportUserInquirePerfume.destroy({
                 where: { userIdx: 5, perfumeIdx: 1 },
             });
         });
         it('# success case', (done: Done) => {
-            searchHistoryDao
-                .create(5, 1, 1)
-                .then((result: SearchHistoryDTO) => {
+            reportsDao
+                .createUserInquirePerfume(5, 1, 1)
+                .then((result: ReportUserInquirePerfumeDTO) => {
                     expect(result.userIdx).to.be.eq(5);
                     expect(result.perfumeIdx).to.be.eq(1);
                     expect(result.count).to.be.eq(1);
@@ -50,24 +49,24 @@ describe('# searchHistoryDao Test', () => {
                 .catch((err: Error) => done(err));
         });
         after(async () => {
-            await SearchHistory.destroy({
+            await ReportUserInquirePerfume.destroy({
                 where: { userIdx: 5, perfumeIdx: 1 },
             });
         });
     });
     describe('# update Test', () => {
         it('# success case', (done: Done) => {
-            searchHistoryDao
-                .update(1, 1, 5)
+            reportsDao
+                .updateUserInquirePerfume(1, 1, 5)
                 .then((result: number) => {
                     expect(result).to.be.eq(1);
-                    return SearchHistory.findOne({
+                    return ReportUserInquirePerfume.findOne({
                         where: { perfumeIdx: 1, userIdx: 1 },
                         nest: true,
                         raw: true,
                     });
                 })
-                .then((result: SearchHistoryDTO) => {
+                .then((result: ReportUserInquirePerfumeDTO) => {
                     expect(result.perfumeIdx).to.be.eq(1);
                     expect(result.userIdx).to.be.eq(1);
                     expect(result.count).to.be.eq(5);
