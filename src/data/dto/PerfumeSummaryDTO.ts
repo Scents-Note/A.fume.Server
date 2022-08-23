@@ -4,19 +4,58 @@ import {
     GENDER_LIST,
     LONGEVITY_LIST,
 } from '@utils/constants';
+import _, { isNumber } from 'lodash';
+
+type SeasonalMap = {
+    spring: number;
+    summer: number;
+    fall: number;
+    winter: number;
+};
+
+type SillageMap = {
+    light: number;
+    medium: number;
+    heavy: number;
+};
+
+type LongevityMap = {
+    veryWeak: number;
+    weak: number;
+    normal: number;
+    strong: number;
+    veryStrong: number;
+};
+
+type GenderMap = {
+    male: number;
+    neutral: number;
+    female: number;
+};
+
+type Longevity = keyof LongevityMap;
+type Gender = keyof GenderMap;
+type Sillage = keyof SillageMap;
+type Seasonal = keyof SeasonalMap;
+
+const FLOATING_POINT = 2;
+
+function toFixedNumber(number: number): number {
+    return parseFloat(number.toFixed(FLOATING_POINT));
+}
 
 class PerfumeSummaryDTO {
-    score: number;
-    seasonal: number[];
-    sillage: number[];
-    longevity: number[];
-    gender: number[];
+    readonly score: number;
+    readonly seasonal: SeasonalMap;
+    readonly sillage: SillageMap;
+    readonly longevity: LongevityMap;
+    readonly gender: GenderMap;
     constructor(
         score: number,
-        seasonal: number[],
-        sillage: number[],
-        longevity: number[],
-        gender: number[]
+        seasonal: SeasonalMap,
+        sillage: SillageMap,
+        longevity: LongevityMap,
+        gender: GenderMap
     ) {
         this.score = score;
         this.seasonal = seasonal;
@@ -30,151 +69,92 @@ class PerfumeSummaryDTO {
     }
 
     static createByReviewList(reviewList: any[]): PerfumeSummaryDTO {
-        const seasonalCountMap: { [key: string]: number } = {
+        const seasonalCountMap: SeasonalMap = {
             spring: 0,
             summer: 0,
             fall: 0,
             winter: 0,
         };
-        const sillageCountMap: { [key: string]: number } = {
+        const sillageCountMap: SillageMap = {
             light: 0,
             medium: 0,
             heavy: 0,
         };
-        const longevityCountMap: { [key: string]: number } = {
+        const longevityCountMap: LongevityMap = {
             veryWeak: 0,
             weak: 0,
             normal: 0,
             strong: 0,
             veryStrong: 0,
         };
-        const genderCountMap: { [key: string]: number } = {
+        const genderCountMap: GenderMap = {
             male: 0,
             neutral: 0,
             female: 0,
         };
 
-        let sum: number = 0;
-        let cnt: number = 0;
+        const sum: number = _.chain(reviewList)
+            .map((it) => it.score)
+            .filter(isNumber)
+            .sum()
+            .value();
+        const cnt: number = _.chain(reviewList).filter(isNumber).size().value();
         reviewList
-            .map((it) => {
+            .map((it: any) => {
                 it.seasonal = SEASONAL_LIST[it.seasonal || 0];
                 it.sillage = SILLAGE_LIST[it.sillage || 0];
                 it.longevity = LONGEVITY_LIST[it.longevity || 0];
                 it.gender = GENDER_LIST[it.gender || 0];
                 return it;
             })
-            .forEach(({ score, longevity, sillage, seasonal, gender }) => {
-                if (score) {
-                    sum += score;
-                    cnt++;
+            .forEach(
+                ({
+                    longevity,
+                    sillage,
+                    seasonal,
+                    gender,
+                }: {
+                    score: number;
+                    longevity: Longevity;
+                    sillage: Sillage;
+                    seasonal: Seasonal;
+                    gender: Gender;
+                }) => {
+                    if (longevity in longevityCountMap) {
+                        longevityCountMap[longevity]++;
+                    }
+                    if (sillage in sillageCountMap) {
+                        sillageCountMap[sillage]++;
+                    }
+                    if (seasonal in seasonalCountMap) {
+                        seasonalCountMap[seasonal]++;
+                    }
+                    if (gender in genderCountMap) {
+                        genderCountMap[gender]++;
+                    }
                 }
-                if (longevityCountMap[longevity]) {
-                    longevityCountMap[longevity]++;
-                }
-                if (sillageCountMap[sillage]) {
-                    sillageCountMap[sillage]++;
-                }
-                if (seasonalCountMap[seasonal]) {
-                    seasonalCountMap[seasonal]++;
-                }
-                if (genderCountMap[gender]) {
-                    genderCountMap[gender]++;
-                }
-            });
+            );
         return new PerfumeSummaryDTO(
-            cnt == 0 ? 0 : parseFloat((sum / cnt).toFixed(2)),
-            this.normalize(seasonalCountMap),
-            this.normalize(sillageCountMap),
-            this.normalize(longevityCountMap),
-            this.normalize(genderCountMap)
+            cnt == 0 ? 0 : toFixedNumber(sum / cnt),
+            <SeasonalMap>this.normalize(seasonalCountMap),
+            <SillageMap>this.normalize(sillageCountMap),
+            <LongevityMap>this.normalize(longevityCountMap),
+            <GenderMap>this.normalize(genderCountMap)
         );
     }
 
-    static createByDefault(defaultReviewDTO: any): PerfumeSummaryDTO {
-        return new PerfumeSummaryDTO(
-            defaultReviewDTO.rating,
-            this.normalize(defaultReviewDTO.seasonal),
-            this.normalize(defaultReviewDTO.sillage),
-            this.normalize(defaultReviewDTO.longevity),
-            this.normalize(defaultReviewDTO.gender)
-        );
-    }
-
-    static merge(
-        defaultSummary: PerfumeSummaryDTO,
-        userSummary: PerfumeSummaryDTO,
-        defaultRate: number
-    ): PerfumeSummaryDTO {
-        const merged: PerfumeSummaryDTO = Object.assign({}, userSummary);
-        function calculate(defaultValue: number, userValue: number) {
-            return userValue * (1 - defaultRate) + defaultValue * defaultRate;
-        }
-        merged.score = calculate(defaultSummary.score, merged.score);
-        for (let key in merged.seasonal) {
-            merged.seasonal[key] = calculate(
-                defaultSummary.seasonal[key],
-                merged.seasonal[key]
-            );
-        }
-        for (let key in merged.longevity) {
-            merged.longevity[key] = calculate(
-                defaultSummary.longevity[key],
-                merged.longevity[key]
-            );
-        }
-        for (let key in merged.sillage) {
-            merged.sillage[key] = calculate(
-                defaultSummary.sillage[key],
-                merged.sillage[key]
-            );
-        }
-        for (let key in merged.gender) {
-            merged.gender[key] = calculate(
-                defaultSummary.gender[key],
-                merged.gender[key]
-            );
-        }
-        return new PerfumeSummaryDTO(
-            merged.score,
-            this.normalize(merged.seasonal),
-            this.normalize(merged.sillage),
-            this.normalize(merged.longevity),
-            this.normalize(merged.gender)
-        );
-    }
-
-    private static normalize(obj: any) {
-        const result: any = {};
+    private static normalize(obj: { [key: string]: number }): {
+        [key: string]: number;
+    } {
         const entries: [string, number][] = Object.entries(obj);
-        const total: number = entries.reduce(
-            (prev: number, cur: [string, number]): number => {
-                return prev + cur[1];
-            },
-            0
+        const total: number = _.sumBy(entries, (it) => it[1]);
+        const result: { [key: string]: number } = _.mapValues(
+            obj,
+            (value: number) =>
+                total != 0
+                    ? Math.floor((value * 100) / total)
+                    : Math.floor(100 / entries.length)
         );
-        if (total == 0) {
-            let remain: number = 100;
-            for (let i = 0; i < entries.length - 1; i++) {
-                const key: string = entries[i][0];
-                obj[key] = Math.floor(100 / entries.length);
-                remain -= obj[key];
-            }
-            obj[entries[entries.length - 1][0]] += remain;
-            return obj;
-        }
-        let remain: number = 100;
-        let maxKey: string = entries[0][0];
-        let max: number = 0;
-        for (const [key, value] of entries) {
-            result[key] = Math.floor((value / total) * 100);
-            remain -= result[key];
-            if (max < value) {
-                max = value;
-                maxKey = key;
-            }
-        }
-        result[maxKey] += remain;
         return result;
     }
 }

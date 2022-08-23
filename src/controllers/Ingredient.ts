@@ -14,30 +14,6 @@ import { IngredientDTO, ListAndCountDTO } from '@dto/index';
 const LOG_TAG: string = '[Ingredient/Controller]';
 
 let Ingredient: IngredientService = new IngredientService();
-/**
- *
- * @swagger
- * definitions:
- *  IngredientInfo:
- *     type: object
- *     properties:
- *       name:
- *         type: string
- *       englishName:
- *         type: string
- *       description:
- *         type: string
- *       imageUrl:
- *         type: string
- *       seriesIdx:
- *         type: number
- *     example:
- *       name: 씨쏠트
- *       englishName: Sea Salt
- *       description: 바다 소금
- *       imageUrl: 'url'
- *       seriesIdx: 4
- *  */
 
 /**
  * @swagger
@@ -51,11 +27,11 @@ let Ingredient: IngredientService = new IngredientService();
  *       produces:
  *       - application/json
  *       parameters:
- *       - name: pagingSize
+ *       - name: requestSize
  *         in: query
  *         type: integer
  *         required: false
- *       - name: pagingIndex
+ *       - name: lastPosition
  *         in: query
  *         type: integer
  *         required: false
@@ -78,13 +54,7 @@ let Ingredient: IngredientService = new IngredientService();
  *                     type: array
  *                     items:
  *                       allOf:
- *                         - $ref: '#/definitions/IngredientInfo'
- *                         - type: object
- *                           properties:
- *                             ingredientIdx:
- *                               type: integer
- *                           example:
- *                             ingredientIdx: 333
+ *                         - $ref: '#/definitions/IngredientResponse'
  *         401:
  *           description: Token is missing or invalid
  *       x-swagger-router-controller: Ingredient
@@ -97,10 +67,7 @@ const getIngredientAll: RequestHandler = (
     logger.debug(`${LOG_TAG} getIngredientAll()`);
     Ingredient.getIngredientAll()
         .then((result: ListAndCountDTO<IngredientDTO>) => {
-            return new ListAndCountDTO<IngredientResponse>(
-                result.count,
-                result.rows.map(IngredientResponse.createByJson)
-            );
+            return result.convertType(IngredientResponse.createByJson);
         })
         .then((response: ListAndCountDTO<IngredientResponse>) => {
             LoggerHelper.logTruncated(

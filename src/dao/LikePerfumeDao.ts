@@ -14,6 +14,7 @@ class LikePerfumeDao {
      * @param {number} userIdx
      * @param {number} perfumeIdx
      * @returns {Promise}
+     * @throws {DuplicatedEntryError} if there is already likePerfume
      */
     create(
         userIdx: number,
@@ -43,6 +44,7 @@ class LikePerfumeDao {
      * @param {number} userIdx
      * @param {number} perfumeIdx
      * @returns {Promise}
+     * @throws {NotMatchedError} if there is no likePerfume
      */
     read(
         userIdx: number,
@@ -67,6 +69,7 @@ class LikePerfumeDao {
      * @param {number} userIdx
      * @param {number} perfumeIdx
      * @returns {Promise}
+     * @throws {NotMatchedError} if there is no likePerfume
      */
     delete(userIdx: number, perfumeIdx: number): Promise<number> {
         logger.debug(

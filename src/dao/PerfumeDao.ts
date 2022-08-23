@@ -9,7 +9,7 @@ import {
     PerfumeDTO,
     PerfumeThumbDTO,
     PerfumeSearchResultDTO,
-    PerfumeSearchHistoryDTO,
+    PerfumeInquireHistoryDTO,
     PagingDTO,
 } from '@dto/index';
 
@@ -19,12 +19,11 @@ const {
     Perfume,
     PerfumeSurvey,
     Brand,
+    InquireHistory,
     LikePerfume,
-    SearchHistory,
     sequelize,
     Sequelize,
 } = require('@sequelize');
-const { Op } = Sequelize;
 
 const { ranking } = require('@mongoose');
 
@@ -40,7 +39,7 @@ const PERFUME_THUMB_COLUMNS: string[] = [
 
 const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT: string =
     'SELECT ' +
-    'COUNT(*) AS "SearchHistory.weight", ' +
+    'COUNT(*) AS "score", ' +
     'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.created_at AS createdAt, p.updated_at AS updatedAt, ' +
     'b.brand_idx AS "Brand.brandIdx", ' +
     'b.name AS "Brand.name", ' +
@@ -49,14 +48,14 @@ const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT: string =
     'b.image_url AS "Brand.imageUrl", ' +
     'b.description AS "Brand.description", ' +
     'b.created_at AS "Brand.createdAt", ' +
-    'b.updated_at AS "Brand.updatedAt"' +
-    'FROM search_histories sh ' +
-    'INNER JOIN perfumes p ON sh.perfume_idx = p.perfume_idx ' +
+    'b.updated_at AS "Brand.updatedAt" ' +
+    'FROM report_user_inquire_perfume ruip ' +
+    'INNER JOIN perfumes p ON ruip.perfume_idx = p.perfume_idx ' +
     'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
-    'INNER JOIN users u ON sh.user_idx = u.user_idx ' +
-    'WHERE u.gender = $1 AND (u.birth BETWEEN $2 AND $3) ' +
-    'GROUP BY sh.perfume_idx ' +
-    'ORDER BY "SearchHistory.weight" DESC ';
+    'INNER JOIN users u ON ruip.user_idx = u.user_idx ' +
+    'WHERE (u.gender = $1 AND (u.birth BETWEEN $2 AND $3)) AND p.deleted_at IS NULL ' +
+    'GROUP BY ruip.perfume_idx ' +
+    'ORDER BY "score" DESC ';
 
 const SQL_SEARCH_PERFUME_SELECT: string =
     'SELECT ' +
@@ -74,7 +73,7 @@ const SQL_SEARCH_PERFUME_SELECT: string =
     '(IFNULL((SELECT COUNT(jpk.keyword_idx) FROM join_perfume_keywords jpk WHERE jpk.perfume_idx = p.perfume_idx AND jpk.keyword_idx IN (:keywords) GROUP BY jpk.perfume_idx), 0) + IFNULL((SELECT COUNT(n.ingredient_idx) FROM notes n WHERE n.perfume_idx = p.perfume_idx AND n.ingredient_idx IN (:ingredients) GROUP BY n.perfume_idx), 0)) AS "Score.total" ' +
     'FROM perfumes p ' +
     'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
-    ':whereCondition ' +
+    'WHERE p.deleted_at IS NULL AND (:whereCondition) ' +
     'ORDER BY :orderCondition ' +
     'LIMIT :limit ' +
     'OFFSET :offset';
@@ -91,7 +90,7 @@ const SQL_SEARCH_PERFUME_SELECT_COUNT: string =
     'COUNT(p.perfume_idx) as count ' +
     'FROM perfumes p ' +
     'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
-    ':whereCondition ';
+    'WHERE p.deleted_at IS NULL AND (:whereCondition) ';
 
 const defaultOption: { [key: string]: any } = {
     include: [
@@ -130,7 +129,7 @@ class PerfumeDao {
                 `searchText = ${searchText}, ` +
                 `pagingDTO = ${pagingDTO}`
         );
-        let orderCondition = pagingDTO.sqlQuery(SQL_ORDER_DEFAULT);
+        let orderCondition = pagingDTO.sqlOrderQuery(SQL_ORDER_DEFAULT);
 
         let whereCondition: string = '';
         if (
@@ -172,16 +171,13 @@ class PerfumeDao {
                 `when MATCH(p.name) AGAINST('${searchText}*' IN BOOLEAN MODE) then 1 ` +
                 `else 2 end, ${orderCondition}`;
         }
-        if (whereCondition.length > 0) {
-            whereCondition = `WHERE ${whereCondition}`;
-        }
         const countSQL: string = SQL_SEARCH_PERFUME_SELECT_COUNT.replace(
             ':whereCondition',
-            whereCondition
+            whereCondition.length > 0 ? whereCondition : 'TRUE'
         );
         const selectSQL: string = SQL_SEARCH_PERFUME_SELECT.replace(
             ':whereCondition',
-            whereCondition
+            whereCondition.length > 0 ? whereCondition : 'TRUE'
         ).replace(':orderCondition', orderCondition);
 
         if (ingredientIdxList.length == 0) ingredientIdxList.push(-1);
@@ -202,8 +198,8 @@ class PerfumeDao {
                     keywords: keywordIdxList,
                     brands: brandIdxList,
                     ingredients: ingredientIdxList,
-                    limit: pagingDTO.pagingSize,
-                    offset: (pagingDTO.pagingIndex - 1) * pagingDTO.pagingSize,
+                    limit: pagingDTO.limit,
+                    offset: pagingDTO.offset,
                 },
                 type: sequelize.QueryTypes.SELECT,
                 raw: true,
@@ -214,29 +210,25 @@ class PerfumeDao {
     }
 
     /**
-     * 새로 등록된 향수 조회
+     * 향수 조회
      *
-     * @param {Date} fromDate
+     * @param {condition} condition
      * @param {PagingDTO} pagingDTO
      * @returns {Promise<Perfume[]>} perfumeList
      */
-    async readNewPerfume(
-        fromDate: Date,
+    async readPerfume(
+        sequelizeOption: any,
         pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
-        pagingDTO.order = [['createdAt', 'desc']];
         logger.debug(
-            `${LOG_TAG} readNewPerfume(fromDate = ${fromDate}, pagingDTO = ${pagingDTO})`
+            `${LOG_TAG} readNewPerfume(sequelizeOption = ${JSON.stringify(
+                sequelizeOption
+            )}, pagingDTO = ${pagingDTO})`
         );
         const options: { [key: string]: any } = Object.assign(
             {},
             defaultOption,
             {
-                where: {
-                    createdAt: {
-                        [Op.gte]: fromDate,
-                    },
-                },
                 attributes: PERFUME_THUMB_COLUMNS,
                 include: [
                     {
@@ -245,7 +237,8 @@ class PerfumeDao {
                     },
                 ],
             },
-            pagingDTO.sequelizeOption()
+            pagingDTO.sequelizeOption(),
+            sequelizeOption
         );
         return Perfume.findAndCountAll(options).then((it: any) => {
             return new ListAndCountDTO(
@@ -260,6 +253,7 @@ class PerfumeDao {
      *
      * @param {number} perfumeIdx
      * @returns {Promise<Perfume>}
+     * @throws {NotMatchedError} if there is no Perfume
      */
     async readByPerfumeIdx(perfumeIdx: number): Promise<PerfumeDTO> {
         logger.debug(`${LOG_TAG} readByPerfumeIdx(perfumeIdx = ${perfumeIdx})`);
@@ -294,11 +288,14 @@ class PerfumeDao {
         logger.debug(
             `${LOG_TAG} readLikedPerfume(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
-        const options: { [key: string]: any } = _.merge({}, defaultOption, {
-            offset: (pagingDTO.pagingIndex - 1) * pagingDTO.pagingSize,
-            limit: pagingDTO.pagingSize,
-            attributes: PERFUME_THUMB_COLUMNS,
-        });
+        const options: { [key: string]: any } = _.merge(
+            {},
+            defaultOption,
+            pagingDTO.sequelizeOption(),
+            {
+                attributes: PERFUME_THUMB_COLUMNS,
+            }
+        );
         options.include.push({
             model: LikePerfume,
             as: 'LikePerfume',
@@ -328,37 +325,66 @@ class PerfumeDao {
     async recentSearchPerfumeList(
         userIdx: number,
         pagingDTO: PagingDTO
-    ): Promise<ListAndCountDTO<PerfumeSearchHistoryDTO>> {
+    ): Promise<ListAndCountDTO<PerfumeInquireHistoryDTO>> {
         logger.debug(
             `${LOG_TAG} recentSearchPerfumeList(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
-        const options: { [key: string]: any } = _.merge(
-            {},
-            defaultOption,
-            pagingDTO.sequelizeOption(),
-            {
-                order: [
-                    [
-                        { model: SearchHistory, as: 'SearchHistory' },
-                        'updatedAt',
-                        'desc',
+        return InquireHistory.findAndCountAll(
+            _.merge({}, pagingDTO.sequelizeOption(), {
+                attributes: {
+                    include: [
+                        [
+                            Sequelize.fn(
+                                'max',
+                                Sequelize.col('InquireHistory.created_at')
+                            ),
+                            'inquireAt',
+                        ],
                     ],
+                },
+                where: {
+                    userIdx,
+                },
+                include: [
+                    {
+                        model: Perfume,
+                        as: 'Perfume',
+                        required: true,
+                        include: [
+                            {
+                                model: Brand,
+                                as: 'Brand',
+                                required: true,
+                            },
+                        ],
+                        raw: true,
+                        nest: true,
+                    },
                 ],
-            }
-        );
-        options.include.push({
-            model: SearchHistory,
-            as: 'SearchHistory',
-            where: {
-                userIdx,
-            },
-            required: true,
-        });
-        return Perfume.findAndCountAll(options).then((it: any) => {
-            return new ListAndCountDTO(
-                it.count,
-                it.rows.map(PerfumeSearchHistoryDTO.createByJson)
-            );
+                order: [[sequelize.col('inquireAt'), 'desc']],
+                group: ['InquireHistory.perfume_idx'],
+            })
+        ).then((it: any) => {
+            const rows: PerfumeInquireHistoryDTO[] = it.rows
+                .map((json: any) => {
+                    return {
+                        perfumeIdx: json.Perfume.perfumeIdx,
+                        name: json.Perfume.name,
+                        isLiked: json.Perfume.isLiked,
+                        imageUrl: json.Perfume.imageUrl,
+                        createdAt: json.Perfume.createdAt,
+                        updatedAt: json.Perfume.updatedAt,
+                        Brand: json.Perfume.Brand,
+                        InquireHistory: {
+                            userIdx: json.userIdx,
+                            perfumeIdx: json.perfumeIdx,
+                            createdAt: json.createdAt,
+                            updatedAt: json.updatedAt,
+                        },
+                    };
+                })
+                .map(PerfumeInquireHistoryDTO.createByJson);
+            return new ListAndCountDTO(it.count.length, rows);
         });
     }
 
@@ -460,6 +486,31 @@ class PerfumeDao {
     async readAll(): Promise<PerfumeThumbDTO[]> {
         logger.debug(`${LOG_TAG} readAll()`);
         return Perfume.findAll();
+    }
+
+    /**
+     * 랜덤 향수 조회
+     *
+     * @param {PagingDTO} pagingDTO
+     * @returns {Promise<Perfume[]>}
+     */
+    async getPerfumesByRandom(
+        pagingDTO: PagingDTO
+    ): Promise<[PerfumeThumbDTO]> {
+        logger.debug(
+            `${LOG_TAG} recommendPerfumeByRandom(pagingDTO = ${pagingDTO})`
+        );
+        const options: { [key: string]: any } = _.merge(
+            {},
+            defaultOption,
+            pagingDTO.sequelizeOption(),
+            {
+                order: Sequelize.literal('rand()'),
+            }
+        );
+        return Perfume.findAll(options).then((rows: any[]) => {
+            return rows.map(PerfumeThumbDTO.createByJson);
+        });
     }
 }
 

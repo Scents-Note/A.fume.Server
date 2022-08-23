@@ -2,12 +2,9 @@ import { logger } from '@modules/winston';
 
 import { NoteDTO } from '@dto/index';
 
-const { Note, Ingredient, sequelize, Sequelize } = require('@sequelize');
-const { Op } = Sequelize;
+const { Note, Ingredient } = require('@sequelize');
 
 const LOG_TAG: string = '[Note/DAO]';
-
-type IngredientCount = { ingredientIdx: number; count: number };
 
 type IngredientEntry = {
     perfumeIdx: number;
@@ -34,48 +31,6 @@ class NoteDao {
             nest: true,
             raw: true,
         }).then((it: any) => it.map(NoteDTO.createByJson));
-    }
-
-    /**
-     * 재료별 사용된 향수 개수 카운트
-     *
-     * @param {number[]} ingredientIdxList
-     */
-
-    async getIngredientCountList(
-        ingredientIdxList: number[]
-    ): Promise<IngredientCount[]> {
-        logger.debug(
-            `${LOG_TAG} getIngredientCountList(ingredientIdxList = ${ingredientIdxList.join(
-                ', '
-            )})`
-        );
-        const result: IngredientCount[] = await Note.findAll({
-            attributes: {
-                include: [
-                    [
-                        sequelize.fn('count', sequelize.col('perfume_idx')),
-                        'count',
-                    ],
-                ],
-            },
-            where: {
-                ingredientIdx: {
-                    [Op.in]: ingredientIdxList,
-                },
-            },
-            group: ['ingredient_idx'],
-            raw: true,
-            nest: true,
-        }).then((it: any[]) => {
-            return it.map((it: any) => {
-                return {
-                    ingredientIdx: it.ingredientIdx,
-                    count: it.count,
-                };
-            });
-        });
-        return result;
     }
 
     /**

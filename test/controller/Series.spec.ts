@@ -6,6 +6,7 @@ dotenv.config();
 import {
     MSG_GET_SERIES_ALL_SUCCESS,
     MSG_SEARCH_SERIES_LIST_SUCCESS,
+    BASE_PATH,
 } from '@utils/strings';
 
 import StatusCode from '@utils/statusCode';
@@ -19,19 +20,20 @@ import app from '@src/app';
 
 const expect = require('../utils/expect');
 
-const basePath = '/A.fume/api/0.0.1';
+const basePath: string = BASE_PATH;
 
 const Series = require('@controllers/Series');
 const mockSeriesService: any = {};
 Series.setSeriesService(mockSeriesService);
+const SERIES_IDX_ETC: number = 1;
 
 describe('# Series Controller Test', () => {
     describe('# getSeriesAll Test', () => {
         mockSeriesService.getSeriesAll = async () =>
-            new ListAndCountDTO<SeriesDTO>(1, [
-                SeriesMockHelper.create({}),
-                SeriesMockHelper.create({}),
-                SeriesMockHelper.create({}),
+            new ListAndCountDTO<SeriesDTO>(3, [
+                SeriesMockHelper.create({ seriesIdx: 1 }),
+                SeriesMockHelper.create({ seriesIdx: 2 }),
+                SeriesMockHelper.create({ seriesIdx: 3 }),
             ]);
         it('success case', (done: Done) => {
             request(app)
@@ -40,7 +42,7 @@ describe('# Series Controller Test', () => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;
                     expect(message).to.be.eq(MSG_GET_SERIES_ALL_SUCCESS);
-                    expect(data.count).to.be.eq(1);
+                    expect(data.count).to.be.eq(2);
                     data.rows.forEach((item: SeriesDTO) => {
                         expect.hasProperties.call(
                             item,
@@ -48,6 +50,7 @@ describe('# Series Controller Test', () => {
                             'name',
                             'imageUrl'
                         );
+                        expect(item.seriesIdx).to.be.not.eq(SERIES_IDX_ETC);
                     });
                     done();
                 })

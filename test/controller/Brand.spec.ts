@@ -8,6 +8,7 @@ import StatusCode from '@utils/statusCode';
 import {
     MSG_GET_BRAND_ALL_SUCCESS,
     MSG_GET_BRAND_FILTER_SUCCESS,
+    BASE_PATH,
 } from '@utils/strings';
 
 import BrandService from '@services/BrandService';
@@ -22,7 +23,7 @@ import app from '@src/app';
 
 const expect = require('../utils/expect');
 
-const basePath = '/A.fume/api/0.0.1';
+const basePath: string = BASE_PATH;
 
 const Brand = require('@controllers/Brand');
 

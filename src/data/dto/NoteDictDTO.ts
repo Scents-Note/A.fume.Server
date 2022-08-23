@@ -8,10 +8,10 @@ import {
 import { NoteDTO } from '@dto/NoteDTO';
 
 class NoteDictDTO {
-    top: string;
-    middle: string;
-    base: string;
-    single: string;
+    readonly top: string;
+    readonly middle: string;
+    readonly base: string;
+    readonly single: string;
     constructor(top: string, middle: string, base: string, single: string) {
         this.top = top;
         this.middle = middle;

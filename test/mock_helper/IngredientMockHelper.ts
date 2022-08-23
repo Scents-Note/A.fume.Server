@@ -31,7 +31,10 @@ class IngredientMockHelper {
             )
         );
     }
-    static createWithIdx(ingredientIdx: number, seriesIdx: number) {
+    static createWithIdx(
+        ingredientIdx: number,
+        seriesIdx: number
+    ): IngredientDTO {
         return IngredientDTO.createByJson({
             ingredientIdx,
             name: `재료${ingredientIdx}`,
@@ -39,6 +42,7 @@ class IngredientMockHelper {
             description: `ingredient description ${ingredientIdx}`,
             imageUrl: `https://www.naver.com/${ingredientIdx}`,
             seriesIdx,
+            category: '카테고리' + ingredientIdx,
             createdAt: '2021-07-24T03:38:52.000Z',
             updatedAt: '2021-07-24T03:38:52.000Z',
         });

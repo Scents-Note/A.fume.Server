@@ -20,6 +20,7 @@ import {
     MSG_INVALID_TOKEN,
     NO_AUTHORIZE,
     MSG_CHANGE_PASSWORD_SUCCESS,
+    BASE_PATH,
 } from '@utils/strings';
 
 import JwtController from '@libs/JwtController';
@@ -38,7 +39,8 @@ import TokenGroupMockHelper from '../mock_helper/TokenGroupMockHelper';
 const expect = require('../utils/expect');
 
 const User = require('@controllers/User');
-const basePath = '/A.fume/api/0.0.1';
+
+const basePath: string = BASE_PATH;
 
 const mockUserService: any = {};
 User.setUserService(mockUserService);

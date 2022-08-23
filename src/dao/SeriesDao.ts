@@ -14,6 +14,7 @@ class SeriesDao {
      *
      * @param {number} seriesIdx
      * @return {Promise<SeriesDTO>} seriesDTO
+     * @throws {NotMatchedError} if there is no Series
      */
     async readByIdx(seriesIdx: number): Promise<SeriesDTO> {
         logger.debug(`${LOG_TAG} readByIdx(seriesIdx = ${seriesIdx})`);
@@ -29,6 +30,7 @@ class SeriesDao {
      *
      * @param {string} seriesName
      * @return {Promise<SeriesDTO>} seriesDTO
+     * @throws {NotMatchedError} if there is no Series
      */
     async readByName(seriesName: string): Promise<SeriesDTO> {
         logger.debug(`${LOG_TAG} readByName(seriesIdx = ${seriesName})`);
@@ -49,15 +51,21 @@ class SeriesDao {
      * @param {PagingDTO} pagingDTO
      * @returns {Promise<ListAndCount<SeriesDTO>>} listAndCount
      */
-    async readAll(pagingDTO: PagingDTO): Promise<ListAndCountDTO<SeriesDTO>> {
+    async readAll(
+        pagingDTO: PagingDTO,
+        where: any = {}
+    ): Promise<ListAndCountDTO<SeriesDTO>> {
         logger.debug(`${LOG_TAG} readAll(pagingDTO = ${pagingDTO})`);
-        return Series.findAndCountAll({
-            offset: (pagingDTO.pagingIndex - 1) * pagingDTO.pagingSize,
-            limit: pagingDTO.pagingSize,
-            order: pagingDTO.order,
-            raw: true,
-            nest: true,
-        }).then((it: any) => {
+        return Series.findAndCountAll(
+            Object.assign(
+                {
+                    where,
+                    raw: true,
+                    nest: true,
+                },
+                pagingDTO.sequelizeOption()
+            )
+        ).then((it: any) => {
             return new ListAndCountDTO<SeriesDTO>(
                 it.count,
                 it.rows.map(SeriesDTO.createByJson)
@@ -73,13 +81,15 @@ class SeriesDao {
      */
     async search(pagingDTO: PagingDTO): Promise<ListAndCountDTO<SeriesDTO>> {
         logger.debug(`${LOG_TAG} search(pagingDTO = ${pagingDTO})`);
-        return Series.findAndCountAll({
-            offset: (pagingDTO.pagingIndex - 1) * pagingDTO.pagingSize,
-            limit: pagingDTO.pagingSize,
-            order: pagingDTO.order,
-            raw: true,
-            nest: true,
-        }).then((it: any) => {
+        return Series.findAndCountAll(
+            Object.assign(
+                {
+                    raw: true,
+                    nest: true,
+                },
+                pagingDTO.sequelizeOption()
+            )
+        ).then((it: any) => {
             return new ListAndCountDTO<SeriesDTO>(
                 it.count,
                 it.rows.map(SeriesDTO.createByJson)

@@ -1,10 +1,10 @@
 class IngredientConditionDTO {
-    ingredientIdx: number | undefined;
-    name: string | undefined;
-    englishName: string | undefined;
-    description: string | undefined;
-    imageUrl: string | undefined;
-    seriesIdx: number | undefined;
+    readonly ingredientIdx: number | undefined;
+    readonly name: string | undefined;
+    readonly englishName: string | undefined;
+    readonly description: string | undefined;
+    readonly imageUrl: string | undefined;
+    readonly seriesIdx: number | undefined;
     constructor(
         ingredientIdx?: number,
         name?: string,

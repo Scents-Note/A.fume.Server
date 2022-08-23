@@ -4,6 +4,8 @@ import {
     WrongPasswordError,
     PasswordPolicyError,
     NotMatchedError,
+    DuplicatedEntryError,
+    FailedToCreateError,
 } from '@errors';
 
 import UserDao from '@dao/UserDao';
@@ -42,6 +44,7 @@ class UserService {
      *
      * @param {UserInputDTO} UserInputDTO
      * @returns {Promise}
+     * @throws {FailedToCreateError} if failed to create user
      **/
     async createUser(userInputDTO: UserInputDTO) {
         logger.debug(`${LOG_TAG} createUser(userInputDTO = ${userInputDTO})`);
@@ -60,6 +63,16 @@ class UserService {
                     token,
                     refreshToken,
                 });
+            })
+            .catch((error: Error) => {
+                if (error instanceof DuplicatedEntryError) {
+                    logger.debug(
+                        `${LOG_TAG} createUser() occurs FailedToCreateError ` +
+                            error.stack
+                    );
+                    throw new FailedToCreateError();
+                }
+                throw error;
             });
     }
 
@@ -79,6 +92,7 @@ class UserService {
      *
      * @param {number} userIdx
      * @returns {Promise<UserDTO>}
+     * @throws {NotMatchedError} if there is no user
      **/
     async getUserByIdx(userIdx: number): Promise<UserDTO> {
         logger.debug(`${LOG_TAG} getUserByIdx(userIdx = ${userIdx})`);
@@ -122,6 +136,8 @@ class UserService {
      * @param {string} email
      * @param {string} password
      * @returns {LoginInfoDTO} - 토큰 정보
+     * @throws {WrongPasswordError} if password is invalid
+     * @throws {NotMatchedError} if there is no user
      **/
     async loginUser(
         email: string,
@@ -165,6 +181,7 @@ class UserService {
      *
      * @param {UserInputDTO} UserInputDTO
      * @returns {UserDTO} UserDTO
+     * @throws {NotMatchedError} if there is no User
      **/
     async updateUser(userInputDTO: UserInputDTO): Promise<UserDTO> {
         logger.debug(`${LOG_TAG} authUser(userInputDTO = ${userInputDTO})`);
@@ -181,13 +198,16 @@ class UserService {
      * @param {number} userIdx
      * @param {string} prevPassword
      * @param {string} newPassword
-     * @returns {}
+     * @returns {Promise<number>} affected rows
+     * @throws {WrongPasswordError} if password is wrong
+     * @throws {PasswordPolicyError} if new password is same with previous password
+     * @throws {NotMatchedError} if there is no User
      **/
     async changePassword(
         userIdx: number,
         prevPassword: string,
         newPassword: string
-    ) {
+    ): Promise<number> {
         const encryptPrevPassword: string = this.crypto.encrypt(prevPassword);
         const encryptNewPassword: string = this.crypto.encrypt(newPassword);
         logger.debug(

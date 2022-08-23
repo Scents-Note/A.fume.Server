@@ -1,42 +1,25 @@
 class PerfumeSearchDTO {
-    keywordIdxList: number[];
-    brandIdxList: number[];
-    ingredientIdxList: number[];
-    searchText: string;
-    userIdx: number;
+    readonly keywordIdxList: number[];
+    readonly brandIdxList: number[];
+    readonly ingredientCategoryList: number[];
+    readonly searchText: string;
+    readonly userIdx: number;
     constructor(
         keywordIdxList: number[],
         brandIdxList: number[],
-        ingredientIdxList: number[],
+        ingredientCategoryList: number[],
         searchText: string,
         userIdx: number
     ) {
         this.userIdx = userIdx;
         this.keywordIdxList = keywordIdxList;
         this.brandIdxList = brandIdxList;
-        this.ingredientIdxList = ingredientIdxList;
+        this.ingredientCategoryList = ingredientCategoryList;
         this.searchText = searchText;
     }
 
     public toString(): string {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
-    }
-
-    static create(perfumeSearchRequestDTO: any) {
-        const {
-            keywordList: keywordIdxList,
-            brandList: brandIdxList,
-            ingredientList: ingredientIdxList,
-            searchText,
-            userIdx,
-        } = perfumeSearchRequestDTO;
-        return new PerfumeSearchDTO(
-            keywordIdxList,
-            brandIdxList,
-            ingredientIdxList,
-            searchText,
-            userIdx
-        );
     }
 }
 

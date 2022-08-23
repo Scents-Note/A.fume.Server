@@ -1,8 +1,22 @@
 import { BrandFilterDTO } from '@dto/index';
 
+/**
+ * @swagger
+ * definitions:
+ *  BrandResponse:
+ *     type: object
+ *     properties:
+ *       brand_idx:
+ *         type: number
+ *       name:
+ *         type: string
+ *     example:
+ *       brand_idx: 1
+ *       name: (테스트)조말론
+ *  */
 class BrandResponse {
-    brandIdx: number;
-    name: string;
+    readonly brandIdx: number;
+    readonly name: string;
     constructor(brandIdx: number, name: string) {
         this.brandIdx = brandIdx;
         this.name = name;
@@ -20,9 +34,24 @@ class BrandResponse {
     }
 }
 
+/**
+ * @swagger
+ * definitions:
+ *  BrandFilterResponse:
+ *     type: object
+ *     properties:
+ *       firstInitial:
+ *         type: string
+ *         example: ㄷ
+ *       brands:
+ *         type: array
+ *         items:
+ *           allOf:
+ *           - $ref: '#/definitions/BrandResponse'
+ * */
 class BrandFilterResponse {
-    firstInitial: string;
-    brands: BrandResponse[];
+    readonly firstInitial: string;
+    readonly brands: BrandResponse[];
     constructor(firstInitial: string, brands: BrandResponse[]) {
         this.firstInitial = firstInitial;
         this.brands = brands;

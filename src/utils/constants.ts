@@ -1,6 +1,5 @@
 import {
     NONE,
-    COLOGNE,
     EAU_DE_COLOGNE,
     EAU_DE_TOILETTE,
     EAU_DE_PERFUME,
@@ -32,15 +31,21 @@ const GENDER_WOMAN: number = 2;
 const GRADE_USER: number = 0;
 const GRADE_MANAGER: number = 1;
 const GRADE_SYSTEM_ADMIN: number = 9;
-const ABUNDANCE_RATE_LIST: string[] = [
-    NONE,
-    COLOGNE,
-    EAU_DE_COLOGNE,
-    EAU_DE_TOILETTE,
-    EAU_DE_PERFUME,
-    PERFUME,
-    ETC,
-];
+
+const ABUNDANCE_RATE_STR_DICT: { [key: string]: string } = new Proxy<{
+    [key: string]: string;
+}>(
+    {
+        '2': EAU_DE_COLOGNE,
+        '3': EAU_DE_TOILETTE,
+        '4': EAU_DE_PERFUME,
+        '5': PERFUME,
+    },
+    {
+        get: (target, name) => (name in target ? target[name.toString()] : ETC),
+    }
+);
+
 const NOTE_TYPE_TOP: number = 1;
 const NOTE_TYPE_MIDDLE: number = 2;
 const NOTE_TYPE_BASE: number = 3;
@@ -61,8 +66,8 @@ const PERFUME_NOTE_TYPE_SINGLE: number = 1;
 const PERFUME_NOTE_TYPE_NORMAL: number = 0;
 const MIN_SCORE: number = 0;
 const MAX_SCORE: number = 10;
-const DEFAULT_REVIEW_THRESHOLD: number = 10;
 const DEFAULT_PAGE_SIZE: number = 100;
+const THRESHOLD_CATEGORY: number = 10;
 
 export {
     GENDER_MAN,
@@ -70,7 +75,7 @@ export {
     GRADE_USER,
     GRADE_MANAGER,
     GRADE_SYSTEM_ADMIN,
-    ABUNDANCE_RATE_LIST,
+    ABUNDANCE_RATE_STR_DICT,
     NOTE_TYPE_TOP,
     NOTE_TYPE_MIDDLE,
     NOTE_TYPE_BASE,
@@ -84,6 +89,6 @@ export {
     PERFUME_NOTE_TYPE_NORMAL,
     MIN_SCORE,
     MAX_SCORE,
-    DEFAULT_REVIEW_THRESHOLD,
     DEFAULT_PAGE_SIZE,
+    THRESHOLD_CATEGORY,
 };

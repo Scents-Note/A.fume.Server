@@ -1,10 +1,10 @@
 import { logger } from '@modules/winston';
+import _, { Dictionary } from 'lodash';
 
 import IngredientDao from '@dao/IngredientDao';
+import IngredientCategoryDao from '@src/dao/IngredientCategoryDao';
 import SeriesDao from '@dao/SeriesDao';
 import NoteDao from '@dao/NoteDao';
-
-import { PagingRequestDTO } from '@request/common';
 
 import {
     PagingDTO,
@@ -12,23 +12,29 @@ import {
     ListAndCountDTO,
     SeriesDTO,
     SeriesFilterDTO,
+    IngredientCategoryDTO,
 } from '@dto/index';
+import { THRESHOLD_CATEGORY } from '@src/utils/constants';
+import { Op } from 'sequelize';
+import { ETC } from '@src/utils/strings';
 
 const LOG_TAG: string = '[Series/Service]';
-
-const FILTER_INGREDIENT_LIMIT_USED_COUNT: number = 10;
 
 class SeriesService {
     seriesDao: SeriesDao;
     ingredientDao: IngredientDao;
+    ingredientCategoryDao: IngredientCategoryDao;
     noteDao: any;
     constructor(
         seriesDao?: SeriesDao,
         ingredientDao?: IngredientDao,
+        ingredientCategoryDao?: IngredientCategoryDao,
         noteDao?: any
     ) {
         this.seriesDao = seriesDao ?? new SeriesDao();
         this.ingredientDao = ingredientDao ?? new IngredientDao();
+        this.ingredientCategoryDao =
+            ingredientCategoryDao ?? new IngredientCategoryDao();
         this.noteDao = noteDao ?? new NoteDao();
     }
 
@@ -37,6 +43,7 @@ class SeriesService {
      *
      * @param {integer} seriesIdx
      * @returns {Promise<SeriesDTO>} seriesDTO
+     * @throws {NotMatchedError} if there is no series
      **/
     getSeriesByIdx(seriesIdx: number): Promise<SeriesDTO> {
         logger.debug(`${LOG_TAG} getSeriesByIdx(seriesIdx = ${seriesIdx})`);
@@ -46,79 +53,83 @@ class SeriesService {
     /**
      * 계열 전체 목록 조회
      *
-     * @param {PagingRequestDTO} pagingRequestDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<ListAndCountDTO<SeriesDTO>>} listAndCountDTO
      **/
-    getSeriesAll(
-        pagingRequestDTO: PagingRequestDTO
-    ): Promise<ListAndCountDTO<SeriesDTO>> {
-        logger.debug(
-            `${LOG_TAG} getSeriesAll(pagingRequestDTO = ${pagingRequestDTO})`
-        );
-        return this.seriesDao.readAll(PagingDTO.create(pagingRequestDTO));
+    getSeriesAll(pagingDTO: PagingDTO): Promise<ListAndCountDTO<SeriesDTO>> {
+        logger.debug(`${LOG_TAG} getSeriesAll(pagingDTO = ${pagingDTO})`);
+        return this.seriesDao.readAll(pagingDTO);
     }
 
     /**
      * 계열 검색
      *
-     * @param {PagingRequestDTO} pagingRequestDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<ListAndCountDTO<SeriesDTO>>} listAndCountDTO
      **/
-    searchSeries(
-        pagingRequestDTO: PagingRequestDTO
-    ): Promise<ListAndCountDTO<SeriesDTO>> {
-        logger.debug(
-            `${LOG_TAG} searchSeries(pagingRequestDTO = ${pagingRequestDTO})`
-        );
-        return this.seriesDao.search(PagingDTO.create(pagingRequestDTO));
+    searchSeries(pagingDTO: PagingDTO): Promise<ListAndCountDTO<SeriesDTO>> {
+        logger.debug(`${LOG_TAG} searchSeries(pagingDTO = ${pagingDTO})`);
+        return this.seriesDao.search(pagingDTO);
     }
 
     /**
      * 필터에서 보여주는 Series 조회
      *
-     * @param {pagingDTO} pagingDTO
+     * @param {PagingDTO} pagingDTO
      * @returns {Promise<ListAndCountDTO<SeriesFilterDTO>>} listAndCountDTO
      */
     async getFilterSeries(
-        pagingRequestDTO: PagingRequestDTO
+        pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<SeriesFilterDTO>> {
-        logger.debug(
-            `${LOG_TAG} getFilterSeries(pagingRequestDTO = ${pagingRequestDTO})`
-        );
+        logger.debug(`${LOG_TAG} getFilterSeries(pagingDTO = ${pagingDTO})`);
         const result: ListAndCountDTO<SeriesDTO> = await this.seriesDao.readAll(
-            PagingDTO.create(pagingRequestDTO)
+            pagingDTO,
+            {
+                name: {
+                    [Op.not]: ETC,
+                },
+            }
         );
         const seriesIdxList: number[] = result.rows.map(
             (it: SeriesDTO) => it.seriesIdx
         );
         const ingredientList: IngredientDTO[] =
             await this.ingredientDao.readBySeriesIdxList(seriesIdxList);
-        const ingredientFilteredList: IngredientDTO[] =
-            await this.filterByUsedCount(ingredientList);
-        const ingredientMap: Map<number, IngredientDTO[]> =
-            ingredientFilteredList.reduce(
-                (
-                    prev: Map<number, IngredientDTO[]>,
-                    cur: IngredientDTO
-                ): Map<number, IngredientDTO[]> => {
-                    if (!prev.has(cur.seriesIdx)) {
-                        prev.set(cur.seriesIdx, []);
-                    }
-                    prev.get(cur.seriesIdx)!!.push(cur);
-                    return prev;
+        const categoryList: IngredientCategoryDTO[] =
+            await this.ingredientCategoryDao.readAll({
+                usedCountOnPerfume: {
+                    [Op.gte]: THRESHOLD_CATEGORY,
                 },
-                new Map<number, IngredientDTO[]>()
+            });
+        const categoryMap: Dictionary<IngredientCategoryDTO> = _.chain(
+            categoryList
+        )
+            .groupBy('id')
+            .mapValues((it) => it[0])
+            .value();
+        const ingredientCategoryMap: {
+            [key: number]: IngredientCategoryDTO[];
+        } = _.chain(ingredientList)
+            .groupBy('seriesIdx')
+            .mapValues((arr) =>
+                Array.from(
+                    new Set(
+                        arr
+                            .map((it) => categoryMap[it.categoryIdx] ?? null)
+                            .filter((it) => it != null)
+                    ).values()
+                )
+            )
+            .value();
+
+        return result.convertType((it: SeriesDTO): SeriesFilterDTO => {
+            return SeriesFilterDTO.createByJson(
+                Object.assign({}, it, {
+                    ingredientCategoryList:
+                        ingredientCategoryMap[it.seriesIdx] || [],
+                })
             );
-        return new ListAndCountDTO<SeriesFilterDTO>(
-            result.count,
-            result.rows.map((it: SeriesDTO) => {
-                return SeriesFilterDTO.createByJson(
-                    Object.assign({}, it, {
-                        ingredients: ingredientMap.get(it.seriesIdx) || [],
-                    })
-                );
-            })
-        );
+        });
     }
 
     /**
@@ -132,32 +143,6 @@ class SeriesService {
             `${LOG_TAG} findSeriesByEnglishName(englishName = ${englishName})`
         );
         return this.seriesDao.findSeries({ englishName });
-    }
-
-    private async filterByUsedCount(
-        ingredientList: IngredientDTO[]
-    ): Promise<IngredientDTO[]> {
-        const ingredientIdxList: number[] = ingredientList.map(
-            (it: IngredientDTO) => it.ingredientIdx
-        );
-        const countMap: Map<number, number> = (
-            await this.noteDao.getIngredientCountList(ingredientIdxList)
-        ).reduce(
-            (
-                prev: Map<number, number>,
-                cur: { ingredientIdx: number; count: number }
-            ): Map<number, number> => {
-                prev.set(cur.ingredientIdx, cur.count);
-                return prev;
-            },
-            new Map<number, number>()
-        );
-        return ingredientList.filter((it: IngredientDTO) => {
-            return (
-                (countMap.get(it.ingredientIdx) || 0) >
-                FILTER_INGREDIENT_LIMIT_USED_COUNT
-            );
-        });
     }
 }
 

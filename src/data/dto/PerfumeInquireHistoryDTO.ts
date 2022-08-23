@@ -1,16 +1,15 @@
 import { BrandDTO } from '@dto/BrandDTO';
 import { PerfumeThumbDTO } from '@dto/PerfumeThumbDTO';
 
-type SearchHistory = {
-    userIdx: number;
-    perfumeIdx: number;
-    count: number;
-    createdAt: Date;
-    updatedAt: Date;
+type InquireHistory = {
+    readonly userIdx: number;
+    readonly perfumeIdx: number;
+    readonly createdAt: Date;
+    readonly updatedAt: Date;
 };
 
-class PerfumeSearchHistoryDTO extends PerfumeThumbDTO {
-    SearchHistory: SearchHistory;
+class PerfumeInquireHistoryDTO extends PerfumeThumbDTO {
+    readonly InquireHistory: InquireHistory;
     constructor(
         perfumeIdx: number,
         name: string,
@@ -19,18 +18,18 @@ class PerfumeSearchHistoryDTO extends PerfumeThumbDTO {
         createdAt: Date,
         updatedAt: Date,
         Brand: BrandDTO,
-        SearchHistory: SearchHistory
+        inquireHistory: InquireHistory
     ) {
         super(perfumeIdx, name, isLiked, imageUrl, createdAt, updatedAt, Brand);
-        this.SearchHistory = SearchHistory;
+        this.InquireHistory = inquireHistory;
     }
 
     public toString(): string {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
 
-    static createByJson(json: any): PerfumeSearchHistoryDTO {
-        return new PerfumeSearchHistoryDTO(
+    static createByJson(json: any): PerfumeInquireHistoryDTO {
+        return new PerfumeInquireHistoryDTO(
             json.perfumeIdx,
             json.name,
             json.isLiked,
@@ -38,9 +37,9 @@ class PerfumeSearchHistoryDTO extends PerfumeThumbDTO {
             json.createdAt,
             json.updatedAt,
             json.Brand,
-            json.SearchHistory
+            json.InquireHistory
         );
     }
 }
 
-export { PerfumeSearchHistoryDTO };
+export { PerfumeInquireHistoryDTO };

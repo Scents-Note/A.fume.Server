@@ -1,10 +1,10 @@
 class NoteDTO {
-    perfumeIdx: number;
-    ingredientIdx: number;
-    type: number;
-    ingredientName: string;
-    createdAt: Date;
-    updatedAt: Date;
+    readonly perfumeIdx: number;
+    readonly ingredientIdx: number;
+    readonly type: number;
+    readonly ingredientName: string;
+    readonly createdAt: Date;
+    readonly updatedAt: Date;
     constructor(
         perfumeIdx: number,
         ingredientIdx: number,

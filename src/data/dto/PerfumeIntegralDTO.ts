@@ -1,4 +1,4 @@
-import { ABUNDANCE_RATE_LIST } from '@utils/constants';
+import { ABUNDANCE_RATE_STR_DICT } from '@utils/constants';
 
 type VolumeAndPrice = { volume: string; price: number }[];
 
@@ -29,24 +29,24 @@ type NoteDict = {
 };
 
 class PerfumeIntegralDTO {
-    perfumeIdx: number;
-    name: string;
-    brandName: string;
-    story: string;
-    abundanceRate: number;
-    volumeAndPrice: VolumeAndPrice;
-    imageUrls: string[];
-    score: number;
-    seasonal: Seasonal;
-    sillage: Sillage;
-    longevity: Longevity;
-    gender: Gender;
-    isLiked: boolean;
-    keywordList: string[];
+    readonly perfumeIdx: number;
+    readonly name: string;
+    readonly brandName: string;
+    readonly story: string;
+    readonly abundanceRate: number;
+    readonly volumeAndPrice: VolumeAndPrice;
+    readonly imageUrls: string[];
+    readonly score: number;
+    readonly seasonal: Seasonal;
+    readonly sillage: Sillage;
+    readonly longevity: Longevity;
+    readonly gender: Gender;
+    readonly isLiked: boolean;
+    readonly keywordList: string[];
     /* TODO change Value to Enum */
-    noteType: number;
-    noteDict: NoteDict;
-    reviewIdx: number;
+    readonly noteType: number;
+    readonly noteDict: NoteDict;
+    readonly reviewIdx: number;
     constructor(
         perfumeIdx: number,
         name: string,
@@ -104,7 +104,7 @@ class PerfumeIntegralDTO {
         reviewIdx: number
     ) {
         perfumeDTO.abundanceRate =
-            ABUNDANCE_RATE_LIST[perfumeDTO.abundanceRate];
+            ABUNDANCE_RATE_STR_DICT[perfumeDTO.abundanceRate];
         const perfume: { [key: string]: any } = Object.assign(
             {
                 keywordList,

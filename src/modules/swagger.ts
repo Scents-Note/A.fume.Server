@@ -5,6 +5,7 @@ import _ from 'lodash';
 
 import properties from '@properties';
 import { logger } from '@modules/winston';
+import { BASE_PATH, CURRENT_VERSION } from '@src/utils/strings';
 
 const parseurl: any = require('parseurl');
 
@@ -44,7 +45,7 @@ const options: swaggerJSDoc.Options = {
         swagger: '2.0',
         info: {
             description: '향수 정보 서비스 A.fume Server Api 문서',
-            version: '0.0.1',
+            version: CURRENT_VERSION,
             title: 'Swagger A.fume Server',
             termsOfService: 'http://swagger.io/terms/',
             email: 'heesung6701@naver.com',
@@ -54,14 +55,15 @@ const options: swaggerJSDoc.Options = {
             },
         },
         host: `${localIpAddress}:${properties.PORT}`,
-        basePath: '/A.fume/api/0.0.1',
+        basePath: BASE_PATH,
     },
     apis: [
+        './src/controllers/definitions/request/*.ts',
+        './src/controllers/definitions/response/*.ts',
         './src/controllers/*.ts',
         './src/controllers/*.js',
-        './src/modules/swagger/*',
+        './src/middleware/auth.ts',
         './api/swagger.yaml',
-        './api/endpoints/*.yaml',
         './api/definitions/*.yaml',
     ],
 };

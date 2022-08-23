@@ -23,20 +23,9 @@ class PerfumeIntegralMockHelper {
             expect(this.noteDict.single).be.empty;
         }
         expect(this.score).to.be.gte(0);
-
-        const sumOfMapFunc = (map: { [key: string]: number }) => {
-            let sum = 0;
-            for (const key in map) {
-                sum += map[key];
-            }
-            return sum;
-        };
         expect(this.seasonal).to.be.ok;
-        expect(sumOfMapFunc(this.seasonal)).to.be.eq(100);
         expect(this.longevity).to.be.ok;
-        expect(sumOfMapFunc(this.longevity)).to.be.eq(100);
         expect(this.gender).to.be.ok;
-        expect(sumOfMapFunc(this.gender)).to.be.eq(100);
         expect(this.reviewIdx).to.be.gte(0);
     }
 

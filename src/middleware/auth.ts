@@ -6,6 +6,16 @@ import JwtController from '@libs/JwtController';
 import { encrypt } from '@libs/crypto';
 
 /**
+ * @swagger
+ * securityDefinitions:
+ *   userToken:
+ *       type: apiKey
+ *       name: x-access-token
+ *       in: header
+ *       description: /Bearer {token}/ 를 입력해주시면 됩니다.
+ * */
+
+/**
  * 로그인 토큰을 읽어서 userIdx를 req.middlewareToken에 추가
  *
  * @param {*} req

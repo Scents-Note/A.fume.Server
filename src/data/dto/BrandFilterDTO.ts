@@ -1,8 +1,8 @@
 import { BrandDTO } from '@dto/BrandDTO';
 
 class BrandFilterDTO {
-    firstInitial: string;
-    brands: BrandDTO[];
+    readonly firstInitial: string;
+    readonly brands: BrandDTO[];
     constructor(firstInitial: string, brands: BrandDTO[]) {
         this.firstInitial = firstInitial;
         this.brands = brands;

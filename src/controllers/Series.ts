@@ -30,26 +30,6 @@ const LOG_TAG: string = '[Series/Controller]';
 
 let Series = new SeriesService();
 let Ingredient = new IngredientService();
-/**
- * @swagger
- * definitions:
- *   SeriesInfo:
- *     type: object
- *     properties:
- *       name:
- *         type: string
- *       englishName:
- *         type: string
- *       description:
- *         type: string
- *       imageUrl:
- *         type: string
- *     example:
- *       name: 꿀
- *       englishName: Honey
- *       description: 화이트 허니, 허니
- *       imageUrl: http://
- *  */
 
 /**
  * @swagger
@@ -63,7 +43,7 @@ let Ingredient = new IngredientService();
  *       produces:
  *       - application/json
  *       parameters:
- *       - name: pagingSize
+ *       - name: requestSize
  *         in: query
  *         type: integer
  *         required: false
@@ -90,13 +70,7 @@ let Ingredient = new IngredientService();
  *                     type: array
  *                     items:
  *                       allOf:
- *                         - $ref: '#/definitions/SeriesInfo'
- *                         - type: object
- *                           properties:
- *                             seriesIdx:
- *                               type: integer
- *                           example:
- *                             seriesIdx: 222
+ *                       - $ref: '#/definitions/SeriesResponse'
  *         401:
  *           description: Token is missing or invalid
  *       x-swagger-router-controller: Series
@@ -107,12 +81,14 @@ const getSeriesAll: RequestHandler = (
     next: NextFunction
 ): any => {
     logger.debug(`${LOG_TAG} getSeriesAll(query = ${req.query})`);
-    Series.getSeriesAll(PagingRequestDTO.createByJson(req.query))
+    const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
+        req.query
+    );
+    Series.getSeriesAll(pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<SeriesDTO>) => {
-            return {
-                count: result.count,
-                rows: result.rows.map(SeriesResponse.create),
-            };
+            // remove etc by concept
+            result = removeEtc(result);
+            return result.convertType(SeriesResponse.create);
         })
         .then((response: ListAndCountDTO<SeriesResponse>) => {
             LoggerHelper.logTruncated(
@@ -138,10 +114,7 @@ const getIngredients: RequestHandler = (
     const seriesIdx: number = parseInt(req.params['seriesIdx']);
     Ingredient.getIngredientList(seriesIdx)
         .then((result: ListAndCountDTO<IngredientDTO>) => {
-            return new ListAndCountDTO(
-                result.count,
-                result.rows.map(IngredientResponse.createByJson)
-            );
+            return result.convertType(IngredientResponse.createByJson);
         })
         .then((response: ListAndCountDTO<IngredientResponse>) => {
             LoggerHelper.logTruncated(
@@ -170,7 +143,7 @@ const getIngredients: RequestHandler = (
  *       produces:
  *       - application/json
  *       parameters:
- *       - name: pagingSize
+ *       - name: requestSize
  *         in: query
  *         type: integer
  *         required: false
@@ -196,16 +169,9 @@ const getIngredients: RequestHandler = (
  *                   rows:
  *                     type: array
  *                     items:
+ *                       type: object
  *                       allOf:
- *                       - $ref: '#/definitions/SeriesInfo'
- *                       - type: object
- *                         properties:
- *                           ingredients:
- *                             type: array
- *                             items:
- *                               $ref: '#/definitions/IngredientInfo'
- *                         example:
- *                           ingredients: []
+ *                       - $ref: '#/definitions/SeriesFilterResponse'
  *       x-swagger-router-controller: Series
  *  */
 const getFilterSeries: RequestHandler = (
@@ -214,12 +180,12 @@ const getFilterSeries: RequestHandler = (
     next: NextFunction
 ) => {
     logger.debug(`${LOG_TAG} getFilterSeries(query = ${req.query})`);
-    Series.getFilterSeries(PagingRequestDTO.createByJson(req.query))
+    const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
+        req.query
+    );
+    Series.getFilterSeries(pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<SeriesFilterDTO>) => {
-            return new ListAndCountDTO(
-                result.count,
-                result.rows.map(SeriesFilterResponse.create)
-            );
+            return result.convertType(SeriesFilterResponse.create);
         })
         .then((response: ListAndCountDTO<SeriesFilterResponse>) => {
             LoggerHelper.logTruncated(
@@ -235,6 +201,18 @@ const getFilterSeries: RequestHandler = (
         })
         .catch((err: Error) => next(err));
 };
+
+function removeEtc(
+    result: ListAndCountDTO<SeriesDTO>
+): ListAndCountDTO<SeriesDTO> {
+    const filtered: SeriesDTO[] = result.rows.filter((seriesDTO) => {
+        return seriesDTO.seriesIdx != 1;
+    });
+    if (filtered.length + 1 == result.rows.length) {
+        return new ListAndCountDTO<SeriesDTO>(result.count - 1, filtered);
+    }
+    return result;
+}
 
 module.exports.getSeriesAll = getSeriesAll;
 module.exports.getIngredients = getIngredients;

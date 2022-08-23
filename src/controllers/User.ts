@@ -43,31 +43,6 @@ let User: UserService = new UserService();
 
 /**
  * @swagger
- * definitions:
- *   User:
- *     type: object
- *     properties:
- *       email:
- *         type: string
- *       nickname:
- *         type: string
- *       gender:
- *         type: string
- *         enum: [MAN, WOMAN]
- *       birth:
- *         type: integer
- *       grade:
- *         type: string
- *         enum: [USER, MANAGER, SYSTEM_ADMIN]
- *     example:
- *       email: hee.youn@samsung.com
- *       nickname: 쿼카맨
- *       gender: MAN
- *       birth: 1995
- *  */
-
-/**
- * @swagger
  *   /user/register:
  *     post:
  *       tags:
@@ -86,14 +61,7 @@ let User: UserService = new UserService();
  *         description: Created user object
  *         required: true
  *         schema:
- *           allOf:
- *           - $ref: '#/definitions/User'
- *           - type: object
- *             properties:
- *               password:
- *                 type: string
- *             example:
- *               password: test
+ *           $ref: '#/definitions/UserRegisterRequest'
  *       responses:
  *         200:
  *           description: success
@@ -104,19 +72,8 @@ let User: UserService = new UserService();
  *                 type: string
  *                 example: 회원가입 성공
  *               data:
- *                 type: object
- *                 properties:
- *                   userIdx:
- *                     type: integer
- *                     example: 29
- *                   token:
- *                     type: string
- *                     description: login용 userToken
- *                     example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWR4IjoyOSwiZW1haWwiOiJoZWUueW91bkBzYW1zdW5nLmNvbSIsIm5pY2tuYW1lIjoi7L-87Lm066eoIiwiZ2VuZGVyIjoxLCJwaG9uZSI6IjAxMC0yMDgxLTM4MTgiLCJiaXJ0aCI6MTk5NSwiZ3JhZGUiOjAsImFjY2Vzc1RpbWUiOiIyMDIxLTAyLTI4VDA4OjEwOjI4LjAwMFoiLCJjcmVhdGVkQXQiOiIyMDIxLTAyLTI4VDAwOjUyOjI4LjAwMFoiLCJ1cGRhdGVkQXQiOiIyMDIxLTAyLTI4VDA4OjEwOjI4LjAwMFoiLCJpYXQiOjE2MTQ0OTk5OTQsImV4cCI6MTYxNjIyNzk5NCwiaXNzIjoiYWZ1bWUtamFja3BvdCJ9.lztExrMNy-HCeaDDheos-EXRQEHMdVmQNiaYvKBPHGw
- *                   refreshToken:
- *                     type: string
- *                     description: token 재발급 용
- *                     example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZWZyZXNoVG9rZW4iOnsidXNlcklkeCI6MSwiZW1haWwiOiJoZWUueW91bkBzYW1zdW5nLmNvbSIsIm5pY2tuYW1lIjoi7L-87Lm066eoIiwiZ2VuZGVyIjoxLCJwaG9uZSI6IjAxMC0yMDgxLTM4MTgiLCJiaXJ0aCI6MTk5NSwiZ3JhZGUiOjAsImFjY2Vzc1RpbWUiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoiLCJjcmVhdGVkQXQiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoiLCJ1cGRhdGVkQXQiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoifSwiaWF0IjoxNjA5ODUxODIzLCJleHAiOjE2MTE1Nzk4MjMsImlzcyI6ImFmdW1lLWphY2twb3QifQ.Vb9-KO1DWOBhuVAoBzh0USybt5b5YpZqfqG1OU3snUY
+ *                 allOf:
+ *                 - $ref: '#/definitions/UserRegisterResponse'
  *         default:
  *           description: successful operation
  *       x-swagger-router-controller: User
@@ -134,7 +91,7 @@ const registerUser: RequestHandler = (
         next(new UnAuthorizedError());
         return;
     }
-    User.createUser(UserInputDTO.createByRequest(userRegisterRequest))
+    User.createUser(userRegisterRequest.toUserInputDTO())
         .then((result: UserInputDTO) => {
             return UserRegisterResponse.createByJson(result);
         })
@@ -185,28 +142,8 @@ const registerUser: RequestHandler = (
  *                 type: string
  *                 example: 로그인 성공
  *               data:
- *                 type: object
- *                 properties:
- *                   userIdx:
- *                     type: integer
- *                     example: 29
- *                   nickname:
- *                     type: string
- *                     example: nickname
- *                   gender:
- *                     type: string
- *                     example: MAN
- *                   birth:
- *                     type: integer
- *                     example: 1995
- *                   token:
- *                     type: string
- *                     description: login용 userToken
- *                     example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWR4IjoyOSwiZW1haWwiOiJoZWUueW91bkBzYW1zdW5nLmNvbSIsIm5pY2tuYW1lIjoi7L-87Lm066eoIiwiZ2VuZGVyIjoxLCJwaG9uZSI6IjAxMC0yMDgxLTM4MTgiLCJiaXJ0aCI6MTk5NSwiZ3JhZGUiOjAsImFjY2Vzc1RpbWUiOiIyMDIxLTAyLTI4VDA4OjEwOjI4LjAwMFoiLCJjcmVhdGVkQXQiOiIyMDIxLTAyLTI4VDAwOjUyOjI4LjAwMFoiLCJ1cGRhdGVkQXQiOiIyMDIxLTAyLTI4VDA4OjEwOjI4LjAwMFoiLCJpYXQiOjE2MTQ0OTk5OTQsImV4cCI6MTYxNjIyNzk5NCwiaXNzIjoiYWZ1bWUtamFja3BvdCJ9.lztExrMNy-HCeaDDheos-EXRQEHMdVmQNiaYvKBPHGw
- *                   refreshToken:
- *                     type: string
- *                     description: token 재발급 용
- *                     example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJyZWZyZXNoVG9rZW4iOnsidXNlcklkeCI6MSwiZW1haWwiOiJoZWUueW91bkBzYW1zdW5nLmNvbSIsIm5pY2tuYW1lIjoi7L-87Lm066eoIiwiZ2VuZGVyIjoxLCJwaG9uZSI6IjAxMC0yMDgxLTM4MTgiLCJiaXJ0aCI6MTk5NSwiZ3JhZGUiOjAsImFjY2Vzc1RpbWUiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoiLCJjcmVhdGVkQXQiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoiLCJ1cGRhdGVkQXQiOiIyMDIxLTAxLTA1VDEzOjAzOjQwLjAwMFoifSwiaWF0IjoxNjA5ODUxODIzLCJleHAiOjE2MTE1Nzk4MjMsImlzcyI6ImFmdW1lLWphY2twb3QifQ.Vb9-KO1DWOBhuVAoBzh0USybt5b5YpZqfqG1OU3snUY
+ *                 allOf:
+ *                 - $ref: '#/definitions/LoginResponse'
  *         400:
  *           description: Invalid username/password supplied
  *         401:
@@ -323,18 +260,14 @@ const changePassword: RequestHandler = (
  *         200:
  *           description: 권한 조회 성공
  *           schema:
- *             allOf:
- *             - type: object
- *               properties:
- *                 isAuth:
- *                   type: boolean
- *                   description: 로그인 여부
- *                   example: false
- *                 isAdmin:
- *                   type: boolean
- *                   description: 관리자 여부
- *                   example: false
- *             - $ref: '#/definitions/User'
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 권한 조회 성공
+ *               data:
+ *                 allOf:
+ *                 - $ref: '#/definitions/UserAuthResponse'
  *       x-swagger-router-controller: User
  *  */
 const authUser: RequestHandler = (
@@ -617,7 +550,7 @@ const postSurvey: RequestHandler = (
  *         description: Updated user object
  *         required: true
  *         schema:
- *           $ref: '#/definitions/User'
+ *           $ref: '#/definitions/UserEditRequest'
  *       responses:
  *         200:
  *           description: successful operation
@@ -628,11 +561,7 @@ const postSurvey: RequestHandler = (
  *                 type: string
  *               data:
  *                 allOf:
- *                 - $ref: '#/definitions/User'
- *                 - type: object
- *                   properties:
- *                     userIdx:
- *                       type: integer
+ *                 - $ref: '#/definitions/UserResponse'
  *             example:
  *               message: 유저 수정 성공
  *               data:
@@ -666,10 +595,8 @@ const updateUser: RequestHandler = (
         next(new UnAuthorizedError());
         return;
     }
-    const userEditRequest = UserEditRequest.createByJson(
-        Object.assign({ userIdx }, req.body)
-    );
-    User.updateUser(UserInputDTO.createByRequest(userEditRequest))
+    const userEditRequest = UserEditRequest.createByJson(req.body);
+    User.updateUser(userEditRequest.toUserInputDTO(userIdx))
         .then((result: UserResponse) => {
             return UserResponse.createByJson(result);
         })

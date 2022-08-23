@@ -13,6 +13,7 @@ class BrandDao {
      *
      * @param {number} brandIdx
      * @returns {Promise<BrandDTO>}
+     * @throws {NotMatchedError} if there is no brand
      */
     async read(brandIdx: number): Promise<BrandDTO> {
         logger.debug(`${LOG_TAG} read(brandIdx = ${brandIdx})`);
@@ -34,16 +35,15 @@ class BrandDao {
      */
     async search(pagingDTO: PagingDTO): Promise<ListAndCountDTO<BrandDTO>> {
         logger.debug(`${LOG_TAG} search(PagingDTO = ${pagingDTO})`);
-        const pagingSize: number = pagingDTO.pagingSize;
-        const pagingIndex: number = pagingDTO.pagingIndex;
-        const order: any = pagingDTO.order;
-        return Brand.findAndCountAll({
-            offset: (pagingIndex - 1) * pagingSize,
-            limit: pagingSize,
-            order,
-            raw: true,
-            nest: true,
-        }).then((it: any) => {
+        return Brand.findAndCountAll(
+            Object.assign(
+                {
+                    raw: true,
+                    nest: true,
+                },
+                pagingDTO.sequelizeOption()
+            )
+        ).then((it: any) => {
             it.rows = it.rows.map((it: any) => BrandDTO.createByJson(it));
             return new ListAndCountDTO<BrandDTO>(it.count, it.rows);
         });
@@ -72,6 +72,7 @@ class BrandDao {
      *
      * @param {Object} condition
      * @returns {Promise<BrandDTO>}
+     * @throws {NotMatchedError} if there is no brand
      */
     async findBrand(condition: any): Promise<BrandDTO> {
         logger.debug(

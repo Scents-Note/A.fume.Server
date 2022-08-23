@@ -10,7 +10,6 @@ const _all: string = '전체';
 const _search: string = '검색';
 
 const NONE: string = 'None';
-const COLOGNE: string = '코롱';
 const EAU_DE_COLOGNE: string = '오 드 코롱';
 const EAU_DE_TOILETTE: string = '오 드 뚜왈렛';
 const EAU_DE_PERFUME: string = '오 드 퍼퓸';
@@ -100,12 +99,18 @@ const MSG_EXPIRED_TOKEN: string = '만료된 토큰입니다.';
 const MSG_WRONG_PASSWORD: string = '비밀번호가 잘못되었습니다';
 const MSG_CANT_USE_PASSWORD_BY_POLICY: string =
     '사용할 수 없는 패스워드입니다. 패스워드 정책을 확인해주세요.';
+const MSG_GET_SUPPORTABLE_YES: string = '현재 apk Version은 이용 가능합니다.';
+const MSG_GET_SUPPORTABLE_NO: string =
+    '현재 apk Version은 업데이트가 필요합니다.';
 
 const NO_AUTHORIZE: string = '권한이 없습니다.';
 
+const CURRENT_VERSION: string = process.env.npm_package_version || '0.0.3';
+/* TODO BASE PATH 는 MAJOR만 따르도록 수정할 것. 0.0.1 -> 1.0 -> 2.0 */
+const BASE_PATH: string = '/A.fume/api/0.0.1';
+
 export {
     NONE,
-    COLOGNE,
     EAU_DE_COLOGNE,
     EAU_DE_TOILETTE,
     EAU_DE_PERFUME,
@@ -169,5 +174,9 @@ export {
     MSG_EXPIRED_TOKEN,
     MSG_WRONG_PASSWORD,
     MSG_CANT_USE_PASSWORD_BY_POLICY,
+    MSG_GET_SUPPORTABLE_YES,
+    MSG_GET_SUPPORTABLE_NO,
     NO_AUTHORIZE,
+    CURRENT_VERSION,
+    BASE_PATH,
 };

@@ -18,6 +18,7 @@ import {
     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
     MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
     MSG_ABNORMAL_ACCESS,
+    BASE_PATH,
 } from '@utils/strings';
 
 import JwtController from '@libs/JwtController';
@@ -29,16 +30,21 @@ import {
     PerfumeRecommendResponse,
 } from '@response/perfume';
 
-import { TokenPayloadDTO, ListAndCountDTO } from '@dto/index';
+import {
+    TokenPayloadDTO,
+    ListAndCountDTO,
+    PerfumeThumbKeywordDTO,
+} from '@dto/index';
 
 import app from '@src/app';
 
-const basePath: string = '/A.fume/api/0.0.1';
+const basePath: string = BASE_PATH;
 
 const Perfume = require('@controllers/Perfume');
 import PerfumeThumbMockHelper from '../mock_helper/PerfumeThumbMockHelper';
 import PerfumeThumbKeywordMockHelper from '../mock_helper/PerfumeThumbKeywordMockHelper';
 import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
+import _ from 'lodash';
 
 const user1tokenPerfume: string = JwtController.create(
     new TokenPayloadDTO(1, 'nickname', 'MAN', 'email', 1995)
@@ -79,7 +85,7 @@ describe('# Perfume Controller Test', () => {
             mockPerfumeService.getPerfumeById = async () => {
                 return PerfumeIntegralMockHelper.createMock({});
             };
-            mockSearchHistoryService.incrementCount = async () => {};
+            mockSearchHistoryService.recordInquire = async () => {};
 
             request(app)
                 .get(`${basePath}/perfume/1`)
@@ -96,10 +102,7 @@ describe('# Perfume Controller Test', () => {
         describe('# searchPerfume Test', () => {
             it('success case', (done: Done) => {
                 mockPerfumeService.searchPerfume = async () => {
-                    return {
-                        rows: mockPerfumeList,
-                        count: 204,
-                    };
+                    return new ListAndCountDTO(204, mockPerfumeList);
                 };
 
                 request(app)
@@ -149,10 +152,7 @@ describe('# Perfume Controller Test', () => {
         describe('# getLikedPerfume Test', () => {
             it('# success case', (done: Done) => {
                 mockPerfumeService.getLikedPerfume = async () => {
-                    return {
-                        rows: mockPerfumeList,
-                        count: 204,
-                    };
+                    return new ListAndCountDTO(204, mockPerfumeList);
                 };
 
                 request(app)
@@ -191,10 +191,7 @@ describe('# Perfume Controller Test', () => {
         describe('# getRecentPerfume Test', () => {
             it('success case', (done: Done) => {
                 mockPerfumeService.recentSearch = async () => {
-                    return {
-                        rows: mockPerfumeList,
-                        count: 20,
-                    };
+                    return new ListAndCountDTO(20, mockPerfumeList);
                 };
 
                 request(app)
@@ -232,10 +229,7 @@ describe('# Perfume Controller Test', () => {
         describe('# recommendPersonalPerfume Test', () => {
             it('success case', (done: Done) => {
                 mockPerfumeService.recommendByUser = async () => {
-                    return {
-                        rows: mockPerfumeKeywordList,
-                        count: 20,
-                    };
+                    return new ListAndCountDTO(20, mockPerfumeKeywordList);
                 };
 
                 request(app)
@@ -255,14 +249,32 @@ describe('# Perfume Controller Test', () => {
                     .catch((err: Error) => done(err));
             });
 
-            it('# Fail: no token', (done: Done) => {
+            it('# with no token', (done: Done) => {
+                const expectResult: PerfumeThumbKeywordDTO[] = _.range(
+                    0,
+                    7
+                ).map((_: any) => PerfumeThumbKeywordMockHelper.createMock({}));
+                mockPerfumeService.getPerfumesByRandom = async () => {
+                    return new ListAndCountDTO(
+                        expectResult.length,
+                        expectResult
+                    );
+                };
                 request(app)
                     .get(`${basePath}/perfume/recommend/personal`)
                     .expect((res: request.Response) => {
-                        expect(res.status).to.be.eq(StatusCode.UNAUTHORIZED);
-                        const responseDTO: SimpleResponseDTO = res.body;
+                        expect(res.status).to.be.eq(StatusCode.OK);
+                        const responseDTO: ResponseDTO<
+                            ListAndCountDTO<PerfumeThumbKeywordDTO>
+                        > = res.body;
                         expect(responseDTO.message).to.be.eq(
-                            '유효하지 않는 토큰입니다.'
+                            MSG_GET_RECOMMEND_PERFUME_BY_USER
+                        );
+                        expect(responseDTO.data.count).to.be.eq(
+                            expectResult.length
+                        );
+                        expect(responseDTO.data.rows).to.be.deep.eq(
+                            expectResult
                         );
                         done();
                     })
@@ -273,10 +285,7 @@ describe('# Perfume Controller Test', () => {
         describe('# recommendCommonPerfume Test', () => {
             it('success case', (done: Done) => {
                 mockPerfumeService.recommendByUser = async () => {
-                    return {
-                        rows: mockPerfumeKeywordList,
-                        count: 20,
-                    };
+                    return new ListAndCountDTO(20, mockPerfumeKeywordList);
                 };
 
                 request(app)
@@ -299,10 +308,7 @@ describe('# Perfume Controller Test', () => {
         describe('# getSurveyPerfume Test', () => {
             it('success case', (done: Done) => {
                 mockPerfumeService.getSurveyPerfume = async () => {
-                    return {
-                        rows: mockPerfumeList,
-                        count: 20,
-                    };
+                    return new ListAndCountDTO(20, mockPerfumeList);
                 };
 
                 request(app)
@@ -326,10 +332,7 @@ describe('# Perfume Controller Test', () => {
         describe('# getNewPerfume Test', () => {
             it('success case', (done: Done) => {
                 mockPerfumeService.getNewPerfume = async () => {
-                    return {
-                        rows: mockPerfumeList,
-                        count: 20,
-                    };
+                    return new ListAndCountDTO(20, mockPerfumeList);
                 };
 
                 request(app)

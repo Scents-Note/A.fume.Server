@@ -66,7 +66,9 @@ describe('# brandDao Test', () => {
     describe('# search Test', () => {
         it('# success case', (done: Done) => {
             brandDao
-                .search(new PagingDTO(10, 1, [['createdAt', 'desc']]))
+                .search(
+                    PagingDTO.createByJson({ order: [['createdAt', 'desc']] })
+                )
                 .then((result: ListAndCountDTO<BrandDTO>) => {
                     expect(result.count).gte(5);
                     expect(result.rows.length).gte(5);

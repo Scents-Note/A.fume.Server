@@ -1,8 +1,7 @@
 import { expect } from 'chai';
 
-import { IngredientDTO, SeriesFilterDTO } from '@dto/index';
+import { SeriesFilterDTO } from '@dto/index';
 
-import IngredientMockHelper from './IngredientMockHelper';
 import SeriesHelper from './SeriesMockHelper';
 
 class SeriesFilterMockHelper {
@@ -14,16 +13,15 @@ class SeriesFilterMockHelper {
         expect(this.description).to.be.not.undefined;
         expect(this.createdAt).to.be.ok;
         expect(this.updatedAt).to.be.ok;
-        for (const ingredient of this.ingredients) {
-            expect(ingredient).instanceOf(IngredientDTO);
-            IngredientMockHelper.validTest.call(ingredient);
+        for (const ingredient of this.ingredientCategoryList) {
+            expect(ingredient).instanceOf(String);
         }
     }
     static createWithIdx(seriesIdx: number, ingredientIdxList: number[]) {
         return SeriesFilterDTO.createByJson(
             Object.assign({}, SeriesHelper.createWithIdx(seriesIdx), {
-                ingredients: ingredientIdxList.map((ingredientIdx) =>
-                    IngredientMockHelper.createWithIdx(ingredientIdx, seriesIdx)
+                ingredientCategoryList: ingredientIdxList.map(
+                    (ingredientIdx) => '카테고리' + ingredientIdx
                 ),
             })
         );
