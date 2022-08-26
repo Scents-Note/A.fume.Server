@@ -217,7 +217,7 @@ class UserService {
         if (user.password !== encryptPrevPassword) {
             throw new WrongPasswordError();
         }
-        if (user.password === encryptNewPassword) {
+        if (prevPassword === newPassword) {
             throw new PasswordPolicyError();
         }
         const password: string = encryptNewPassword;
