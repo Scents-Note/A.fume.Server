@@ -28,9 +28,7 @@ class UserDao {
             )
         )
             .then((it: UserDTO) => {
-                /* TODO Change after apply ts */
-                // new CreatedResultDTO<UserDTO></UserDTO>(it.userIdx, new UserDTO(it))
-                return new CreatedResultDTO(
+                return new CreatedResultDTO<UserDTO>(
                     it.userIdx,
                     UserDTO.createByJson(it)
                 );
