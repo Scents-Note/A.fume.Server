@@ -214,10 +214,13 @@ class UserService {
             `${LOG_TAG} authUser(userIdx = ${userIdx}, prevPassword = ${prevPassword}, newPassword = ${newPassword})`
         );
         const user: UserDTO = await this.userDao.readByIdx(userIdx);
-        if (user.password !== encryptPrevPassword) {
+        if (
+            this.crypto.decrypt(user.password) !=
+            this.crypto.decrypt(encryptPrevPassword)
+        ) {
             throw new WrongPasswordError();
         }
-        if (prevPassword === newPassword) {
+        if (prevPassword == newPassword) {
             throw new PasswordPolicyError();
         }
         const password: string = encryptNewPassword;
