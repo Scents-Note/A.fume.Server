@@ -144,11 +144,9 @@ class UserService {
         encryptPassword: string
     ): Promise<LoginInfoDTO> {
         logger.debug(
-            `${LOG_TAG} authUser(email = ${email}, encrypt_password = ${encryptPassword})`
+            `${LOG_TAG} loginUser(email = ${email}, encrypt_password = ${encryptPassword})`
         );
         const user: UserDTO = await this.userDao.read({ email });
-        console.log(user.password);
-        console.log(encryptPassword);
         if (
             this.crypto.decrypt(user.password) !=
             this.crypto.decrypt(encryptPassword)
@@ -196,8 +194,8 @@ class UserService {
      * 유저 비밀번호 변경
      *
      * @param {number} userIdx
-     * @param {string} prevPassword
-     * @param {string} newPassword
+     * @param {string} encryptPrevPassword
+     * @param {string} encryptNewPassword
      * @returns {Promise<number>} affected rows
      * @throws {WrongPasswordError} if password is wrong
      * @throws {PasswordPolicyError} if new password is same with previous password
@@ -205,19 +203,23 @@ class UserService {
      **/
     async changePassword(
         userIdx: number,
-        prevPassword: string,
-        newPassword: string
+        encryptPrevPassword: string,
+        encryptNewPassword: string
     ): Promise<number> {
-        const encryptPrevPassword: string = this.crypto.encrypt(prevPassword);
-        const encryptNewPassword: string = this.crypto.encrypt(newPassword);
         logger.debug(
-            `${LOG_TAG} authUser(userIdx = ${userIdx}, prevPassword = ${prevPassword}, newPassword = ${newPassword})`
+            `${LOG_TAG} authUser(userIdx = ${userIdx}, encrypt = ${encryptPrevPassword}, newPassword = ${encryptNewPassword})`
         );
         const user: UserDTO = await this.userDao.readByIdx(userIdx);
-        if (user.password !== encryptPrevPassword) {
+        if (
+            this.crypto.decrypt(user.password) !=
+            this.crypto.decrypt(encryptPrevPassword)
+        ) {
             throw new WrongPasswordError();
         }
-        if (user.password === encryptNewPassword) {
+        if (
+            this.crypto.decrypt(encryptPrevPassword) ==
+            this.crypto.decrypt(encryptNewPassword)
+        ) {
             throw new PasswordPolicyError();
         }
         const password: string = encryptNewPassword;
