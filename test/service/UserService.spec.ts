@@ -77,7 +77,6 @@ describe('# User Service Test', () => {
                     updatedAt: '2021-08-07T09:20:29.000Z',
                 });
             };
-            console.log(mockUserDao.read());
             userService
                 .loginUser('', userService.crypto.encrypt('password'))
                 .then(() => {
@@ -143,7 +142,11 @@ describe('# User Service Test', () => {
                 });
             };
             userService
-                .changePassword(1, 'encrypted', 'newpassword')
+                .changePassword(
+                    1,
+                    userService.crypto.encrypt('encrypted'),
+                    userService.crypto.encrypt('newpassword')
+                )
                 .then(() => {
                     done();
                 })
@@ -166,7 +169,11 @@ describe('# User Service Test', () => {
                 });
             };
             userService
-                .changePassword(1, 'wrong', '')
+                .changePassword(
+                    1,
+                    userService.crypto.encrypt('wrong'),
+                    userService.crypto.encrypt('')
+                )
                 .then(() => {
                     done(new UnExpectedError(WrongPasswordError));
                 })
@@ -193,7 +200,11 @@ describe('# User Service Test', () => {
                 });
             };
             userService
-                .changePassword(1, 'encrypted', 'encrypted')
+                .changePassword(
+                    1,
+                    userService.crypto.encrypt('encrypted'),
+                    userService.crypto.encrypt('encrypted')
+                )
                 .then(() => {
                     done(new UnExpectedError(PasswordPolicyError));
                 })
