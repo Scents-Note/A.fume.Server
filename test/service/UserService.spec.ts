@@ -127,6 +127,29 @@ describe('# User Service Test', () => {
     });
 
     describe('# changePassword Test', () => {
+        it('# success case', (done: Done) => {
+            mockUserDao.readByIdx = () => {
+                return UserDTO.createByJson({
+                    userIdx: 1,
+                    nickname: 'user1',
+                    password: userService.crypto.encrypt('encrypted'),
+                    gender: 2,
+                    email: 'email1@afume.com',
+                    birth: 1995,
+                    grade: 1,
+                    accessTime: '2021-07-13T11:33:49.000Z',
+                    createdAt: '2021-07-13T11:33:49.000Z',
+                    updatedAt: '2021-08-07T09:20:29.000Z',
+                });
+            };
+            userService
+                .changePassword(1, 'encrypted', 'newpassword')
+                .then(() => {
+                    done();
+                })
+                .catch((err: Error) => done(err));
+        });
+
         it('# wrong prev password', (done: Done) => {
             mockUserDao.readByIdx = () => {
                 return UserDTO.createByJson({
