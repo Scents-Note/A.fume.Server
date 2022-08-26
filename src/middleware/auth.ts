@@ -67,6 +67,12 @@ function encryptPassword(
     if (req.body.password) {
         req.body.password = encrypt(req.body.password);
     }
+    if (req.body.prevPassword) {
+        req.body.prevPassword = encrypt(req.body.prevPassword);
+    }
+    if (req.body.newPassword) {
+        req.body.newPassword = encrypt(req.body.newPassword);
+    }
     return next(null);
 }
 export { verifyTokenMiddleware, encryptPassword };
