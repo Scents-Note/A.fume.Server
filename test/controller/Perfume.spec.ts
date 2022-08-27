@@ -234,9 +234,21 @@ describe('# Perfume Controller Test', () => {
         describe('# recommendPersonalPerfume Test', () => {
             it('success case', (done: Done) => {
                 mockPerfumeService.recommendByUser = async () => {
-                    return new ListAndCountDTO(20, mockPerfumeKeywordList);
+                    return new ListAndCountDTO(
+                        1,
+                        mockPerfumeKeywordList.slice(0, 1)
+                    );
                 };
 
+                mockPerfumeService.getPerfumesByRandom = async () => {
+                    return new ListAndCountDTO(
+                        DEFAULT_RECOMMEND_REQUEST_SIZE,
+                        mockPerfumeList.slice(
+                            0,
+                            DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE
+                        )
+                    );
+                };
                 request(app)
                     .get(`${basePath}/perfume/recommend/personal`)
                     .set('x-access-token', 'Bearer ' + user1tokenPerfume)
@@ -249,6 +261,39 @@ describe('# Perfume Controller Test', () => {
                             MSG_GET_RECOMMEND_PERFUME_BY_USER
                         );
                         expect(responseDTO.data.count).to.be.eq(
+                            DEFAULT_RECOMMEND_REQUEST_SIZE
+                        );
+                        done();
+                    })
+                    .catch((err: Error) => done(err));
+            });
+
+            it('# success case: but less than default recommend size', (done: Done) => {
+                mockPerfumeService.recommendByUser = async () => {
+                    return new ListAndCountDTO(1, mockPerfumeList.slice(0, 1));
+                };
+
+                mockPerfumeService.getPerfumesByRandom = async () => {
+                    return new ListAndCountDTO(
+                        DEFAULT_RECOMMEND_REQUEST_SIZE,
+                        mockPerfumeList.slice(0, DEFAULT_RECOMMEND_REQUEST_SIZE)
+                    );
+                };
+                request(app)
+                    .get(`${basePath}/perfume/recommend/personal`)
+                    .set('x-access-token', 'Bearer ' + user1tokenPerfume)
+                    .expect((res: request.Response) => {
+                        expect(res.status).to.be.eq(StatusCode.OK);
+                        const responseDTO: ResponseDTO<
+                            ListAndCountDTO<PerfumeResponse>
+                        > = res.body;
+                        expect(responseDTO.message).to.be.eq(
+                            MSG_GET_RECOMMEND_PERFUME_BY_USER
+                        );
+                        expect(responseDTO.data.count).to.be.eq(
+                            DEFAULT_RECOMMEND_REQUEST_SIZE
+                        );
+                        expect(responseDTO.data.rows.length).to.be.eq(
                             DEFAULT_RECOMMEND_REQUEST_SIZE
                         );
                         done();
@@ -309,6 +354,39 @@ describe('# Perfume Controller Test', () => {
                             MSG_GET_RECOMMEND_PERFUME_BY_AGE_AND_GENDER
                         );
                         expect(responseDTO.data.count).to.be.eq(
+                            DEFAULT_RECOMMEND_REQUEST_SIZE
+                        );
+                        done();
+                    })
+                    .catch((err: Error) => done(err));
+            });
+
+            it('# success case: but less than default recommend size', (done: Done) => {
+                mockPerfumeService.recentSearch = async () => {
+                    return new ListAndCountDTO(1, mockPerfumeList.slice(0, 1));
+                };
+
+                mockPerfumeService.getPerfumesByRandom = async () => {
+                    return new ListAndCountDTO(
+                        DEFAULT_RECOMMEND_REQUEST_SIZE,
+                        mockPerfumeList.slice(0, DEFAULT_RECOMMEND_REQUEST_SIZE)
+                    );
+                };
+                request(app)
+                    .get(`${basePath}/perfume/recommend/common`)
+                    .set('x-access-token', 'Bearer ' + user1tokenPerfume)
+                    .expect((res: request.Response) => {
+                        expect(res.status).to.be.eq(StatusCode.OK);
+                        const responseDTO: ResponseDTO<
+                            ListAndCountDTO<PerfumeResponse>
+                        > = res.body;
+                        expect(responseDTO.message).to.be.eq(
+                            MSG_GET_RECOMMEND_PERFUME_BY_AGE_AND_GENDER
+                        );
+                        expect(responseDTO.data.count).to.be.eq(
+                            DEFAULT_RECOMMEND_REQUEST_SIZE
+                        );
+                        expect(responseDTO.data.rows.length).to.be.eq(
                             DEFAULT_RECOMMEND_REQUEST_SIZE
                         );
                         done();
