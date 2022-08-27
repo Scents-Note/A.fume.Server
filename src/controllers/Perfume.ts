@@ -44,6 +44,7 @@ import {
     DEFAULT_RECOMMEND_REQUEST_SIZE,
     DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE,
 } from '@utils/constants';
+import _ from 'lodash';
 
 const LOG_TAG: string = '[Perfume/Controller]';
 
@@ -427,11 +428,19 @@ const recommendPersonalPerfume: RequestHandler = (
             ? Perfume.recommendByUser(loginUserIdx, pagingDTO)
             : Perfume.getPerfumesByRandom(pagingDTO)
     )
-        .then((it: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-            if (it.rows.length > 0) {
-                return it;
+        .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
+            const needSize: number = pagingDTO.limit - result.rows.length;
+            if (needSize <= 0) {
+                return result;
             }
-            return Perfume.getPerfumesByRandom(pagingDTO);
+            return Perfume.getPerfumesByRandom(
+                new PagingDTO(0, needSize, pagingDTO.order)
+            ).then((randomList: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
+                return new ListAndCountDTO<PerfumeThumbKeywordDTO>(
+                    pagingDTO.limit,
+                    _.concat(result.rows, randomList.rows.slice(0, needSize))
+                );
+            });
         })
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return result.convertType(PerfumeRecommendResponse.createByJson);
@@ -525,10 +534,18 @@ const recommendCommonPerfume: RequestHandler = (
     const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
     Perfume.recommendByUser(loginUserIdx, pagingDTO, ageGroup, gender)
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-            if (result.rows.length > 0) {
+            const needSize: number = pagingDTO.limit - result.rows.length;
+            if (needSize <= 0) {
                 return result;
             }
-            return Perfume.getPerfumesByRandom(pagingDTO);
+            return Perfume.getPerfumesByRandom(
+                new PagingDTO(0, needSize, pagingDTO.order)
+            ).then((randomList: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
+                return new ListAndCountDTO<PerfumeThumbKeywordDTO>(
+                    pagingDTO.limit,
+                    _.concat(result.rows, randomList.rows.slice(0, needSize))
+                );
+            });
         })
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return result.convertType(PerfumeRecommendResponse.createByJson);
