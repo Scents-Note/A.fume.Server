@@ -439,21 +439,7 @@ const recommendPersonalPerfume: RequestHandler = (
             : Perfume.getPerfumesByRandom(pagingDTO.limit)
     )
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-            const needSize: number = pagingDTO.limit - result.rows.length;
-            if (needSize <= 0) {
-                return result;
-            }
-            return Perfume.getPerfumesByRandom(needSize).then(
-                (randomList: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-                    return new ListAndCountDTO<PerfumeThumbKeywordDTO>(
-                        pagingDTO.limit,
-                        _.concat(
-                            result.rows,
-                            randomList.rows.slice(0, needSize)
-                        )
-                    );
-                }
-            );
+            return supplementPerfumeWithRandom(result, pagingDTO.limit);
         })
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return result.convertType(PerfumeRecommendResponse.createByJson);
@@ -549,21 +535,7 @@ const recommendCommonPerfume: RequestHandler = (
     const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
     Perfume.recommendByUser(loginUserIdx, pagingDTO, ageGroup, gender)
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-            const needSize: number = pagingDTO.limit - result.rows.length;
-            if (needSize <= 0) {
-                return result;
-            }
-            return Perfume.getPerfumesByRandom(needSize).then(
-                (randomList: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-                    return new ListAndCountDTO<PerfumeThumbKeywordDTO>(
-                        pagingDTO.limit,
-                        _.concat(
-                            result.rows,
-                            randomList.rows.slice(0, needSize)
-                        )
-                    );
-                }
-            );
+            return supplementPerfumeWithRandom(result, pagingDTO.limit);
         })
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return result.convertType(PerfumeRecommendResponse.createByJson);
@@ -814,6 +786,21 @@ const getLikedPerfume: RequestHandler = (
             next(err);
         });
 };
+
+function supplementPerfumeWithRandom(
+    origin: ListAndCountDTO<PerfumeThumbKeywordDTO>,
+    size: number
+): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
+    return Perfume.getPerfumesByRandom(size).then(
+        (randomList: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
+            const needSize: number = size - origin.rows.length;
+            return new ListAndCountDTO<PerfumeThumbKeywordDTO>(
+                size,
+                _.concat(origin.rows, randomList.rows.slice(0, needSize))
+            );
+        }
+    );
+}
 
 module.exports.getPerfume = getPerfume;
 module.exports.searchPerfume = searchPerfume;
