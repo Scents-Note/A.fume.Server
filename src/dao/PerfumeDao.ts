@@ -491,23 +491,15 @@ class PerfumeDao {
     /**
      * 랜덤 향수 조회
      *
-     * @param {PagingDTO} pagingDTO
+     * @param {number} size
      * @returns {Promise<Perfume[]>}
      */
-    async getPerfumesByRandom(
-        pagingDTO: PagingDTO
-    ): Promise<[PerfumeThumbDTO]> {
-        logger.debug(
-            `${LOG_TAG} recommendPerfumeByRandom(pagingDTO = ${pagingDTO})`
-        );
-        const options: { [key: string]: any } = _.merge(
-            {},
-            defaultOption,
-            pagingDTO.sequelizeOption(),
-            {
-                order: Sequelize.literal('rand()'),
-            }
-        );
+    async getPerfumesByRandom(size: number): Promise<[PerfumeThumbDTO]> {
+        logger.debug(`${LOG_TAG} recommendPerfumeByRandom(size = ${size})`);
+        const options: { [key: string]: any } = _.merge({}, defaultOption, {
+            order: Sequelize.literal('rand()'),
+            limit: size,
+        });
         return Perfume.findAll(options).then((rows: any[]) => {
             return rows.map(PerfumeThumbDTO.createByJson);
         });

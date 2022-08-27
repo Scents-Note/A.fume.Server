@@ -395,8 +395,8 @@ describe('# perfumeDao Test', () => {
         describe('# random Test', () => {
             it('# get perfumes by random', (done: Done) => {
                 Promise.all([
-                    perfumeDao.getPerfumesByRandom(defaultPagingDTO),
-                    perfumeDao.getPerfumesByRandom(defaultPagingDTO),
+                    perfumeDao.getPerfumesByRandom(defaultPagingDTO.limit),
+                    perfumeDao.getPerfumesByRandom(defaultPagingDTO.limit),
                 ])
                     .then((result: [[PerfumeThumbDTO], [PerfumeThumbDTO]]) => {
                         const result1: [PerfumeThumbDTO] = result[0];
