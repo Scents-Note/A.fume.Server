@@ -40,10 +40,12 @@ import {
     PagingDTO,
 } from '@dto/index';
 import { GenderMap } from '@src/utils/enumType';
+import {
+    DEFAULT_RECOMMEND_REQUEST_SIZE,
+    DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE,
+} from '@utils/constants';
 
 const LOG_TAG: string = '[Perfume/Controller]';
-const DEFAULT_RECOMMEND_REQUEST_SIZE: number = 7;
-const DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE: number = 7;
 
 let Perfume: PerfumeService = new PerfumeService();
 let SearchHistory: SearchHistoryService = new SearchHistoryService();

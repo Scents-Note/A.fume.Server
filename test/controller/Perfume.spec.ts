@@ -21,6 +21,11 @@ import {
     BASE_PATH,
 } from '@utils/strings';
 
+import {
+    DEFAULT_RECOMMEND_REQUEST_SIZE,
+    DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE,
+} from '@utils/constants';
+
 import JwtController from '@libs/JwtController';
 
 import { ResponseDTO, SimpleResponseDTO } from '@response/common';
@@ -243,7 +248,9 @@ describe('# Perfume Controller Test', () => {
                         expect(responseDTO.message).to.be.eq(
                             MSG_GET_RECOMMEND_PERFUME_BY_USER
                         );
-                        expect(responseDTO.data.count).to.be.gte(0);
+                        expect(responseDTO.data.count).to.be.eq(
+                            DEFAULT_RECOMMEND_REQUEST_SIZE
+                        );
                         done();
                     })
                     .catch((err: Error) => done(err));
@@ -285,7 +292,10 @@ describe('# Perfume Controller Test', () => {
         describe('# recommendCommonPerfume Test', () => {
             it('success case', (done: Done) => {
                 mockPerfumeService.recommendByUser = async () => {
-                    return new ListAndCountDTO(20, mockPerfumeKeywordList);
+                    return new ListAndCountDTO(
+                        DEFAULT_RECOMMEND_REQUEST_SIZE,
+                        mockPerfumeKeywordList
+                    );
                 };
 
                 request(app)
@@ -298,7 +308,9 @@ describe('# Perfume Controller Test', () => {
                         expect(responseDTO.message).to.be.eq(
                             MSG_GET_RECOMMEND_PERFUME_BY_AGE_AND_GENDER
                         );
-                        expect(responseDTO.data.count).to.be.gte(0);
+                        expect(responseDTO.data.count).to.be.eq(
+                            DEFAULT_RECOMMEND_REQUEST_SIZE
+                        );
                         done();
                     })
                     .catch((err: Error) => done(err));
@@ -332,7 +344,10 @@ describe('# Perfume Controller Test', () => {
         describe('# getNewPerfume Test', () => {
             it('success case', (done: Done) => {
                 mockPerfumeService.getNewPerfume = async () => {
-                    return new ListAndCountDTO(20, mockPerfumeList);
+                    return new ListAndCountDTO(
+                        DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE,
+                        mockPerfumeList
+                    );
                 };
 
                 request(app)
@@ -345,7 +360,9 @@ describe('# Perfume Controller Test', () => {
                         expect(responseDTO.message).to.be.eq(
                             MSG_GET_ADDED_PERFUME_RECENT_SUCCESS
                         );
-                        expect(responseDTO.data.count).to.be.gte(0);
+                        expect(responseDTO.data.count).to.be.eq(
+                            DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE
+                        );
                         done();
                     })
                     .catch((err: Error) => done(err));
