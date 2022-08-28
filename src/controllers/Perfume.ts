@@ -14,6 +14,7 @@ import {
     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
     MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
     MSG_ABNORMAL_ACCESS,
+    MSG_GET_PERFUME_SIMILARS_BY_PERFUME,
 } from '@utils/strings';
 
 import StatusCode from '@utils/statusCode';
@@ -43,6 +44,7 @@ import { GenderMap } from '@src/utils/enumType';
 import {
     DEFAULT_RECOMMEND_REQUEST_SIZE,
     DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE,
+    DEFAULT_SIMILAR_PERFUMES_REQUEST_SIZE,
 } from '@utils/constants';
 import _ from 'lodash';
 
@@ -463,6 +465,89 @@ const recommendPersonalPerfume: RequestHandler = (
 
 /**
  * @swagger
+ *   /perfume/{perfumeIdx}/similar:
+ *     get:
+ *       tags:
+ *       - perfume
+ *       summary: 비슷한 향수 추천
+ *       description: 현재 향수와 유사한 향수를 추천 해준다,
+ *       operationId: recommendSimilarPerfume
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: requestSize
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       - name: lastPosition
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       - name: perfumeIdx
+ *         in: path
+ *         required: true
+ *         type: integer
+ *         format: int64
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 현재 향수와 비슷한 향수 리스트 입니다.
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   count:
+ *                     type: integer
+ *                     example: 1
+ *                   rows:
+ *                     type: array
+ *                     items:
+ *                       allOf:
+ *                       - $ref: '#/definitions/PerfumeRecommendResponse'
+ *       x-swagger-router-controller: Perfume
+ * */
+const recommendSimilarPerfume: RequestHandler = (
+    req: Request | any,
+    res: Response,
+    next: NextFunction
+): any => {
+    const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
+        req.query,
+        {
+            requestSize: DEFAULT_SIMILAR_PERFUMES_REQUEST_SIZE,
+        }
+    );
+    logger.debug(
+        `${LOG_TAG} recommendSimilarPerfume(query = ${JSON.stringify(
+            req.query
+        )})`
+    );
+    const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
+    return Perfume.getPerfumesByRandom(pagingDTO.limit)
+        .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
+            return result.convertType(PerfumeRecommendResponse.createByJson);
+        })
+        .then((response: ListAndCountDTO<PerfumeRecommendResponse>) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} recommendPersonalPerfume's result = ${response}`
+            );
+            res.status(StatusCode.OK).json(
+                new ResponseDTO<ListAndCountDTO<PerfumeRecommendResponse>>(
+                    MSG_GET_PERFUME_SIMILARS_BY_PERFUME,
+                    response
+                )
+            );
+        })
+        .catch((err: Error) => next(err));
+};
+
+/**
+ * @swagger
  *   /perfume/recommend/common:
  *     get:
  *       tags:
@@ -815,6 +900,7 @@ module.exports.recommendCommonPerfume = recommendCommonPerfume;
 module.exports.getSurveyPerfume = getSurveyPerfume;
 module.exports.getNewPerfume = getNewPerfume;
 module.exports.getLikedPerfume = getLikedPerfume;
+module.exports.recommendSimilarPerfume = recommendSimilarPerfume;
 
 module.exports.setPerfumeService = (service: PerfumeService) => {
     Perfume = service;
