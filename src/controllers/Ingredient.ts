@@ -4,19 +4,22 @@ import { logger, LoggerHelper } from '@modules/winston';
 
 import { MSG_GET_SEARCH_INGREDIENT_SUCCESS } from '@utils/strings';
 import StatusCode from '@utils/statusCode';
+import { DEFAULT_INGREDIENT_REQUEST_SIZE } from '@utils/constants';
 
 import IngredientService from '@services/IngredientService';
 
+import { PagingRequestDTO } from '@request/common';
 import { ResponseDTO } from '@response/common';
 import { IngredientResponse } from '@response/ingredient';
-import { IngredientDTO, ListAndCountDTO } from '@dto/index';
+import { IngredientDTO, ListAndCountDTO, PagingDTO } from '@dto/index';
 
 const LOG_TAG: string = '[Ingredient/Controller]';
 
 let Ingredient: IngredientService = new IngredientService();
 
 /**
- * @swagger
+ * @hide
+ * #swagger
  *  /ingredient:
  *     get:
  *       tags:
@@ -60,12 +63,21 @@ let Ingredient: IngredientService = new IngredientService();
  *       x-swagger-router-controller: Ingredient
  */
 const getIngredientAll: RequestHandler = (
-    _: Request,
+    req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    logger.debug(`${LOG_TAG} getIngredientAll()`);
-    Ingredient.getIngredientAll()
+    const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
+        req.query,
+        {
+            requestSize: DEFAULT_INGREDIENT_REQUEST_SIZE,
+        }
+    );
+    logger.debug(
+        `${LOG_TAG} getIngredientAll(pagingRequestDTO = ${pagingRequestDTO})`
+    );
+    const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
+    Ingredient.getIngredientAll(pagingDTO)
         .then((result: ListAndCountDTO<IngredientDTO>) => {
             return result.convertType(IngredientResponse.createByJson);
         })
