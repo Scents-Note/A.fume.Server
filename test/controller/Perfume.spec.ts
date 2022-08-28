@@ -18,6 +18,7 @@ import {
     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
     MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
     MSG_ABNORMAL_ACCESS,
+    MSG_GET_RECOMMEND_SIMILAR_PERFUMES,
     BASE_PATH,
 } from '@utils/strings';
 
@@ -440,6 +441,43 @@ describe('# Perfume Controller Test', () => {
                         );
                         expect(responseDTO.data.count).to.be.eq(
                             DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE
+                        );
+                        done();
+                    })
+                    .catch((err: Error) => done(err));
+            });
+        });
+
+        describe('# recommendSimilarPerfume Test', () => {
+            it('success case', (done: Done) => {
+                mockPerfumeService.recommendByUser = async () => {
+                    return new ListAndCountDTO(
+                        1,
+                        mockPerfumeKeywordList.slice(0, 1)
+                    );
+                };
+
+                mockPerfumeService.getPerfumesByRandom = async () => {
+                    return new ListAndCountDTO(
+                        DEFAULT_RECOMMEND_REQUEST_SIZE,
+                        mockPerfumeList.slice(
+                            0,
+                            DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE
+                        )
+                    );
+                };
+                request(app)
+                    .get(`${basePath}/perfume/1/similar`)
+                    .expect((res: request.Response) => {
+                        expect(res.status).to.be.eq(StatusCode.OK);
+                        const responseDTO: ResponseDTO<
+                            ListAndCountDTO<PerfumeRecommendResponse>
+                        > = res.body;
+                        expect(responseDTO.message).to.be.eq(
+                            MSG_GET_RECOMMEND_SIMILAR_PERFUMES
+                        );
+                        expect(responseDTO.data.count).to.be.eq(
+                            DEFAULT_RECOMMEND_REQUEST_SIZE
                         );
                         done();
                     })

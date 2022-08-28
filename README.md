@@ -156,6 +156,7 @@ npm run test-each ./test/...
     -   SearchHistory 로직 개선
     -   영어 검색 지원
     -   향수 추천시 최소 7개 보장하도록 수정
+    -   비슷한 향수 추천 엔드포인트(/perfume/{perfumeIdx}/similar) 추가
 
 -   0.0.2
 
