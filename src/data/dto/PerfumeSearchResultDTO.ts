@@ -9,6 +9,7 @@ type Score = {
 class PerfumeSearchResultDTO {
     readonly perfumeIdx: number;
     readonly name: string;
+    readonly englishName: string;
     readonly brandName: string;
     readonly isLiked: boolean;
     readonly imageUrl: string;
@@ -20,6 +21,7 @@ class PerfumeSearchResultDTO {
     constructor(
         perfumeIdx: number,
         name: string,
+        englishName: string,
         isLiked: boolean,
         imageUrl: string,
         Brand: BrandDTO,
@@ -30,6 +32,7 @@ class PerfumeSearchResultDTO {
     ) {
         this.perfumeIdx = perfumeIdx;
         this.name = name;
+        this.englishName = englishName;
         this.brandName = Brand.name;
         this.isLiked = isLiked || false;
         this.imageUrl = imageUrl;
@@ -48,6 +51,7 @@ class PerfumeSearchResultDTO {
         return new PerfumeSearchResultDTO(
             json.perfumeIdx,
             json.name,
+            json.englishName,
             json.isLiked,
             json.imageUrl,
             BrandDTO.createByJson(json.Brand),
