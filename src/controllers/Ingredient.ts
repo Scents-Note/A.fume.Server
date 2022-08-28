@@ -18,7 +18,8 @@ const LOG_TAG: string = '[Ingredient/Controller]';
 let Ingredient: IngredientService = new IngredientService();
 
 /**
- * @swagger
+ * @hide
+ * #swagger
  *  /ingredient:
  *     get:
  *       tags:
