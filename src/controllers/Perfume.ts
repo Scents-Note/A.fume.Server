@@ -345,10 +345,11 @@ const getRecentPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
-    req.query.requestSize =
-        req.query.requestSize || DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE;
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
-        req.query
+        req.query,
+        {
+            requestSize: DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE,
+        }
     );
     logger.debug(
         `${LOG_TAG} getRecentPerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(
@@ -422,10 +423,11 @@ const recommendPersonalPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
-    req.query.requestSize =
-        req.query.requestSize || DEFAULT_RECOMMEND_REQUEST_SIZE;
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
-        req.query
+        req.query,
+        {
+            requestSize: DEFAULT_RECOMMEND_REQUEST_SIZE,
+        }
     );
     logger.debug(
         `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(
@@ -520,10 +522,11 @@ const recommendCommonPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
-    req.query.requestSize =
-        req.query.requestSize || DEFAULT_RECOMMEND_REQUEST_SIZE;
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
-        req.query
+        req.query,
+        {
+            requestSize: DEFAULT_RECOMMEND_REQUEST_SIZE,
+        }
     );
     const ageGroup: number = Math.floor(req.query.age / 10) * 10;
     const gender: number = GenderMap[req.query.gender];
@@ -670,10 +673,11 @@ const getNewPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
-    req.query.requestSize =
-        req.query.requestSize || DEFAULT_RECOMMEND_REQUEST_SIZE;
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
-        req.query
+        req.query,
+        {
+            requestSize: DEFAULT_RECOMMEND_REQUEST_SIZE,
+        }
     );
     logger.debug(
         `${LOG_TAG} getNewPerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(

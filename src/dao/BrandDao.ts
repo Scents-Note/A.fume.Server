@@ -52,14 +52,20 @@ class BrandDao {
     /**
      * 브랜드 전체 목록 조회
      *
+     * @params {PagingDTO} pagingDTO
      * @returns {Promise<ListAndCountDTO<BrandDTO>>}
      */
-    async readAll(): Promise<ListAndCountDTO<BrandDTO>> {
-        logger.debug(`${LOG_TAG} readAll()`);
-        return Brand.findAndCountAll({
-            raw: true,
-            nest: true,
-        }).then((result: any) => {
+    async readAll(pagingDTO?: PagingDTO): Promise<ListAndCountDTO<BrandDTO>> {
+        logger.debug(`${LOG_TAG} readAll(pagingDTO = ${pagingDTO})`);
+        return Brand.findAndCountAll(
+            Object.assign(
+                {
+                    raw: true,
+                    nest: true,
+                },
+                pagingDTO ? pagingDTO.sequelizeOption() : {}
+            )
+        ).then((result: any) => {
             return new ListAndCountDTO<BrandDTO>(
                 result.count,
                 result.rows.map(BrandDTO.createByJson)
