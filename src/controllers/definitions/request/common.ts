@@ -46,11 +46,20 @@ class PagingRequestDTO {
         return order;
     }
 
-    static createByJson(json: any): PagingRequestDTO {
+    static createByJson(json: any, defaultJson?: any): PagingRequestDTO {
+        const defaultValue: any = Object.assign(
+            {
+                requestSize: DEFAULT_PAGE_SIZE,
+                lastPosition: -1,
+                sort: 'createdAt_dsc',
+            },
+            defaultJson
+        );
         const requestSize: number =
-            parseInt(json.requestSize) || DEFAULT_PAGE_SIZE;
-        const lastPosition: number = parseInt(json.lastPosition) || -1;
-        const sort: string = json.sort || 'createdAt_dsc';
+            parseInt(json.requestSize) || defaultValue.requestSize;
+        const lastPosition: number =
+            parseInt(json.lastPosition) || defaultValue.lastPosition;
+        const sort: string = json.sort || defaultValue.sort;
         return new PagingRequestDTO(requestSize, lastPosition, sort);
     }
 }
