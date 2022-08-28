@@ -56,13 +56,21 @@ class IngredientDao {
      * @return {Promise<ListAndCountDTO>} listAndCountDTO
      * @throws {NotMatchedError} if there is no ingredient
      */
-    async readAll(where: any): Promise<ListAndCountDTO<IngredientDTO>> {
+    async readAll(
+        where: any,
+        pagingDTO?: PagingDTO
+    ): Promise<ListAndCountDTO<IngredientDTO>> {
         logger.debug(`${LOG_TAG} readAll(where = ${JSON.stringify(where)})`);
-        const result = await Ingredient.findAndCountAll({
-            where,
-            nest: true,
-            raw: true,
-        });
+        const result = await Ingredient.findAndCountAll(
+            Object.assign(
+                {
+                    where,
+                    raw: true,
+                    nest: true,
+                },
+                pagingDTO ? pagingDTO.sequelizeOption() : {}
+            )
+        );
         if (!result) {
             throw new NotMatchedError();
         }
