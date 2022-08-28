@@ -6,6 +6,7 @@ import {
     IngredientConditionDTO,
     ListAndCountDTO,
     IngredientDTO,
+    PagingDTO,
 } from '@dto/index';
 
 const LOG_TAG: string = '[Ingredient/Service]';
@@ -23,9 +24,11 @@ class IngredientService {
      * @returns {Promise<ListAndCountDTO<IngredientDTO>>} ListAndCountDTO<IngredientDTO>
      * @throws {NotMatchedError} if there is no Ingredient
      **/
-    getIngredientAll(): Promise<ListAndCountDTO<IngredientDTO>> {
+    getIngredientAll(
+        pagingDTO?: PagingDTO
+    ): Promise<ListAndCountDTO<IngredientDTO>> {
         logger.debug(`${LOG_TAG} getIngredientAll()`);
-        return this.ingredientDao.readAll({});
+        return this.ingredientDao.readAll({}, pagingDTO);
     }
 
     /**
