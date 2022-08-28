@@ -1,4 +1,5 @@
 # A.fume.Server
+
 > A.fume Backend Server Repository 입니다.
 
 # 서비스 소개
@@ -13,13 +14,13 @@
 
 ## 🤝 CORE VALUE - 3E
 
-- **EASY**
+-   **EASY**
 
 어퓸에서는 쉽습니다. 어렵고 번거롭지 않습니다.
 
 어퓸에서는 원하는 향수를 쉽게 찾을 수 있고, 다양하고 자세한 정보로 향수를 쉽게 알 수 있습니다.
 
-- **ENJOY**
+-   **ENJOY**
 
 어퓸과 함께하면 즐거운 향수라이프가 가능합니다. 향수는 즐거운 취미생활이어야 합니다.
 
@@ -27,7 +28,7 @@
 
 이를 통해 나만의 향수를 찾는 과정이 즐거워집니다.
 
-- **EMOTIONAL**
+-   **EMOTIONAL**
 
 어퓸은 감성적입니다.
 
@@ -45,17 +46,17 @@
 
 ## 어퓸의 주요 기능
 
-- **향수 추천** : 흔한 향수 추천이 아닌, 당신의 취향에 맞는 향수들을 골라 추천해드립니다.
+-   **향수 추천** : 흔한 향수 추천이 아닌, 당신의 취향에 맞는 향수들을 골라 추천해드립니다.
 
-- **향수 검색** : 향 계열별 필터를 통해 내가 원하는 향의 향수들만 한 번에 모아볼 수 있습니다.
+-   **향수 검색** : 향 계열별 필터를 통해 내가 원하는 향의 향수들만 한 번에 모아볼 수 있습니다.
 
-- **향수 정보** : 향수의 노트 구성, 조향 스토리, 브랜드, 가격, 시향기 등 향수에 대한 모든 정보들을 한 곳에서 모아볼 수 있습니다.
+-   **향수 정보** : 향수의 노트 구성, 조향 스토리, 브랜드, 가격, 시향기 등 향수에 대한 모든 정보들을 한 곳에서 모아볼 수 있습니다.
 
-- **시향 위시리스트** : 혹시 나중에 맡아보고싶은 향수가 생겼나요? 위시리스트에 추가하여 보세요. 나중에 시향할 때 한 번에 볼 수 있습니다.
+-   **시향 위시리스트** : 혹시 나중에 맡아보고싶은 향수가 생겼나요? 위시리스트에 추가하여 보세요. 나중에 시향할 때 한 번에 볼 수 있습니다.
 
-- **시향 노트** : 시향을 하셨나요? 그 순간 어떻게 느꼈는지 까먹기 전에 나만의 시향 노트에 적어보세요. 단순 메모뿐만 아니라 계절감, 성별, 지속력, 잔향감 등도 선택할 수 있습니다.
+-   **시향 노트** : 시향을 하셨나요? 그 순간 어떻게 느꼈는지 까먹기 전에 나만의 시향 노트에 적어보세요. 단순 메모뿐만 아니라 계절감, 성별, 지속력, 잔향감 등도 선택할 수 있습니다.
 
-- **향수 컬렉션** : 그 동안 내가 썼던 향수들, 한 곳에 모아보세요. 나의 향수 취향을 한 눈에 파악할 수 있을거에요.
+-   **향수 컬렉션** : 그 동안 내가 썼던 향수들, 한 곳에 모아보세요. 나의 향수 취향을 한 눈에 파악할 수 있을거에요.
 
 # 프로젝트 구조
 
@@ -63,23 +64,22 @@
 
 # 기술 스택
 
-| 분류 | 기술 스택 |
-| :---| ---|
-| 런타임 | nodejs | 
-| framework | express |
-| language| typescript, javascript, shell script |
-| open api | swagger |
-| CI/CD | pm2, github action | 
-| cloud service | EC2, RDS, S3 |
-| test library | mocha |
-| logging | winston, morgan |
+| 분류          | 기술 스택                            |
+| :------------ | ------------------------------------ |
+| 런타임        | nodejs                               |
+| framework     | express                              |
+| language      | typescript, javascript, shell script |
+| open api      | swagger                              |
+| CI/CD         | pm2, github action                   |
+| cloud service | EC2, RDS, S3                         |
+| test library  | mocha                                |
+| logging       | winston, morgan                      |
 
 # 설치 방법
 
 1. .env 파일 생성
 
 project_root에 .env 생성
-
 
 2. 의존성 설치
 
@@ -117,7 +117,7 @@ npm run test-each ./test/...
 
 # 라이센스
 
-`GNU GENERAL PUBLIC LICENSE Version 3` 라이센스를 준수하며 ``LICENSE``에서 자세한 정보를 확인할 수 있습니다.
+`GNU GENERAL PUBLIC LICENSE Version 3` 라이센스를 준수하며 `LICENSE`에서 자세한 정보를 확인할 수 있습니다.
 
 # 기여 방법
 
@@ -126,7 +126,7 @@ npm run test-each ./test/...
 1. (<https://github.com/yourname/yourproject/fork>)을 포크합니다.
 2. (`git checkout -b feature/fooBar`) 명령어로 새 브랜치를 만드세요.
 3. (`git commit -am 'Add some fooBar'`) 명령어로 커밋하세요.
-4. (`git push origin feature/fooBar`) 명령어로 브랜치에 푸시하세요. 
+4. (`git push origin feature/fooBar`) 명령어로 브랜치에 푸시하세요.
 5. 풀리퀘스트를 보내주세요.
 
 ## B. 팀원으로 참여
@@ -137,36 +137,37 @@ npm run test-each ./test/...
 | 이신일 | PM | |
 | 윤희성 | Server 팀원 | quokkaman@kaka.com |
 
-
 # 팀원 소개
 
-- 윤희성 / @heesung6701 / quokkaman@kakao.com
+-   윤희성 / @heesung6701 / quokkaman@kakao.com
 
-- 조하담 / @ChoHadam / 
+-   조하담 / @ChoHadam /
 
 # 업데이트 내역
 
-* 0.0.3
-    * default review 컨셉 제거
-    * ingredient category 개념 추가
-        - Ingredient_category table 추가
-        - ingredient Model에 category_idx 추가
-    * 추천 정보가 존재하지 않는 경우 random 데이터 반환
-    * safe delete(deleted_at) 추가
-    * SearchHistory로직 개선
+-   0.0.3
+
+    -   default review 컨셉 제거
+    -   ingredient category 개념 추가
+        -   Ingredient_category table 추가
+        -   ingredient Model에 category_idx 추가
+    -   추천 정보가 존재하지 않는 경우 random 데이터 반환
+    -   safe delete(deleted_at) 추가
+    -   SearchHistory 로직 개선
     -   영어 검색 지원
     -   향수 추천시 최소 7개 보장하도록 수정
 
-* 0.0.2
-    * paging방식 lastPosition + pagingSize로 변경
-    * base path 변경
+-   0.0.2
 
-* 0.0.1
-    * Typescript 적용
-    * swagger 적용
-    * FullText Index 적용
-    * Logging winston 적용
-    * alias 적용
+    -   paging방식 lastPosition + pagingSize로 변경
+    -   base path 변경
+
+-   0.0.1
+    -   Typescript 적용
+    -   swagger 적용
+    -   FullText Index 적용
+    -   Logging winston 적용
+    -   alias 적용
 
 # 기술 블로그
 
