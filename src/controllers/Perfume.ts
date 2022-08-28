@@ -40,10 +40,13 @@ import {
     PagingDTO,
 } from '@dto/index';
 import { GenderMap } from '@src/utils/enumType';
+import {
+    DEFAULT_RECOMMEND_REQUEST_SIZE,
+    DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE,
+} from '@utils/constants';
+import _ from 'lodash';
 
 const LOG_TAG: string = '[Perfume/Controller]';
-const DEFAULT_RECOMMEND_REQUEST_SIZE: number = 7;
-const DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE: number = 7;
 
 let Perfume: PerfumeService = new PerfumeService();
 let SearchHistory: SearchHistoryService = new SearchHistoryService();
@@ -96,7 +99,9 @@ const getPerfume: RequestHandler = (
     }
     const loginUserIdx: number = req.middlewareToken.loginUserIdx || -1;
     logger.debug(
-        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, params = ${req.params})`
+        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, params = ${JSON.stringify(
+            req.params
+        )})`
     );
     Promise.all([
         Perfume.getPerfumeById(perfumeIdx, loginUserIdx),
@@ -193,7 +198,9 @@ const searchPerfume: RequestHandler = (
         req.query
     );
     logger.debug(
-        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, query = ${req.query}, body = ${req.body})`
+        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(
+            req.query
+        )}, body = ${JSON.stringify(req.body)})`
     );
     const perfumeSearchDTO: PerfumeSearchDTO =
         perfumeSearchRequest.toPerfumeSearchDTO(loginUserIdx);
@@ -264,7 +271,9 @@ const likePerfume: RequestHandler = (
     const perfumeIdx: number = req.params['perfumeIdx'];
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
     logger.debug(
-        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, params = ${req.params})`
+        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, params = ${JSON.stringify(
+            req.params
+        )})`
     );
     Perfume.likePerfume(loginUserIdx, perfumeIdx)
         .then((result: boolean) => {
@@ -342,7 +351,9 @@ const getRecentPerfume: RequestHandler = (
         req.query
     );
     logger.debug(
-        `${LOG_TAG} getRecentPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
+        `${LOG_TAG} getRecentPerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(
+            req.query
+        )})`
     );
     Perfume.recentSearch(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
@@ -417,19 +428,18 @@ const recommendPersonalPerfume: RequestHandler = (
         req.query
     );
     logger.debug(
-        `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
+        `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(
+            req.query
+        )})`
     );
     const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
     return (
         loginUserIdx > 0
             ? Perfume.recommendByUser(loginUserIdx, pagingDTO)
-            : Perfume.getPerfumesByRandom(pagingDTO)
+            : Perfume.getPerfumesByRandom(pagingDTO.limit)
     )
-        .then((it: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-            if (it.rows.length > 0) {
-                return it;
-            }
-            return Perfume.getPerfumesByRandom(pagingDTO);
+        .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
+            return supplementPerfumeWithRandom(result, pagingDTO.limit);
         })
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return result.convertType(PerfumeRecommendResponse.createByJson);
@@ -518,15 +528,14 @@ const recommendCommonPerfume: RequestHandler = (
     const ageGroup: number = Math.floor(req.query.age / 10) * 10;
     const gender: number = GenderMap[req.query.gender];
     logger.debug(
-        `${LOG_TAG} recommendCommonPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
+        `${LOG_TAG} recommendCommonPerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(
+            req.query
+        )})`
     );
     const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
     Perfume.recommendByUser(loginUserIdx, pagingDTO, ageGroup, gender)
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-            if (result.rows.length > 0) {
-                return result;
-            }
-            return Perfume.getPerfumesByRandom(pagingDTO);
+            return supplementPerfumeWithRandom(result, pagingDTO.limit);
         })
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return result.convertType(PerfumeRecommendResponse.createByJson);
@@ -667,7 +676,9 @@ const getNewPerfume: RequestHandler = (
         req.query
     );
     logger.debug(
-        `${LOG_TAG} getNewPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
+        `${LOG_TAG} getNewPerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(
+            req.query
+        )})`
     );
     Perfume.getNewPerfume(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
@@ -745,7 +756,9 @@ const getLikedPerfume: RequestHandler = (
         req.query
     );
     logger.debug(
-        `${LOG_TAG} getLikedPerfume(userIdx = ${userIdx}, loginUserIdx = ${loginUserIdx}, query = ${req.query})`
+        `${LOG_TAG} getLikedPerfume(userIdx = ${userIdx}, loginUserIdx = ${loginUserIdx}, query = ${JSON.stringify(
+            req.query
+        )})`
     );
     if (loginUserIdx != userIdx) {
         res.status(StatusCode.FORBIDDEN).json(
@@ -773,6 +786,21 @@ const getLikedPerfume: RequestHandler = (
             next(err);
         });
 };
+
+function supplementPerfumeWithRandom(
+    origin: ListAndCountDTO<PerfumeThumbKeywordDTO>,
+    size: number
+): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
+    return Perfume.getPerfumesByRandom(size).then(
+        (randomList: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
+            const needSize: number = size - origin.rows.length;
+            return new ListAndCountDTO<PerfumeThumbKeywordDTO>(
+                size,
+                _.concat(origin.rows, randomList.rows.slice(0, needSize))
+            );
+        }
+    );
+}
 
 module.exports.getPerfume = getPerfume;
 module.exports.searchPerfume = searchPerfume;
