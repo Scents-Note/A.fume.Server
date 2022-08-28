@@ -31,7 +31,8 @@ module.exports.setBrandService = (brandService: BrandService) => {
 };
 
 /**
- * @swagger
+ * @hide
+ * #swagger
  *   /brand:
  *     get:
  *       tags:
