@@ -4,10 +4,16 @@ import { logger, LoggerHelper } from '@modules/winston';
 
 import BrandService from '@services/BrandService';
 
+import { PagingRequestDTO } from '@request/common';
 import { ResponseDTO } from '@response/common';
 import { BrandResponse, BrandFilterResponse } from '@response/brand';
 
-import { ListAndCountDTO, BrandDTO, BrandFilterDTO } from '@dto/index';
+import {
+    ListAndCountDTO,
+    BrandDTO,
+    BrandFilterDTO,
+    PagingDTO,
+} from '@dto/index';
 
 import StatusCode from '@utils/statusCode';
 
@@ -15,6 +21,7 @@ import {
     MSG_GET_BRAND_FILTER_SUCCESS,
     MSG_GET_BRAND_ALL_SUCCESS,
 } from '@utils/strings';
+import { DEFAULT_BRAND_REQUEST_SIZE } from '@src/utils/constants';
 
 let Brand: BrandService = new BrandService();
 const LOG_TAG: string = '[Brand/Controller]';
@@ -24,12 +31,13 @@ module.exports.setBrandService = (brandService: BrandService) => {
 };
 
 /**
- * @swagger
+ * @hide
+ * #swagger
  *   /brand:
  *     get:
  *       tags:
  *       - brand
- *       summary: 브랜드 전체 조회
+ *       summary: 브랜드 조회
  *       description: 브랜드 조회 <br/> 반환 되는 정보 [브랜드]
  *       operationId: getBrandAll
  *       produces:
@@ -68,12 +76,21 @@ module.exports.setBrandService = (brandService: BrandService) => {
  *       x-swagger-router-controller: Brand
  * */
 const getBrandAll: RequestHandler = (
-    _: Request,
+    req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    logger.debug(`${LOG_TAG} getBrandAll()`);
-    Brand.getBrandAll()
+    const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
+        req.query,
+        {
+            requestSize: DEFAULT_BRAND_REQUEST_SIZE,
+        }
+    );
+    logger.debug(
+        `${LOG_TAG} getBrandAll(pagingRequestDTO = ${pagingRequestDTO})`
+    );
+    const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
+    Brand.getBrandAll(pagingDTO)
         .then((result: ListAndCountDTO<BrandDTO>) => {
             return result.convertType(BrandResponse.createByJson);
         })

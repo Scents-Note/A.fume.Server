@@ -161,14 +161,14 @@ class PerfumeDao {
             if (whereCondition.length) {
                 whereCondition = `${whereCondition} AND `;
             }
-            whereCondition = `${whereCondition} (MATCH(p.name) AGAINST('${searchText}*' IN BOOLEAN MODE)`;
+            whereCondition = `${whereCondition} (MATCH(p.name, p.english_name) AGAINST('${searchText}*' IN BOOLEAN MODE)`;
             if (brandIdxList.length == 0) {
-                whereCondition = `${whereCondition} OR (MATCH(b.name) AGAINST ('${searchText}*' IN BOOLEAN MODE))`;
+                whereCondition = `${whereCondition} OR (MATCH(b.name, b.english_name) AGAINST ('${searchText}*' IN BOOLEAN MODE))`;
             }
             whereCondition = `${whereCondition} )`;
             orderCondition =
-                `case when MATCH(p.name) AGAINST('${searchText}') then 0 ` +
-                `when MATCH(p.name) AGAINST('${searchText}*' IN BOOLEAN MODE) then 1 ` +
+                `case when MATCH(p.name, p.english_name) AGAINST('${searchText}') then 0 ` +
+                `when MATCH(p.name, p.english_name) AGAINST('${searchText}*' IN BOOLEAN MODE) then 1 ` +
                 `else 2 end, ${orderCondition}`;
         }
         const countSQL: string = SQL_SEARCH_PERFUME_SELECT_COUNT.replace(
@@ -491,23 +491,15 @@ class PerfumeDao {
     /**
      * 랜덤 향수 조회
      *
-     * @param {PagingDTO} pagingDTO
+     * @param {number} size
      * @returns {Promise<Perfume[]>}
      */
-    async getPerfumesByRandom(
-        pagingDTO: PagingDTO
-    ): Promise<[PerfumeThumbDTO]> {
-        logger.debug(
-            `${LOG_TAG} recommendPerfumeByRandom(pagingDTO = ${pagingDTO})`
-        );
-        const options: { [key: string]: any } = _.merge(
-            {},
-            defaultOption,
-            pagingDTO.sequelizeOption(),
-            {
-                order: Sequelize.literal('rand()'),
-            }
-        );
+    async getPerfumesByRandom(size: number): Promise<[PerfumeThumbDTO]> {
+        logger.debug(`${LOG_TAG} recommendPerfumeByRandom(size = ${size})`);
+        const options: { [key: string]: any } = _.merge({}, defaultOption, {
+            order: Sequelize.literal('rand()'),
+            limit: size,
+        });
         return Perfume.findAll(options).then((rows: any[]) => {
             return rows.map(PerfumeThumbDTO.createByJson);
         });

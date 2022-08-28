@@ -11,6 +11,7 @@ import {
     IngredientConditionDTO,
     IngredientDTO,
     ListAndCountDTO,
+    PagingDTO,
 } from '@dto/index';
 
 import IngredientMockHelper from '../mock_helper/IngredientMockHelper';
@@ -50,6 +51,18 @@ describe('# ingredientDao Test', () => {
                 .then((result: ListAndCountDTO<IngredientDTO>) => {
                     expect(result.count).greaterThan(4);
                     expect(result).instanceOf(ListAndCountDTO);
+                    done();
+                })
+                .catch((err: Error) => done(err));
+        });
+
+        it(' # success case with paging', (done: Done) => {
+            ingredientDao
+                .readAll({}, PagingDTO.createByJson({ limit: 1 }))
+                .then((result: ListAndCountDTO<IngredientDTO>) => {
+                    expect(result.count).greaterThan(4);
+                    expect(result).instanceOf(ListAndCountDTO);
+                    expect(result.rows.length).to.be.eq(1);
                     done();
                 })
                 .catch((err: Error) => done(err));

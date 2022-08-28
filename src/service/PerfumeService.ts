@@ -406,17 +406,15 @@ class PerfumeService {
     /**
      * 랜덤 향수 조회
      *
-     * @param {PagingDTO} pagingDTO
+     * @param {number} size
      * @returns {Promise<PerfumeThumbKeywordDTO[]>}
      **/
     getPerfumesByRandom(
-        pagingDTO: PagingDTO
+        size: number
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
-        logger.debug(
-            `${LOG_TAG} getPerfumesByRandom(pagingDTO = ${pagingDTO})`
-        );
+        logger.debug(`${LOG_TAG} getPerfumesByRandom(size = ${size})`);
         return perfumeDao
-            .getPerfumesByRandom(pagingDTO)
+            .getPerfumesByRandom(size)
             .then(
                 (
                     result: [PerfumeThumbDTO]
