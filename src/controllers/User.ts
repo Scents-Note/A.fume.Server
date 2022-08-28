@@ -83,7 +83,7 @@ const registerUser: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    logger.debug(`${LOG_TAG} registerUser(body = ${req.body})`);
+    logger.debug(`${LOG_TAG} registerUser(body = ${JSON.stringify(req.body)})`);
     const userRegisterRequest: UserRegisterRequest =
         UserRegisterRequest.createByJson(req.body);
 
@@ -159,7 +159,7 @@ const loginUser: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    logger.debug(`${LOG_TAG} loginUser(body = ${req.body})`);
+    logger.debug(`${LOG_TAG} loginUser(body = ${JSON.stringify(req.body)})`);
     const email: string = req.body.email;
     const password: string = req.body.password;
     User.loginUser(email, password)
@@ -220,7 +220,9 @@ const changePassword: RequestHandler = (
 ) => {
     const userIdx = req.middlewareToken.loginUserIdx;
     logger.debug(
-        `${LOG_TAG} changePassword(userIdx = ${userIdx}, body = ${req.body})`
+        `${LOG_TAG} changePassword(userIdx = ${userIdx}, body = ${JSON.stringify(
+            req.body
+        )})`
     );
     const { prevPassword, newPassword } = req.body;
     User.changePassword(userIdx, prevPassword, newPassword)
@@ -275,7 +277,7 @@ const authUser: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    logger.debug(`${LOG_TAG} authUser(body = ${req.body})`);
+    logger.debug(`${LOG_TAG} authUser(body = ${JSON.stringify(req.body)})`);
     const { token } = req.body;
     User.authUser(token)
         .then((result: UserAuthDTO) => {
@@ -485,7 +487,9 @@ const postSurvey: RequestHandler = (
 ) => {
     const userIdx: number = req.middlewareToken.loginUserIdx;
     logger.debug(
-        `${LOG_TAG} postSurvey(userIdx = ${userIdx}, body = ${req.body})`
+        `${LOG_TAG} postSurvey(userIdx = ${userIdx}, body = ${JSON.stringify(
+            req.body
+        )})`
     );
     const {
         keywordList,
@@ -588,7 +592,9 @@ const updateUser: RequestHandler = (
     const userIdx = req.params['userIdx'];
     const tokenUserIdx = req.middlewareToken.loginUserIdx;
     logger.debug(
-        `${LOG_TAG} updateUser(userIdx = ${tokenUserIdx}, params = ${req.params}, body = ${req.body})`
+        `${LOG_TAG} updateUser(userIdx = ${tokenUserIdx}, params = ${
+            req.params
+        }, body = ${JSON.stringify(req.body)})`
     );
     if (userIdx != tokenUserIdx) {
         logger.warn('userIdx and tokenUserIdx is not same');

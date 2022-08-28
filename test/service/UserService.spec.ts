@@ -17,13 +17,9 @@ import LoginInfoMockHelper from '../mock_helper/LoginInfoMockHelper';
 import TokenGroupMockHelper from '../mock_helper/TokenGroupMockHelper';
 import UserMockHelper from '../mock_helper/UserMockHelper';
 
-const mockUserDao = require('../dao/UserDao.mock.js');
+const mockUserDao = Object.assign({}, require('../dao/UserDao.mock.js'));
 const mockJWT = Object.assign({}, require('../lib/token.mock.js'));
-const mockCrypt = {
-    encrypt: (data: string): string => data,
-    decrypt: (data: string): string => data,
-};
-const userService = new UserService(mockUserDao, mockCrypt, mockJWT);
+const userService = new UserService(mockUserDao, undefined, mockJWT);
 
 describe('# User Service Test', () => {
     describe('# createUser Test', () => {
@@ -67,8 +63,22 @@ describe('# User Service Test', () => {
 
     describe('# loginUser Test', () => {
         it('# wrong password', (done: Done) => {
+            mockUserDao.read = () => {
+                return UserDTO.createByJson({
+                    userIdx: 1,
+                    nickname: 'user1',
+                    password: userService.crypto.encrypt('encrypted'),
+                    gender: 2,
+                    email: 'email1@afume.com',
+                    birth: 1995,
+                    grade: 1,
+                    accessTime: '2021-07-13T11:33:49.000Z',
+                    createdAt: '2021-07-13T11:33:49.000Z',
+                    updatedAt: '2021-08-07T09:20:29.000Z',
+                });
+            };
             userService
-                .loginUser('', 'password')
+                .loginUser('', userService.crypto.encrypt('password'))
                 .then(() => {
                     done(new UnExpectedError(WrongPasswordError));
                 })
@@ -79,8 +89,22 @@ describe('# User Service Test', () => {
                 .catch((err: Error) => done(err));
         });
         it('# success case', (done: Done) => {
+            mockUserDao.read = () => {
+                return UserDTO.createByJson({
+                    userIdx: 1,
+                    nickname: 'user1',
+                    password: userService.crypto.encrypt('encrypted'),
+                    gender: 2,
+                    email: 'email1@afume.com',
+                    birth: 1995,
+                    grade: 1,
+                    accessTime: '2021-07-13T11:33:49.000Z',
+                    createdAt: '2021-07-13T11:33:49.000Z',
+                    updatedAt: '2021-08-07T09:20:29.000Z',
+                });
+            };
             userService
-                .loginUser('', 'encrypted')
+                .loginUser('', userService.crypto.encrypt('encrypted'))
                 .then((result) => {
                     LoginInfoMockHelper.validTest.call(result);
                     done();
@@ -102,9 +126,54 @@ describe('# User Service Test', () => {
     });
 
     describe('# changePassword Test', () => {
-        it('# wrong prev password', (done: Done) => {
+        it('# success case', (done: Done) => {
+            mockUserDao.readByIdx = () => {
+                return UserDTO.createByJson({
+                    userIdx: 1,
+                    nickname: 'user1',
+                    password: userService.crypto.encrypt('encrypted'),
+                    gender: 2,
+                    email: 'email1@afume.com',
+                    birth: 1995,
+                    grade: 1,
+                    accessTime: '2021-07-13T11:33:49.000Z',
+                    createdAt: '2021-07-13T11:33:49.000Z',
+                    updatedAt: '2021-08-07T09:20:29.000Z',
+                });
+            };
             userService
-                .changePassword(1, 'wrong', '')
+                .changePassword(
+                    1,
+                    userService.crypto.encrypt('encrypted'),
+                    userService.crypto.encrypt('newpassword')
+                )
+                .then(() => {
+                    done();
+                })
+                .catch((err: Error) => done(err));
+        });
+
+        it('# wrong prev password', (done: Done) => {
+            mockUserDao.readByIdx = () => {
+                return UserDTO.createByJson({
+                    userIdx: 1,
+                    nickname: 'user1',
+                    password: userService.crypto.encrypt('encrypted'),
+                    gender: 2,
+                    email: 'email1@afume.com',
+                    birth: 1995,
+                    grade: 1,
+                    accessTime: '2021-07-13T11:33:49.000Z',
+                    createdAt: '2021-07-13T11:33:49.000Z',
+                    updatedAt: '2021-08-07T09:20:29.000Z',
+                });
+            };
+            userService
+                .changePassword(
+                    1,
+                    userService.crypto.encrypt('wrong'),
+                    userService.crypto.encrypt('')
+                )
                 .then(() => {
                     done(new UnExpectedError(WrongPasswordError));
                 })
@@ -116,8 +185,26 @@ describe('# User Service Test', () => {
         });
 
         it('# same password(restrict by password policy)', (done: Done) => {
+            mockUserDao.readByIdx = () => {
+                return UserDTO.createByJson({
+                    userIdx: 1,
+                    nickname: 'user1',
+                    password: userService.crypto.encrypt('encrypted'),
+                    gender: 2,
+                    email: 'email1@afume.com',
+                    birth: 1995,
+                    grade: 1,
+                    accessTime: '2021-07-13T11:33:49.000Z',
+                    createdAt: '2021-07-13T11:33:49.000Z',
+                    updatedAt: '2021-08-07T09:20:29.000Z',
+                });
+            };
             userService
-                .changePassword(1, 'encrypted', 'encrypted')
+                .changePassword(
+                    1,
+                    userService.crypto.encrypt('encrypted'),
+                    userService.crypto.encrypt('encrypted')
+                )
                 .then(() => {
                     done(new UnExpectedError(PasswordPolicyError));
                 })

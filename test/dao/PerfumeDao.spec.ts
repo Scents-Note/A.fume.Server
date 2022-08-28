@@ -276,6 +276,80 @@ describe('# perfumeDao Test', () => {
                     })
                     .catch((err: Error) => done(err));
             });
+
+            it('# success case (searchText with perfume name)', (done: Done) => {
+                perfumeDao
+                    .search([], [], [], '향수', defaultPagingDTO)
+                    .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
+                        expect(result.count).to.be.eq(5);
+                        expect(result.rows.length).to.be.gte(5);
+                        result.rows.forEach(
+                            (perfume: PerfumeSearchResultDTO) => {
+                                expect(perfume.name).to.be.contains('향수');
+                            }
+                        );
+                        done();
+                    })
+                    .catch((err: Error) => done(err));
+            });
+
+            it('# success case (searchText with perfume english_name)', (done: Done) => {
+                perfumeDao
+                    .search([], [], [], 'perfume', defaultPagingDTO)
+                    .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
+                        console.log(result);
+                        expect(result.count).to.be.eq(5);
+                        expect(result.rows.length).to.be.gte(5);
+                        result.rows.forEach(
+                            (perfume: PerfumeSearchResultDTO) => {
+                                expect(perfume.englishName).to.be.contains(
+                                    'perfume'
+                                );
+                            }
+                        );
+                        done();
+                    })
+                    .catch((err: Error) => done(err));
+            });
+
+            it('# success case (searchText with brand name)', (done: Done) => {
+                perfumeDao
+                    .search([], [], [], '브랜드', defaultPagingDTO)
+                    .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
+                        expect(result.count).to.be.eq(5);
+                        expect(result.rows.length).to.be.gte(5);
+                        result.rows.forEach(
+                            (perfume: PerfumeSearchResultDTO) => {
+                                expect(perfume.Brand.name).to.be.contains(
+                                    '브랜드'
+                                );
+                            }
+                        );
+                        done();
+                    })
+                    .catch((err: Error) => done(err));
+            });
+
+            it('# success case (searchText with brand english_name)', (done: Done) => {
+                perfumeDao
+                    .search([], [], [], 'brand', defaultPagingDTO)
+                    .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
+                        expect(result.count).to.be.eq(5);
+                        expect(result.rows.length).to.be.gte(5);
+                        result.rows.forEach(
+                            (perfume: PerfumeSearchResultDTO) => {
+                                expect(
+                                    perfume.Brand.englishName
+                                ).to.be.contains('brand');
+                            }
+                        );
+                        done();
+                    })
+                    .catch((err: Error) => done(err));
+            });
+        });
+
+        describe('# readPerfume Test', () => {
             it('# read new Perfume', (done: Done) => {
                 perfumeDao
                     .readPerfume(undefined, defaultPagingDTO)
@@ -300,7 +374,9 @@ describe('# perfumeDao Test', () => {
                     })
                     .catch((err: Error) => done(err));
             });
+        });
 
+        describe('# readLikedPerfume Test', () => {
             it('# read likedPerfume', (done: Done) => {
                 perfumeDao
                     .readLikedPerfume(1, defaultPagingDTO)
@@ -314,6 +390,8 @@ describe('# perfumeDao Test', () => {
                     })
                     .catch((err) => done(err));
             });
+        });
+        describe('# recentSearchPerfumeList Test', () => {
             it('# recent search perfume List', (done) => {
                 perfumeDao
                     .recentSearchPerfumeList(1, defaultPagingDTO)
@@ -357,7 +435,9 @@ describe('# perfumeDao Test', () => {
                     )
                     .catch((err: Error) => done(err));
             });
+        });
 
+        describe('# readPerfumeSurvey Test', () => {
             it('# read perfume survey', (done: Done) => {
                 perfumeDao
                     .readPerfumeSurvey(GENDER_WOMAN)
@@ -372,6 +452,7 @@ describe('# perfumeDao Test', () => {
                     .catch((err) => done(err));
             });
         });
+
         describe('# recommend Test', () => {
             it('# recommend perfume by age and gender', (done: Done) => {
                 perfumeDao
@@ -395,8 +476,8 @@ describe('# perfumeDao Test', () => {
         describe('# random Test', () => {
             it('# get perfumes by random', (done: Done) => {
                 Promise.all([
-                    perfumeDao.getPerfumesByRandom(defaultPagingDTO),
-                    perfumeDao.getPerfumesByRandom(defaultPagingDTO),
+                    perfumeDao.getPerfumesByRandom(defaultPagingDTO.limit),
+                    perfumeDao.getPerfumesByRandom(defaultPagingDTO.limit),
                 ])
                     .then((result: [[PerfumeThumbDTO], [PerfumeThumbDTO]]) => {
                         const result1: [PerfumeThumbDTO] = result[0];

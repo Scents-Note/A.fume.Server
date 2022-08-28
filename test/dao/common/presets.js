@@ -22,5 +22,12 @@ module.exports = async (context) => {
         require('../../../src/utils/db/mongoose.js'),
     ]);
     await require('./seeds.js')();
+    await sequelize.query(
+        'CREATE FULLTEXT INDEX ft_idx_perfume_name ON perfumes(`name`, `english_name`)'
+    );
+    await sequelize.query(
+        'CREATE FULLTEXT INDEX ft_idx_brand_name ON brands(`name`, `english_name`)'
+    );
+
     context.timeout();
 };
