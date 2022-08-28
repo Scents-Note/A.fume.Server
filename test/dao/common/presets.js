@@ -23,12 +23,6 @@ module.exports = async (context) => {
     ]);
     await require('./seeds.js')();
     await sequelize.query(
-        'CREATE FULLTEXT INDEX ft_idx_perfume_name_one ON perfumes(`name`)'
-    );
-    await sequelize.query(
-        'CREATE FULLTEXT INDEX ft_idx_brand_name_one ON brands(`name`)'
-    );
-    await sequelize.query(
         'CREATE FULLTEXT INDEX ft_idx_perfume_name ON perfumes(`name`, `english_name`)'
     );
     await sequelize.query(
