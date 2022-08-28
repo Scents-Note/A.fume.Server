@@ -28,5 +28,12 @@ module.exports = async (context) => {
     await sequelize.query(
         'CREATE FULLTEXT INDEX ft_idx_brand_name_one ON brands(`name`)'
     );
+    await sequelize.query(
+        'CREATE FULLTEXT INDEX ft_idx_perfume_name ON perfumes(`name`, `english_name`)'
+    );
+    await sequelize.query(
+        'CREATE FULLTEXT INDEX ft_idx_brand_name ON brands(`name`, `english_name`)'
+    );
+
     context.timeout();
 };
