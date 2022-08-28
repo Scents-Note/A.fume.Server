@@ -154,6 +154,8 @@ npm run test-each ./test/...
     * 추천 정보가 존재하지 않는 경우 random 데이터 반환
     * safe delete(deleted_at) 추가
     * SearchHistory로직 개선
+    -   영어 검색 지원
+    -   향수 추천시 최소 7개 보장하도록 수정
 
 * 0.0.2
     * paging방식 lastPosition + pagingSize로 변경
