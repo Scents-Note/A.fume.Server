@@ -14,7 +14,7 @@ import {
     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
     MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
     MSG_ABNORMAL_ACCESS,
-    MSG_GET_PERFUME_SIMILARS_BY_PERFUME,
+    MSG_GET_RECOMMEND_SIMILAR_PERFUMES,
 } from '@utils/strings';
 
 import StatusCode from '@utils/statusCode';
@@ -470,8 +470,8 @@ const recommendPersonalPerfume: RequestHandler = (
  *       tags:
  *       - perfume
  *       summary: 비슷한 향수 추천
- *       description: 현재 향수와 유사한 향수를 추천 해준다,
- *       operationId: recommendSimilarPerfume
+ *       description: 현재 향수와 유사한 향수들을 추천 해준다,
+ *       operationId: recommendSimilarPerfumes
  *       produces:
  *       - application/json
  *       parameters:
@@ -510,7 +510,7 @@ const recommendPersonalPerfume: RequestHandler = (
  *                       - $ref: '#/definitions/PerfumeRecommendResponse'
  *       x-swagger-router-controller: Perfume
  * */
-const recommendSimilarPerfume: RequestHandler = (
+const recommendSimilarPerfumes: RequestHandler = (
     req: Request | any,
     res: Response,
     next: NextFunction
@@ -538,7 +538,7 @@ const recommendSimilarPerfume: RequestHandler = (
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeRecommendResponse>>(
-                    MSG_GET_PERFUME_SIMILARS_BY_PERFUME,
+                    MSG_GET_RECOMMEND_SIMILAR_PERFUMES,
                     response
                 )
             );
@@ -900,7 +900,7 @@ module.exports.recommendCommonPerfume = recommendCommonPerfume;
 module.exports.getSurveyPerfume = getSurveyPerfume;
 module.exports.getNewPerfume = getNewPerfume;
 module.exports.getLikedPerfume = getLikedPerfume;
-module.exports.recommendSimilarPerfume = recommendSimilarPerfume;
+module.exports.recommendSimilarPerfumes = recommendSimilarPerfumes;
 
 module.exports.setPerfumeService = (service: PerfumeService) => {
     Perfume = service;

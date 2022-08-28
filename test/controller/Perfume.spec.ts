@@ -18,7 +18,7 @@ import {
     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
     MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
     MSG_ABNORMAL_ACCESS,
-    MSG_GET_PERFUME_SIMILARS_BY_PERFUME,
+    MSG_GET_RECOMMEND_SIMILAR_PERFUMES,
     BASE_PATH,
 } from '@utils/strings';
 
@@ -474,7 +474,7 @@ describe('# Perfume Controller Test', () => {
                             ListAndCountDTO<PerfumeRecommendResponse>
                         > = res.body;
                         expect(responseDTO.message).to.be.eq(
-                            MSG_GET_PERFUME_SIMILARS_BY_PERFUME
+                            MSG_GET_RECOMMEND_SIMILAR_PERFUMES
                         );
                         expect(responseDTO.data.count).to.be.eq(
                             DEFAULT_RECOMMEND_REQUEST_SIZE
