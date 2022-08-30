@@ -1,6 +1,5 @@
 import { NotMatchedError, UnAuthorizedError } from '../utils/errors/errors';
 
-const reviewDao = require('../dao/ReviewDao.js');
 const likeReviewDao = require('../dao/LikeReviewDao');
 const keywordDao = require('../dao/KeywordDao');
 const reportReviewDao = require('../dao/ReportReviewDao');
@@ -12,9 +11,11 @@ const {
 
 import UserDao from '@dao/UserDao';
 import LikePerfumeDao from '@dao/LikePerfumeDao';
+import ReviewDao from '@dao/ReviewDao';
 
 const userDao = new UserDao();
 const likePerfumeDao = new LikePerfumeDao();
+const reviewDao = new ReviewDao();
 
 const discordHook = require('../utils/discordHook')
 
