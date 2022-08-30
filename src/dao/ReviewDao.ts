@@ -116,7 +116,7 @@ class ReviewDao {
             nest: true,
         });
 
-        if (!readReviewResult) {
+        if (readReviewResult === null) {
             throw new NotMatchedError();
         }
 
