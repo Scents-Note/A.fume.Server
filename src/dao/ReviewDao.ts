@@ -83,7 +83,9 @@ class ReviewDao {
                 content,
             });
         } catch (err: Error | any) {
-            if (err.parent.errno === 1062) throw new DuplicatedEntryError
+            if (err.parent.errno === 1062) {
+                throw new DuplicatedEntryError;
+            }
             throw err;
         }
     };
@@ -114,7 +116,9 @@ class ReviewDao {
             nest: true,
         });
 
-        if (!readReviewResult) throw new NotMatchedError();
+        if (!readReviewResult) {
+            throw new NotMatchedError();
+        }
 
         const readKeywordList = await JoinReviewKeyword.findAll({
             where: { reviewIdx },
