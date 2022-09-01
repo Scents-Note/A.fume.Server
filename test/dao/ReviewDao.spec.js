@@ -4,11 +4,12 @@ dotenv.config();
 import { NotMatchedError } from '@errors';
 import NoteDao from '@dao/NoteDao';
 import ReviewDao from '@dao/ReviewDao';
+import KeywordDao from '@dao/KeywordDao';
 
 const chai = require('chai');
 const { expect } = chai;
 const reviewDao = new ReviewDao();
-const keywordDao = require('@dao/KeywordDao');
+const keywordDao = new KeywordDao();
 const { Review } = require('@sequelize');
 const noteDao = new NoteDao();
 const { read } = noteDao;
