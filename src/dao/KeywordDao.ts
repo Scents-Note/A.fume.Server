@@ -171,6 +171,8 @@ class KeywordDao {
 
     /**
      * 향수가 가진 키워드별 개수 조회
+     * @TODO 아래 함수 readAllOfPerfume()와 역할 유사해서 제거/주석 처리 필요해보임
+     * @TODO NotMatchedError 이 단계에서 필요한지 고민
      * 
      * @param {number} perfumeIdx
      * @param {string[][]} sort
@@ -198,6 +200,10 @@ class KeywordDao {
 
     /**
      * 향수별 특정 키워드 매칭 정보 조회
+     * @TODO count 리턴 대신, findOne 결과 그대로 리턴하는 방식으로 변경 요구됨. 
+     * @TODO 함수 역할과 맞게 함수명 변경.
+     * @TODO 변경사항에 맞게 테스트 코드 변경
+     * @TODO NotMatchedError 이 단계에서 필요한지 고민
      * 
      * @param {Object}
      * @returns {Promise<number>} count
