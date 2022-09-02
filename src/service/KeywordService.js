@@ -1,4 +1,6 @@
-const keywordDao = require('../dao/KeywordDao');
+import KeywordDao from '@dao/KeywordDao';
+
+const keywordDao = new KeywordDao();
 
 /**
  * 키워드 전체 조회

@@ -15,6 +15,7 @@ import NoteDao from '@dao/NoteDao';
 import LikePerfumeDao from '@dao/LikePerfumeDao';
 import S3FileDao from '@dao/S3FileDao';
 import ReviewDao from '@dao/ReviewDao';
+import KeywordDao from '@dao/KeywordDao';
 
 import {
     PagingDTO,
@@ -41,7 +42,7 @@ let ingredientDao: IngredientDao = new IngredientDao();
 let reviewDao : ReviewDao = new ReviewDao();
 let noteDao: NoteDao = new NoteDao();
 let likePerfumeDao: LikePerfumeDao = new LikePerfumeDao();
-let keywordDao = require('@dao/KeywordDao.js');
+let keywordDao: KeywordDao = new KeywordDao();
 let s3FileDao: S3FileDao = new S3FileDao();
 let userDao: UserDao = new UserDao();
 
