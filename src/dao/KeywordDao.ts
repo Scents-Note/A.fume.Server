@@ -56,6 +56,7 @@ class KeywordDao {
                 ];
             } catch (err) {
                 logger.error(err);
+                throw err;
             }
         });
     };
