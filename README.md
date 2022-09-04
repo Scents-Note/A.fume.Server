@@ -135,7 +135,7 @@ npm run test-each ./test/...
 | name | role | email |
 |:---|:---|:---|
 | 이신일 | PM | |
-| 윤희성 | Server 팀원 | quokkaman@kaka.com |
+| 윤희성 | Server | quokkaman@kaka.com |
 
 # 팀원 소개
 
