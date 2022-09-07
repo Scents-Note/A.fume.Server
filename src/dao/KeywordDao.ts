@@ -113,15 +113,22 @@ class KeywordDao {
 
     /**
      * 키워드 전체 목록 조회
-     *
+     * @param {number} pagingIndex
+     * @param {number} pagingSize
+     * @param {string[][]} sort
      * @returns {any[]} KeywordListDTO
      */
-    readAll(pagingIndex: number = 1, pagingSize: number = 10) : any[] { 
+    readAll(
+        pagingIndex: number = 1, 
+        pagingSize: number = 10, 
+        sort: string[][] = [['name', 'asc']] 
+    ) : any[] { 
         //LIMIT는 가져올 게시물의 수, OFFSET은 어디서부터 가져올거냐(몇 페이지를 가져오고 싶냐)
         return Keyword.findAndCountAll({
             attributes: {
                 exclude: ['createdAt', 'updatedAt', 'deletedAt'],
             },
+            order: sort,
             offset: (pagingIndex - 1) * pagingSize,
             limit: pagingSize,
             raw: true,
