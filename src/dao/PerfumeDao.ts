@@ -67,23 +67,18 @@ const SQL_SEARCH_PERFUME_SELECT: string =
     'b.image_url AS "Brand.imageUrl", ' +
     'b.description AS "Brand.description", ' +
     'b.created_at AS "Brand.createdAt", ' +
-    'b.updated_at AS "Brand.updatedAt", ' +
-    'IFNULL((SELECT COUNT(jpk.keyword_idx) FROM join_perfume_keywords jpk WHERE jpk.perfume_idx = p.perfume_idx AND jpk.keyword_idx IN (:keywords) GROUP BY jpk.perfume_idx), 0) AS "Score.keyword", ' +
-    'IFNULL((SELECT COUNT(n.ingredient_idx) FROM notes n WHERE n.perfume_idx = p.perfume_idx AND n.ingredient_idx IN (:ingredients) GROUP BY n.perfume_idx), 0) AS "Score.ingredient", ' +
-    '(IFNULL((SELECT COUNT(jpk.keyword_idx) FROM join_perfume_keywords jpk WHERE jpk.perfume_idx = p.perfume_idx AND jpk.keyword_idx IN (:keywords) GROUP BY jpk.perfume_idx), 0) + IFNULL((SELECT COUNT(n.ingredient_idx) FROM notes n WHERE n.perfume_idx = p.perfume_idx AND n.ingredient_idx IN (:ingredients) GROUP BY n.perfume_idx), 0)) AS "Score.total" ' +
+    'b.updated_at AS "Brand.updatedAt" ' +
     'FROM perfumes p ' +
     'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
     'WHERE p.deleted_at IS NULL AND (:whereCondition) ' +
     'ORDER BY :orderCondition ' +
     'LIMIT :limit ' +
     'OFFSET :offset';
-const SQL_ORDER_DEFAULT: string =
-    '(IFNULL((SELECT COUNT(jpk.keyword_idx) FROM join_perfume_keywords jpk WHERE jpk.perfume_idx = p.perfume_idx AND jpk.keyword_idx IN (:keywords) GROUP BY jpk.perfume_idx), 0) + IFNULL((SELECT COUNT(n.ingredient_idx) FROM notes n WHERE n.perfume_idx = p.perfume_idx AND n.ingredient_idx IN (:ingredients) GROUP BY n.perfume_idx), 0)) DESC';
 const SQL_SEARCH_BRAND_CONDITION: string = ' p.brand_idx IN (:brands)';
 const SQL_SEARCH_KEYWORD_CONDITION: string =
-    'IFNULL((SELECT COUNT(jpk.keyword_idx) FROM join_perfume_keywords jpk WHERE jpk.perfume_idx = p.perfume_idx AND jpk.keyword_idx IN (:keywords) GROUP BY jpk.perfume_idx), 0) > 0 ';
+    '(SELECT COUNT(DISTINCT(jpk.keyword_idx)) FROM join_perfume_keywords jpk WHERE jpk.perfume_idx = p.perfume_idx AND jpk.keyword_idx IN (:keywords) GROUP BY jpk.perfume_idx) = (:keywordCount) ';
 const SQL_SEARCH_INGREDIENT_CONDITION: string =
-    'IFNULL((SELECT COUNT(n.ingredient_idx) FROM notes n WHERE n.perfume_idx = p.perfume_idx AND n.ingredient_idx IN (:ingredients) GROUP BY n.perfume_idx), 0) > 0 ';
+    '(SELECT COUNT(DISTINCT(i.category_idx)) FROM notes n INNER JOIN ingredients i ON i.ingredient_idx = n.ingredient_idx WHERE n.perfume_idx = p.perfume_idx AND n.ingredient_idx IN (:ingredients) GROUP BY n.perfume_idx) = (:categoryCount) ';
 
 const SQL_SEARCH_PERFUME_SELECT_COUNT: string =
     'SELECT ' +
@@ -110,6 +105,7 @@ class PerfumeDao {
      *
      * @param {number[]} brandIdxList
      * @param {number[]} ingredientIdxList
+     * @param {number[]} categoryIdxList
      * @param {number[]} keywordIdxList
      * @param {string} searchText
      * @param {PagingDTO} pagingDTO
@@ -118,6 +114,7 @@ class PerfumeDao {
     async search(
         brandIdxList: number[],
         ingredientIdxList: number[],
+        categoryIdxList: number[],
         keywordIdxList: number[],
         searchText: string,
         pagingDTO: PagingDTO
@@ -129,7 +126,7 @@ class PerfumeDao {
                 `searchText = ${searchText}, ` +
                 `pagingDTO = ${pagingDTO}`
         );
-        let orderCondition = pagingDTO.sqlOrderQuery(SQL_ORDER_DEFAULT);
+        let orderCondition = pagingDTO.sqlOrderQuery('p.perfume_idx ASC');
 
         let whereCondition: string = '';
         if (
@@ -188,6 +185,8 @@ class PerfumeDao {
                 keywords: keywordIdxList,
                 brands: brandIdxList,
                 ingredients: ingredientIdxList,
+                categoryCount: categoryIdxList.length,
+                keywordCount: keywordIdxList.length,
             },
             type: sequelize.QueryTypes.SELECT,
             raw: true,
@@ -198,6 +197,8 @@ class PerfumeDao {
                     keywords: keywordIdxList,
                     brands: brandIdxList,
                     ingredients: ingredientIdxList,
+                    categoryCount: categoryIdxList.length,
+                    keywordCount: keywordIdxList.length,
                     limit: pagingDTO.limit,
                     offset: pagingDTO.offset,
                 },
