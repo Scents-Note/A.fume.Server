@@ -145,7 +145,7 @@ npm run test-each ./test/...
 
 # 업데이트 내역
 -   0.0.4
-    - perfume search 기능에서 keyword, ingredient 에서 Score로직 삭제하고 AND 조건으로 변경s
+    - perfume search 기능에서 keyword, ingredient 에서 Score로직 삭제하고 AND 조건으로 변경
 
 -   0.0.3
 
