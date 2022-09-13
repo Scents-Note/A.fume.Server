@@ -496,7 +496,7 @@ class PerfumeDao {
      * @returns {Promise<Perfume[]>}
      */
     async getPerfumesByRandom(size: number): Promise<[PerfumeThumbDTO]> {
-        logger.debug(`${LOG_TAG} recommendPerfumeByRandom(size = ${size})`);
+        logger.debug(`${LOG_TAG} getPerfumesByRandom(size = ${size})`);
         const options: { [key: string]: any } = _.merge({}, defaultOption, {
             order: Sequelize.literal('rand()'),
             limit: size,
@@ -504,6 +504,46 @@ class PerfumeDao {
         return Perfume.findAll(options).then((rows: any[]) => {
             return rows.map(PerfumeThumbDTO.createByJson);
         });
+    }
+
+    /**
+     * perfume idx list로 향수 조회
+     *
+     * @param {number[]} perfumeIdxList
+     * @returns {Promise<Perfume[]>}
+     */
+    async getPerfumesByIdxList(
+        perfumeIdxList: number[]
+    ): Promise<PerfumeThumbDTO[]> {
+        logger.debug(
+            `${LOG_TAG} getPerfumesByIdxList(perfumeIdxList = ${perfumeIdxList})`
+        );
+        const options: { [key: string]: any } = _.merge({}, defaultOption, {
+            where: {
+                perfumeIdx: perfumeIdxList,
+            },
+        });
+        return Perfume.findAll(options)
+            .then((rows: any[]) => {
+                return rows.map(PerfumeThumbDTO.createByJson);
+            })
+            .then((result: PerfumeThumbDTO[]) => {
+                const perfumeThumbMap: { [key: number]: PerfumeThumbDTO } = {};
+                result.forEach((it: PerfumeThumbDTO) => {
+                    perfumeThumbMap[it.perfumeIdx] = it;
+                });
+                return perfumeIdxList
+                    .filter((idx: number) => {
+                        if (perfumeThumbMap[idx] == undefined) {
+                            logger.warn('perfumeIdx(' + idx + ') is not exist');
+                            return false;
+                        }
+                        return true;
+                    })
+                    .map((idx: number) => {
+                        return perfumeThumbMap[idx];
+                    });
+            });
     }
 }
 
