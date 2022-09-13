@@ -571,14 +571,6 @@ const recommendSimilarPerfumes: RequestHandler = (
  *         - MAN
  *         - WOMAN
  *         required: false
- *       - name: requestSize
- *         in: query
- *         type: integer
- *         required: false
- *       - name: lastPosition
- *         in: query
- *         type: integer
- *         required: false
  *       responses:
  *         200:
  *           description: 성공
@@ -607,26 +599,28 @@ const recommendCommonPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
-    const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
-        req.query,
-        {
-            requestSize: DEFAULT_RECOMMEND_REQUEST_SIZE,
-        }
-    );
-    const ageGroup: number = Math.floor(req.query.age / 10) * 10;
     const gender: number = GenderMap[req.query.gender];
     logger.debug(
         `${LOG_TAG} recommendCommonPerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(
             req.query
         )})`
     );
-    const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
-    Perfume.recommendByUser(loginUserIdx, pagingDTO, ageGroup, gender)
-        .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-            return supplementPerfumeWithRandom(result, pagingDTO.limit);
-        })
-        .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-            return result.convertType(PerfumeRecommendResponse.createByJson);
+    const perfumeIdxList: number[] =
+        gender == GenderMap.MAN
+            ? [
+                  5508, 2999, 3007, 2649, 2647, 2192, 5, 7392, 7381, 7380, 2234,
+                  2813, 6081, 2450, 49,
+              ]
+            : [
+                  49, 2450, 2465, 1767, 2176, 3040, 16, 1522, 2192, 5, 7420,
+                  7392, 7381, 7380, 1537,
+              ];
+    Perfume.getPerfumesByIdxList(perfumeIdxList, loginUserIdx)
+        .then((result: PerfumeThumbKeywordDTO[]) => {
+            return new ListAndCountDTO(
+                result.length,
+                result.map(PerfumeRecommendResponse.createByJson)
+            );
         })
         .then((response: ListAndCountDTO<PerfumeRecommendResponse>) => {
             LoggerHelper.logTruncated(
