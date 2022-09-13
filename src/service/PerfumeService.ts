@@ -553,6 +553,18 @@ class PerfumeService {
         const perfumeIdxList: number[] = result.rows.map(
             (it: PerfumeThumbDTO) => it.perfumeIdx
         );
+        const converter: (item: PerfumeThumbDTO) => PerfumeThumbKeywordDTO =
+            await this.getPerfumeThumbKeywordConverter(perfumeIdxList, userIdx);
+
+        return result.convertType((item: PerfumeThumbDTO) => {
+            return converter(item);
+        });
+    }
+
+    private async getPerfumeThumbKeywordConverter(
+        perfumeIdxList: number[],
+        userIdx: number = -1
+    ): Promise<(item: PerfumeThumbDTO) => PerfumeThumbKeywordDTO> {
         let likePerfumeList: any[] = [];
         if (userIdx > -1) {
             likePerfumeList = await likePerfumeDao.readLikeInfo(
@@ -561,18 +573,23 @@ class PerfumeService {
             );
         }
 
-        const joinKeywordList: any[] = await keywordDao.readAllOfPerfumeIdxList(
-            perfumeIdxList
-        );
+        const joinKeywordList: any[] = await keywordDao
+            .readAllOfPerfumeIdxList(perfumeIdxList)
+            .catch((err: Error) => {
+                if (err instanceof NotMatchedError) {
+                    return [];
+                }
+                throw err;
+            });
 
-        return result.convertType((item: PerfumeThumbDTO) => {
+        return (item: PerfumeThumbDTO): PerfumeThumbKeywordDTO => {
             return fp.compose(
                 ...commonJob,
                 this.isLikeJob(likePerfumeList),
                 this.addKeyword(joinKeywordList),
                 PerfumeThumbKeywordDTO.createByJson
             )(item);
-        });
+        };
     }
 }
 
