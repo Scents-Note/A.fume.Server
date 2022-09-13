@@ -1,11 +1,5 @@
 import { BrandDTO } from '@dto/BrandDTO';
 
-type Score = {
-    ingredient: number;
-    keyword: number;
-    total: number;
-};
-
 class PerfumeSearchResultDTO {
     readonly perfumeIdx: number;
     readonly name: string;
@@ -17,7 +11,6 @@ class PerfumeSearchResultDTO {
     readonly brandIdx: number;
     readonly createdAt: Date;
     readonly updatedAt: Date;
-    readonly Score: Score;
     constructor(
         perfumeIdx: number,
         name: string,
@@ -27,8 +20,7 @@ class PerfumeSearchResultDTO {
         Brand: BrandDTO,
         brandIdx: number,
         createdAt: Date,
-        updatedAt: Date,
-        Score: Score
+        updatedAt: Date
     ) {
         this.perfumeIdx = perfumeIdx;
         this.name = name;
@@ -40,7 +32,6 @@ class PerfumeSearchResultDTO {
         this.brandIdx = brandIdx;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.Score = Score;
     }
 
     public toString(): string {
@@ -57,8 +48,7 @@ class PerfumeSearchResultDTO {
             BrandDTO.createByJson(json.Brand),
             json.brandIdx,
             json.createdAt,
-            json.updatedAt,
-            json.Score
+            json.updatedAt
         );
     }
 }

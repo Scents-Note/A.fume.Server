@@ -21,7 +21,7 @@ import BrandHelper from '../mock_helper/BrandHelper';
 import PerfumeThumbMockHelper from '../mock_helper/PerfumeThumbMockHelper';
 import _ from 'lodash';
 const perfumeDao = new PerfumeDao();
-const { Note, Sequelize } = require('@sequelize');
+const { Note, JoinPerfumeKeyword, Sequelize } = require('@sequelize');
 const { Op } = Sequelize;
 const defaultPagingDTO: PagingDTO = PagingDTO.createByJson({});
 
@@ -55,11 +55,13 @@ describe('# perfumeDao Test', () => {
         describe('# search Test', () => {
             it('# success case (integral and brand filter)', (done: Done) => {
                 const ingredients: number[] = [1, 2, 3, 4, 5];
+                const categories: number[] = [1, 2, 3, 4, 5];
                 const brands: number[] = [1, 2, 3, 4, 5];
                 perfumeDao
                     .search(
                         brands,
                         ingredients,
+                        categories,
                         [],
                         '',
                         PagingDTO.createByJson({
@@ -68,7 +70,7 @@ describe('# perfumeDao Test', () => {
                     )
                     .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
                         expect(result.count).to.be.eq(5);
-                        expect(result.rows.length).to.be.gte(5);
+                        expect(result.rows.length).to.be.eq(5);
                         result.rows.forEach(
                             (perfume: PerfumeSearchResultDTO) => {
                                 expect(perfume.perfumeIdx).to.be.ok;
@@ -83,10 +85,6 @@ describe('# perfumeDao Test', () => {
                                 );
 
                                 BrandHelper.validTest.call(perfume.Brand);
-
-                                expect(perfume.Score.keyword).to.be.gte(0);
-                                expect(perfume.Score.ingredient).to.be.gte(0);
-                                expect(perfume.Score.total).to.be.gte(0);
                             }
                         );
 
@@ -121,6 +119,9 @@ describe('# perfumeDao Test', () => {
                     })
                     .then((result: any[]) => {
                         for (const ingredientByPerfumeIdxArr of result) {
+                            expect(ingredientByPerfumeIdxArr.length).to.be.eq(
+                                ingredients.length
+                            );
                             for (const ingredient of ingredientByPerfumeIdxArr) {
                                 expect(ingredient.ingredientIdx).to.be.oneOf(
                                     ingredients
@@ -133,7 +134,7 @@ describe('# perfumeDao Test', () => {
             });
             it('# success case (empty filter)', (done: Done) => {
                 perfumeDao
-                    .search([], [], [], '', defaultPagingDTO)
+                    .search([], [], [], [], '', defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
                         expect(result.count).to.be.gt(3);
                         expect(result.rows.length).to.be.gt(3);
@@ -154,13 +155,21 @@ describe('# perfumeDao Test', () => {
                     .catch((err: Error) => done(err));
             });
 
-            it('# success case (ingredient filter)', (done: Done) => {
+            it('# success case (ingredient filter 1)', (done: Done) => {
                 const ingredients: number[] = [1, 2, 3, 4, 5];
+                const categories: number[] = [1, 2, 3, 4, 5];
                 perfumeDao
-                    .search([], ingredients, [], '', defaultPagingDTO)
+                    .search(
+                        [],
+                        ingredients,
+                        categories,
+                        [],
+                        '',
+                        defaultPagingDTO
+                    )
                     .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
-                        expect(result.count).to.be.gte(3);
-                        expect(result.rows.length).to.gte(3);
+                        expect(result.count).to.be.eq(5);
+                        expect(result.rows.length).to.eq(5);
                         return Promise.all(
                             result.rows.map((it: PerfumeSearchResultDTO) => {
                                 return Note.findAll({
@@ -178,6 +187,9 @@ describe('# perfumeDao Test', () => {
                     })
                     .then((result: any[]) => {
                         for (const ingredientByPerfumeIdxArr of result) {
+                            expect(ingredientByPerfumeIdxArr.length).to.be.eq(
+                                ingredients.length
+                            );
                             for (const ingredient of ingredientByPerfumeIdxArr) {
                                 expect(ingredient.ingredientIdx).to.be.oneOf(
                                     ingredients
@@ -185,8 +197,28 @@ describe('# perfumeDao Test', () => {
                             }
                         }
                         result.forEach((it: any) => {
-                            expect(it.length).gte(ingredients.length);
+                            expect(it.length).eq(ingredients.length);
                         });
+                        done();
+                    })
+                    .catch((err: Error) => done(err));
+            });
+
+            it('# success case (ingredient filter with no result)', (done: Done) => {
+                const ingredients: number[] = [1, 2, 3, 4, 5, 6];
+                const categories: number[] = [1, 2, 3, 4, 5, 6];
+                perfumeDao
+                    .search(
+                        [],
+                        ingredients,
+                        categories,
+                        [],
+                        '',
+                        defaultPagingDTO
+                    )
+                    .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
+                        expect(result.count).to.be.eq(0);
+                        expect(result.rows.length).to.eq(0);
                         done();
                     })
                     .catch((err: Error) => done(err));
@@ -195,7 +227,7 @@ describe('# perfumeDao Test', () => {
             it('# success case (brand filter)', (done: Done) => {
                 const brands: number[] = [1, 2, 3, 4];
                 perfumeDao
-                    .search(brands, [], [], '', defaultPagingDTO)
+                    .search(brands, [], [], [], '', defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
                         expect(result.count).to.be.gte(2);
                         expect(result.rows.length).to.gte(2);
@@ -213,9 +245,60 @@ describe('# perfumeDao Test', () => {
                     .catch((err: Error) => done(err));
             });
 
+            it('# success case (keyword filter 1)', (done: Done) => {
+                const keywords: number[] = [1, 3, 5];
+                perfumeDao
+                    .search([], [], [], keywords, '', defaultPagingDTO)
+                    .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
+                        expect(result.count).to.be.eq(1);
+                        expect(result.rows.length).to.eq(1);
+                        return Promise.all(
+                            result.rows.map((it: PerfumeSearchResultDTO) => {
+                                return JoinPerfumeKeyword.findAll({
+                                    where: {
+                                        perfumeIdx: it.perfumeIdx,
+                                        keywordIdx: {
+                                            [Op.in]: keywords,
+                                        },
+                                    },
+                                    raw: true,
+                                    nest: true,
+                                });
+                            })
+                        );
+                    })
+                    .then((result: any[]) => {
+                        for (const keywordList of result) {
+                            expect(keywordList.length).to.be.eq(
+                                keywords.length
+                            );
+                            for (const keyword of keywordList) {
+                                expect(keyword.keywordIdx).to.be.oneOf(
+                                    keywords
+                                );
+                            }
+                        }
+                        done();
+                    })
+                    .catch((err: Error) => done(err));
+            });
+
+            it('# success case (keyword filter with no result)', (done: Done) => {
+                const keywords: number[] = [1, 2, 5];
+                perfumeDao
+                    .search([], [], [], keywords, '', defaultPagingDTO)
+                    .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
+                        expect(result.count).to.be.eq(0);
+                        expect(result.rows.length).to.eq(0);
+                        done();
+                    })
+                    .catch((err: Error) => done(err));
+            });
+
             it('# success case (order by recent)', (done: Done) => {
                 perfumeDao
                     .search(
+                        [],
                         [],
                         [],
                         [],
@@ -254,9 +337,9 @@ describe('# perfumeDao Test', () => {
                     order: [Sequelize.fn('RAND')],
                 });
                 Promise.all([
-                    perfumeDao.search([], [], [], '', pagingDTO),
-                    perfumeDao.search([], [], [], '', pagingDTO),
-                    perfumeDao.search([], [], [], '', pagingDTO),
+                    perfumeDao.search([], [], [], [], '', pagingDTO),
+                    perfumeDao.search([], [], [], [], '', pagingDTO),
+                    perfumeDao.search([], [], [], [], '', pagingDTO),
                 ])
                     .then(([result1, result2, result3]) => {
                         expect(result1.rows.length).gte(3);
@@ -279,10 +362,10 @@ describe('# perfumeDao Test', () => {
 
             it('# success case (searchText with perfume name)', (done: Done) => {
                 perfumeDao
-                    .search([], [], [], '향수', defaultPagingDTO)
+                    .search([], [], [], [], '향수', defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
                         expect(result.count).to.be.eq(5);
-                        expect(result.rows.length).to.be.gte(5);
+                        expect(result.rows.length).to.be.eq(5);
                         result.rows.forEach(
                             (perfume: PerfumeSearchResultDTO) => {
                                 expect(perfume.name).to.be.contains('향수');
@@ -295,11 +378,10 @@ describe('# perfumeDao Test', () => {
 
             it('# success case (searchText with perfume english_name)', (done: Done) => {
                 perfumeDao
-                    .search([], [], [], 'perfume', defaultPagingDTO)
+                    .search([], [], [], [], 'perfume', defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
-                        console.log(result);
                         expect(result.count).to.be.eq(5);
-                        expect(result.rows.length).to.be.gte(5);
+                        expect(result.rows.length).to.be.eq(5);
                         result.rows.forEach(
                             (perfume: PerfumeSearchResultDTO) => {
                                 expect(perfume.englishName).to.be.contains(
@@ -314,10 +396,10 @@ describe('# perfumeDao Test', () => {
 
             it('# success case (searchText with brand name)', (done: Done) => {
                 perfumeDao
-                    .search([], [], [], '브랜드', defaultPagingDTO)
+                    .search([], [], [], [], '브랜드', defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
                         expect(result.count).to.be.eq(5);
-                        expect(result.rows.length).to.be.gte(5);
+                        expect(result.rows.length).to.be.eq(5);
                         result.rows.forEach(
                             (perfume: PerfumeSearchResultDTO) => {
                                 expect(perfume.Brand.name).to.be.contains(
@@ -332,10 +414,10 @@ describe('# perfumeDao Test', () => {
 
             it('# success case (searchText with brand english_name)', (done: Done) => {
                 perfumeDao
-                    .search([], [], [], 'brand', defaultPagingDTO)
+                    .search([], [], [], [], 'brand', defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
                         expect(result.count).to.be.eq(5);
-                        expect(result.rows.length).to.be.gte(5);
+                        expect(result.rows.length).to.be.eq(5);
                         result.rows.forEach(
                             (perfume: PerfumeSearchResultDTO) => {
                                 expect(
@@ -397,7 +479,7 @@ describe('# perfumeDao Test', () => {
                     .recentSearchPerfumeList(1, defaultPagingDTO)
                     .then(
                         (result: ListAndCountDTO<PerfumeInquireHistoryDTO>) => {
-                            expect(result.rows.length).gte(5);
+                            expect(result.rows.length).eq(5);
                             result.rows.forEach((element: any) => {
                                 for (const key in element) {
                                     expect(element[key]).to.be.not.undefined;
