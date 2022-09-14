@@ -439,7 +439,18 @@ const recommendPersonalPerfume: RequestHandler = (
     const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
     return (
         loginUserIdx > 0
-            ? Perfume.recommendByUser(loginUserIdx, pagingDTO)
+            ? Perfume.recommendByUser(loginUserIdx, pagingDTO).then(
+                  (it: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
+                      // recommendByUser 는 pagingDTO를 만족해서 반환해줘야 하는데,,아닌경우가 존재함..? 재현은 안되서 방어 코드 추가
+                      if (it.rows.length <= pagingDTO.limit) {
+                          return it;
+                      }
+                      return new ListAndCountDTO<PerfumeThumbKeywordDTO>(
+                          it.count,
+                          it.rows.slice(0, pagingDTO.limit)
+                      );
+                  }
+              )
             : Perfume.getPerfumesByRandom(pagingDTO.limit)
     )
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
