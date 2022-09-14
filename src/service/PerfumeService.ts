@@ -39,7 +39,7 @@ const LOG_TAG: string = '[Perfume/Service]';
 
 let perfumeDao: PerfumeDao = new PerfumeDao();
 let ingredientDao: IngredientDao = new IngredientDao();
-let reviewDao : ReviewDao = new ReviewDao();
+let reviewDao: ReviewDao = new ReviewDao();
 let noteDao: NoteDao = new NoteDao();
 let likePerfumeDao: LikePerfumeDao = new LikePerfumeDao();
 let keywordDao: KeywordDao = new KeywordDao();
@@ -139,6 +139,7 @@ class PerfumeService {
                 return perfumeDao.search(
                     perfumeSearchDTO.brandIdxList,
                     ingredientIdxList,
+                    perfumeSearchDTO.ingredientCategoryList,
                     perfumeSearchDTO.keywordIdxList,
                     perfumeSearchDTO.searchText,
                     pagingDTO
