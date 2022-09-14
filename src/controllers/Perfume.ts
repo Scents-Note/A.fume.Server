@@ -437,11 +437,11 @@ const recommendPersonalPerfume: RequestHandler = (
         )})`
     );
     const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
+    // FIXME : recommendByUser 는 pagingDTO를 만족해서 반환해줘야 하는데 아닌경우가 존재하지만 재현이 안되어서 방어 코드 추가
     return (
         loginUserIdx > 0
             ? Perfume.recommendByUser(loginUserIdx, pagingDTO).then(
                   (it: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-                      // recommendByUser 는 pagingDTO를 만족해서 반환해줘야 하는데,,아닌경우가 존재함..? 재현은 안되서 방어 코드 추가
                       if (it.rows.length <= pagingDTO.limit) {
                           return it;
                       }
@@ -616,6 +616,7 @@ const recommendCommonPerfume: RequestHandler = (
             req.query
         )})`
     );
+    // FIXME : perfumeIdxList는 외부로 부터 받아야 하지만 현재는 고정된 값을 반환함. 외부로 부터 가져오는 시스템 구축 시 아래 코드는 수정되어야함.
     const perfumeIdxList: number[] =
         gender == GenderMap.MAN
             ? [
