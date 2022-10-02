@@ -7,6 +7,7 @@ import {
     GENDER_WOMAN,
     PERFUME_NOTE_TYPE_SINGLE,
     PERFUME_NOTE_TYPE_NORMAL,
+    ACCESS_PUBLIC,
 } from '@utils/constants';
 
 import UserDao from '@dao/UserDao';
@@ -523,7 +524,14 @@ class PerfumeService {
     private async generateSummary(
         perfumeIdx: number
     ): Promise<PerfumeSummaryDTO> {
-        const reviewList = await reviewDao.readAllOfPerfume(perfumeIdx);
+        const reviewList = await reviewDao
+            .readAllOfPerfume(perfumeIdx)
+            .then((reviews) => {
+                /* filter는 dao level에서 수행 할 수 있도록 변경 되어야 함 */
+                return reviews.filter(
+                    (review: any) => review.access == ACCESS_PUBLIC
+                );
+            });
         const userSummary = PerfumeSummaryDTO.createByReviewList(reviewList);
         return userSummary;
     }
