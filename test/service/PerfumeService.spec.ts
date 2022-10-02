@@ -8,7 +8,7 @@ import PerfumeService from '@services/PerfumeService';
 
 import { NotMatchedError } from '@errors';
 
-import { GENDER_WOMAN } from '@utils/constants';
+import { GENDER_WOMAN, ACCESS_PUBLIC, ACCESS_PRIVATE } from '@utils/constants';
 
 import {
     ListAndCountDTO,
@@ -70,7 +70,29 @@ describe('# Perfume Service Test', () => {
                             sillage: 1,
                             seasonal: 4,
                             gender: 1,
-                            access: 1,
+                            access: ACCESS_PUBLIC,
+                            content: '시향노트1',
+                            createdAt: '2021-09-26T08:38:33.000Z',
+                            User: {
+                                userIdx: 1,
+                                email: 'email1@afume.com',
+                                nickname: 'user1',
+                                password: 'test',
+                                gender: 2,
+                                birth: 1995,
+                                grade: 1,
+                                accessTime: '2021-09-26T08:38:33.000Z',
+                            },
+                            LikeReview: { likeCount: 1 },
+                        },
+                        {
+                            reviewIdx: 2,
+                            score: 5,
+                            longevity: 5,
+                            sillage: 5,
+                            seasonal: 1,
+                            gender: 1,
+                            access: ACCESS_PRIVATE,
                             content: '시향노트1',
                             createdAt: '2021-09-26T08:38:33.000Z',
                             User: {
