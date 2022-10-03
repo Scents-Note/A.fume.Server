@@ -8,7 +8,13 @@ import PerfumeService from '@services/PerfumeService';
 
 import { NotMatchedError } from '@errors';
 
-import { GENDER_WOMAN } from '@utils/constants';
+import {
+    GENDER_MAN,
+    GRADE_USER,
+    GENDER_WOMAN,
+    ACCESS_PUBLIC,
+    ACCESS_PRIVATE,
+} from '@utils/constants';
 
 import {
     ListAndCountDTO,
@@ -70,7 +76,7 @@ describe('# Perfume Service Test', () => {
                             sillage: 1,
                             seasonal: 4,
                             gender: 1,
-                            access: 1,
+                            access: ACCESS_PUBLIC,
                             content: '시향노트1',
                             createdAt: '2021-09-26T08:38:33.000Z',
                             User: {
@@ -78,9 +84,31 @@ describe('# Perfume Service Test', () => {
                                 email: 'email1@afume.com',
                                 nickname: 'user1',
                                 password: 'test',
-                                gender: 2,
+                                gender: GENDER_MAN,
                                 birth: 1995,
-                                grade: 1,
+                                grade: GRADE_USER,
+                                accessTime: '2021-09-26T08:38:33.000Z',
+                            },
+                            LikeReview: { likeCount: 1 },
+                        },
+                        {
+                            reviewIdx: 2,
+                            score: 5,
+                            longevity: 1,
+                            sillage: 1,
+                            seasonal: 4,
+                            gender: 1,
+                            access: ACCESS_PRIVATE,
+                            content: '시향노트1',
+                            createdAt: '2021-09-26T08:38:33.000Z',
+                            User: {
+                                userIdx: 1,
+                                email: 'email1@afume.com',
+                                nickname: 'user1',
+                                password: 'test',
+                                gender: GENDER_WOMAN,
+                                birth: 1995,
+                                grade: GRADE_USER,
                                 accessTime: '2021-09-26T08:38:33.000Z',
                             },
                             LikeReview: { likeCount: 1 },
@@ -99,7 +127,7 @@ describe('# Perfume Service Test', () => {
                             it.keywordList
                         );
                         expect(expectedReviewIdx).to.be.eq(it.reviewIdx);
-                        expect(it.score).to.be.eq(1);
+                        expect(it.score).to.be.eq(3);
                         done();
                     })
                     .catch((err: Error) => done(err));
@@ -128,7 +156,7 @@ describe('# Perfume Service Test', () => {
                             sillage: 1,
                             seasonal: 4,
                             gender: 1,
-                            access: 1,
+                            access: ACCESS_PUBLIC,
                             content: '시향노트1',
                             createdAt: '2021-09-26T08:38:33.000Z',
                             User: {
@@ -136,9 +164,31 @@ describe('# Perfume Service Test', () => {
                                 email: 'email1@afume.com',
                                 nickname: 'user1',
                                 password: 'test',
-                                gender: 2,
+                                gender: GENDER_WOMAN,
                                 birth: 1995,
-                                grade: 1,
+                                grade: GRADE_USER,
+                                accessTime: '2021-09-26T08:38:33.000Z',
+                            },
+                            LikeReview: { likeCount: 1 },
+                        },
+                        {
+                            reviewIdx: 2,
+                            score: 5,
+                            longevity: 1,
+                            sillage: 1,
+                            seasonal: 4,
+                            gender: 2,
+                            access: ACCESS_PRIVATE,
+                            content: '시향노트1',
+                            createdAt: '2021-09-26T08:38:33.000Z',
+                            User: {
+                                userIdx: 1,
+                                email: 'email1@afume.com',
+                                nickname: 'user1',
+                                password: 'test',
+                                gender: GENDER_WOMAN,
+                                birth: 1995,
+                                grade: GRADE_USER,
                                 accessTime: '2021-09-26T08:38:33.000Z',
                             },
                             LikeReview: { likeCount: 1 },
