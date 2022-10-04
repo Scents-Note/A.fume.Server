@@ -1,4 +1,5 @@
 import { ABUNDANCE_RATE_STR_DICT } from '@utils/constants';
+import { PerfumeSummaryDTO } from './PerfumeSummaryDTO';
 
 type VolumeAndPrice = { volume: string; price: number }[];
 
@@ -91,7 +92,7 @@ class PerfumeIntegralDTO {
 
     static create(
         perfumeDTO: any,
-        perfumeSummaryDTO: any,
+        perfumeSummaryDTO: PerfumeSummaryDTO,
         keywordList: string[],
         noteDictDTO: {
             top: string;
