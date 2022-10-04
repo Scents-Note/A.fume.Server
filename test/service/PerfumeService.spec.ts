@@ -26,6 +26,13 @@ import {
     PerfumeThumbKeywordDTO,
 } from '@dto/index';
 
+import {
+    LongevityProperty,
+    SillageProperty,
+    GenderProperty,
+    SeasonalProperty,
+} from '@vo/ReviewProperty';
+
 import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
 
 const Perfume: PerfumeService = new PerfumeService();
@@ -72,10 +79,10 @@ describe('# Perfume Service Test', () => {
                         {
                             reviewIdx: 1,
                             score: 1,
-                            longevity: 1,
-                            sillage: 1,
-                            seasonal: 4,
-                            gender: 1,
+                            longevity: LongevityProperty.veryWeak.value,
+                            sillage: SillageProperty.light.value,
+                            seasonal: SeasonalProperty.fall.value,
+                            gender: GenderProperty.male.value,
                             access: ACCESS_PUBLIC,
                             content: '시향노트1',
                             createdAt: '2021-09-26T08:38:33.000Z',
@@ -94,10 +101,10 @@ describe('# Perfume Service Test', () => {
                         {
                             reviewIdx: 2,
                             score: 5,
-                            longevity: 1,
-                            sillage: 1,
-                            seasonal: 4,
-                            gender: 1,
+                            longevity: LongevityProperty.veryWeak.value,
+                            sillage: SillageProperty.light.value,
+                            seasonal: SeasonalProperty.fall.value,
+                            gender: GenderProperty.male.value,
                             access: ACCESS_PRIVATE,
                             content: '시향노트1',
                             createdAt: '2021-09-26T08:38:33.000Z',
@@ -152,10 +159,10 @@ describe('# Perfume Service Test', () => {
                         {
                             reviewIdx: 1,
                             score: 1,
-                            longevity: 1,
-                            sillage: 1,
-                            seasonal: 4,
-                            gender: 1,
+                            longevity: LongevityProperty.veryWeak.value,
+                            sillage: SillageProperty.light.value,
+                            seasonal: SeasonalProperty.fall.value,
+                            gender: GenderProperty.male.value,
                             access: ACCESS_PUBLIC,
                             content: '시향노트1',
                             createdAt: '2021-09-26T08:38:33.000Z',
@@ -174,10 +181,10 @@ describe('# Perfume Service Test', () => {
                         {
                             reviewIdx: 2,
                             score: 5,
-                            longevity: 1,
-                            sillage: 1,
-                            seasonal: 4,
-                            gender: 2,
+                            longevity: LongevityProperty.veryWeak.value,
+                            sillage: SillageProperty.light.value,
+                            seasonal: SeasonalProperty.fall.value,
+                            gender: GenderProperty.male.value,
                             access: ACCESS_PRIVATE,
                             content: '시향노트1',
                             createdAt: '2021-09-26T08:38:33.000Z',
