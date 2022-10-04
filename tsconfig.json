@@ -67,6 +67,7 @@
             "@services/*": ["service/*"],
             "@dao/*": ["dao/*"],
             "@dto/*": ["data/dto/*"],
+            "@vo/*": ["data/vo/*"],
             "@modules/*": ["modules/*"],
             "@utils/*": ["utils/*"],
             "@libs/*": ["lib/*"],
