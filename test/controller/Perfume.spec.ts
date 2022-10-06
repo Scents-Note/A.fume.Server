@@ -102,6 +102,11 @@ describe('# Perfume Controller Test', () => {
                     expect(result.message).to.be.eq(
                         MSG_GET_PERFUME_DETAIL_SUCCESS
                     );
+                    result.data.volumeAndPrice.forEach(
+                        (volumeAndPrice: string) => {
+                            expect(volumeAndPrice).to.be.not.contain('NaN');
+                        }
+                    );
                     done();
                 })
                 .catch((err: Error) => done(err));

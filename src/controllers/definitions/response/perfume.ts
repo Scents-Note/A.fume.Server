@@ -217,6 +217,9 @@ class PerfumeDetailResponse {
     ): PerfumeDetailResponse {
         const volumeAndPrice: string[] = perfumeIntegralDTO.volumeAndPrice.map(
             (it: { volume: string; price: number }) => {
+                if (isNaN(it.price) || !it.price) {
+                    return `${it.volume}ml`;
+                }
                 return `${PerfumeDetailResponse.numberWithCommas(it.price)}/${
                     it.volume
                 }ml`;
