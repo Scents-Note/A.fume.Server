@@ -565,7 +565,12 @@ class PerfumeService {
 
         const joinKeywordList: any[] = await keywordDao
             .readAllOfPerfumeIdxList(perfumeIdxList)
-            .catch((_: Error) => []);
+            .catch((err: Error) => {
+                if (err instanceof NotMatchedError) {
+                    return [];
+                }
+                throw err;
+            });
 
         return result.convertType((item: PerfumeThumbDTO) => {
             return fp.compose(
