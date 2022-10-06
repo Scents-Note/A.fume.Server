@@ -82,9 +82,11 @@ class PerfumeService {
         perfume.isLiked = await this.isLike(userIdx, perfumeIdx);
         const keywordList: string[] = [
             ...new Set<string>(
-                (await keywordDao.readAllOfPerfume(perfumeIdx)).map(
-                    (it: any) => it.name
-                )
+                (
+                    await keywordDao
+                        .readAllOfPerfume(perfumeIdx)
+                        .catch((_: Error) => [])
+                ).map((it: any) => it.name)
             ),
         ];
         const imageUrls: string[] = [
