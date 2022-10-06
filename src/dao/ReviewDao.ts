@@ -274,6 +274,31 @@ class ReviewDao {
             nest: true,
         });
     };
+
+    /**
+     * 향수 리스트에 관해, 내가 작성한 시향노트 조회
+     *
+     * @param {number[]} userIdx
+     * @param {number[]} perfumeIdxList
+     * @returns {Promise}
+     */
+     async readAllMineOfPerfumes(
+        userIdx: number,
+        perfumeIdxList: number[]
+    ): Promise<{ userIdx: number; perfumeIdx: number }[]> {
+        return Review.findAll({
+            where: {
+                userIdx,
+                perfumeIdx: {
+                    [Op.in]: perfumeIdxList,
+                },
+            },
+            raw: true,
+            nest: true,
+        }).then((res: any[]) => {
+            return res
+        });
+    }
 }
 
 export default ReviewDao;

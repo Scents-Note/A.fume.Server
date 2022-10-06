@@ -30,12 +30,14 @@ import {
     UserDTO,
     NoteDictDTO,
     IngredientDTO,
+    PerfumeThumbWithReviewDTO
 } from '@dto/index';
 import fp from 'lodash/fp';
 import _ from 'lodash';
 import IngredientDao from '@src/dao/IngredientDao';
 
 const LOG_TAG: string = '[Perfume/Service]';
+const DEFAULT_VALUE_OF_INDEX = 0;
 
 let perfumeDao: PerfumeDao = new PerfumeDao();
 let ingredientDao: IngredientDao = new IngredientDao();
@@ -384,23 +386,26 @@ class PerfumeService {
     getLikedPerfume(
         userIdx: number,
         pagingDTO: PagingDTO
-    ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+    ): Promise<ListAndCountDTO<PerfumeThumbWithReviewDTO>> {
         logger.debug(
             `${LOG_TAG} getLikedPerfume(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
         return perfumeDao
             .readLikedPerfume(userIdx, pagingDTO)
-            .then(async (result: ListAndCountDTO<PerfumeThumbDTO>) => {
+            .then(async (result: any) => {
                 const perfumeIdxList: number[] = result.rows.map(
-                    (it: PerfumeThumbDTO) => it.perfumeIdx
+                    (it: any) => it.perfumeIdx
                 );
                 const likePerfumeList: any[] =
                     await likePerfumeDao.readLikeInfo(userIdx, perfumeIdxList);
-                return result.convertType((item: PerfumeThumbDTO) => {
+                const perfumeReivewList: any[] =
+                    await reviewDao.readAllMineOfPerfumes(userIdx, perfumeIdxList);
+                return result.convertType((item: any) => {
                     return fp.compose(
                         ...commonJob,
                         this.isLikeJob(likePerfumeList),
-                        PerfumeThumbDTO.createByJson
+                        this.matchReviewsWithPerfumesJob(perfumeReivewList),
+                        PerfumeThumbWithReviewDTO.createByJson
                     )(item);
                 });
             });
@@ -552,6 +557,22 @@ class PerfumeService {
             return ret;
         };
     }
+
+    private matchReviewsWithPerfumesJob(perfumeReivewList: any[]): (obj: any) => any {
+
+        const reviewMap: { [key: string]: any } = _
+            .chain(perfumeReivewList)
+            .groupBy('perfumeIdx')
+            .mapValues((arr) => arr.map((it) => it))
+            .value();
+
+        return (obj: any) => {
+            const ret: any = Object.assign({}, obj); // obj 복사본 생성
+            ret.reviewIdx = reviewMap[obj.perfumeIdx]? reviewMap[obj.perfumeIdx][0]['id'] : DEFAULT_VALUE_OF_INDEX;
+            return ret;
+        };
+    }
+
 
     private addKeyword(joinKeywordList: any[]): (obj: any) => any {
         const keywordMap: { [key: number]: string[] } = _.chain(joinKeywordList)

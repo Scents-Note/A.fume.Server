@@ -365,4 +365,43 @@ class PerfumeRecommendResponse extends PerfumeResponse {
     }
 }
 
-export { PerfumeDetailResponse, PerfumeResponse, PerfumeRecommendResponse };
+class PerfumeWishedResponse {
+    readonly perfumeIdx: number;
+    readonly name: string;
+    readonly brandName: string;
+    readonly imageUrl: string;
+    readonly isLiked: boolean;
+    readonly reviewIdx: number;
+    constructor(
+        perfumeIdx: number,
+        name: string,
+        brandName: string,
+        imageUrl: string,
+        isLiked: boolean,
+        reviewIdx: number
+    ) {
+        this.perfumeIdx = perfumeIdx;
+        this.name = name;
+        this.brandName = brandName;
+        this.imageUrl = imageUrl;
+        this.isLiked = isLiked;
+        this.reviewIdx = reviewIdx;
+    }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
+    static createByJson(json: any): PerfumeWishedResponse {
+        return new PerfumeWishedResponse(
+            json.perfumeIdx,
+            json.name,
+            json.brandName,
+            json.imageUrl,
+            json.isLiked,
+            json.reviewIdx
+        );
+    }
+}
+
+export { PerfumeDetailResponse, PerfumeResponse, PerfumeRecommendResponse, PerfumeWishedResponse };
