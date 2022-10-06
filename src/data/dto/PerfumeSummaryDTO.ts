@@ -98,7 +98,11 @@ class PerfumeSummaryDTO {
             .filter(isNumber)
             .sum()
             .value();
-        const cnt: number = _.chain(reviewList).filter(isNumber).size().value();
+        const cnt: number = _.chain(reviewList)
+            .map((it) => it.score)
+            .filter(isNumber)
+            .size()
+            .value();
         reviewList
             .map((it: any) => {
                 it.seasonal = SEASONAL_LIST[it.seasonal || 0];

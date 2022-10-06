@@ -81,6 +81,7 @@ const mockPerfumeKeywordList: any[] = [
     PerfumeThumbKeywordMockHelper.createWithIdx(4, []),
     PerfumeThumbKeywordMockHelper.createWithIdx(6, ['키워드 1', '키워드2']),
     PerfumeThumbKeywordMockHelper.createWithIdx(8, ['키워드']),
+    PerfumeThumbKeywordMockHelper.createWithIdx(18, ['키워드']),
 ];
 Perfume.setPerfumeService(mockPerfumeService);
 Perfume.setSearchHistoryService(mockSearchHistoryService);
@@ -337,11 +338,8 @@ describe('# Perfume Controller Test', () => {
 
         describe('# recommendCommonPerfume Test', () => {
             it('success case', (done: Done) => {
-                mockPerfumeService.recommendByUser = async () => {
-                    return new ListAndCountDTO(
-                        DEFAULT_RECOMMEND_REQUEST_SIZE,
-                        mockPerfumeKeywordList
-                    );
+                mockPerfumeService.getPerfumesByIdxList = async () => {
+                    return mockPerfumeKeywordList;
                 };
 
                 request(app)
@@ -355,7 +353,7 @@ describe('# Perfume Controller Test', () => {
                             MSG_GET_RECOMMEND_PERFUME_BY_AGE_AND_GENDER
                         );
                         expect(responseDTO.data.count).to.be.eq(
-                            DEFAULT_RECOMMEND_REQUEST_SIZE
+                            mockPerfumeKeywordList.length
                         );
                         done();
                     })
@@ -369,8 +367,8 @@ describe('# Perfume Controller Test', () => {
 
                 mockPerfumeService.getPerfumesByRandom = async () => {
                     return new ListAndCountDTO(
-                        DEFAULT_RECOMMEND_REQUEST_SIZE,
-                        mockPerfumeList.slice(0, DEFAULT_RECOMMEND_REQUEST_SIZE)
+                        mockPerfumeList.length,
+                        mockPerfumeList
                     );
                 };
                 request(app)
@@ -385,10 +383,10 @@ describe('# Perfume Controller Test', () => {
                             MSG_GET_RECOMMEND_PERFUME_BY_AGE_AND_GENDER
                         );
                         expect(responseDTO.data.count).to.be.eq(
-                            DEFAULT_RECOMMEND_REQUEST_SIZE
+                            mockPerfumeKeywordList.length
                         );
                         expect(responseDTO.data.rows.length).to.be.eq(
-                            DEFAULT_RECOMMEND_REQUEST_SIZE
+                            mockPerfumeKeywordList.length
                         );
                         done();
                     })

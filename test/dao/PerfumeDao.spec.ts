@@ -579,5 +579,32 @@ describe('# perfumeDao Test', () => {
                     .catch((err: Error) => done(err));
             });
         });
+
+        describe('# getPerfumesByIdxList test', () => {
+            it('# success case', (done: Done) => {
+                const idxList: number[] = [5, 2, 3, 4, 1];
+                perfumeDao
+                    .getPerfumesByIdxList(idxList)
+                    .then((result: PerfumeThumbDTO[]) => {
+                        _.zip(idxList, result).map(
+                            (
+                                it: [
+                                    number | undefined,
+                                    PerfumeThumbDTO | undefined
+                                ]
+                            ) => {
+                                const [idx, perfumeThumbDTO] = it;
+                                expect(idx).to.be.not.undefined;
+                                expect(perfumeThumbDTO).to.be.not.undefined;
+                                expect(perfumeThumbDTO!!.perfumeIdx).to.be.eq(
+                                    idx
+                                );
+                            }
+                        );
+                        done();
+                    })
+                    .catch((err: Error) => done(err));
+            });
+        });
     });
 });
