@@ -135,7 +135,7 @@ npm run test-each ./test/...
 | name | role | email |
 |:---|:---|:---|
 | 이신일 | PM | |
-| 윤희성 | Server 팀원 | quokkaman@kaka.com |
+| 윤희성 | Server | quokkaman@kaka.com |
 
 # 팀원 소개
 
@@ -144,6 +144,8 @@ npm run test-each ./test/...
 -   조하담 / @ChoHadam /
 
 # 업데이트 내역
+-   0.0.4
+    - perfume search 기능에서 keyword, ingredient 에서 Score로직 삭제하고 AND 조건으로 변경
 
 -   0.0.3
 

@@ -2,14 +2,16 @@
 name: Bug report
 about: 버그 발견
 title: "[BUG]"
-labels: bug, SERVER
+labels: bug
 assignees: ''
 
 ---
 
-## 버그 묘사
+## summary
 
-## 버그 재현
+## 관련 Endpoint
+
+## 버그 재현 경로
 
 ## 필요한 작업
 

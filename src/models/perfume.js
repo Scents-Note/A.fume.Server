@@ -42,7 +42,7 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false,
             },
             story: {
-                type: DataTypes.STRING,
+                type: DataTypes.STRING(1000),
                 allowNull: false,
             },
             abundanceRate: {

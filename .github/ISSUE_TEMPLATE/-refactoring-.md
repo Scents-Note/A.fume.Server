@@ -2,7 +2,7 @@
 name: "[Refactoring]"
 about: 리팩토링
 title: "[Refactoring]"
-labels: 리팩토링, SERVER
+labels: ''
 assignees: ''
 
 ---

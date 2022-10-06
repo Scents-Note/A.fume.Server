@@ -1,8 +1,6 @@
 import { NotMatchedError, UnAuthorizedError } from '../utils/errors/errors';
 
-const reviewDao = require('../dao/ReviewDao.js');
 const likeReviewDao = require('../dao/LikeReviewDao');
-const keywordDao = require('../dao/KeywordDao');
 const reportReviewDao = require('../dao/ReportReviewDao');
 const {
     InputIntToDBIntOfReview,
@@ -12,9 +10,13 @@ const {
 
 import UserDao from '@dao/UserDao';
 import LikePerfumeDao from '@dao/LikePerfumeDao';
+import ReviewDao from '@dao/ReviewDao';
+import KeywordDao from '../dao/KeywordDao';
 
 const userDao = new UserDao();
 const likePerfumeDao = new LikePerfumeDao();
+const reviewDao = new ReviewDao();
+const keywordDao = new KeywordDao();
 
 const discordHook = require('../utils/discordHook')
 
