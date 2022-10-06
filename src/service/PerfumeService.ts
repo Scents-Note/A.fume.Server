@@ -434,6 +434,26 @@ class PerfumeService {
             );
     }
 
+    /**
+     * perfumeIdx로 향수 조회
+     *
+     * @param {number[]} perfumeIdxList
+     * @param {number} userIdx
+     * @returns {Promise<PerfumeThumbKeywordDTO[]>}
+     **/
+    async getPerfumesByIdxList(
+        perfumeIdxList: number[],
+        userIdx: number
+    ): Promise<PerfumeThumbKeywordDTO[]> {
+        const converter: (item: PerfumeThumbDTO) => PerfumeThumbKeywordDTO =
+            await this.getPerfumeThumbKeywordConverter(perfumeIdxList, userIdx);
+        return perfumeDao
+            .getPerfumesByIdxList(perfumeIdxList)
+            .then((result: PerfumeThumbDTO[]): PerfumeThumbKeywordDTO[] => {
+                return result.map(converter);
+            });
+    }
+
     setPerfumeDao(dao: PerfumeDao) {
         perfumeDao = dao;
     }
@@ -555,6 +575,18 @@ class PerfumeService {
         const perfumeIdxList: number[] = result.rows.map(
             (it: PerfumeThumbDTO) => it.perfumeIdx
         );
+        const converter: (item: PerfumeThumbDTO) => PerfumeThumbKeywordDTO =
+            await this.getPerfumeThumbKeywordConverter(perfumeIdxList, userIdx);
+
+        return result.convertType((item: PerfumeThumbDTO) => {
+            return converter(item);
+        });
+    }
+
+    private async getPerfumeThumbKeywordConverter(
+        perfumeIdxList: number[],
+        userIdx: number = -1
+    ): Promise<(item: PerfumeThumbDTO) => PerfumeThumbKeywordDTO> {
         let likePerfumeList: any[] = [];
         if (userIdx > -1) {
             likePerfumeList = await likePerfumeDao.readLikeInfo(
@@ -572,14 +604,14 @@ class PerfumeService {
                 throw err;
             });
 
-        return result.convertType((item: PerfumeThumbDTO) => {
+        return (item: PerfumeThumbDTO): PerfumeThumbKeywordDTO => {
             return fp.compose(
                 ...commonJob,
                 this.isLikeJob(likePerfumeList),
                 this.addKeyword(joinKeywordList),
                 PerfumeThumbKeywordDTO.createByJson
             )(item);
-        });
+        };
     }
 }
 

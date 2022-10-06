@@ -99,6 +99,7 @@ describe('# Perfume Service Test', () => {
                             it.keywordList
                         );
                         expect(expectedReviewIdx).to.be.eq(it.reviewIdx);
+                        expect(it.score).to.be.eq(1);
                         done();
                     })
                     .catch((err: Error) => done(err));
