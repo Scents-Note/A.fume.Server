@@ -837,7 +837,7 @@ const getNewPerfume: RequestHandler = (
  *                 type: array
  *                 items:
  *                   allOf:
- *                   - $ref: '#/definitions/PerfumeResponse'
+ *                   - $ref: '#/definitions/PerfumeWishedResponse'
  *         default:
  *           description: successful operation
  *       x-swagger-router-controller: Perfume
