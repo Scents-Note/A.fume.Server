@@ -398,8 +398,9 @@ class PerfumeService {
                 );
                 const likePerfumeList: any[] =
                     await likePerfumeDao.readLikeInfo(userIdx, perfumeIdxList);
-                const perfumeReivewList: any[] =
+                const perfumeReivewList: any[] = 
                     await reviewDao.readAllMineOfPerfumes(userIdx, perfumeIdxList);
+                console.log('perfumeReivewList', perfumeReivewList)
                 return result.convertType((item: any) => {
                     return fp.compose(
                         ...commonJob,

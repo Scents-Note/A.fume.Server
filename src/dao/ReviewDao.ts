@@ -282,10 +282,10 @@ class ReviewDao {
      * @param {number[]} perfumeIdxList
      * @returns {Promise}
      */
-     async readAllMineOfPerfumes(
+    readAllMineOfPerfumes(
         userIdx: number,
         perfumeIdxList: number[]
-    ): Promise<{ userIdx: number; perfumeIdx: number }[]> {
+    ): Promise<any> {
         return Review.findAll({
             where: {
                 userIdx,
@@ -295,9 +295,7 @@ class ReviewDao {
             },
             raw: true,
             nest: true,
-        }).then((res: any[]) => {
-            return res
-        });
+        })
     }
 }
 

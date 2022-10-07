@@ -18,6 +18,7 @@ import {
     PerfumeSearchDTO,
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
+    PerfumeThumbWithReviewDTO
 } from '@dto/index';
 
 import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
@@ -84,6 +85,26 @@ describe('# Perfume Service Test', () => {
                                 accessTime: '2021-09-26T08:38:33.000Z',
                             },
                             LikeReview: { likeCount: 1 },
+                        },
+                    ];
+                };
+                mockReviewDao.readAllMineOfPerfumes = async () => {
+                    return [
+                        {
+                            id: 1,
+                            score: 1,
+                            longevity: 1,
+                            sillage: 1,
+                            seasonal: 4,
+                            gender: 1,
+                            access: 1,
+                            content: '시향노트1',
+                            likeCnt: 0,
+                            createdAt: '2021-09-26T08:38:33.000Z',
+                            updatedAt: '2022-06-01T11:09:46.000Z',
+                            deletedAt: null,
+                            perfumeIdx: 1,
+                            userIdx: 1
                         },
                     ];
                 };
@@ -296,8 +317,17 @@ describe('# Perfume Service Test', () => {
                     perfumeIdx,
                 }));
             };
+            mockReviewDao.readAllMineOfPerfumes = async (
+                _: number,
+                perfumeIdxList: number[]
+            ) => {
+                return perfumeIdxList.map((perfumeIdx: number) => ({
+                    reviewIdx: 0,
+                    perfumeIdx,
+                }));
+            };
             Perfume.getLikedPerfume(1, defaultPagingDTO)
-                .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
+                .then((result: ListAndCountDTO<PerfumeThumbWithReviewDTO>) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     result.rows.forEach((item) => {
                         expect(item.isLiked).to.be.true;
