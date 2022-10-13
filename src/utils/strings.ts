@@ -107,7 +107,7 @@ const MSG_GET_SUPPORTABLE_NO: string =
 
 const NO_AUTHORIZE: string = '권한이 없습니다.';
 
-const CURRENT_VERSION: string = process.env.npm_package_version || '0.0.3';
+const CURRENT_VERSION: string = process.env.npm_package_version || '0.0.4';
 /* TODO BASE PATH 는 MAJOR만 따르도록 수정할 것. 0.0.1 -> 1.0 -> 2.0 */
 const BASE_PATH: string = '/A.fume/api/0.0.1';
 

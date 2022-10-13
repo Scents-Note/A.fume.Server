@@ -1,6 +1,6 @@
 {
   "name": "a-fume-server",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "향수 정보 서비스 A.fume Server Api 문서",
   "main": "index.js",
   "type": "commonjs",
