@@ -27,6 +27,7 @@ import {
     PerfumeDetailResponse,
     PerfumeResponse,
     PerfumeRecommendResponse,
+    PerfumeWishedResponse
 } from '@response/perfume';
 
 import { PagingRequestDTO } from '@request/index';
@@ -36,6 +37,7 @@ import {
     ListAndCountDTO,
     PerfumeSearchResultDTO,
     PerfumeThumbDTO,
+    PerfumeThumbWithReviewDTO,
     PerfumeThumbKeywordDTO,
     PerfumeSearchDTO,
     PagingDTO,
@@ -835,7 +837,7 @@ const getNewPerfume: RequestHandler = (
  *                 type: array
  *                 items:
  *                   allOf:
- *                   - $ref: '#/definitions/PerfumeResponse'
+ *                   - $ref: '#/definitions/PerfumeWishedResponse'
  *         default:
  *           description: successful operation
  *       x-swagger-router-controller: Perfume
@@ -862,16 +864,16 @@ const getLikedPerfume: RequestHandler = (
         return;
     }
     Perfume.getLikedPerfume(userIdx, pagingRequestDTO.toPageDTO())
-        .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-            return result.convertType(PerfumeResponse.createByJson);
+        .then((result: ListAndCountDTO<PerfumeThumbWithReviewDTO>) => {
+            return result.convertType(PerfumeWishedResponse.createByJson);
         })
-        .then((response: ListAndCountDTO<PerfumeResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeWishedResponse>) => {
             LoggerHelper.logTruncated(
                 logger.debug,
                 `${LOG_TAG} getLikedPerfume's result = ${response}`
             );
             res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
+                new ResponseDTO<ListAndCountDTO<PerfumeWishedResponse>>(
                     MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
                     response
                 )

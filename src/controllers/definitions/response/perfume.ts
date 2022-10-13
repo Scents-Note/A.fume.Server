@@ -217,6 +217,9 @@ class PerfumeDetailResponse {
     ): PerfumeDetailResponse {
         const volumeAndPrice: string[] = perfumeIntegralDTO.volumeAndPrice.map(
             (it: { volume: string; price: number }) => {
+                if (isNaN(it.price) || !it.price) {
+                    return `${it.volume}ml`;
+                }
                 return `${PerfumeDetailResponse.numberWithCommas(it.price)}/${
                     it.volume
                 }ml`;
@@ -364,5 +367,69 @@ class PerfumeRecommendResponse extends PerfumeResponse {
         );
     }
 }
+/**
+ * @swagger
+ * definitions:
+ *   PerfumeWishedResponse:
+ *     type: object
+ *     properties:
+ *       perfumeIdx:
+ *         type: number
+ *       name:
+ *         type: string
+ *       brandName:
+ *         type: string
+ *       imageUrl:
+ *         type: string
+ *       isLiked:
+ *         type: boolean
+ *       reviewIdx:
+ *         trype: number
+ *     example:
+ *       perfumeIdx: 1
+ *       name: 154 코롱
+ *       brandName: 154 kolon
+ *       imageUrl: https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554
+ *       isLiked: true
+ *       reviewIdx: 1
+ * */
+class PerfumeWishedResponse {
+    readonly perfumeIdx: number;
+    readonly name: string;
+    readonly brandName: string;
+    readonly imageUrl: string;
+    readonly isLiked: boolean;
+    readonly reviewIdx: number;
+    constructor(
+        perfumeIdx: number,
+        name: string,
+        brandName: string,
+        imageUrl: string,
+        isLiked: boolean,
+        reviewIdx: number
+    ) {
+        this.perfumeIdx = perfumeIdx;
+        this.name = name;
+        this.brandName = brandName;
+        this.imageUrl = imageUrl;
+        this.isLiked = isLiked;
+        this.reviewIdx = reviewIdx;
+    }
 
-export { PerfumeDetailResponse, PerfumeResponse, PerfumeRecommendResponse };
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
+    static createByJson(json: any): PerfumeWishedResponse {
+        return new PerfumeWishedResponse(
+            json.perfumeIdx,
+            json.name,
+            json.brandName,
+            json.imageUrl,
+            json.isLiked,
+            json.reviewIdx
+        );
+    }
+}
+
+export { PerfumeDetailResponse, PerfumeResponse, PerfumeRecommendResponse, PerfumeWishedResponse };
