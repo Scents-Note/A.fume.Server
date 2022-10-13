@@ -27,7 +27,7 @@ import {
     PerfumeDetailResponse,
     PerfumeResponse,
     PerfumeRecommendResponse,
-    PerfumeWishedResponse
+    PerfumeWishedResponse,
 } from '@response/perfume';
 
 import { PagingRequestDTO } from '@request/index';
@@ -612,7 +612,8 @@ const recommendCommonPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
-    const gender: number = GenderMap[req.query.gender];
+    const gender: number =
+        GenderMap[req.query.gender] || req.middlewareToken.userGender;
     logger.debug(
         `${LOG_TAG} recommendCommonPerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(
             req.query
