@@ -36,7 +36,7 @@ const SQL_READ_ALL_OF_PERFUME = `
     FROM reviews r
     join users u on u.user_idx = r.user_idx 
     left outer join (SELECT review_idx, COUNT(review_idx) as likeCount FROM like_reviews Group By review_idx) AS lr on r.id = lr.review_idx    
-    where r.perfume_idx = $1 AND r.access = 1
+    where r.perfume_idx = $1 AND r.access = 1 AND r.deleted_at IS NULL
     order by "LikeReview.likeCount" desc;
 `;
 
@@ -274,6 +274,29 @@ class ReviewDao {
             nest: true,
         });
     };
+
+    /**
+     * 향수 리스트에 관해, 내가 작성한 시향노트 조회
+     *
+     * @param {number[]} userIdx
+     * @param {number[]} perfumeIdxList
+     * @returns {Promise}
+     */
+    readAllMineOfPerfumes(
+        userIdx: number,
+        perfumeIdxList: number[]
+    ): Promise<any> {
+        return Review.findAll({
+            where: {
+                userIdx,
+                perfumeIdx: {
+                    [Op.in]: perfumeIdxList,
+                },
+            },
+            raw: true,
+            nest: true,
+        })
+    }
 }
 
 export default ReviewDao;

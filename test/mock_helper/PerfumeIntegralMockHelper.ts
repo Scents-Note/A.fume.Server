@@ -38,7 +38,10 @@ class PerfumeIntegralMockHelper {
                     brandName: '브랜드1',
                     story: '스토리1',
                     abundanceRate: '오 드 코롱',
-                    volumeAndPrice: [],
+                    volumeAndPrice: [
+                        { volume: 30, price: NaN },
+                        { volume: 45, price: 400 },
+                    ],
                     isLiked: false,
                     keywordList: ['keyword', 'keyword2'],
                     imageUrls: [],
