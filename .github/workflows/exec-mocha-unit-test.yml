@@ -1,4 +1,4 @@
-name: Execute Mocha Test
+name: Execute Mocha Unit Test
 
 on:
     pull_request:
@@ -35,23 +35,3 @@ jobs:
                   ENCRYPTION_KEY: '${{ secrets.ENCRYPTION_KEY }}'
                   ENCRYPT_ALGORITHM: '${{ secrets.ENCRYPT_ALGORITHM }}'
                   AWS_S3_URL: '${{ secrets.AWS_S3_URL }}'
-            - name: run integral test code
-              run: npm run test-integral
-              env:
-                  NODE_ENV: production
-                  MYSQL_PRD_USERNAME: '${{ secrets.MYSQL_PRD_USERNAME }}'
-                  MYSQL_PRD_PASSWORD: '${{ secrets.MYSQL_PRD_PASSWORD }}'
-                  MYSQL_PRD_DATABASE: '${{ secrets.MYSQL_PRD_DATABASE }}'
-                  MYSQL_PRD_HOST: '${{ secrets.MYSQL_PRD_HOST }}'
-                  MYSQL_PRD_PORT: '${{ secrets.MYSQL_PRD_PORT }}'
-                  MYSQL_PRD_DIALECT: '${{ secrets.MYSQL_PRD_DIALECT }}'
-                  MONGO_URI: '${{ secrets.MONGO_URI }}'
-                  CORS_ALLOW_LIST: '${{ secrets.CORS_ALLOW_LIST }}'
-                  JWT_SECRET: '${{ secrets.JWT_SECRET }}'
-                  AWS_ACCESS_KEY_ID: '${{ secrets.AWS_ACCESS_KEY_ID }}'
-                  AWS_SECRET_ACCESS_KEY: '${{ secrets.AWS_SECRET_ACCESS_KEY}}'
-                  ENCRYPTION_KEY: '${{ secrets.ENCRYPTION_KEY }}'
-                  ENCRYPT_ALGORITHM: '${{ secrets.ENCRYPT_ALGORITHM }}'
-                  AWS_S3_URL: '${{ secrets.AWS_S3_URL }}'
-                  TEST_ACCOUNT_ID: = '${{ secrets.TEST_ACCOUNT_ID }}'
-                  TEST_ACCOUNT_PWD: = '${{ secrets.TEST_ACCOUNT_PWD }}'
