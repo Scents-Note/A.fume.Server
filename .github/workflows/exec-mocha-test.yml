@@ -1,38 +1,57 @@
 name: Execute Mocha Test
 
 on:
-  pull_request:
-    branches: [ dev, main, production-1, production-2 ]
+    pull_request:
+        branches: [dev, main, production-1, production-2]
 
 jobs:
-  build:
+    build:
+        runs-on: ubuntu-latest
 
-    runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [10.x]
 
-    strategy:
-      matrix:
-        node-version: [10.x]
-        
-    steps:
-    - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-    - run: sudo ./script/prebuild.sh
-    - name: run test code 
-      run: npm test
-      env:
-        NODE_ENV: test
-        MYSQL_TST_USERNAME: '${{ secrets.MYSQL_TST_USERNAME }}'
-        MYSQL_TST_PASSWORD: '${{ secrets.MYSQL_TST_PASSWORD }}'
-        MYSQL_TST_DATABASE: '${{ secrets.MYSQL_TST_DATABASE }}'
-        MYSQL_TST_HOST: '${{ secrets.MYSQL_TST_HOST }}'
-        MYSQL_TST_PORT: '${{ secrets.MYSQL_TST_PORT }}'
-        MYSQL_TST_DIALECT: '${{ secrets.MYSQL_TST_DIALECT }}'
-        MONGO_URI: '${{ secrets.MONGO_URI }}'
-        CORS_ALLOW_LIST: '${{ secrets.CORS_ALLOW_LIST }}'
-        JWT_SECRET: '${{ secrets.JWT_SECRET }}'
-        AWS_ACCESS_KEY_ID: '${{ secrets.AWS_ACCESS_KEY_ID }}'
-        AWS_SECRET_ACCESS_KEY: '${{ secrets.AWS_SECRET_ACCESS_KEY}}'
-        ENCRYPTION_KEY: '${{ secrets.ENCRYPTION_KEY }}'
-        ENCRYPT_ALGORITHM: '${{ secrets.ENCRYPT_ALGORITHM }}'
-        AWS_S3_URL: '${{ secrets.AWS_S3_URL }}'
+        steps:
+            - uses: actions/checkout@v2
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v2
+            - run: sudo ./script/prebuild.sh
+            - name: run unit test code
+              run: npm run test-unit
+              env:
+                  NODE_ENV: test
+                  MYSQL_TST_USERNAME: '${{ secrets.MYSQL_TST_USERNAME }}'
+                  MYSQL_TST_PASSWORD: '${{ secrets.MYSQL_TST_PASSWORD }}'
+                  MYSQL_TST_DATABASE: '${{ secrets.MYSQL_TST_DATABASE }}'
+                  MYSQL_TST_HOST: '${{ secrets.MYSQL_TST_HOST }}'
+                  MYSQL_TST_PORT: '${{ secrets.MYSQL_TST_PORT }}'
+                  MYSQL_TST_DIALECT: '${{ secrets.MYSQL_TST_DIALECT }}'
+                  MONGO_URI: '${{ secrets.MONGO_URI }}'
+                  CORS_ALLOW_LIST: '${{ secrets.CORS_ALLOW_LIST }}'
+                  JWT_SECRET: '${{ secrets.JWT_SECRET }}'
+                  AWS_ACCESS_KEY_ID: '${{ secrets.AWS_ACCESS_KEY_ID }}'
+                  AWS_SECRET_ACCESS_KEY: '${{ secrets.AWS_SECRET_ACCESS_KEY}}'
+                  ENCRYPTION_KEY: '${{ secrets.ENCRYPTION_KEY }}'
+                  ENCRYPT_ALGORITHM: '${{ secrets.ENCRYPT_ALGORITHM }}'
+                  AWS_S3_URL: '${{ secrets.AWS_S3_URL }}'
+            - name: run integral test code
+              run: npm run test-integral
+              env:
+                  NODE_ENV: production
+                  MYSQL_PRD_USERNAME: '${{ secrets.MYSQL_PRD_USERNAME }}'
+                  MYSQL_PRD_PASSWORD: '${{ secrets.MYSQL_PRD_PASSWORD }}'
+                  MYSQL_PRD_DATABASE: '${{ secrets.MYSQL_PRD_DATABASE }}'
+                  MYSQL_PRD_HOST: '${{ secrets.MYSQL_PRD_HOST }}'
+                  MYSQL_PRD_PORT: '${{ secrets.MYSQL_PRD_PORT }}'
+                  MYSQL_PRD_DIALECT: '${{ secrets.MYSQL_PRD_DIALECT }}'
+                  MONGO_URI: '${{ secrets.MONGO_URI }}'
+                  CORS_ALLOW_LIST: '${{ secrets.CORS_ALLOW_LIST }}'
+                  JWT_SECRET: '${{ secrets.JWT_SECRET }}'
+                  AWS_ACCESS_KEY_ID: '${{ secrets.AWS_ACCESS_KEY_ID }}'
+                  AWS_SECRET_ACCESS_KEY: '${{ secrets.AWS_SECRET_ACCESS_KEY}}'
+                  ENCRYPTION_KEY: '${{ secrets.ENCRYPTION_KEY }}'
+                  ENCRYPT_ALGORITHM: '${{ secrets.ENCRYPT_ALGORITHM }}'
+                  AWS_S3_URL: '${{ secrets.AWS_S3_URL }}'
+                  TEST_ACCOUNT_ID: = '${{ secrets.TEST_ACCOUNT_ID }}'
+                  TEST_ACCOUNT_PWD: = '${{ secrets.TEST_ACCOUNT_PWD }}'
