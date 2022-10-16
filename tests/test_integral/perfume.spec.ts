@@ -46,7 +46,7 @@ import UserService from '@services/UserService';
 
 import { encrypt } from '@libs/crypto';
 
-describe('# Perfume Controller Test', () => {
+describe('# Perfume Integral Test', () => {
     describe('# with Token Test', () => {
         var user1token: string;
         var user1idx: number;
