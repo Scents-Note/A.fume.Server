@@ -19,7 +19,7 @@ module.exports = async (context) => {
             .then(function () {
                 return sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
             }),
-        require('../../../src/utils/db/mongoose.js'),
+        require('@src/utils/db/mongoose.js'),
     ]);
     await require('./seeds.js')();
     await sequelize.query(

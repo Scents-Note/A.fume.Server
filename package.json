@@ -7,7 +7,8 @@
   "scripts": {
     "_prestart": "npm install",
     "start": "cross-env NODE_ENV=development npm run build && node ./dist/bin/www ",
-    "test": "cross-env NODE_ENV=test mocha --recursive --exit -t 5000 ./test/**/*.spec.ts ./test/**/*.spec.js -r ts-node/register -r tsconfig-paths/register ",
+    "test": "cross-env NODE_ENV=test mocha --recursive --exit -t 5000 ./tests/test_unit/**/*.spec.ts ./tests/test_unit/**/*.spec.js -r ts-node/register -r tsconfig-paths/register ",
+    "test-unit": "cross-env NODE_ENV=test mocha --recursive --exit -t 5000 ./tests/test_unit/**/*.spec.ts ./tests/test_unit**/*.spec.js -r ts-node/register -r tsconfig-paths/register ",
     "test-each": "cross-env NODE_ENV=test mocha --recursive --exit -t 5000 -r ts-node/register -r tsconfig-paths/register",
     "type-check": "tsc --noEmit",
     "type-check:watch": "npm run type-check --watch",

@@ -3,8 +3,8 @@ import { expect } from 'chai';
 import { Done } from 'mocha';
 dotenv.config();
 
-import ReportsDao from '../../src/dao/ReportsDao';
-import { ReportUserInquirePerfumeDTO } from '../../src/data/dto';
+import ReportsDao from '@dao/ReportsDao';
+import { ReportUserInquirePerfumeDTO } from '@dto/index';
 
 const { ReportUserInquirePerfume } = require('@sequelize');
 
