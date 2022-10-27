@@ -218,7 +218,7 @@ class PerfumeDetailResponse {
         const volumeAndPrice: string[] = perfumeIntegralDTO.volumeAndPrice.map(
             (it: { volume: string; price: number }) => {
                 if (isNaN(it.price) || !it.price) {
-                    return `${it.volume}ml`;
+                    return `정보 없음/${it.volume}ml`;
                 }
                 return `${PerfumeDetailResponse.numberWithCommas(it.price)}/${
                     it.volume
@@ -432,4 +432,9 @@ class PerfumeWishedResponse {
     }
 }
 
-export { PerfumeDetailResponse, PerfumeResponse, PerfumeRecommendResponse, PerfumeWishedResponse };
+export {
+    PerfumeDetailResponse,
+    PerfumeResponse,
+    PerfumeRecommendResponse,
+    PerfumeWishedResponse,
+};
