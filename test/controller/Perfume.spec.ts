@@ -110,7 +110,6 @@ describe('# Perfume Controller Test', () => {
                                 (prev: number, cur: number) => prev + cur,
                                 0
                             );
-                    console.log(result.data.longevity);
                     expect(sumValues(result.data.gender)).to.be.eq(100);
                     expect(sumValues(result.data.longevity)).to.be.eq(100);
                     expect(sumValues(result.data.seasonal)).to.be.eq(100);
