@@ -295,7 +295,7 @@ describe('# Perfume Integral Test', () => {
                     expected: 62,
                 },
             ];
-            var i = 0;
+            let i = 0;
             tests.forEach(
                 ({ args, expected }: { args: any; expected: any }) => {
                     it(`searchPerfumeTest case ${i++}`, (done: Done) => {
