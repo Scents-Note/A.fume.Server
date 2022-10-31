@@ -144,10 +144,14 @@ npm run test-each ./test/...
 -   조하담 / @ChoHadam /
 
 # 업데이트 내역
+
+-   0.0.5
+    -   getPerfume 에서 지속력 보통이 api의 expect(medium)와 actual(normal) 불일치 하는 버그 수정
 -   0.0.4
-    - perfume search 기능에서 keyword, ingredient 에서 Score로직 삭제하고 AND 조건으로 변경
-    - getLikedPerfume `/user/{userIdx}/perfume/liked:`에서 response type 변경(`PerfumeResponse` -> `PerfumeWishedResponse`)
+    -   perfume search 기능에서 keyword, ingredient 에서 Score로직 삭제하고 AND 조건으로 변경
+    -   getLikedPerfume `/user/{userIdx}/perfume/liked:`에서 response type 변경(`PerfumeResponse` -> `PerfumeWishedResponse`)
 -   0.0.3
+
     -   default review 컨셉 제거
     -   ingredient category 개념 추가
         -   Ingredient_category table 추가

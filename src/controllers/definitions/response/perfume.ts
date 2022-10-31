@@ -14,7 +14,7 @@ type Sillage = { light: number; medium: number; heavy: number };
 type Longevity = {
     veryWeak: number;
     weak: number;
-    normal: number;
+    medium: number;
     strong: number;
     veryStrong: number;
 };
@@ -236,7 +236,7 @@ class PerfumeDetailResponse {
             perfumeIntegralDTO.score,
             perfumeIntegralDTO.seasonal,
             perfumeIntegralDTO.sillage,
-            perfumeIntegralDTO.longevity,
+            this.convertLongevity(perfumeIntegralDTO.longevity),
             perfumeIntegralDTO.gender,
             perfumeIntegralDTO.isLiked,
             perfumeIntegralDTO.keywordList,
@@ -245,6 +245,16 @@ class PerfumeDetailResponse {
             perfumeIntegralDTO.reviewIdx
         );
     }
+    private static convertLongevity(longevity: any): Longevity {
+        return {
+            veryWeak: longevity.veryWeak,
+            weak: longevity.weak,
+            medium: longevity.normal,
+            strong: longevity.strong,
+            veryStrong: longevity.veryStrong,
+        };
+    }
+
     private static numberWithCommas(x: number): string {
         return x
             .toString()
