@@ -1,7 +1,7 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-import KeywordDao from '@dao/KeywordDao'
+import KeywordDao from '@dao/KeywordDao';
 
 const keywordDao = new KeywordDao();
 
@@ -34,7 +34,9 @@ describe('# KeywordDao Test', () => {
     describe('# readAllOfPerfume Test', () => {
         it('# success case', (done) => {
             keywordDao
-                .readAllOfPerfume(1, [['count', 'desc']], { [Op.gte]: 1 })
+                .readAllOfPerfume(1, [['count', 'desc']], {
+                    count: { [Op.gte]: 1 },
+                })
                 .then((result) => {
                     expect(result.length).to.be.gte(2);
                     for (const keyword of result) {
@@ -50,7 +52,7 @@ describe('# KeywordDao Test', () => {
     describe('# readAllOfPerfume Test', () => {
         it('# success case', (done) => {
             keywordDao
-                .readAllOfPerfumeIdxList([1], null, { [Op.gte]: 1 })
+                .readAllOfPerfumeIdxList([1], null, { count: { [Op.gte]: 1 } })
                 .then((result) => {
                     expect(result.length).gte(2);
                     for (const keyword of result) {

@@ -145,13 +145,13 @@ class KeywordDao {
      * @param {number} limitSize
      * @returns {Promise<any>} keywordListObject
      */
-     async readAllOfPerfume (
+    async readAllOfPerfume(
         perfumeIdx: number,
         sort: string[][] = [['count', 'desc']],
-        condition: Object = { [Op.gte]: 3 },
-        limitSize : number = 9
-    ) : Promise<any> {
-        const result : any[] = await JoinPerfumeKeyword.findAll({
+        condition: Object = {},
+        limitSize: number = 9
+    ): Promise<any> {
+        const result: any[] = await JoinPerfumeKeyword.findAll({
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
             },
@@ -162,34 +162,39 @@ class KeywordDao {
                 },
             },
             order: sort,
-            where: { perfumeIdx, count: condition },
+            where: Object.assign(
+                {
+                    perfumeIdx,
+                },
+                condition
+            ),
             limit: limitSize,
             raw: true, //Set this to true if you don't have a model definition for your query.
             nest: true,
         });
 
-        if (result.length === 0 ) {
+        if (result.length === 0) {
             throw new NotMatchedError();
         }
 
         return result.map((it) => {
             return it.Keyword;
         });
-    };
+    }
 
     /**
      * 향수가 가진 키워드별 개수 조회
      * @TODO 아래 함수 readAllOfPerfume()와 역할 유사해서 제거/주석 처리 필요해보임
      * @TODO NotMatchedError 이 단계에서 필요한지 고민
-     * 
+     *
      * @param {number} perfumeIdx
      * @param {string[][]} sort
      * @returns {Promise<any>} keywordList
      */
-     async readAllPerfumeKeywordCount (
+    async readAllPerfumeKeywordCount(
         perfumeIdx: number,
-        sort : string[][] = [['count', 'desc']]
-    ) : Promise<any> {
+        sort: string[][] = [['count', 'desc']]
+    ): Promise<any> {
         let result = await JoinPerfumeKeyword.findAll({
             attributes: {
                 exclude: ['createdAt', 'updatedAt', 'perfumeIdx'],
@@ -250,12 +255,12 @@ class KeywordDao {
      * @param {number} limitSize
      * @returns {Promise<any>} keywordListDTO
      */
-     async readAllOfPerfumeIdxList (
-        perfumeIdxList : any,
-        sort : string[][] = [['count', 'desc']],
-        condition : Object = { [Op.gte]: 3 },
-        limitSize : number = 2
-    ) : Promise<any> {
+    async readAllOfPerfumeIdxList(
+        perfumeIdxList: any,
+        sort: string[][] = [['count', 'desc']],
+        condition: Object = {},
+        limitSize: number = 2
+    ): Promise<any> {
         let result = await JoinPerfumeKeyword.findAll({
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
@@ -267,12 +272,14 @@ class KeywordDao {
                 },
             },
             order: sort,
-            where: {
-                perfumeIdx: {
-                    [Op.in]: perfumeIdxList,
+            where: Object.assign(
+                {
+                    perfumeIdx: {
+                        [Op.in]: perfumeIdxList,
+                    },
                 },
-                count: condition,
-            },
+                condition
+            ),
             limit: limitSize,
             raw: true, // To receive a plain response instead, pass { raw: true } as an option to the finder method.
             nest: true,
