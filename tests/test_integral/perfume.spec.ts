@@ -323,7 +323,7 @@ describe('# Perfume Integral Test', () => {
                 request(app)
                     .get(`${basePath}/perfume/new`)
                     .expect((res: request.Response) => {
-                        expect(res.status).to.be.eq(200);
+                        expect(res.status).to.be.eq(StatusCode.OK);
                         const responseDTO: ResponseDTO<
                             ListAndCountDTO<PerfumeResponse>
                         > = res.body;
