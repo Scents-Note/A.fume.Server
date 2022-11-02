@@ -11,15 +11,21 @@ import {
 
 import UserService from '@services/UserService';
 
-import { UserAuthDTO, UserDTO } from '@dto/index';
+import { UserAuthDTO, UserDTO, TokenSetDTO } from '@dto/index';
 
 import LoginInfoMockHelper from '../mock_helper/LoginInfoMockHelper';
 import TokenGroupMockHelper from '../mock_helper/TokenGroupMockHelper';
 import UserMockHelper from '../mock_helper/UserMockHelper';
 
 const mockUserDao = Object.assign({}, require('../dao/UserDao.mock.js'));
+const mockTokenDao = Object.assign({});
 const mockJWT = Object.assign({}, require('../lib/token.mock.js'));
-const userService = new UserService(mockUserDao, undefined, mockJWT);
+const userService = new UserService(
+    mockUserDao,
+    mockTokenDao,
+    undefined,
+    mockJWT
+);
 
 describe('# User Service Test', () => {
     describe('# createUser Test', () => {
@@ -62,6 +68,9 @@ describe('# User Service Test', () => {
     });
 
     describe('# loginUser Test', () => {
+        mockTokenDao.create = async (_: TokenSetDTO) => {
+            return true;
+        };
         it('# wrong password', (done: Done) => {
             mockUserDao.read = () => {
                 return UserDTO.createByJson({
