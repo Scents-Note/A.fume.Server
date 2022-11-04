@@ -168,8 +168,8 @@ class UserService {
         );
         this.tokenDao
             .create(new TokenSetDTO(token, refreshToken))
-            .then((result: any) => {
-                if (!result || result == 0) {
+            .then((result: boolean) => {
+                if (!result) {
                     logger.error('Failed to create tokenset on storage');
                 }
             });
