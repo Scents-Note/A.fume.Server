@@ -12,7 +12,7 @@ interface TokenDao {
      * 토큰 조회
      *
      * @param {Object} where
-     * @returns {Promise<Note[]>}
+     * @returns {Promise<TokenSetDTO | null>}
      */
     read(accessToken: string): Promise<TokenSetDTO | null>;
 
@@ -20,7 +20,7 @@ interface TokenDao {
      * 토큰 기록 생성
      *
      * @param {Object} where
-     * @returns {Promise<Note[]>}
+     * @returns {Promise<boolean>}
      */
     create(tokenSet: TokenSetDTO): Promise<boolean>;
 
@@ -28,7 +28,7 @@ interface TokenDao {
      * 토큰 갱신
      *
      * @param {Object} where
-     * @returns {Promise<Note[]>}
+     * @returns {Promise<boolean>}
      */
     update(prevAccessToken: string, newAccessToken: string): Promise<boolean>;
 
@@ -36,7 +36,7 @@ interface TokenDao {
      * 토큰 정보 삭제
      *
      * @param {Object} condition
-     * @returns {Promise<Note[]>}
+     * @returns {Promise<boolean>}
      */
     delete(condition: any): Promise<boolean>;
 }
