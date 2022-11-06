@@ -5,7 +5,7 @@ import { logger, LoggerHelper } from '@modules/winston';
 import StatusCode from '@utils/statusCode';
 
 import { ReissueRequest } from '@request/auth';
-import { ResponseDTO, SimpleResponseDTO } from '@response/common';
+import { OpCode, ResponseDTO, SimpleResponseDTO } from '@response/common';
 
 import { TokenSetDTO } from '@dto/index';
 
@@ -92,7 +92,7 @@ class AuthControllerImpl implements AuthController {
                         `${LOG_TAG} detect AbnormalConnection on during reissueAccessToken`
                     );
                     res.status(StatusCode.FORBIDDEN).json(
-                        new SimpleResponseDTO(err.message)
+                        new SimpleResponseDTO(err.message, OpCode.LOGOUT)
                     );
                     return;
                 }

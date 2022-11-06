@@ -1,7 +1,15 @@
+const enum OpCode {
+    NONE = 0,
+    NEED_LOGIN = 101,
+    LOGOUT = 102,
+}
+
 class SimpleResponseDTO {
     readonly message: string;
-    constructor(message: string) {
+    readonly opcode: OpCode;
+    constructor(message: string, opcode: OpCode = OpCode.NONE) {
         this.message = message;
+        this.opcode = opcode;
     }
 
     public toString(): string {
@@ -11,8 +19,8 @@ class SimpleResponseDTO {
 
 class ResponseDTO<Type> extends SimpleResponseDTO {
     readonly data: Type;
-    constructor(message: string, data: Type) {
-        super(message);
+    constructor(message: string, data: Type, opcode: OpCode = OpCode.NONE) {
+        super(message, opcode);
         this.data = data;
     }
 
@@ -21,4 +29,4 @@ class ResponseDTO<Type> extends SimpleResponseDTO {
     }
 }
 
-export { ResponseDTO, SimpleResponseDTO };
+export { ResponseDTO, SimpleResponseDTO, OpCode };

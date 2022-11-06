@@ -12,6 +12,8 @@ import {
     ABNORMAL_CONNECTION,
 } from '@utils/strings';
 
+import { OpCode } from '@response/common';
+
 import { TokenSetDTO } from '@dto/index';
 
 import { AbnormalConnectionError } from '@errors';
@@ -67,8 +69,9 @@ describe('# Auth Controller Test', () => {
                     })
                     .expect((res: any) => {
                         expect(res.status).to.be.eq(StatusCode.FORBIDDEN);
-                        const { message } = res.body;
+                        const { message, opcode } = res.body;
                         expect(message).to.be.eq(ABNORMAL_CONNECTION);
+                        expect(opcode).to.be.eq(OpCode.LOGOUT);
                         done();
                     })
                     .catch((err: Error) => done(err));
