@@ -166,12 +166,15 @@ class UserService {
         const { token, refreshToken } = this.jwt.publish(
             TokenPayloadDTO.createByJson(user)
         );
-        this.tokenDao
+        await this.tokenDao
             .create(new TokenSetDTO(token, refreshToken))
             .then((result: boolean) => {
                 if (!result) {
                     logger.error('Failed to create tokenset on storage');
                 }
+            })
+            .catch((err: Error) => {
+                logger.error(err);
             });
         return LoginInfoDTO.createByJson(
             Object.assign({}, user, {
