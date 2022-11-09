@@ -55,8 +55,13 @@ describe('# Auth Controller Test', () => {
             });
         });
         describe('# fail case with abnormalConeectionError', () => {
+            const inputToken: string = '';
             before(() => {
-                mockAuthService.reissueAccessToken = async (_: TokenSetDTO) => {
+                mockAuthService.reissueAccessToken = async (
+                    token: TokenSetDTO
+                ) => {
+                    expect(token.accessToken).to.be.eq(inputToken);
+                    expect(token.refreshToken).to.be.eq(inputToken);
                     throw new AbnormalConnectionError();
                 };
             });
@@ -64,8 +69,8 @@ describe('# Auth Controller Test', () => {
                 request(app)
                     .post(`${basePath}/auth/reissue`)
                     .send({
-                        accessToken: '',
-                        refreshToken: '',
+                        accessToken: inputToken,
+                        refreshToken: inputToken,
                     })
                     .expect((res: any) => {
                         expect(res.status).to.be.eq(StatusCode.FORBIDDEN);
