@@ -105,7 +105,10 @@ const MSG_GET_SUPPORTABLE_YES: string = '현재 apk Version은 이용 가능합�
 const MSG_GET_SUPPORTABLE_NO: string =
     '현재 apk Version은 업데이트가 필요합니다.';
 
+const MSG_REISSUE_SUCCESS: string = '토큰이 재발행 되었습니다.';
+
 const NO_AUTHORIZE: string = '권한이 없습니다.';
+const ABNORMAL_CONNECTION: string = '비정상 적인 접근 입니다.';
 
 const CURRENT_VERSION: string = process.env.npm_package_version || '0.0.4';
 /* TODO BASE PATH 는 MAJOR만 따르도록 수정할 것. 0.0.1 -> 1.0 -> 2.0 */
@@ -179,7 +182,9 @@ export {
     MSG_CANT_USE_PASSWORD_BY_POLICY,
     MSG_GET_SUPPORTABLE_YES,
     MSG_GET_SUPPORTABLE_NO,
+    MSG_REISSUE_SUCCESS,
     NO_AUTHORIZE,
+    ABNORMAL_CONNECTION,
     CURRENT_VERSION,
     BASE_PATH,
 };
