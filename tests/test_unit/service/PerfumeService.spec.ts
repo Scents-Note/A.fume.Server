@@ -24,7 +24,7 @@ import {
     PerfumeSearchDTO,
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
-    PerfumeThumbWithReviewDTO
+    PerfumeThumbWithReviewDTO,
 } from '@dto/index';
 
 import {
@@ -139,7 +139,7 @@ describe('# Perfume Service Test', () => {
                             updatedAt: '2022-06-01T11:09:46.000Z',
                             deletedAt: null,
                             perfumeIdx: 1,
-                            userIdx: 1
+                            userIdx: 1,
                         },
                     ];
                 };
