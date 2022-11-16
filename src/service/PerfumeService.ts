@@ -564,9 +564,9 @@ class PerfumeService {
     }
 
     private matchReviewsWithPerfumesJob(
-        perfumeReivewList: any[]
+        perfumeReviewList: any[]
     ): (obj: any) => any {
-        const reviewMap: { [key: string]: any } = _.chain(perfumeReivewList)
+        const reviewMap: { [key: string]: any } = _.chain(perfumeReviewList)
             .groupBy('perfumeIdx')
             .mapValues((arr) => arr.map((it) => it))
             .value();
