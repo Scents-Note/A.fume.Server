@@ -24,7 +24,7 @@ import {
     PerfumeSearchDTO,
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
-    PerfumeThumbWithReviewDTO
+    PerfumeThumbWithReviewDTO,
 } from '@dto/index';
 
 import {
@@ -139,18 +139,16 @@ describe('# Perfume Service Test', () => {
                             updatedAt: '2022-06-01T11:09:46.000Z',
                             deletedAt: null,
                             perfumeIdx: 1,
-                            userIdx: 1
+                            userIdx: 1,
                         },
                     ];
                 };
                 Perfume.getPerfumeById(1, 1)
                     .then((it: PerfumeIntegralDTO) => {
                         PerfumeIntegralMockHelper.validTest.call(it);
-                        expect([
-                            'http://perfume-image/1',
-                            'imageUrl1',
-                            'imageUrl2',
-                        ]).to.be.deep.eq(it.imageUrls);
+                        expect(['imageUrl1', 'imageUrl2']).to.be.deep.eq(
+                            it.imageUrls
+                        );
                         expect(['키워드1', '키워드2']).to.be.deep.eq(
                             it.keywordList
                         );

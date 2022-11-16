@@ -30,7 +30,7 @@ import {
     UserDTO,
     NoteDictDTO,
     IngredientDTO,
-    PerfumeThumbWithReviewDTO
+    PerfumeThumbWithReviewDTO,
 } from '@dto/index';
 import fp from 'lodash/fp';
 import _ from 'lodash';
@@ -91,10 +91,10 @@ class PerfumeService {
                 ).map((it: any) => it.name)
             ),
         ];
-        const imageUrls: string[] = [
-            perfume.imageUrl,
-            ...(await s3FileDao.getS3ImageList(perfumeIdx)),
-        ];
+        const imageUrls: string[] = await this.getImageList(
+            perfumeIdx,
+            perfume.imageUrl
+        );
 
         const { noteType, noteDictDTO } = await this.generateNote(perfumeIdx);
         const perfumeSummaryDTO: PerfumeSummaryDTO = await this.generateSummary(
@@ -400,9 +400,12 @@ class PerfumeService {
                 );
                 const likePerfumeList: any[] =
                     await likePerfumeDao.readLikeInfo(userIdx, perfumeIdxList);
-                const perfumeReivewList: any[] = 
-                    await reviewDao.readAllMineOfPerfumes(userIdx, perfumeIdxList);
-                console.log('perfumeReivewList', perfumeReivewList)
+                const perfumeReivewList: any[] =
+                    await reviewDao.readAllMineOfPerfumes(
+                        userIdx,
+                        perfumeIdxList
+                    );
+                console.log('perfumeReivewList', perfumeReivewList);
                 return result.convertType((item: any) => {
                     return fp.compose(
                         ...commonJob,
@@ -561,21 +564,22 @@ class PerfumeService {
         };
     }
 
-    private matchReviewsWithPerfumesJob(perfumeReivewList: any[]): (obj: any) => any {
-
-        const reviewMap: { [key: string]: any } = _
-            .chain(perfumeReivewList)
+    private matchReviewsWithPerfumesJob(
+        perfumeReivewList: any[]
+    ): (obj: any) => any {
+        const reviewMap: { [key: string]: any } = _.chain(perfumeReivewList)
             .groupBy('perfumeIdx')
             .mapValues((arr) => arr.map((it) => it))
             .value();
 
         return (obj: any) => {
             const ret: any = Object.assign({}, obj); // obj 복사본 생성
-            ret.reviewIdx = reviewMap[obj.perfumeIdx]? reviewMap[obj.perfumeIdx][0]['id'] : DEFAULT_VALUE_OF_INDEX;
+            ret.reviewIdx = reviewMap[obj.perfumeIdx]
+                ? reviewMap[obj.perfumeIdx][0]['id']
+                : DEFAULT_VALUE_OF_INDEX;
             return ret;
         };
     }
-
 
     private addKeyword(joinKeywordList: any[]): (obj: any) => any {
         const keywordMap: { [key: number]: string[] } = _.chain(joinKeywordList)
@@ -634,6 +638,29 @@ class PerfumeService {
                 PerfumeThumbKeywordDTO.createByJson
             )(item);
         };
+    }
+
+    private async getImageList(
+        perfumeIdx: number,
+        defaultImage: string
+    ): Promise<string[]> {
+        const imageFromS3: string[] = await s3FileDao
+            .getS3ImageList(perfumeIdx)
+            .catch((_: any) => []);
+
+        if (imageFromS3.length > 0) {
+            return imageFromS3;
+        }
+
+        const imageFromS3Legacy: string[] = await s3FileDao
+            .getS3ImageList(perfumeIdx)
+            .catch((_: any) => []);
+
+        if (imageFromS3Legacy.length > 0) {
+            return [imageFromS3Legacy[0]];
+        }
+
+        return [defaultImage];
     }
 }
 

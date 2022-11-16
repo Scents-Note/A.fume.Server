@@ -7,6 +7,12 @@ const REQUIRED_ENV_LIST: string[] = [
     'ENCRYPTION_KEY',
     'JWT_SECRET',
     'MONGO_URI',
+    'AWS_ACCESS_KEY_ID_LEGACY',
+    'AWS_SECRET_ACCESS_KEY_LEGACY',
+    'AWS_S3_URL_LEGACY',
+    'AWS_ACCESS_KEY_ID',
+    'AWS_SECRET_ACCESS_KEY',
+    'AWS_S3_URL',
 ];
 
 const NULLABLE_ENV_MAP: { [key: string]: any } = {
@@ -18,6 +24,11 @@ const NULLABLE_ENV_MAP: { [key: string]: any } = {
 };
 
 type Properties = {
+    AWS_ACCESS_KEY_ID_LEGACY: string;
+    AWS_SECRET_ACCESS_KEY_LEGACY: string;
+    AWS_S3_URL_LEGACY: string;
+    AWS_ACCESS_KEY_ID: string;
+    AWS_SECRET_ACCESS_KEY: string;
     AWS_S3_URL: string;
     ENCRYPT_ALGORITHM: string;
     ENCRYPTION_KEY: string;
