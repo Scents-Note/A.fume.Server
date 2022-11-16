@@ -48,7 +48,6 @@ describe('# seriesDao Test', () => {
                     return Token.findOne({ where: { accessToken: 'tokenB' } });
                 })
                 .then((result: any) => {
-                    console.log(result);
                     expect(result).to.be.not.null;
                     done();
                 })

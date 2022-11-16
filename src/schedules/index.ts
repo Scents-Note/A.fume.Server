@@ -23,8 +23,6 @@ class SchedulerManager {
         }),
     ];
     constructor() {
-        console.log('ScheduleManager');
-        console.log(debug);
         if (debug) {
             logger.debug(TAG, `execute reloadSearchHistory() by debug flag`);
             reloadSearchHistory();
