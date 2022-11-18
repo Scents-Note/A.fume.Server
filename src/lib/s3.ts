@@ -21,6 +21,7 @@ const s3MainInfo: S3Info = {
     },
 };
 
+// TODO: This variable will be removed after detaching afume(previous) bucket
 const s3LegacyInfo: S3Info = {
     getConfig: (): AWS.ConfigurationOptions => {
         return {
@@ -74,6 +75,7 @@ class S3Adapter {
         return new S3Adapter(s3MainInfo);
     }
 
+    // TODO: This method will be removed after detaching afume(previous) bucket
     static getLegacyS3Adapter(): S3Adapter {
         return new S3Adapter(s3LegacyInfo);
     }
