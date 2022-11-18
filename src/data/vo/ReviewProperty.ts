@@ -193,9 +193,7 @@ abstract class NormalizeCounterStrategy {
         const result: { [key: string]: number } = _.mapValues(
             obj,
             (value: number) =>
-                total != 0
-                    ? Math.floor((value * 100) / total)
-                    : Math.floor(100 / entries.length)
+                total != 0 ? Math.floor((value * 100) / total) : 0
         );
         return result;
     }

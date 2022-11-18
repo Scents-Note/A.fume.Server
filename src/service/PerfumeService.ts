@@ -30,7 +30,7 @@ import {
     UserDTO,
     NoteDictDTO,
     IngredientDTO,
-    PerfumeThumbWithReviewDTO
+    PerfumeThumbWithReviewDTO,
 } from '@dto/index';
 import fp from 'lodash/fp';
 import _ from 'lodash';
@@ -400,14 +400,16 @@ class PerfumeService {
                 );
                 const likePerfumeList: any[] =
                     await likePerfumeDao.readLikeInfo(userIdx, perfumeIdxList);
-                const perfumeReivewList: any[] = 
-                    await reviewDao.readAllMineOfPerfumes(userIdx, perfumeIdxList);
-                console.log('perfumeReivewList', perfumeReivewList)
+                const perfumeReviewList: any[] =
+                    await reviewDao.readAllMineOfPerfumes(
+                        userIdx,
+                        perfumeIdxList
+                    );
                 return result.convertType((item: any) => {
                     return fp.compose(
                         ...commonJob,
                         this.isLikeJob(likePerfumeList),
-                        this.matchReviewsWithPerfumesJob(perfumeReivewList),
+                        this.matchReviewsWithPerfumesJob(perfumeReviewList),
                         PerfumeThumbWithReviewDTO.createByJson
                     )(item);
                 });
@@ -561,21 +563,22 @@ class PerfumeService {
         };
     }
 
-    private matchReviewsWithPerfumesJob(perfumeReivewList: any[]): (obj: any) => any {
-
-        const reviewMap: { [key: string]: any } = _
-            .chain(perfumeReivewList)
+    private matchReviewsWithPerfumesJob(
+        perfumeReviewList: any[]
+    ): (obj: any) => any {
+        const reviewMap: { [key: string]: any } = _.chain(perfumeReviewList)
             .groupBy('perfumeIdx')
             .mapValues((arr) => arr.map((it) => it))
             .value();
 
         return (obj: any) => {
             const ret: any = Object.assign({}, obj); // obj 복사본 생성
-            ret.reviewIdx = reviewMap[obj.perfumeIdx]? reviewMap[obj.perfumeIdx][0]['id'] : DEFAULT_VALUE_OF_INDEX;
+            ret.reviewIdx = reviewMap[obj.perfumeIdx]
+                ? reviewMap[obj.perfumeIdx][0]['id']
+                : DEFAULT_VALUE_OF_INDEX;
             return ret;
         };
     }
-
 
     private addKeyword(joinKeywordList: any[]): (obj: any) => any {
         const keywordMap: { [key: number]: string[] } = _.chain(joinKeywordList)
