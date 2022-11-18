@@ -232,6 +232,64 @@ describe('# Perfume Service Test', () => {
                     })
                     .catch((err: Error) => done(err));
             });
+
+            it('# success Test(case empty)', (done: Done) => {
+                mockS3FileDao.getS3ImageList = async () => [];
+                mockLikePerfumeDao.read = async (_: number, __: number) =>
+                    false;
+                mockKeywordDao.readAllOfPerfume = async (_: number) => [];
+                const expectedReviewIdx: number = 4;
+                mockReviewDao.findOne = async () => {
+                    return { id: expectedReviewIdx };
+                };
+                mockReviewDao.readAllOfPerfume = async () => {
+                    return [];
+                };
+                mockReviewDao.readAllMineOfPerfumes = async () => {
+                    return [
+                        {
+                            id: 1,
+                            score: 1,
+                            longevity: 1,
+                            sillage: 1,
+                            seasonal: 4,
+                            gender: 1,
+                            access: 1,
+                            content: '시향노트1',
+                            likeCnt: 0,
+                            createdAt: '2021-09-26T08:38:33.000Z',
+                            updatedAt: '2022-06-01T11:09:46.000Z',
+                            deletedAt: null,
+                            perfumeIdx: 1,
+                            userIdx: 1,
+                        },
+                    ];
+                };
+                Perfume.getPerfumeById(1, 1)
+                    .then((it: PerfumeIntegralDTO) => {
+                        PerfumeIntegralMockHelper.validTest.call(it);
+                        expect(it.seasonal.spring).to.be.eq(0);
+                        expect(it.seasonal.summer).to.be.eq(0);
+                        expect(it.seasonal.fall).to.be.eq(0);
+                        expect(it.seasonal.winter).to.be.eq(0);
+
+                        expect(it.longevity.veryWeak).to.be.eq(0);
+                        expect(it.longevity.weak).to.be.eq(0);
+                        expect(it.longevity.normal).to.be.eq(0);
+                        expect(it.longevity.strong).to.be.eq(0);
+                        expect(it.longevity.veryStrong).to.be.eq(0);
+
+                        expect(it.sillage.light).to.be.eq(0);
+                        expect(it.sillage.medium).to.be.eq(0);
+                        expect(it.sillage.heavy).to.be.eq(0);
+
+                        expect(it.gender.male).to.be.eq(0);
+                        expect(it.gender.neutral).to.be.eq(0);
+                        expect(it.gender.female).to.be.eq(0);
+                        done();
+                    })
+                    .catch((err: Error) => done(err));
+            });
         });
 
         it('# search Test', (done: Done) => {

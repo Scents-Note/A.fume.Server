@@ -400,17 +400,16 @@ class PerfumeService {
                 );
                 const likePerfumeList: any[] =
                     await likePerfumeDao.readLikeInfo(userIdx, perfumeIdxList);
-                const perfumeReivewList: any[] =
+                const perfumeReviewList: any[] =
                     await reviewDao.readAllMineOfPerfumes(
                         userIdx,
                         perfumeIdxList
                     );
-                console.log('perfumeReivewList', perfumeReivewList);
                 return result.convertType((item: any) => {
                     return fp.compose(
                         ...commonJob,
                         this.isLikeJob(likePerfumeList),
-                        this.matchReviewsWithPerfumesJob(perfumeReivewList),
+                        this.matchReviewsWithPerfumesJob(perfumeReviewList),
                         PerfumeThumbWithReviewDTO.createByJson
                     )(item);
                 });
@@ -565,9 +564,9 @@ class PerfumeService {
     }
 
     private matchReviewsWithPerfumesJob(
-        perfumeReivewList: any[]
+        perfumeReviewList: any[]
     ): (obj: any) => any {
-        const reviewMap: { [key: string]: any } = _.chain(perfumeReivewList)
+        const reviewMap: { [key: string]: any } = _.chain(perfumeReviewList)
             .groupBy('perfumeIdx')
             .mapValues((arr) => arr.map((it) => it))
             .value();
