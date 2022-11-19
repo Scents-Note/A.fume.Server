@@ -91,10 +91,10 @@ class PerfumeService {
                 ).map((it: any) => it.name)
             ),
         ];
-        const imageUrls: string[] = [
-            perfume.imageUrl,
-            ...(await s3FileDao.getS3ImageList(perfumeIdx)),
-        ];
+        const imageUrls: string[] = await this.getImageList(
+            perfumeIdx,
+            perfume.imageUrl
+        );
 
         const { noteType, noteDictDTO } = await this.generateNote(perfumeIdx);
         const perfumeSummaryDTO: PerfumeSummaryDTO = await this.generateSummary(
@@ -637,6 +637,30 @@ class PerfumeService {
                 PerfumeThumbKeywordDTO.createByJson
             )(item);
         };
+    }
+
+    private async getImageList(
+        perfumeIdx: number,
+        defaultImage: string
+    ): Promise<string[]> {
+        const imageFromS3: string[] = await s3FileDao
+            .getS3ImageList(perfumeIdx)
+            .catch((_: any) => []);
+
+        if (imageFromS3.length > 0) {
+            return imageFromS3;
+        }
+
+        // TODO: Below logic will be removed after detaching afume(previous) bucket
+        const imageFromS3Legacy: string[] = await s3FileDao
+            .getS3ImageList(perfumeIdx)
+            .catch((_: any) => []);
+
+        if (imageFromS3Legacy.length > 0) {
+            return [imageFromS3Legacy[0]];
+        }
+
+        return [defaultImage];
     }
 }
 
