@@ -9,6 +9,7 @@ import {
 } from '@errors';
 
 import UserDao from '@dao/UserDao';
+import { TokenDao, TokenDaoSequelize } from '@dao/TokenDao';
 
 import { encrypt as _encrypt, decrypt as _decrypt } from '@libs/crypto';
 import JwtController from '@libs/JwtController';
@@ -21,16 +22,24 @@ import {
     UserInputDTO,
     UserDTO,
     SurveyDTO,
+    TokenSetDTO,
 } from '@dto/index';
 
 const LOG_TAG: string = '[User/Service]';
 
 class UserService {
     userDao: UserDao;
+    tokenDao: TokenDao;
     crypto: any;
     jwt: any;
-    constructor(userDao?: UserDao, crypto?: any, jwt?: any) {
+    constructor(
+        userDao?: UserDao,
+        tokenDao?: TokenDao,
+        crypto?: any,
+        jwt?: any
+    ) {
         this.userDao = userDao || new UserDao();
+        this.tokenDao = tokenDao || new TokenDaoSequelize();
         this.crypto = crypto || { encrypt: _encrypt, decrypt: _decrypt };
         this.jwt = jwt || {
             create: JwtController.create,
@@ -157,6 +166,16 @@ class UserService {
         const { token, refreshToken } = this.jwt.publish(
             TokenPayloadDTO.createByJson(user)
         );
+        await this.tokenDao
+            .create(new TokenSetDTO(token, refreshToken))
+            .then((result: boolean) => {
+                if (!result) {
+                    logger.error('Failed to create tokenset on storage');
+                }
+            })
+            .catch((err: Error) => {
+                logger.error(err);
+            });
         return LoginInfoDTO.createByJson(
             Object.assign({}, user, {
                 token,

@@ -1,0 +1,41 @@
+name: Execute Mocha Unit Test
+
+on:
+    pull_request:
+        branches: [dev, main, production-1, production-2]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                node-version: [10.x]
+
+        steps:
+            - uses: actions/checkout@v2
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v2
+            - run: sudo ./script/prebuild.sh
+            - name: run unit test code
+              run: npm run test-unit
+              env:
+                  NODE_ENV: test
+                  MYSQL_TST_USERNAME: '${{ secrets.MYSQL_TST_USERNAME }}'
+                  MYSQL_TST_PASSWORD: '${{ secrets.MYSQL_TST_PASSWORD }}'
+                  MYSQL_TST_DATABASE: '${{ secrets.MYSQL_TST_DATABASE }}'
+                  MYSQL_TST_HOST: '${{ secrets.MYSQL_TST_HOST }}'
+                  MYSQL_TST_PORT: '${{ secrets.MYSQL_TST_PORT }}'
+                  MYSQL_TST_DIALECT: '${{ secrets.MYSQL_TST_DIALECT }}'
+                  MONGO_URI: '${{ secrets.MONGO_URI }}'
+                  CORS_ALLOW_LIST: '${{ secrets.CORS_ALLOW_LIST }}'
+                  JWT_SECRET: '${{ secrets.JWT_SECRET }}'
+                  ENCRYPTION_KEY: '${{ secrets.ENCRYPTION_KEY }}'
+                  ENCRYPT_ALGORITHM: '${{ secrets.ENCRYPT_ALGORITHM }}'
+                  AWS_S3_URL: '${{ secrets.AWS_S3_URL }}'
+                  AWS_ACCESS_KEY_ID: '${{ secrets.AWS_ACCESS_KEY_ID }}'
+                  AWS_SECRET_ACCESS_KEY: '${{ secrets.AWS_SECRET_ACCESS_KEY }}'
+                  # TODO: These environments will be removed after detaching afume(previous) bucket
+                  AWS_S3_URL_LEGACY: '${{ secrets.AWS_S3_URL_LEGACY }}'
+                  AWS_ACCESS_KEY_ID_LEGACY: '${{ secrets.AWS_ACCESS_KEY_ID_LEGACY }}'
+                  AWS_SECRET_ACCESS_KEY_LEGACY: '${{ secrets.AWS_SECRET_ACCESS_KEY_LEGACY }}'

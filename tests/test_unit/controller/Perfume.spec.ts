@@ -3,6 +3,7 @@ import request from 'supertest';
 import { expect } from 'chai';
 import { Done } from 'mocha';
 dotenv.config();
+import _ from 'lodash';
 
 import StatusCode from '@utils/statusCode';
 
@@ -43,6 +44,7 @@ import {
 } from '@dto/index';
 
 import app from '@src/app';
+import { checkAllValues } from '../utils/common';
 
 const basePath: string = BASE_PATH;
 
@@ -50,7 +52,6 @@ const Perfume = require('@controllers/Perfume');
 import PerfumeThumbMockHelper from '../mock_helper/PerfumeThumbMockHelper';
 import PerfumeThumbKeywordMockHelper from '../mock_helper/PerfumeThumbKeywordMockHelper';
 import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
-import _ from 'lodash';
 
 const user1tokenPerfume: string = JwtController.create(
     new TokenPayloadDTO(1, 'nickname', 'MAN', 'email', 1995)
@@ -102,6 +103,23 @@ describe('# Perfume Controller Test', () => {
                     expect(result.message).to.be.eq(
                         MSG_GET_PERFUME_DETAIL_SUCCESS
                     );
+                    const sumValues = (obj: any) =>
+                        Object.entries(obj)
+                            .map((it: any) => it[1])
+                            .reduce(
+                                (prev: number, cur: number) => prev + cur,
+                                0
+                            );
+                    expect(sumValues(result.data.gender)).to.be.eq(100);
+                    expect(sumValues(result.data.longevity)).to.be.eq(100);
+                    expect(sumValues(result.data.seasonal)).to.be.eq(100);
+                    expect(sumValues(result.data.sillage)).to.be.eq(100);
+                    expect(
+                        checkAllValues(result.data, (obj: any) => {
+                            return obj != undefined && obj != null;
+                        })
+                    ).be.to.true;
+
                     result.data.volumeAndPrice.forEach(
                         (volumeAndPrice: string) => {
                             expect(volumeAndPrice).to.be.not.contain('NaN');

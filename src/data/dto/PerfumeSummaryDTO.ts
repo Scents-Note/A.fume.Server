@@ -1,61 +1,30 @@
+import _ from 'lodash';
 import {
-    SEASONAL_LIST,
-    SILLAGE_LIST,
-    GENDER_LIST,
-    LONGEVITY_LIST,
-} from '@utils/constants';
-import _, { isNumber } from 'lodash';
-
-type SeasonalMap = {
-    spring: number;
-    summer: number;
-    fall: number;
-    winter: number;
-};
-
-type SillageMap = {
-    light: number;
-    medium: number;
-    heavy: number;
-};
-
-type LongevityMap = {
-    veryWeak: number;
-    weak: number;
-    normal: number;
-    strong: number;
-    veryStrong: number;
-};
-
-type GenderMap = {
-    male: number;
-    neutral: number;
-    female: number;
-};
-
-type Longevity = keyof LongevityMap;
-type Gender = keyof GenderMap;
-type Sillage = keyof SillageMap;
-type Seasonal = keyof SeasonalMap;
-
-const FLOATING_POINT = 2;
-
-function toFixedNumber(number: number): number {
-    return parseFloat(number.toFixed(FLOATING_POINT));
-}
+    ReviewProperty,
+    ScoreProperty,
+    AverageStrategy,
+    SeasonalProperty,
+    SeasonalNormalizeStrategy,
+    LongevityProperty,
+    LongevityNormalizeStrategy,
+    SillageProperty,
+    SillageNormalizeStrategy,
+    GenderProperty,
+    GenderNormalizeStrategy,
+} from '../vo/ReviewProperty';
 
 class PerfumeSummaryDTO {
     readonly score: number;
-    readonly seasonal: SeasonalMap;
-    readonly sillage: SillageMap;
-    readonly longevity: LongevityMap;
-    readonly gender: GenderMap;
+    readonly seasonal: { [key: string]: number };
+    readonly sillage: { [key: string]: number };
+    readonly longevity: { [key: string]: number };
+    readonly gender: { [key: string]: number };
     constructor(
         score: number,
-        seasonal: SeasonalMap,
-        sillage: SillageMap,
-        longevity: LongevityMap,
-        gender: GenderMap
+        seasonal: { [key: string]: number },
+        sillage: { [key: string]: number },
+        longevity: { [key: string]: number },
+        gender: { [key: string]: number }
     ) {
         this.score = score;
         this.seasonal = seasonal;
@@ -69,97 +38,72 @@ class PerfumeSummaryDTO {
     }
 
     static createByReviewList(reviewList: any[]): PerfumeSummaryDTO {
-        const seasonalCountMap: SeasonalMap = {
-            spring: 0,
-            summer: 0,
-            fall: 0,
-            winter: 0,
-        };
-        const sillageCountMap: SillageMap = {
-            light: 0,
-            medium: 0,
-            heavy: 0,
-        };
-        const longevityCountMap: LongevityMap = {
-            veryWeak: 0,
-            weak: 0,
-            normal: 0,
-            strong: 0,
-            veryStrong: 0,
-        };
-        const genderCountMap: GenderMap = {
-            male: 0,
-            neutral: 0,
-            female: 0,
-        };
+        const score: number = this.getAverageScore(reviewList);
+        const normalizeSeasonal: { [key: string]: number } =
+            this.getNormalizeSeasonal(reviewList);
+        const normalizeSillage: { [key: string]: number } =
+            this.getNormalizeSillage(reviewList);
+        const normalizeLongevity: { [key: string]: number } =
+            this.getNormalizeLongevity(reviewList);
+        const normalizeGender: { [key: string]: number } =
+            this.getNormalizeGender(reviewList);
 
-        const sum: number = _.chain(reviewList)
-            .map((it) => it.score)
-            .filter(isNumber)
-            .sum()
-            .value();
-        const cnt: number = _.chain(reviewList)
-            .map((it) => it.score)
-            .filter(isNumber)
-            .size()
-            .value();
-        reviewList
-            .map((it: any) => {
-                it.seasonal = SEASONAL_LIST[it.seasonal || 0];
-                it.sillage = SILLAGE_LIST[it.sillage || 0];
-                it.longevity = LONGEVITY_LIST[it.longevity || 0];
-                it.gender = GENDER_LIST[it.gender || 0];
-                return it;
-            })
-            .forEach(
-                ({
-                    longevity,
-                    sillage,
-                    seasonal,
-                    gender,
-                }: {
-                    score: number;
-                    longevity: Longevity;
-                    sillage: Sillage;
-                    seasonal: Seasonal;
-                    gender: Gender;
-                }) => {
-                    if (longevity in longevityCountMap) {
-                        longevityCountMap[longevity]++;
-                    }
-                    if (sillage in sillageCountMap) {
-                        sillageCountMap[sillage]++;
-                    }
-                    if (seasonal in seasonalCountMap) {
-                        seasonalCountMap[seasonal]++;
-                    }
-                    if (gender in genderCountMap) {
-                        genderCountMap[gender]++;
-                    }
-                }
-            );
         return new PerfumeSummaryDTO(
-            cnt == 0 ? 0 : toFixedNumber(sum / cnt),
-            <SeasonalMap>this.normalize(seasonalCountMap),
-            <SillageMap>this.normalize(sillageCountMap),
-            <LongevityMap>this.normalize(longevityCountMap),
-            <GenderMap>this.normalize(genderCountMap)
+            score,
+            normalizeSeasonal,
+            normalizeSillage,
+            normalizeLongevity,
+            normalizeGender
         );
     }
 
-    private static normalize(obj: { [key: string]: number }): {
+    private static getAverageScore(reviewList: any[]): number {
+        return new AverageStrategy().calculate(
+            reviewList.map((it: any) => ScoreProperty.getIntance(it.score))
+        );
+    }
+
+    private static getNormalizeSeasonal(reviewList: any[]): {
         [key: string]: number;
     } {
-        const entries: [string, number][] = Object.entries(obj);
-        const total: number = _.sumBy(entries, (it) => it[1]);
-        const result: { [key: string]: number } = _.mapValues(
-            obj,
-            (value: number) =>
-                total != 0
-                    ? Math.floor((value * 100) / total)
-                    : Math.floor(100 / entries.length)
+        const properties: ReviewProperty[] = reviewList.flatMap((it: any) =>
+            SeasonalProperty.getIntances(it.seasonal || 0)
         );
-        return result;
+        const strategy: SeasonalNormalizeStrategy =
+            new SeasonalNormalizeStrategy();
+        return strategy.calculate(properties);
+    }
+
+    private static getNormalizeSillage(reviewList: any[]): {
+        [key: string]: number;
+    } {
+        const properties: ReviewProperty[] = reviewList.map((it: any) =>
+            SillageProperty.getIntance(it.sillage || 0)
+        );
+        const strategy: SillageNormalizeStrategy =
+            new SillageNormalizeStrategy();
+        return strategy.calculate(properties);
+    }
+
+    private static getNormalizeLongevity(reviewList: any[]): {
+        [key: string]: number;
+    } {
+        const properties: ReviewProperty[] = reviewList.map((it: any) =>
+            LongevityProperty.getIntance(it.longevity || 0)
+        );
+        const strategy: LongevityNormalizeStrategy =
+            new LongevityNormalizeStrategy();
+        return strategy.calculate(properties);
+    }
+
+    private static getNormalizeGender(reviewList: any[]): {
+        [key: string]: number;
+    } {
+        const properties: ReviewProperty[] = reviewList.map((it: any) =>
+            GenderProperty.getIntance(it.gender || 0)
+        );
+        const strategy: GenderNormalizeStrategy = new GenderNormalizeStrategy();
+        return strategy.calculate(properties);
     }
 }
 

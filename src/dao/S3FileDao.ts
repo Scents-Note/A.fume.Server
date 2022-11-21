@@ -1,31 +1,37 @@
 import properties from '@properties';
 
-import { getImageList } from '@libs/s3';
+import { S3Adapter } from '@libs/s3';
 
 import { logger } from '@modules/winston';
 
 const LOG_TAG: string = '[S3File/DAO]';
 
-const REGEX_IMAGE: RegExp = /\.jpg$|\.png$/i;
-
 class S3FileDao {
     s3Url: string;
+    s3Adapter: S3Adapter;
+    // TODO: This property will be removed after detaching afume(previous) bucket
+    s3LegacyAdapter: S3Adapter;
     constructor(s3Url?: string) {
         this.s3Url = s3Url ?? properties.AWS_S3_URL;
+        this.s3Adapter = S3Adapter.getMainS3Adapter();
+        this.s3LegacyAdapter = S3Adapter.getLegacyS3Adapter();
     }
     getS3ImageList(perfumeIdx: number): Promise<string[]> {
         logger.debug(`${LOG_TAG} getS3ImageList(perfumeIdx = ${perfumeIdx})`);
-        return getImageList({
+        return this.s3Adapter.getImageList({
+            Bucket: 'afume-release',
+            Prefix: `perfumes/${perfumeIdx}_`,
+        });
+    }
+
+    // TODO: This method will be removed after detaching afume(previous) bucket
+    getS3ImageListFromLegacy(perfumeIdx: number): Promise<string[]> {
+        logger.debug(
+            `${LOG_TAG} getS3ImageListFromLegacy(perfumeIdx = ${perfumeIdx})`
+        );
+        return this.s3LegacyAdapter.getImageList({
             Bucket: 'afume',
             Prefix: `perfume/${perfumeIdx}/`,
-        }).then((it: string[]) => {
-            return it
-                .filter((it: string) => {
-                    return it.search(REGEX_IMAGE) > 0;
-                })
-                .map((it: string) => {
-                    return `${this.s3Url}/${it}`;
-                });
         });
     }
 }

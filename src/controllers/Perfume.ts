@@ -47,6 +47,7 @@ import {
     DEFAULT_RECOMMEND_REQUEST_SIZE,
     DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE,
     DEFAULT_SIMILAR_PERFUMES_REQUEST_SIZE,
+    DEFAULT_NEW_PERFUME_REQUEST_SIZE,
 } from '@utils/constants';
 import _ from 'lodash';
 
@@ -770,7 +771,7 @@ const getNewPerfume: RequestHandler = (
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
         req.query,
         {
-            requestSize: DEFAULT_RECOMMEND_REQUEST_SIZE,
+            requestSize: DEFAULT_NEW_PERFUME_REQUEST_SIZE,
         }
     );
     logger.debug(

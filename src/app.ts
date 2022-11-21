@@ -52,7 +52,6 @@ app.use(express.json());
 
 app.use(
     makeMorgan((message: string) => {
-        console.log(message);
         logger.http(message);
     })
 );
