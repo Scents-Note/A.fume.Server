@@ -26,6 +26,7 @@ const sequelize: any = require('./models').sequelize;
 sequelize.sync();
 
 require('@utils/db/mongoose.js');
+require('@utils/db/redis.js');
 
 const app: Express = express();
 
