@@ -1,621 +1,622 @@
 ---
 tags:
-- name: perfume
-  description: 향수 정보
-- name: series
-  description: 계열
-- name: ingredient
-  description: 향료
-- name: brand
-  description: 브랜드
-- name: review
-  description: 시향기
-- name: keyword
-  description: 키워드
-- name: user
-  description: 사용자
-- name: system
-  description: system 정보
+    - name: perfume
+      description: 향수 정보
+    - name: series
+      description: 계열
+    - name: ingredient
+      description: 향료
+    - name: brand
+      description: 브랜드
+    - name: review
+      description: 시향기
+    - name: keyword
+      description: 키워드
+    - name: user
+      description: 사용자
+    - name: auth
+      description: 권한
+    - name: system
+      description: system 정보
 schemes:
-#- https
-- http
+    #- https
+    - http
 security:
-- userToken: []
+    - userToken: []
 paths:
-  /perfume/{perfumeIdx}/review:
-    post:
-      tags:
-      - review
-      summary: 시향노트 추가
-      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 시향노트를 작성한다.
-      operationId: postReview
-      security:
-        - userToken: []
-      x-security-scopes:
-        - user
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - name: perfumeIdx
-        in: path
-        description: 향수 Idx
-        required: true
-        type: integer
-        format: int64  
-      - name: body
-        in: body
-        description: 시향노트 정보
-        required: true
-        schema:
-          allOf:
-            - $ref: '#/definitions/ReviewInfo'
-            - type: object
-              example:
-                keywordList:  [1, 2]
-              properties:
-                keywordList: 
-                  type: array
-                  items:
-                    type: integer
-                    format: int64
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message: 
-                type: string
-                example: 시향노트 추가 성공
-              data:
-                type: object
-                properties:
-                  reviewIdx:
-                    type: integer
-                    format: int64
-                    example: 40
-        401:
-          description: Token is missing or invalid
-      x-swagger-router-controller: Review
-    get:
-      tags:
-      - review
-      summary: 향수별 시향 노트 전체 조회 
-      description: <h3> 🎫로그인 토큰 필수🎫 </h3> 해당 향수에 작성된 시향 노트 리스트를 반환한다. <br/> 반환되는 정보 [시향노트]
-      operationId: getPerfumeReview
-      security:
-        - userToken: []
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - name: perfumeIdx
-        in: path
-        description: 향수 Idx
-        required: true
-        type: integer
-        format: int64
-      # - name: sort
-      #   in: query
-      #   type: string
-      #   enum:
-      #   - likeCount_asc
-      #   - score_asc
-      #   - likeCount_desc
-      #   - score_desc
-      #   required: false
-      # - name: pagingSize
-      #   in: query
-      #   type: integer
-      #   required: false
-      # - name: pagingIndex
-      #   in: query
-      #   type: integer
-      #   required: false
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message: 
-                type: string
-                example: 특정 향수의 시향노트 목록 조회 성공
-              data:
-                type: array
-                items:
-                  type: object
-                  properties: 
-                    reviewIdx:
-                      type: integer
-                      format: int64
-                    score:
-                      type: integer
-                      format: int64
-                    access:
-                      type: boolean
-                    content:
-                      type: string
-                    likeCount:
-                      type: integer
-                      format: int64
-                    isLiked: 
-                      type: boolean
-                    age:
-                      type: string
-                    userGender: 
-                      type: string
-                    nickname:
-                      type: string
-                    createTime:
-                      type: string
-                  example:
-                    reviewIdx: 339
-                    score: 5
-                    access: true
-                    content: "시향노트 내용"
-                    likeCount: 3
-                    isLiked: true
-                    userGender: 여자
-                    age: 20대 중반
-                    nickname: 담담
-                    createTime: '2020-12-07 00:11:41'
-      x-swagger-router-controller: Review
-  /review/{reviewIdx}:
-    get:
-      tags:
-      - review
-      summary: 시향노트 조회
-      description: 특정 시향노트 가져오기 <br/> 반환 되는 정보 [시향 노트]
-      operationId: getReviewByIdx
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - name: reviewIdx
-        in: path
-        description: 시향노트 Idx
-        required: true
-        type: integer
-        format: int64
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message: 
-                type: string
-                example: 시향노트 조회 성공
-              data:
-                allOf:
-                - $ref: '#/definitions/ReviewInfo'
-                - type: object
-                  properties: 
-                    reviewIdx:
-                      type: integer
-                      format: int64
-                    Perfume:
-                      type: object
-                      properties:
-                        perfumeIdx:
-                          type: integer
-                          format: int64
-                        perfumeName:
-                          type: integer
-                          format: int64
-                        imageUrl:
-                          type: string
-                    KeywordList: 
-                      type: array
-                      items: 
+    /perfume/{perfumeIdx}/review:
+        post:
+            tags:
+                - review
+            summary: 시향노트 추가
+            description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 시향노트를 작성한다.
+            operationId: postReview
+            security:
+                - userToken: []
+            x-security-scopes:
+                - user
+            consumes:
+                - application/json
+            produces:
+                - application/json
+            parameters:
+                - name: perfumeIdx
+                  in: path
+                  description: 향수 Idx
+                  required: true
+                  type: integer
+                  format: int64
+                - name: body
+                  in: body
+                  description: 시향노트 정보
+                  required: true
+                  schema:
+                      allOf:
+                          - $ref: '#/definitions/ReviewInfo'
+                          - type: object
+                            example:
+                                keywordList: [1, 2]
+                            properties:
+                                keywordList:
+                                    type: array
+                                    items:
+                                        type: integer
+                                        format: int64
+            responses:
+                200:
+                    description: 성공
+                    schema:
                         type: object
                         properties:
-                          keywordIdx:
-                            type: integer
-                            format: int64
-                          name:
-                            type: string
-                    Brand:
+                            message:
+                                type: string
+                                example: 시향노트 추가 성공
+                            data:
+                                type: object
+                                properties:
+                                    reviewIdx:
+                                        type: integer
+                                        format: int64
+                                        example: 40
+                401:
+                    description: Token is missing or invalid
+            x-swagger-router-controller: Review
+        get:
+            tags:
+                - review
+            summary: 향수별 시향 노트 전체 조회
+            description: <h3> 🎫로그인 토큰 필수🎫 </h3> 해당 향수에 작성된 시향 노트 리스트를 반환한다. <br/> 반환되는 정보 [시향노트]
+            operationId: getPerfumeReview
+            security:
+                - userToken: []
+            consumes:
+                - application/json
+            produces:
+                - application/json
+            parameters:
+                - name: perfumeIdx
+                  in: path
+                  description: 향수 Idx
+                  required: true
+                  type: integer
+                  format: int64
+            # - name: sort
+            #   in: query
+            #   type: string
+            #   enum:
+            #   - likeCount_asc
+            #   - score_asc
+            #   - likeCount_desc
+            #   - score_desc
+            #   required: false
+            # - name: pagingSize
+            #   in: query
+            #   type: integer
+            #   required: false
+            # - name: pagingIndex
+            #   in: query
+            #   type: integer
+            #   required: false
+            responses:
+                200:
+                    description: 성공
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                                example: 특정 향수의 시향노트 목록 조회 성공
+                            data:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        reviewIdx:
+                                            type: integer
+                                            format: int64
+                                        score:
+                                            type: integer
+                                            format: int64
+                                        access:
+                                            type: boolean
+                                        content:
+                                            type: string
+                                        likeCount:
+                                            type: integer
+                                            format: int64
+                                        isLiked:
+                                            type: boolean
+                                        age:
+                                            type: string
+                                        userGender:
+                                            type: string
+                                        nickname:
+                                            type: string
+                                        createTime:
+                                            type: string
+                                    example:
+                                        reviewIdx: 339
+                                        score: 5
+                                        access: true
+                                        content: '시향노트 내용'
+                                        likeCount: 3
+                                        isLiked: true
+                                        userGender: 여자
+                                        age: 20대 중반
+                                        nickname: 담담
+                                        createTime: '2020-12-07 00:11:41'
+            x-swagger-router-controller: Review
+    /review/{reviewIdx}:
+        get:
+            tags:
+                - review
+            summary: 시향노트 조회
+            description: 특정 시향노트 가져오기 <br/> 반환 되는 정보 [시향 노트]
+            operationId: getReviewByIdx
+            consumes:
+                - application/json
+            produces:
+                - application/json
+            parameters:
+                - name: reviewIdx
+                  in: path
+                  description: 시향노트 Idx
+                  required: true
+                  type: integer
+                  format: int64
+            responses:
+                200:
+                    description: 성공
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                                example: 시향노트 조회 성공
+                            data:
+                                allOf:
+                                    - $ref: '#/definitions/ReviewInfo'
+                                    - type: object
+                                      properties:
+                                          reviewIdx:
+                                              type: integer
+                                              format: int64
+                                          Perfume:
+                                              type: object
+                                              properties:
+                                                  perfumeIdx:
+                                                      type: integer
+                                                      format: int64
+                                                  perfumeName:
+                                                      type: integer
+                                                      format: int64
+                                                  imageUrl:
+                                                      type: string
+                                          KeywordList:
+                                              type: array
+                                              items:
+                                                  type: object
+                                                  properties:
+                                                      keywordIdx:
+                                                          type: integer
+                                                          format: int64
+                                                      name:
+                                                          type: string
+                                          Brand:
+                                              type: object
+                                              properties:
+                                                  brandIdx:
+                                                      type: integer
+                                                      format: int64
+                                                  brandName:
+                                                      type: string
+                                      example:
+                                          reviewIdx: 1
+                                          Perfume:
+                                              perfumeIdx: 1
+                                              perfumeName: 154 코롱
+                                              imageUrl: https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554
+                                          KeywordList:
+                                              - keywordIdx: 1
+                                                name: 달달한
+                                          Brand:
+                                              brandIdx: 1
+                                              brandName: Jo Malone
+                400:
+                    description: Invalid ID supplied
+                401:
+                    description: Token is missing or invalid
+                404:
+                    description: Review not found
+            x-swagger-router-controller: Review
+        put:
+            tags:
+                - review
+            summary: 시향노트 수정
+            description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 시향 노트를 수정한다.
+            operationId: putReview
+            security:
+                - userToken: []
+            x-security-scopes:
+                - user
+            consumes:
+                - application/json
+            produces:
+                - application/json
+            parameters:
+                - name: reviewIdx
+                  in: path
+                  description: 시향노트 Idx
+                  required: true
+                  type: integer
+                  format: int64
+                - in: body
+                  name: body
+                  required: false
+                  schema:
+                      allOf:
+                          - $ref: '#/definitions/ReviewInfo'
+                          - type: object
+                            example:
+                                keywordList: [3, 4]
+                            properties:
+                                keywordList:
+                                    type: array
+                                    items:
+                                        type: integer
+                                        format: int64
+            responses:
+                200:
+                    description: 성공
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                                example: 시향노트 수정 성공
+                400:
+                    description: Invalid ID supplied
+                401:
+                    description: Token is missing or invalid
+            x-swagger-router-controller: Review
+        delete:
+            tags:
+                - review
+            summary: 시향노트 삭제
+            description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 시향노트 삭제하기
+            operationId: deleteReview
+            security:
+                - userToken: []
+            x-security-scopes:
+                - user
+            consumes:
+                - application/json
+            produces:
+                - application/json
+            parameters:
+                - name: reviewIdx
+                  in: path
+                  description: 시향노트 Idx
+                  required: true
+                  type: integer
+                  format: int64
+            responses:
+                200:
+                    description: 성공
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                                example: 시향노트 삭제 성공
+                400:
+                    description: Invalid ID supplied
+                401:
+                    description: Token is missing or invalid
+            x-swagger-router-controller: Review
+    /review/{reviewIdx}/like:
+        post:
+            tags:
+                - review
+            summary: 시향노트 좋아요
+            description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 시향노트 좋아요 상태 변경하기. <br/> 반환 되는 정보 [최종 좋아요 상태]
+            security:
+                - userToken: []
+            x-security-scopes:
+                - user
+            operationId: likeReview
+            produces:
+                - application/json
+            parameters:
+                - name: reviewIdx
+                  in: path
+                  required: true
+                  type: integer
+                  format: int64
+            responses:
+                200:
+                    description: 성공
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                                example: 시향노트 좋아요 상태 변경 성공
+                            data:
+                                type: boolean
+                                example: true
+                401:
+                    description: Not authenticated
+                403:
+                    description: Access token does not have the required scope
+                404:
+                    description: Review Like not found
+            x-swagger-router-controller: Review
+    /review/{reviewIdx}/report:
+        post:
+            tags:
+                - review
+            summary: 시향노트 신고
+            description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 시향노트 신고하기. <br/>
+            security:
+                - userToken: []
+            x-security-scopes:
+                - user
+            operationId: reportReview
+            produces:
+                - application/json
+            parameters:
+                - name: reviewIdx
+                  in: path
+                  description: 시향노트 Idx
+                  required: true
+                  type: integer
+                  format: int64
+                - in: body
+                  name: body
+                  required: true
+                  schema:
                       type: object
                       properties:
-                        brandIdx:
-                          type: integer
-                          format: int64
-                        brandName:
-                          type: string
-                  example:
-                    reviewIdx: 1
-                    Perfume:
-                      perfumeIdx: 1
-                      perfumeName:  154 코롱
-                      imageUrl: https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554
-                    KeywordList:
-                      -
-                        keywordIdx: 1
-                        name: 달달한
-                    Brand:
-                      brandIdx: 1
-                      brandName: Jo Malone
-        400:
-          description: Invalid ID supplied
-        401:
-          description: Token is missing or invalid
-        404:
-          description: Review not found
-      x-swagger-router-controller: Review
-    put:
-      tags:
-      - review
-      summary: 시향노트 수정
-      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 시향 노트를 수정한다.
-      operationId: putReview
-      security:
-        - userToken: []
-      x-security-scopes:
-        - user
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - name: reviewIdx
-        in: path
-        description: 시향노트 Idx
-        required: true
-        type: integer
-        format: int64
-      - in: body
-        name: body
-        required: false
-        schema:
-          allOf:
-            - $ref: '#/definitions/ReviewInfo'
-            - type: object
-              example:
-                keywordList:  [3, 4]
-              properties:
-                keywordList: 
-                  type: array
-                  items:
-                    type: integer
-                    format: int64
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message: 
-                type: string
-                example: 시향노트 수정 성공
-        400:
-          description: Invalid ID supplied
-        401:
-          description: Token is missing or invalid
-      x-swagger-router-controller: Review
-    delete:
-      tags:
-      - review
-      summary: 시향노트 삭제
-      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 시향노트 삭제하기
-      operationId: deleteReview
-      security:
-        - userToken: []
-      x-security-scopes:
-        - user
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      parameters:
-      - name: reviewIdx
-        in: path
-        description: 시향노트 Idx
-        required: true
-        type: integer
-        format: int64
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message: 
-                type: string
-                example: 시향노트 삭제 성공
-        400:
-          description: Invalid ID supplied
-        401:
-          description: Token is missing or invalid
-      x-swagger-router-controller: Review
-  /review/{reviewIdx}/like:
-    post:
-      tags:
-      - review
-      summary:  시향노트 좋아요
-      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 시향노트 좋아요 상태 변경하기. <br/> 반환 되는 정보 [최종 좋아요 상태]
-      security:
-        - userToken: []
-      x-security-scopes:
-        - user
-      operationId: likeReview
-      produces:
-      - application/json
-      parameters:
-      - name: reviewIdx
-        in: path
-        required: true
-        type: integer
-        format: int64
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: 시향노트 좋아요 상태 변경 성공
-              data:
-                type: boolean
-                example: true
-        401:
-          description: Not authenticated
-        403:
-          description: Access token does not have the required scope
-        404:
-          description: Review Like not found
-      x-swagger-router-controller: Review
-  /review/{reviewIdx}/report:
-    post:
-      tags:
-      - review
-      summary:  시향노트 신고
-      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 시향노트 신고하기. <br/>
-      security:
-        - userToken: []
-      x-security-scopes:
-        - user
-      operationId: reportReview
-      produces:
-      - application/json
-      parameters:
-      - name: reviewIdx
-        in: path
-        description: 시향노트 Idx
-        required: true
-        type: integer
-        format: int64
-      - in: body
-        name: body
-        required: true
-        schema:
-          type: object
-          properties:
-            reason:
-              type: string
-              example: '광고, 홍보'
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: 시향노트 신고 성공
-        401:
-          description: Not authenticated
-        403:
-          description: Access token does not have the required scope
-        404:
-          description: Review Report not found
-      x-swagger-router-controller: Review
-  /keyword:
-    get:
-      tags:
-      - keyword
-      summary: 키워드 목록 전체 조회
-      operationId: getKeywordAll
-      produces:
-      - application/json
-      parameters:
-      - name: pagingSize
-        in: query
-        type: integer
-        required: false
-      - name: lastPosition
-        in: query
-        type: integer
-        required: false
-      responses:
-        200:
-          description: 성공
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: 키워드 목록 전체 조회 성공
-              data:
-                type: object
-                properties:
-                  count:
-                    type: integer
-                    example: 1
-                  rows:
-                    type: array
-                    items:
-                      allOf:
-                      - $ref: '#/definitions/KeywordInfo'
-                      - type: object
+                          reason:
+                              type: string
+                              example: '광고, 홍보'
+            responses:
+                200:
+                    description: 성공
+                    schema:
+                        type: object
                         properties:
-                          keywordIdx:
-                            type: integer
-                        example:
-                          keywordIdx: 1
-        401:
-          description: Token is missing or invalid
-      x-swagger-router-controller: Keyword
-  /user/review:
-    get:
-      tags:
-      - review
-      summary: 마이퍼퓸 조회
-      description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저가 작성한 리뷰 전체 조회
-      operationId: getReviewOfUser
-      security:
-        - userToken: []
-      x-security-scopes:
-        - user
-      produces:
-      - application/json
-      responses:
-        200:
-          description: successful operation
-          schema:
-            type: object
-            properties:
-              message:
+                            message:
+                                type: string
+                                example: 시향노트 신고 성공
+                401:
+                    description: Not authenticated
+                403:
+                    description: Access token does not have the required scope
+                404:
+                    description: Review Report not found
+            x-swagger-router-controller: Review
+    /keyword:
+        get:
+            tags:
+                - keyword
+            summary: 키워드 목록 전체 조회
+            operationId: getKeywordAll
+            produces:
+                - application/json
+            parameters:
+                - name: pagingSize
+                  in: query
+                  type: integer
+                  required: false
+                - name: lastPosition
+                  in: query
+                  type: integer
+                  required: false
+            responses:
+                200:
+                    description: 성공
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                                example: 키워드 목록 전체 조회 성공
+                            data:
+                                type: object
+                                properties:
+                                    count:
+                                        type: integer
+                                        example: 1
+                                    rows:
+                                        type: array
+                                        items:
+                                            allOf:
+                                                - $ref: '#/definitions/KeywordInfo'
+                                                - type: object
+                                                  properties:
+                                                      keywordIdx:
+                                                          type: integer
+                                                  example:
+                                                      keywordIdx: 1
+                401:
+                    description: Token is missing or invalid
+            x-swagger-router-controller: Keyword
+    /user/review:
+        get:
+            tags:
+                - review
+            summary: 마이퍼퓸 조회
+            description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저가 작성한 리뷰 전체 조회
+            operationId: getReviewOfUser
+            security:
+                - userToken: []
+            x-security-scopes:
+                - user
+            produces:
+                - application/json
+            responses:
+                200:
+                    description: successful operation
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                                example: 마이퍼퓸 조회 성공
+                            data:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        reviewIdx:
+                                            type: integer
+                                            example: 1
+                                        score:
+                                            type: number
+                                            example: 4.5
+                                        perfumeIdx:
+                                            type: integer
+                                            example: 1
+                                        perfumeName:
+                                            type: string
+                                            example: 154 코롱
+                                        imageUrl:
+                                            type: string
+                                            example: https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554
+                                        brandIdx:
+                                            type: integer
+                                            example: 1
+                                        brandName:
+                                            type: string
+                                            example: (테스트)조말론
+                default:
+                    description: successful operation
+            x-swagger-router-controller: Review
+securityDefinitions:
+    APIKeyHeader:
+        type: apiKey
+        name: X-API-Key
+        in: header
+definitions:
+    KeywordInfo:
+        type: object
+        properties:
+            keywordIdx:
+                type: number
+                example: 1
+            name:
                 type: string
-                example: 마이퍼퓸 조회 성공
-              data:
+                example: 달달한
+    NoteInfo:
+        type: object
+        properties:
+            ingredientIdx:
+                type: integer
+            perfumeIdx:
+                type: integer
+            type:
+                type: integer
+        example:
+            ingredientIdx: 1
+            perfumeIdx: 1
+            type: 4
+    ReviewInfo:
+        type: object
+        properties:
+            score:
+                description: 별점
+                type: number
+                minimum: 1
+                maximum: 5
+            content:
+                description: 내용
+                type: string
+            longevity:
+                description: 지속력
+                type: integer
+                format: int64
+                enum:
+                    - -1
+                    - 0
+                    - 1
+                    - 2
+                    - 3
+                    - 4
+            sillage:
+                description: 잔향감
+                type: integer
+                format: int64
+                enum:
+                    - -1
+                    - 0
+                    - 1
+                    - 2
+            seasonal:
+                description: 계절감
                 type: array
                 items:
-                  type: object
-                  properties: 
-                    reviewIdx: 
-                      type: integer
-                      example: 1
-                    score:
-                      type: number
-                      example: 4.5
-                    perfumeIdx:
-                      type: integer
-                      example: 1
-                    perfumeName:
-                      type: string
-                      example: 154 코롱
-                    imageUrl:
-                      type: string
-                      example: https://contents.lotteon.com/itemimage/_v065423/LE/12/04/59/50/19/_1/22/48/08/13/9/LE1204595019_1224808139_1.jpg/dims/resizef/554X554
-                    brandIdx: 
-                      type: integer
-                      example: 1
-                    brandName:
-                      type: string
-                      example: (테스트)조말론
-        default:
-          description: successful operation
-      x-swagger-router-controller: Review
-securityDefinitions:
-  APIKeyHeader:
-    type: apiKey
-    name: X-API-Key
-    in: header
-definitions:
-  KeywordInfo:
-    type: object
-    properties:
-      keywordIdx:
-        type: number
-        example: 1
-      name:
-        type: string
-        example: 달달한
-  NoteInfo:
-    type: object
-    properties:
-      ingredientIdx:
-        type: integer
-      perfumeIdx:
-        type: integer
-      type: 
-        type: integer
-    example:
-      ingredientIdx: 1
-      perfumeIdx: 1
-      type: 4
-  ReviewInfo:
-    type: object
-    properties:
-      score:
-        description: 별점
-        type: number
-        minimum: 1
-        maximum: 5
-      content:
-        description: 내용
-        type: string  
-      longevity:
-        description: 지속력
-        type: integer
-        format: int64
-        enum:
-        - -1
-        - 0
-        - 1
-        - 2
-        - 3
-        - 4
-      sillage:
-        description: 잔향감
-        type: integer
-        format: int64
-        enum:
-        - -1
-        - 0
-        - 1
-        - 2
-      seasonal:
-        description: 계절감
-        type: array
-        items:
-          type: string
-          enum:
-            - 봄
-            - 여름
-            - 가을
-            - 겨울        
-      gender:
-        description: 성별감
-        type: integer
-        format: int64
-        enum:
-        - -1
-        - 0
-        - 1
-        - 2
-      access: 
-        description: 시향노트 공유 여부
-        type: boolean
-        enum:
-        - true
-        - false
-    example:
-      score: 1
-      longevity: 0
-      sillage: 1
-      seasonal:
-      - 겨울
-      - 가을
-      gender: 2
-      access: true
-      content: 시향노트 내용
-  ApiResponse:
-    type: object
-    properties:
-      message:
-        type: string
-        example: 메세지
-      data:
-        type: string
-        example: 0
+                    type: string
+                    enum:
+                        - 봄
+                        - 여름
+                        - 가을
+                        - 겨울
+            gender:
+                description: 성별감
+                type: integer
+                format: int64
+                enum:
+                    - -1
+                    - 0
+                    - 1
+                    - 2
+            access:
+                description: 시향노트 공유 여부
+                type: boolean
+                enum:
+                    - true
+                    - false
+        example:
+            score: 1
+            longevity: 0
+            sillage: 1
+            seasonal:
+                - 겨울
+                - 가을
+            gender: 2
+            access: true
+            content: 시향노트 내용
+    ApiResponse:
+        type: object
+        properties:
+            message:
+                type: string
+                example: 메세지
+            data:
+                type: string
+                example: 0
 externalDocs:
-  description: Afume Server Git Wiki
-  url: https://github.com/A-fume/A.fume.Server/wiki
+    description: Afume Server Git Wiki
+    url: https://github.com/A-fume/A.fume.Server/wiki

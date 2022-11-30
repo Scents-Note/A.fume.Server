@@ -8,7 +8,13 @@ import PerfumeService from '@services/PerfumeService';
 
 import { NotMatchedError } from '@errors';
 
-import { GENDER_WOMAN } from '@utils/constants';
+import {
+    GENDER_MAN,
+    GRADE_USER,
+    GENDER_WOMAN,
+    ACCESS_PUBLIC,
+    ACCESS_PRIVATE,
+} from '@utils/constants';
 
 import {
     ListAndCountDTO,
@@ -18,8 +24,15 @@ import {
     PerfumeSearchDTO,
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
-    PerfumeThumbWithReviewDTO
+    PerfumeThumbWithReviewDTO,
 } from '@dto/index';
+
+import {
+    LongevityProperty,
+    SillageProperty,
+    GenderProperty,
+    SeasonalProperty,
+} from '@vo/ReviewProperty';
 
 import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
 
@@ -67,11 +80,11 @@ describe('# Perfume Service Test', () => {
                         {
                             reviewIdx: 1,
                             score: 1,
-                            longevity: 1,
-                            sillage: 1,
-                            seasonal: 4,
-                            gender: 1,
-                            access: 1,
+                            longevity: LongevityProperty.veryWeak.value,
+                            sillage: SillageProperty.light.value,
+                            seasonal: SeasonalProperty.fall.value,
+                            gender: GenderProperty.male.value,
+                            access: ACCESS_PUBLIC,
                             content: '시향노트1',
                             createdAt: '2021-09-26T08:38:33.000Z',
                             User: {
@@ -79,9 +92,31 @@ describe('# Perfume Service Test', () => {
                                 email: 'email1@afume.com',
                                 nickname: 'user1',
                                 password: 'test',
-                                gender: 2,
+                                gender: GENDER_MAN,
                                 birth: 1995,
-                                grade: 1,
+                                grade: GRADE_USER,
+                                accessTime: '2021-09-26T08:38:33.000Z',
+                            },
+                            LikeReview: { likeCount: 1 },
+                        },
+                        {
+                            reviewIdx: 2,
+                            score: 5,
+                            longevity: LongevityProperty.veryWeak.value,
+                            sillage: SillageProperty.light.value,
+                            seasonal: SeasonalProperty.fall.value,
+                            gender: GenderProperty.male.value,
+                            access: ACCESS_PRIVATE,
+                            content: '시향노트1',
+                            createdAt: '2021-09-26T08:38:33.000Z',
+                            User: {
+                                userIdx: 1,
+                                email: 'email1@afume.com',
+                                nickname: 'user1',
+                                password: 'test',
+                                gender: GENDER_WOMAN,
+                                birth: 1995,
+                                grade: GRADE_USER,
                                 accessTime: '2021-09-26T08:38:33.000Z',
                             },
                             LikeReview: { likeCount: 1 },
@@ -104,23 +139,21 @@ describe('# Perfume Service Test', () => {
                             updatedAt: '2022-06-01T11:09:46.000Z',
                             deletedAt: null,
                             perfumeIdx: 1,
-                            userIdx: 1
+                            userIdx: 1,
                         },
                     ];
                 };
                 Perfume.getPerfumeById(1, 1)
                     .then((it: PerfumeIntegralDTO) => {
                         PerfumeIntegralMockHelper.validTest.call(it);
-                        expect([
-                            'http://perfume-image/1',
-                            'imageUrl1',
-                            'imageUrl2',
-                        ]).to.be.deep.eq(it.imageUrls);
+                        expect(['imageUrl1', 'imageUrl2']).to.be.deep.eq(
+                            it.imageUrls
+                        );
                         expect(['키워드1', '키워드2']).to.be.deep.eq(
                             it.keywordList
                         );
                         expect(expectedReviewIdx).to.be.eq(it.reviewIdx);
-                        expect(it.score).to.be.eq(1);
+                        expect(it.score).to.be.eq(3);
                         done();
                     })
                     .catch((err: Error) => done(err));
@@ -145,11 +178,11 @@ describe('# Perfume Service Test', () => {
                         {
                             reviewIdx: 1,
                             score: 1,
-                            longevity: 1,
-                            sillage: 1,
-                            seasonal: 4,
-                            gender: 1,
-                            access: 1,
+                            longevity: LongevityProperty.veryWeak.value,
+                            sillage: SillageProperty.light.value,
+                            seasonal: SeasonalProperty.fall.value,
+                            gender: GenderProperty.male.value,
+                            access: ACCESS_PUBLIC,
                             content: '시향노트1',
                             createdAt: '2021-09-26T08:38:33.000Z',
                             User: {
@@ -157,9 +190,31 @@ describe('# Perfume Service Test', () => {
                                 email: 'email1@afume.com',
                                 nickname: 'user1',
                                 password: 'test',
-                                gender: 2,
+                                gender: GENDER_WOMAN,
                                 birth: 1995,
-                                grade: 1,
+                                grade: GRADE_USER,
+                                accessTime: '2021-09-26T08:38:33.000Z',
+                            },
+                            LikeReview: { likeCount: 1 },
+                        },
+                        {
+                            reviewIdx: 2,
+                            score: 5,
+                            longevity: LongevityProperty.veryWeak.value,
+                            sillage: SillageProperty.light.value,
+                            seasonal: SeasonalProperty.fall.value,
+                            gender: GenderProperty.male.value,
+                            access: ACCESS_PRIVATE,
+                            content: '시향노트1',
+                            createdAt: '2021-09-26T08:38:33.000Z',
+                            User: {
+                                userIdx: 1,
+                                email: 'email1@afume.com',
+                                nickname: 'user1',
+                                password: 'test',
+                                gender: GENDER_WOMAN,
+                                birth: 1995,
+                                grade: GRADE_USER,
                                 accessTime: '2021-09-26T08:38:33.000Z',
                             },
                             LikeReview: { likeCount: 1 },
@@ -173,6 +228,64 @@ describe('# Perfume Service Test', () => {
                             '키워드1',
                             '키워드2',
                         ]);
+                        done();
+                    })
+                    .catch((err: Error) => done(err));
+            });
+
+            it('# success Test(case empty)', (done: Done) => {
+                mockS3FileDao.getS3ImageList = async () => [];
+                mockLikePerfumeDao.read = async (_: number, __: number) =>
+                    false;
+                mockKeywordDao.readAllOfPerfume = async (_: number) => [];
+                const expectedReviewIdx: number = 4;
+                mockReviewDao.findOne = async () => {
+                    return { id: expectedReviewIdx };
+                };
+                mockReviewDao.readAllOfPerfume = async () => {
+                    return [];
+                };
+                mockReviewDao.readAllMineOfPerfumes = async () => {
+                    return [
+                        {
+                            id: 1,
+                            score: 1,
+                            longevity: 1,
+                            sillage: 1,
+                            seasonal: 4,
+                            gender: 1,
+                            access: 1,
+                            content: '시향노트1',
+                            likeCnt: 0,
+                            createdAt: '2021-09-26T08:38:33.000Z',
+                            updatedAt: '2022-06-01T11:09:46.000Z',
+                            deletedAt: null,
+                            perfumeIdx: 1,
+                            userIdx: 1,
+                        },
+                    ];
+                };
+                Perfume.getPerfumeById(1, 1)
+                    .then((it: PerfumeIntegralDTO) => {
+                        PerfumeIntegralMockHelper.validTest.call(it);
+                        expect(it.seasonal.spring).to.be.eq(0);
+                        expect(it.seasonal.summer).to.be.eq(0);
+                        expect(it.seasonal.fall).to.be.eq(0);
+                        expect(it.seasonal.winter).to.be.eq(0);
+
+                        expect(it.longevity.veryWeak).to.be.eq(0);
+                        expect(it.longevity.weak).to.be.eq(0);
+                        expect(it.longevity.normal).to.be.eq(0);
+                        expect(it.longevity.strong).to.be.eq(0);
+                        expect(it.longevity.veryStrong).to.be.eq(0);
+
+                        expect(it.sillage.light).to.be.eq(0);
+                        expect(it.sillage.medium).to.be.eq(0);
+                        expect(it.sillage.heavy).to.be.eq(0);
+
+                        expect(it.gender.male).to.be.eq(0);
+                        expect(it.gender.neutral).to.be.eq(0);
+                        expect(it.gender.female).to.be.eq(0);
                         done();
                     })
                     .catch((err: Error) => done(err));

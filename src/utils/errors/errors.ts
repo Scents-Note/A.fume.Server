@@ -12,6 +12,7 @@ import {
     MSG_WRONG_PASSWORD,
     MSG_CANT_USE_PASSWORD_BY_POLICY,
     NO_AUTHORIZE,
+    ABNORMAL_CONNECTION,
 } from '@utils/strings';
 
 class HttpError extends Error {
@@ -146,6 +147,15 @@ class InvalidRequestError extends HttpError {
     }
 }
 
+class AbnormalConnectionError extends HttpError {
+    constructor(
+        status: number = StatusCode.UNAUTHORIZED,
+        message: string = ABNORMAL_CONNECTION
+    ) {
+        super(status, message);
+    }
+}
+
 class UnExpectedError extends Error {
     constructor(expectedError: any, ...params: any) {
         super(...params);
@@ -172,4 +182,5 @@ export {
     InvalidRequestError,
     InvalidValueError,
     UnExpectedError,
+    AbnormalConnectionError,
 };
