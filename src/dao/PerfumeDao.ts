@@ -27,6 +27,8 @@ const {
 
 const { ranking } = require('@mongoose');
 
+const redis = require('@utils/db/redis.js');
+
 const PERFUME_THUMB_COLUMNS: string[] = [
     'perfumeIdx',
     'name',
@@ -387,6 +389,32 @@ class PerfumeDao {
                 .map(PerfumeInquireHistoryDTO.createByJson);
             return new ListAndCountDTO(it.count.length, rows);
         });
+    }
+
+    /**
+     * 비슷한 향수 추천 데이터 저장
+     * @todo Consider error handling
+     * @todo Fix type annotations
+     * @param {number} userIdx
+     * @param {PagingDTO} pagingDTO order is ignored
+     * @returns {Promise<Perfume[]>}
+     */
+    async updateSimilarPerfumes(similarPerfumes: any) : Promise<any> {
+        try {
+            const obj = similarPerfumes;
+            const multi = await redis.multi();
+
+            for (const key in obj) {
+                multi.del(`recs.perfume:${key}`)
+                obj[key].forEach((v: any) => {
+                    multi.rpush(`recs.perfume:${key}`, v)
+                })
+            }
+
+            return await multi.exec();
+        } catch (err) {
+            throw err
+        }      
     }
 
     /**
