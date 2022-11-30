@@ -22,7 +22,7 @@ redisClient.hSet("species", "dinotocat", "Dinosaur and Octopus", redis.print);
 redisClient.hSet(["species", "robotocat", "Cat and Robot"], redis.print);
 // Gets all fields in "species" key
 
-redisClient.hkeys("species", function (err, replies) {
+redisClient.hKeys("species", function (err, replies) {
     console.log(replies.length + " replies:");
     replies.forEach(function (reply, i) {
         console.log("    " + i + ": " + reply);
