@@ -364,8 +364,8 @@ describe('# perfumeDao Test', () => {
                 perfumeDao
                     .search([], [], [], [], '향수', defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
-                        expect(result.count).to.be.eq(5);
-                        expect(result.rows.length).to.be.eq(5);
+                        expect(result.count).to.be.eq(6);
+                        expect(result.rows.length).to.be.eq(6);
                         result.rows.forEach(
                             (perfume: PerfumeSearchResultDTO) => {
                                 expect(perfume.name).to.be.contains('향수');
@@ -380,8 +380,8 @@ describe('# perfumeDao Test', () => {
                 perfumeDao
                     .search([], [], [], [], 'perfume', defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
-                        expect(result.count).to.be.eq(5);
-                        expect(result.rows.length).to.be.eq(5);
+                        expect(result.count).to.be.eq(6);
+                        expect(result.rows.length).to.be.eq(6);
                         result.rows.forEach(
                             (perfume: PerfumeSearchResultDTO) => {
                                 expect(perfume.englishName).to.be.contains(
@@ -398,8 +398,8 @@ describe('# perfumeDao Test', () => {
                 perfumeDao
                     .search([], [], [], [], '브랜드', defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
-                        expect(result.count).to.be.eq(5);
-                        expect(result.rows.length).to.be.eq(5);
+                        expect(result.count).to.be.eq(6);
+                        expect(result.rows.length).to.be.eq(6);
                         result.rows.forEach(
                             (perfume: PerfumeSearchResultDTO) => {
                                 expect(perfume.Brand.name).to.be.contains(
@@ -416,8 +416,8 @@ describe('# perfumeDao Test', () => {
                 perfumeDao
                     .search([], [], [], [], 'brand', defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
-                        expect(result.count).to.be.eq(5);
-                        expect(result.rows.length).to.be.eq(5);
+                        expect(result.count).to.be.eq(6);
+                        expect(result.rows.length).to.be.eq(6);
                         result.rows.forEach(
                             (perfume: PerfumeSearchResultDTO) => {
                                 expect(
