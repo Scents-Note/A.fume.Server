@@ -12,7 +12,7 @@ try {
         host = process.env.REDIS_HOST_PROD
     }
     else {
-        host = 'localhost'
+        host = process.env.REDIS_HOST
     }
 
     if (process.env.NODE_ENV === 'production') {
