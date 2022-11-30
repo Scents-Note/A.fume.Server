@@ -22,12 +22,14 @@ redisClient.hSet("species", "octocat", "Cat and Octopus");
 redisClient.hSet("species", "dinotocat", "Dinosaur and Octopus");
 // Sets a key to "octocat", field to "species", and "value" to "Cat and Robot"
 redisClient.hSet("species", "robotocat", "Cat and Robot");
-// Gets all fields in "species" key
 
-redisClient.hKeys("species", function (err, replies) {
-    console.log(replies.length + " replies:");
-    replies.forEach(function (reply, i) {
-        console.log("    " + i + ": " + reply);
-    });
-    redisClient.quit();
-});
+redisClient.quit();
+
+// Gets all fields in "species" key
+// redisClient.hKeys("species", function (err, replies) {
+//     console.log(replies.length + " replies:");
+//     replies.forEach(function (reply, i) {
+//         console.log("    " + i + ": " + reply);
+//     });
+//     redisClient.quit();
+// });
