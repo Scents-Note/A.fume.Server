@@ -8,6 +8,8 @@ const redisClient = redis.createClient({
   port: process.env.REDIS_PORT  
 });
 
+await redisClient.connect()
+
 redisClient.on("error", function(err) {
     console.log("Error " + err);
 });
