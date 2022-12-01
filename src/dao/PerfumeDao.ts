@@ -27,8 +27,6 @@ const {
 
 const { ranking } = require('@mongoose');
 
-const redis = require('@utils/db/redis.js');
-
 const PERFUME_THUMB_COLUMNS: string[] = [
     'perfumeIdx',
     'name',
@@ -401,6 +399,8 @@ class PerfumeDao {
      */
     async updateSimilarPerfumes(similarPerfumes: any) : Promise<any> {
         try {
+            const redis = require('@utils/db/redis.js');
+            
             const obj = similarPerfumes;
             const multi = await redis.multi();
 
