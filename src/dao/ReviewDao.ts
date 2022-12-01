@@ -1,4 +1,5 @@
 import { NotMatchedError, DuplicatedEntryError } from '@errors';
+import { ACCESS_PUBLIC, ACCESS_PRIVATE } from '@utils/constants';
 
 const {
     sequelize,
@@ -36,10 +37,9 @@ const SQL_READ_ALL_OF_PERFUME = `
     FROM reviews r
     join users u on u.user_idx = r.user_idx 
     left outer join (SELECT review_idx, COUNT(review_idx) as likeCount FROM like_reviews Group By review_idx) AS lr on r.id = lr.review_idx    
-    where r.perfume_idx = $1 AND r.access = 1 AND r.deleted_at IS NULL
+    where r.perfume_idx = $1 AND r.access >= $2 AND r.deleted_at IS NULL
     order by "LikeReview.likeCount" desc;
 `;
-
 
 class ReviewDao {
     /**
@@ -84,7 +84,7 @@ class ReviewDao {
             });
         } catch (err: Error | any) {
             if (err.parent.errno === 1062) {
-                throw new DuplicatedEntryError;
+                throw new DuplicatedEntryError();
             }
             throw err;
         }
@@ -178,12 +178,16 @@ class ReviewDao {
      * 1차 정렬 기준은 좋아요 개수순, 만약 좋아요 개수가 같거나 없는 경우는 최신 순으로 해당부분만 2차 정렬됨.
      *
      * @param {number} perfumeIdx
+     * @param {boolean} includePrivate
      * @returns {Promise<[]>} reviewListDTO
      */
 
-    readAllOfPerfume(perfumeIdx: number) : Promise<any> {
+    readAllOfPerfume(
+        perfumeIdx: number,
+        includePrivate: boolean = false
+    ): Promise<any> {
         return sequelize.query(SQL_READ_ALL_OF_PERFUME, {
-            bind: [perfumeIdx],
+            bind: [perfumeIdx, includePrivate ? ACCESS_PRIVATE : ACCESS_PUBLIC],
             nest: true,
             raw: true,
             model: Review,
