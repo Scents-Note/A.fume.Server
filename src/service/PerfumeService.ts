@@ -533,7 +533,7 @@ class PerfumeService {
     private async generateSummary(
         perfumeIdx: number
     ): Promise<PerfumeSummaryDTO> {
-        const reviewList = await reviewDao.readAllOfPerfume(perfumeIdx);
+        const reviewList = await reviewDao.readAllOfPerfume(perfumeIdx, true);
         const userSummary = PerfumeSummaryDTO.createByReviewList(reviewList);
         return userSummary;
     }

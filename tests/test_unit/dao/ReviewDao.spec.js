@@ -5,6 +5,7 @@ import { NotMatchedError } from '@errors';
 import NoteDao from '@dao/NoteDao';
 import ReviewDao from '@dao/ReviewDao';
 import KeywordDao from '@dao/KeywordDao';
+import { ACCESS_PUBLIC, ACCESS_PRIVATE } from '@utils/constants';
 
 const chai = require('chai');
 const { expect } = chai;
@@ -120,7 +121,10 @@ describe('# reviewDao Test', () => {
                         expect(review.sillage).to.be.ok;
                         expect(review.seasonal).to.be.ok;
                         expect(review.gender).to.be.ok;
-                        expect(review.access).to.be.ok;
+                        expect(review.access).to.be.oneOf([
+                            ACCESS_PRIVATE,
+                            ACCESS_PUBLIC,
+                        ]);
                         expect(review.content).to.be.ok;
                         expect(review.likeCnt).to.be.ok;
                         expect(review.perfumeIdx).to.be.ok;
@@ -153,8 +157,8 @@ describe('# reviewDao Test', () => {
     });
 
     describe('# readAllOfPerfume Test', () => {
-        let perfumeIdx = 1;
         it('# success case', (done) => {
+            let perfumeIdx = 1;
             reviewDao
                 .readAllOfPerfume(perfumeIdx)
                 .then((result) => {
@@ -167,7 +171,7 @@ describe('# reviewDao Test', () => {
                         expect(review.sillage).to.be.not.undefined;
                         expect(review.seasonal).to.be.not.undefined;
                         expect(review.gender).to.be.not.undefined;
-                        expect(review.access).to.be.ok;
+                        expect(review.access).to.be.eq(ACCESS_PUBLIC);
                         expect(review.content).to.be.ok;
 
                         expect(review.User).to.be.ok;
@@ -184,6 +188,32 @@ describe('# reviewDao Test', () => {
                         expect(review.Perfume).to.be.undefined;
                         expect(review.keywordList).to.be.undefined;
                     }
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+        it('# test include private', (done) => {
+            let perfumeIdx = 10;
+            reviewDao
+                .readAllOfPerfume(perfumeIdx, false)
+                .then((result) => {
+                    expect(result).to.be.ok;
+                    expect(result.length).to.be.eq(0);
+                    done();
+                })
+                .catch((err) => done(err));
+        });
+
+        it('# test include private', (done) => {
+            let perfumeIdx = 10;
+            reviewDao
+                .readAllOfPerfume(perfumeIdx, true)
+                .then((result) => {
+                    expect(result).to.be.ok;
+                    expect(result.length).to.be.eq(5);
+                    result.forEach((it) => {
+                        expect(it.access).to.be.gte(ACCESS_PRIVATE);
+                    });
                     done();
                 })
                 .catch((err) => done(err));
