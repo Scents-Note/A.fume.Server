@@ -81,6 +81,18 @@ module.exports = () => {
             })
         );
     }
+    secondJob.push(
+        Perfume.upsert({
+            perfumeIdx: 10,
+            brandIdx: 1,
+            name: `향수10`,
+            englishName: `perfume-10`,
+            imageUrl: `http://perfume-image/10_1.png`,
+            story: `스토리10`,
+            abundanceRate: 1,
+            volumeAndPrice: '30/95000',
+        })
+    );
     const thirdJob = [];
     for (let i = 1; i <= 5; i++) {
         thirdJob.push(
@@ -99,6 +111,19 @@ module.exports = () => {
                 gender: 1,
                 access: 1,
                 content: `시향노트${i}`,
+                likeCnt: 5,
+            }),
+            Review.upsert({
+                id: i + 5,
+                perfumeIdx: 10,
+                userIdx: i,
+                score: i,
+                longevity: i,
+                sillage: i,
+                seasonal: 1,
+                gender: 1,
+                access: 0,
+                content: `(비공개)시향노트${i}`,
                 likeCnt: 5,
             }),
             JoinPerfumeKeyword.upsert({
