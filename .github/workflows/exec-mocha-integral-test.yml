@@ -37,3 +37,4 @@ jobs:
                   AWS_S3_URL: '${{ secrets.AWS_S3_URL }}'
                   TEST_ACCOUNT_ID: '${{ secrets.TEST_ACCOUNT_ID }}'
                   TEST_ACCOUNT_PWD: '${{ secrets.TEST_ACCOUNT_PWD }}'
+                  REDIS_DB_ID: '${{ secrets.REDIS_PRD_DB_ID }}'

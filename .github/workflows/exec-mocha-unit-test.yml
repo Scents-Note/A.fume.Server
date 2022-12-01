@@ -35,3 +35,4 @@ jobs:
                   ENCRYPTION_KEY: '${{ secrets.ENCRYPTION_KEY }}'
                   ENCRYPT_ALGORITHM: '${{ secrets.ENCRYPT_ALGORITHM }}'
                   AWS_S3_URL: '${{ secrets.AWS_S3_URL }}'
+                  REDIS_DB_ID: '${{ secrets.REDIS_TEST_DB_ID }}'
