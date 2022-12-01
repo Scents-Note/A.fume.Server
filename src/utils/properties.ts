@@ -7,7 +7,14 @@ const REQUIRED_ENV_LIST: string[] = [
     'ENCRYPTION_KEY',
     'JWT_SECRET',
     'MONGO_URI',
-    'REDIS_DB_ID'
+    'REDIS_DB_ID',
+    'AWS_ACCESS_KEY_ID',
+    'AWS_SECRET_ACCESS_KEY',
+    'AWS_S3_URL',
+    // TODO: below environments will be removed after detaching afume(previous) bucket
+    'AWS_ACCESS_KEY_ID_LEGACY',
+    'AWS_SECRET_ACCESS_KEY_LEGACY',
+    'AWS_S3_URL_LEGACY',
 ];
 
 const NULLABLE_ENV_MAP: { [key: string]: any } = {
@@ -22,6 +29,8 @@ const NULLABLE_ENV_MAP: { [key: string]: any } = {
 };
 
 type Properties = {
+    AWS_ACCESS_KEY_ID: string;
+    AWS_SECRET_ACCESS_KEY: string;
     AWS_S3_URL: string;
     ENCRYPT_ALGORITHM: string;
     ENCRYPTION_KEY: string;
@@ -54,6 +63,10 @@ type Properties = {
     CORS_ALLOW_LIST: string;
     SERVER_IP: string;
     LOG_PATH: string;
+    // TODO: below properties will be removed after detaching afume(previous) bucket
+    AWS_ACCESS_KEY_ID_LEGACY: string;
+    AWS_SECRET_ACCESS_KEY_LEGACY: string;
+    AWS_S3_URL_LEGACY: string;
 };
 const properties: { [key: string]: any } = {};
 

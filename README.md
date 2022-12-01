@@ -145,6 +145,13 @@ npm run test-each ./test/...
 
 # 업데이트 내역
 
+-   0.0.6
+    -   새로 추가된 향수 개수 변경 7 -> 50
+    -   키워드 제한 제거
+    -   정보 없음 추가
+    -   시향 정보 상세에서 normal로 보내지던거 medium으로 변경
+    -   시향노트 없는 경우 0 반환
+    -   향수 이미지 버그 수정
 -   0.0.5
     -   getPerfume 에서 지속력 보통이 api의 expect(medium)와 actual(normal) 불일치 하는 버그 수정
 -   0.0.4
