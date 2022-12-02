@@ -5,8 +5,7 @@ require("dotenv").config();
 // If REDIS_HOST is not set, the default host is localhost
 // If REDIS_PORT is not set, the default port is 6379
 const redisClient = redis.createClient({
-  url: 'redis://redis:6379',
-  legacyMode: true,
+  url: 'redis://redis:6379'
 });
 
 redisClient.connect().then( async () => {
