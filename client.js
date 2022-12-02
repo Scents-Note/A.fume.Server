@@ -20,13 +20,15 @@ redisClient.connect().then( async () => {
   // Sets a key to "octocat", field to "species", and "value" to "Cat and Robot"
   await redisClient.hSet("species", "robotocat", "Cat and Robot");
 
-  await redisClient.hKeys("species", async function (err, replies) {
+  await redisClient.hKeys("species", (err, replies) => {
+    if (err) throw err;
     console.log(replies.length + " replies:");
     replies.forEach(function (reply, i) {
       console.log("    " + i + ": " + reply);
     });
-    await redisClient.quit();
   });
+  
+  await redisClient.quit();
 
 })
 .catch((error) => {
