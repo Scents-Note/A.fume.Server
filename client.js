@@ -36,6 +36,9 @@ redisClient.connect().then( async () => {
   });
   console.log('e', e)
   
+  const f = await redisClient.keys('*')
+  console.log('f', f)
+  
   await redisClient.quit();
 
 })
