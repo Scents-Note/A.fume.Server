@@ -27,7 +27,7 @@ redisClient.connect().then( async () => {
     });
   });
 
-  redisClient.quit();
+  await redisClient.quit();
 })
 .catch((error) => {
   console.log("Error " + error);
