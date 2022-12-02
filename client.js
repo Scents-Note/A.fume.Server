@@ -12,21 +12,29 @@ redisClient.connect().then( async () => {
   console.log('redis connected');
 
   // Sets the key "octocat" to a value of "Mona the octocat"
-  await redisClient.set("octocat", "Mona the Octocat");
+  const a = await redisClient.set("octocat", "Mona the Octocat");
+  console.log('a', a)
+  
   // Sets a key to "octocat", field to "species", and "value" to "Cat and Octopus"
-  await redisClient.hSet("species", "octocat", "Cat and Octopus");
+  const b = await redisClient.hSet("species", "octocat", "Cat and Octopus");
+  console.log('b', b)
+  
   // Sets a key to "octocat", field to "species", and "value" to "Dinosaur and Octopus"
-  await redisClient.hSet("species", "dinotocat", "Dinosaur and Octopus");
+  const c = await redisClient.hSet("species", "dinotocat", "Dinosaur and Octopus");
+  console.log('c', c)
+  
   // Sets a key to "octocat", field to "species", and "value" to "Cat and Robot"
-  await redisClient.hSet("species", "robotocat", "Cat and Robot");
-
-  await redisClient.hKeys("species", (err, replies) => {
+  const d = await redisClient.hSet("species", "robotocat", "Cat and Robot");
+  console.log('d', d)
+  
+  const e = await redisClient.hKeys("species", (err, replies) => {
     if (err) throw err;
     console.log(replies.length + " replies:");
     replies.forEach(function (reply, i) {
       console.log("    " + i + ": " + reply);
     });
   });
+  console.log('e', e)
   
   await redisClient.quit();
 
