@@ -47,6 +47,8 @@ const MSG_GET_SEARCH_INGREDIENT_SUCCESS: string = `재료 ${_search} ${_get} ${_
 const MSG_GET_PERFUME_DETAIL_SUCCESS: string = `향수 ${_detail} ${_get} ${_success}`;
 const MSG_GET_SEARCH_PERFUME_SUCCESS: string = `향수 ${_search} ${_get} ${_success}`;
 
+const MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS: string = `비슷한 향수 추천 데이터 ${_post} ${_success}`;
+
 const LIKE_PERFUME: string = '향수 좋아요';
 const LIKE_PERFUME_CANCEL: string = `${LIKE_PERFUME} ${_cancel}`;
 
@@ -145,6 +147,7 @@ export {
     MSG_GET_SEARCH_INGREDIENT_SUCCESS,
     MSG_GET_PERFUME_DETAIL_SUCCESS,
     MSG_GET_SEARCH_PERFUME_SUCCESS,
+    MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS,
     LIKE_PERFUME,
     LIKE_PERFUME_CANCEL,
     MSG_GET_RECENT_SEARCH_PERFUME_SUCCESS,

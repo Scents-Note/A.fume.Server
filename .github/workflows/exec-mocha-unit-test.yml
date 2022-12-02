@@ -39,3 +39,4 @@ jobs:
                   AWS_S3_URL_LEGACY: '${{ secrets.AWS_S3_URL_LEGACY }}'
                   AWS_ACCESS_KEY_ID_LEGACY: '${{ secrets.AWS_ACCESS_KEY_ID_LEGACY }}'
                   AWS_SECRET_ACCESS_KEY_LEGACY: '${{ secrets.AWS_SECRET_ACCESS_KEY_LEGACY }}'
+                  REDIS_DB_ID: '${{ secrets.REDIS_TEST_DB_ID }}'

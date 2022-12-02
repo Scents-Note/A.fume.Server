@@ -209,6 +209,21 @@ class PerfumeService {
     }
 
     /**
+     * 비슷한 향수 추천 데이터 저장
+     * @todo Fix error handling
+     * @todo Fix type annotations
+     * @param {Object} perfumeSimilarRequest
+     * @returns {Promise}
+     **/
+    async updateSimilarPerfumes(perfumeSimilarRequest: any): Promise<boolean> {
+        return perfumeDao
+            .updateSimilarPerfumes(perfumeSimilarRequest)
+            .catch((err: Error) => {
+                throw err;
+            });
+    }
+        
+    /**
      * 향수 좋아요
      *
      * @param {number} userIdx
