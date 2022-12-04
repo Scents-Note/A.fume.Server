@@ -229,13 +229,8 @@ const checkPassword: RequestHandler = (
                 logger.debug,
                 `${LOG_TAG} checkPassword isSuccess ${isSuccess}`
             );
-            if (!isSuccess) {
-                res.status(StatusCode.OK).json(
-                    new ResponseDTO<boolean>(MSG_CHECK_PASSWORD, false)
-                );
-            }
             res.status(StatusCode.OK).json(
-                new ResponseDTO(MSG_CHECK_PASSWORD, true)
+                new ResponseDTO(MSG_CHECK_PASSWORD, isSuccess)
             );
         })
         .catch((err: Error) => next(err));
