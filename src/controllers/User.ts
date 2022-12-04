@@ -207,6 +207,18 @@ const loginUser: RequestHandler = (
  *           example:
  *             password: test
  *       responses:
+ *         200:
+ *           description: 비밀번호 일치
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 비밀번호 확인
+ *               data:
+ *                  type: boolean
+ *                  example: true
+ *                  description: true if password is correct
  *         default:
  *           description: successful operation
  *       x-swagger-router-controller: User
