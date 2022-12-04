@@ -78,6 +78,7 @@ const MSG_DELETE_USER_SUCCESS: string = `유저 ${_delete} ${_success}`;
 const MSG_LOGIN_SUCCESS: string = `로그인 ${_success}`;
 const MSG_MODIFY_USER_SUCCESS: string = `유저 ${_update} ${_success}`;
 const MSG_CHANGE_PASSWORD_SUCCESS: string = `비밀번호 변경 ${_success}`;
+const MSG_CHECK_PASSWORD: string = `비밀번호 확인`;
 const MSG_GET_AUTHORIZE_INFO: string = `권한 ${_get}`;
 
 const MSG_DUPLICATE_CHECK_EMAIL: string = 'Email 중복 체크';
@@ -166,6 +167,7 @@ export {
     MSG_LOGIN_SUCCESS,
     MSG_MODIFY_USER_SUCCESS,
     MSG_CHANGE_PASSWORD_SUCCESS,
+    MSG_CHECK_PASSWORD,
     MSG_GET_AUTHORIZE_INFO,
     MSG_DUPLICATE_CHECK_EMAIL_AVAILABLE,
     MSG_DUPLICATE_CHECK_EMAIL_UNAVAILABLE,

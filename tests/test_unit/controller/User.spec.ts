@@ -20,6 +20,7 @@ import {
     MSG_INVALID_TOKEN,
     NO_AUTHORIZE,
     MSG_CHANGE_PASSWORD_SUCCESS,
+    MSG_CHECK_PASSWORD,
     BASE_PATH,
 } from '@utils/strings';
 
@@ -220,6 +221,47 @@ describe('# User Controller Test', () => {
                     expect(res.status).to.be.eq(StatusCode.UNAUTHORIZED);
                     const { message } = res.body;
                     expect(message).to.be.eq(MSG_INVALID_TOKEN);
+                    done();
+                })
+                .catch((err: Error) => done(err));
+        });
+    });
+
+    describe('# CheckPassword Test', () => {
+        it('valid password', (done: Done) => {
+            mockUserService.checkPassword = async ({}): Promise<boolean> => {
+                return true;
+            };
+            request(app)
+                .put(`${basePath}/user/checkPassword`)
+                .set('x-access-token', 'Bearer ' + user1tokenUser)
+                .send({
+                    password: 'test',
+                })
+                .expect((res) => {
+                    expect(res.status).to.be.eq(StatusCode.OK);
+                    const { message, data } = res.body;
+                    expect(message).to.be.eq(MSG_CHECK_PASSWORD);
+                    expect(data).to.be.true;
+                    done();
+                })
+                .catch((err: Error) => done(err));
+        });
+        it('invalid password', (done: Done) => {
+            mockUserService.checkPassword = async ({}): Promise<boolean> => {
+                return false;
+            };
+            request(app)
+                .put(`${basePath}/user/checkPassword`)
+                .set('x-access-token', 'Bearer ' + user1tokenUser)
+                .send({
+                    password: 'test',
+                })
+                .expect((res) => {
+                    expect(res.status).to.be.eq(StatusCode.OK);
+                    const { message, data } = res.body;
+                    expect(message).to.be.eq(MSG_CHECK_PASSWORD);
+                    expect(data).to.be.false;
                     done();
                 })
                 .catch((err: Error) => done(err));
