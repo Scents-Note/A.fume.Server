@@ -2,40 +2,41 @@ const redis = require("redis");
 require("dotenv").config();
 
 // Creates a new Redis client
-// If REDIS_HOST is not set, the default host is localhost
-// If REDIS_PORT is not set, the default port is 6379
 const redisClient = redis.createClient({
-  url: 'redis://redis:6379'
+  // format: redis://[host][:port][/db-number]
+  url: 'redis://redis:6379[15]'
 });
 
-redisClient.connect().then( async () => {
+redisClient.on("error", (err) => console.log("Error", err));
+
+async () => {
+  await redisClient.connect()
   console.log('redis connected');
 
   // Sets the key "octocat" to a value of "Mona the octocat"
   await redisClient.set("octocat", "Mona the Octocat");
-  // console.log('a', a)
   
-  // Sets a key to "octocat", field to "species", and "value" to "Cat and Octopus"
+  // Sets a key to "species", field to "octocat", and "value" to "Cat and Octopus"
   await redisClient.hSet("species", "octocat", "Cat and Octopus");
-  // console.log('b', b)
   
-  // Sets a key to "octocat", field to "species", and "value" to "Dinosaur and Octopus"
+  // Sets a key to "species", field to "dinotocat", and "value" to "Dinosaur and Octopus"
   await redisClient.hSet("species", "dinotocat", "Dinosaur and Octopus");
-  // console.log('c', c)
   
-  // Sets a key to "octocat", field to "species", and "value" to "Cat and Robot"
+  // Sets a key to "species", field to "robotocat", and "value" to "Cat and Robot"
   await redisClient.hSet("species", "robotocat", "Cat and Robot");
-  // console.log('d', d)
   
-  await redisClient.hKeys("species")
-  // console.log('e', e)
-  
-  const f = await redisClient.keys('*')
-  console.log('f', f)
+  try {
+    // Gets all fields in "species" key
+    const replies = await redisClient.hKeys("species")
+    console.log(replies.length + " replies:");
+    replies.forEach(function (reply, i) {
+        console.log("    " + i + ": " + reply);
+    });
+  }
+  catch (err) {
+    // Write down how to handle errors
+  }
   
   await redisClient.quit();
 
 })
-.catch((error) => {
-  console.log("Error " + error);
-});
