@@ -4,7 +4,7 @@ require("dotenv").config();
 // Creates a new Redis client
 const redisClient = redis.createClient({
   // format: redis://[host][:port][/db-number]
-  url: 'redis://redis:6379[15]'
+  url: 'redis://redis:6379/15'
 });
 
 redisClient.on("error", (err) => console.log("Error", err));
