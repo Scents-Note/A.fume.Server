@@ -38,5 +38,4 @@ async () => {
   }
   
   await redisClient.quit();
-
-})
+}
