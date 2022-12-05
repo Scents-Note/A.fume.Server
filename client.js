@@ -9,7 +9,7 @@ const redisClient = redis.createClient({
 
 redisClient.on("error", (err) => console.log("Error", err));
 
-async () => {
+(async () => {
   await redisClient.connect()
   console.log('redis connected');
 
@@ -38,4 +38,4 @@ async () => {
   }
   
   await redisClient.quit();
-}
+})()
