@@ -15,6 +15,8 @@ redisClient.on("error", function(err) {
     console.log("Error " + err);
 });
 
+redisClient.connect()
+
 // Sets the key "octocat" to a value of "Mona the octocat"
 redisClient.set("octocat", "Mona the Octocat", redis.print);
 // Sets a key to "octocat", field to "species", and "value" to "Cat and Octopus"
