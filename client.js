@@ -14,16 +14,16 @@ redisClient.on("error", (err) => console.log("Error", err));
   console.log('redis connected');
 
   // Sets the key "octocat" to a value of "Mona the octocat"
-  await redisClient.set("octocat", "Mona the Octocat");
+  await redisClient.set("octocat", "Mona the Octocat", redis.print);
   
   // Sets a key to "species", field to "octocat", and "value" to "Cat and Octopus"
-  await redisClient.hSet("species", "octocat", "Cat and Octopus");
+  await redisClient.hSet("species", "octocat", "Cat and Octopus", redis.print);
   
   // Sets a key to "species", field to "dinotocat", and "value" to "Dinosaur and Octopus"
-  await redisClient.hSet("species", "dinotocat", "Dinosaur and Octopus");
+  await redisClient.hSet("species", "dinotocat", "Dinosaur and Octopus", redis.print);
   
   // Sets a key to "species", field to "robotocat", and "value" to "Cat and Robot"
-  await redisClient.hSet("species", "robotocat", "Cat and Robot");
+  await redisClient.hSet("species", "robotocat", "Cat and Robot", redis.print);
   
   try {
     // Gets all fields in "species" key
