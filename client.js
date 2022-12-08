@@ -1,41 +1,39 @@
 const redis = require("redis");
-require("dotenv").config();
 
 // Creates a new Redis client
 const redisClient = redis.createClient({
-  // format: redis://[host][:port][/db-number]
-  url: 'redis://redis:6379/15'
+  // format: redis://[host][:port]
+  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
 });
 
 redisClient.on("error", (err) => console.log("Error", err));
 
 (async () => {
   await redisClient.connect()
-  console.log('redis connected');
 
   // Sets the key "octocat" to a value of "Mona the octocat"
-  await redisClient.set("octocat", "Mona the Octocat", redis.print);
-  
+  const setKeyReply = await redisClient.set("octocat", "Mona the Octocat");
+  console.log("Reply: ", setKeyReply)
   // Sets a key to "species", field to "octocat", and "value" to "Cat and Octopus"
-  await redisClient.hSet("species", "octocat", "Cat and Octopus", redis.print);
-  
+  const SetFieldOctocatReply = await redisClient.hSet("species", "octocat", "Cat and Octopus");
+  console.log("Reply: ", SetFieldOctocatReply)
   // Sets a key to "species", field to "dinotocat", and "value" to "Dinosaur and Octopus"
-  await redisClient.hSet("species", "dinotocat", "Dinosaur and Octopus", redis.print);
-  
+  const SetFieldDinotocatReply = await redisClient.hSet("species", "dinotocat", "Dinosaur and Octopus");
+  console.log("Reply: ", SetFieldDinotocatReply)
   // Sets a key to "species", field to "robotocat", and "value" to "Cat and Robot"
-  await redisClient.hSet("species", "robotocat", "Cat and Robot", redis.print);
+  const SetFieldRobotocatReply = await redisClient.hSet("species", "robotocat", "Cat and Robot");
+  console.log("Reply: ", SetFieldRobotocatReply)
   
   try {
     // Gets all fields in "species" key
     const replies = await redisClient.hKeys("species")
     console.log(replies.length + " replies:");
-    replies.forEach(function (reply, i) {
+    replies.forEach((reply, i) => {
         console.log("    " + i + ": " + reply);
     });
+    await redisClient.quit();
   }
   catch (err) {
-    // Write down how to handle errors
+    // statements to handle any exceptions
   }
-  
-  await redisClient.quit();
 })()
