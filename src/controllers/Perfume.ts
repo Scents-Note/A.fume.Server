@@ -5,6 +5,7 @@ import { logger, LoggerHelper } from '@modules/winston';
 import {
     MSG_GET_PERFUME_DETAIL_SUCCESS,
     MSG_GET_SEARCH_PERFUME_SUCCESS,
+    MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS,
     LIKE_PERFUME,
     LIKE_PERFUME_CANCEL,
     MSG_GET_RECENT_SEARCH_PERFUME_SUCCESS,
@@ -227,6 +228,69 @@ const searchPerfume: RequestHandler = (
         })
         .catch((err: Error) => next(err));
 };
+
+/**
+ * @todo Fix type annotations
+ * @todo Fix error handling
+ * @swagger
+ *   /perfume/recommend/simmilar:
+ *     post:
+ *       tags:
+ *       - perfume
+ *       summary: 비슷한 향수 추천 데이터 저장
+ *       operationId: updateSimilarPerfumes
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - in: body
+ *         name: body 
+ *         schema:
+ *           type: object  
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 비슷한 향수 추천 데이터 등록 성공
+ *               opcode:
+ *                 type: integer
+ *                 example: 0
+ *       x-swagger-router-controller: Perfume
+ * */
+const updateSimilarPerfumes: RequestHandler = (
+    req: Request | any,
+    res: Response,
+    next: NextFunction
+): any => {
+
+    const perfumeSimilarRequest : any = req.body;
+
+    logger.debug(
+        `${LOG_TAG} updateSimilarPerfume(
+            body = ${JSON.stringify(req.body)}
+        )`
+    );
+
+    Perfume.updateSimilarPerfumes(perfumeSimilarRequest)
+        .then((result: any) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} updateSimilarPerfumes's result = ${result}`
+            );
+            
+            res.status(StatusCode.OK).json(
+                new SimpleResponseDTO(
+                    MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS
+                )
+            );
+        })
+        .catch((err: Error) => next(err));
+
+};
+
 
 /**
  * @swagger
@@ -911,6 +975,7 @@ module.exports.getSurveyPerfume = getSurveyPerfume;
 module.exports.getNewPerfume = getNewPerfume;
 module.exports.getLikedPerfume = getLikedPerfume;
 module.exports.recommendSimilarPerfumes = recommendSimilarPerfumes;
+module.exports.updateSimilarPerfumes = updateSimilarPerfumes;
 
 module.exports.setPerfumeService = (service: PerfumeService) => {
     Perfume = service;

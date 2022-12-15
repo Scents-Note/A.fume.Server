@@ -12,6 +12,7 @@ import {
     MSG_LOGIN_SUCCESS,
     MSG_MODIFY_USER_SUCCESS,
     MSG_CHANGE_PASSWORD_SUCCESS,
+    MSG_CHECK_PASSWORD,
     MSG_GET_AUTHORIZE_INFO,
     MSG_DUPLICATE_CHECK_EMAIL_AVAILABLE,
     MSG_DUPLICATE_CHECK_EMAIL_UNAVAILABLE,
@@ -173,6 +174,63 @@ const loginUser: RequestHandler = (
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<LoginResponse>(MSG_LOGIN_SUCCESS, response)
+            );
+        })
+        .catch((err: Error) => next(err));
+};
+
+/**
+ * @swagger
+ *   /user/checkPassword:
+ *     put:
+ *       tags:
+ *       - user
+ *       description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저 비밀번호 변경 <br/>
+ *       operationId: checkPassword
+ *       security:
+ *         - userToken: []
+ *       x-security-scopes:
+ *         - user
+ *       produces:
+ *       - application/json
+ *       consumes:
+ *       - application/json
+ *       parameters:
+ *       - in: body
+ *         name: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             password:
+ *               type: string
+ *           example:
+ *             password: test
+ *       responses:
+ *         default:
+ *           description: successful operation
+ *       x-swagger-router-controller: User
+ *  */
+const checkPassword: RequestHandler = (
+    req: Request | any,
+    res: Response,
+    next: NextFunction
+) => {
+    const userIdx = req.middlewareToken.loginUserIdx;
+    logger.debug(
+        `${LOG_TAG} checkPassword(userIdx = ${userIdx}, body = ${JSON.stringify(
+            req.body
+        )})`
+    );
+    const { password } = req.body;
+    User.checkPassword(userIdx, password)
+        .then((isSuccess: boolean) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} checkPassword isSuccess ${isSuccess}`
+            );
+            res.status(StatusCode.OK).json(
+                new ResponseDTO(MSG_CHECK_PASSWORD, isSuccess)
             );
         })
         .catch((err: Error) => next(err));
@@ -670,6 +728,7 @@ module.exports.deleteUser = deleteUser;
 module.exports.loginUser = loginUser;
 module.exports.updateUser = updateUser;
 module.exports.changePassword = changePassword;
+module.exports.checkPassword = checkPassword;
 module.exports.authUser = authUser;
 module.exports.validateEmail = validateEmail;
 module.exports.validateName = validateName;

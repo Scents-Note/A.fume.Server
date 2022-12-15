@@ -390,6 +390,34 @@ class PerfumeDao {
     }
 
     /**
+     * 비슷한 향수 추천 데이터 저장
+     * @todo Consider error handling
+     * @todo Fix type annotations
+     * @param {number} userIdx
+     * @param {PagingDTO} pagingDTO order is ignored
+     * @returns {Promise<Perfume[]>}
+     */
+    async updateSimilarPerfumes(similarPerfumes: any) : Promise<any> {
+        try {
+            const redis = require('@utils/db/redis.js');
+            
+            const obj = similarPerfumes;
+            const multi = await redis.multi();
+
+            for (const key in obj) {
+                multi.del(`recs.perfume:${key}`)
+                obj[key].forEach((v: any) => {
+                    multi.rpush(`recs.perfume:${key}`, v)
+                })
+            }
+
+            return await multi.exec();
+        } catch (err) {
+            throw err
+        }      
+    }
+
+    /**
      * 나이 및 성별에 기반한 향수 추천
      *
      * @param {string} gender
