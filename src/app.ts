@@ -3,6 +3,7 @@ dotenv.config();
 import cookieParser from 'cookie-parser';
 import cors, { CorsOptions, CorsOptionsDelegate } from 'cors';
 import express, { Express } from 'express';
+const bodyParser = require('body-parser');
 import createError from 'http-errors';
 
 import properties from '@properties';
@@ -48,7 +49,7 @@ const corsOptionsDelegate: CorsOptionsDelegate<express.Request> = function (
 };
 
 app.use(cors(corsOptionsDelegate));
-app.use(express.json());
+app.use(bodyParser.json({ limit: "5mb"}));
 
 app.use(
     makeMorgan((message: string) => {
