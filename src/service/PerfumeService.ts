@@ -432,6 +432,36 @@ class PerfumeService {
     }
 
     /**
+     * 비슷한 향수 추천 목록 조회
+     * 
+     * @todo Fix error handling
+     * @param {number} perfumeIdx
+     * @param {number} size
+     * @returns {Promise<PerfumeThumbKeywordDTO[]>}
+     **/
+    async getRecommendedSimilarPerfumeList(
+        perfumeIdx: number,
+        size: number
+    ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
+        try {
+            logger.debug(`${LOG_TAG} getRecommendedSimilarPerfumes(perfumeIdx = ${perfumeIdx}, size = ${size})`);
+            
+            const perfumeIdxList : number[] = await  perfumeDao.getSimilarPerfumeIdxList(perfumeIdx, size);
+            const perfumeList: PerfumeThumbDTO[] = await perfumeDao.getPerfumesByIdxList(perfumeIdxList);
+
+            return this.convertToThumbKeyword(
+                new ListAndCountDTO<PerfumeThumbDTO>(
+                    perfumeList.length,
+                    perfumeList
+                )
+            );
+        } catch (err) {
+            console.log('getRecommendedSimilarPerfumes Error', err)
+            throw err;
+        }
+    }
+
+    /**
      * 랜덤 향수 조회
      *
      * @param {number} size

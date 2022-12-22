@@ -518,6 +518,29 @@ class PerfumeDao {
     }
 
     /**
+     * 비슷한 향수 인덱스 목록 조회
+     *
+     * @todo Fix error handling
+     * @param {number} perfumeIdx
+     * @param {number} size
+     * @returns {Promise<Perfume[]>}
+     */
+    async getSimilarPerfumeIdxList(perfumeIdx: number, size: number): Promise<number[]> {
+        try {
+            logger.debug(`${LOG_TAG} getSimilarPerfumeIdxList(perfumeIdx = ${perfumeIdx}, size = ${size})`);
+            
+            const client = require('@utils/db/redis.js');
+
+            const result = await client.lrange(`recs.perfume:${perfumeIdx}`, 0, size-1);
+            
+            return result.map((it: string) =>  Number(it));
+        } catch (err) {
+            console.log('getSimilarPerfumeIdxList Error', err)
+            throw err;
+        }      
+    }
+
+    /**
      * 랜덤 향수 조회
      *
      * @param {number} size
