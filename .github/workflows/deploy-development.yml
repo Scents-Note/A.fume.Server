@@ -6,7 +6,7 @@ name: Deploy development server to ec2
 on:
   push:
     branches: 
-    - dev
+    - bug/issue-439-using-nodejs-acrion-does-not-work
 
 jobs:
   build:
@@ -36,7 +36,7 @@ jobs:
     - name: Copy Environment File
       run: cp ~/config-injection/.env ${{ env.PROJECT_PATH }}/.env
 
-    - name: Run Prebuild
+    - name: Run Pre-build
     - run: sudo ${{ env.PROJECT_PATH }}/script/prebuild.sh
     
     - name: Reload Server
