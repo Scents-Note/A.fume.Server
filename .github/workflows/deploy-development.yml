@@ -22,16 +22,32 @@ jobs:
     - uses: actions/checkout@v3
       with:
         path: ${{ env.NODE_ENV }}
+        
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+              node-version: ${{ matrix.node-version }}
         cache: 'npm'
         cache-dependency-path: ${{ env.NODE_ENV }}/package-lock.json
-    - run: cp ~/config-injection/ecosystem-${{ env.NODE_ENV }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
-    - run: cp ~/config-injection/.env ${{ env.PROJECT_PATH }}/.env
-#     - run: sudo ${{ env.PROJECT_PATH }}/script/prebuild.sh
-    - run: ${{ env.PROJECT_PATH }}/script/reload.sh
+
+    - name: Copy Ecosystem File
+      run: cp ~/config-injection/ecosystem-${{ env.NODE_ENV }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
+    
+    - name: Copy Environment File
+      run: cp ~/config-injection/.env ${{ env.PROJECT_PATH }}/.env
+
+#   - run: sudo ${{ env.PROJECT_PATH }}/script/prebuild.sh
+
+    - name: Install Dependancies
+      run: npm ci
+      
+    - name: Run build
+      run: npm run build
+    
+    - name: Reload Server
+      run: ${{ env.PROJECT_PATH }}/script/reload.sh
+      
     env:
       NODE_ENV: development
       PROJECT_PATH: ~/actions-runner/_work/A.fume.Server/A.fume.Server/development
