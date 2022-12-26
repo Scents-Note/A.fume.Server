@@ -36,13 +36,8 @@ jobs:
     - name: Copy Environment File
       run: cp ~/config-injection/.env ${{ env.PROJECT_PATH }}/.env
 
-#   - run: sudo ${{ env.PROJECT_PATH }}/script/prebuild.sh
-
-    - name: Install Dependancies
-      run: npm ci
-      
-    - name: Run build
-      run: npm run build
+    - name: Run Prebuild
+    - run: sudo ${{ env.PROJECT_PATH }}/script/prebuild.sh
     
     - name: Reload Server
       run: ${{ env.PROJECT_PATH }}/script/reload.sh
