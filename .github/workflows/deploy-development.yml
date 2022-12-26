@@ -37,7 +37,7 @@ jobs:
       run: cp ~/config-injection/.env ${{ env.PROJECT_PATH }}/.env
 
     - name: Install Dependancies
-      run: npm ci
+      run: npm install
 
     # - name: Run Pre-build
     #   run: sudo ${{ env.PROJECT_PATH }}/script/prebuild.sh
