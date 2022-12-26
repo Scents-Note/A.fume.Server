@@ -28,8 +28,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
               node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: ${{ env.NODE_ENV }}/package-lock.json
+        # cache: 'npm'
+        # cache-dependency-path: ${{ env.NODE_ENV }}/package-lock.json
 
     - name: Copy Ecosystem File
       run: cp ~/config-injection/ecosystem-${{ env.NODE_ENV }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
