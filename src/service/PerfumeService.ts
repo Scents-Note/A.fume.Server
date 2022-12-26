@@ -446,8 +446,16 @@ class PerfumeService {
         try {
             logger.debug(`${LOG_TAG} getRecommendedSimilarPerfumes(perfumeIdx = ${perfumeIdx}, size = ${size})`);
             
-            const perfumeIdxList : number[] = await  perfumeDao.getSimilarPerfumeIdxList(perfumeIdx, size);
-            const perfumeList: PerfumeThumbDTO[] = await perfumeDao.getPerfumesByIdxList(perfumeIdxList);
+            let perfumeList: PerfumeThumbDTO[];
+
+            const perfumeIdxList : number[] = await perfumeDao.getSimilarPerfumeIdxList(perfumeIdx, size);
+            
+            if (perfumeIdxList.length > 0) {
+                perfumeList = await perfumeDao.getPerfumesByIdxList(perfumeIdxList);
+            }
+            else {
+                perfumeList = await perfumeDao.getPerfumesByRandom(size);
+            }
 
             return this.convertToThumbKeyword(
                 new ListAndCountDTO<PerfumeThumbDTO>(
@@ -456,7 +464,7 @@ class PerfumeService {
                 )
             );
         } catch (err) {
-            console.log('getRecommendedSimilarPerfumes Error', err)
+            console.log('getRecommendedSimilarPerfumes Error', err);
             throw err;
         }
     }
