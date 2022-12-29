@@ -555,6 +555,39 @@ describe('# perfumeDao Test', () => {
             });
         });
 
+        describe('# recommend similar Test', () => {
+            it('# update recommended similar perfumes ', async () => {
+                try {
+                    const result: any[] = await perfumeDao.updateSimilarPerfumes({ 1: [2,3], 2: [3,4,5] });
+                    
+                    expect(result.length).to.be.eq(7);
+
+                    let err: any;
+                    let length: number;
+                    for (const response of result) {
+                        err =  response[0];
+                        length =  response[1];
+                        expect(err).to.be.null;
+                        expect(length).to.be.lte(3);
+                    }
+                } catch (err: any) { 
+                    throw err; 
+                };
+            });
+
+            it('# get recommended similar perfumes ', async () => {
+                try {
+                    await perfumeDao.updateSimilarPerfumes({1: [1,2,3]});
+
+                    const result: number[] = await perfumeDao.getSimilarPerfumeIdxList(1, 20);
+                    
+                    expect(result.length).to.be.eq(3);
+                } catch (err: any) { 
+                    throw err;
+                };
+            });
+        });
+
         describe('# random Test', () => {
             it('# get perfumes by random', (done: Done) => {
                 Promise.all([
