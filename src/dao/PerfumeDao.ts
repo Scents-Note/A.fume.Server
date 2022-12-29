@@ -411,6 +411,9 @@ class PerfumeDao {
                 })
             }
 
+            // It returns an array of responses
+            // Each response follows the format `[err, result]` 
+            // `result` is the length of the list after the push operation.
             return await multi.exec();
         } catch (err) {
             throw err
