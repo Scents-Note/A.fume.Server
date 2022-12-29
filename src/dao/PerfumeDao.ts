@@ -538,7 +538,6 @@ class PerfumeDao {
             
             return result.map((it: string) =>  Number(it));
         } catch (err) {
-            console.log('getSimilarPerfumeIdxList Error', err)
             throw err;
         }      
     }
