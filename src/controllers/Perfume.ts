@@ -260,34 +260,36 @@ const searchPerfume: RequestHandler = (
  *                 example: 0
  *       x-swagger-router-controller: Perfume
  * */
-const updateSimilarPerfumes: RequestHandler = (
+const updateSimilarPerfumes: RequestHandler = async (
     req: Request | any,
     res: Response,
     next: NextFunction
-): any => {
+): Promise<any> => {
+    try {
+        const perfumeSimilarRequest : any = req.body;
 
-    const perfumeSimilarRequest : any = req.body;
+        logger.debug(
+            `${LOG_TAG} updateSimilarPerfumes(
+                body = ${JSON.stringify(req.body)}
+            )`
+        );
+    
+        const result: any = await Perfume.updateSimilarPerfumes(perfumeSimilarRequest);
+        
+        LoggerHelper.logTruncated(
+            logger.debug,
+            `${LOG_TAG} updateSimilarPerfumes's result = ${result}`
+        );
+        
+        res.status(StatusCode.OK).json(
+            new SimpleResponseDTO(
+                MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS
+            )
+        );
+    } catch(err: any) {
+        next(err);
+    } 
 
-    logger.debug(
-        `${LOG_TAG} updateSimilarPerfume(
-            body = ${JSON.stringify(req.body)}
-        )`
-    );
-
-    Perfume.updateSimilarPerfumes(perfumeSimilarRequest)
-        .then((result: any) => {
-            LoggerHelper.logTruncated(
-                logger.debug,
-                `${LOG_TAG} updateSimilarPerfumes's result = ${result}`
-            );
-            
-            res.status(StatusCode.OK).json(
-                new SimpleResponseDTO(
-                    MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS
-                )
-            );
-        })
-        .catch((err: Error) => next(err));
 
 };
 

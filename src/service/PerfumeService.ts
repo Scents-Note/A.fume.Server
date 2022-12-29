@@ -215,12 +215,16 @@ class PerfumeService {
      * @param {Object} perfumeSimilarRequest
      * @returns {Promise}
      **/
-    async updateSimilarPerfumes(perfumeSimilarRequest: any): Promise<boolean> {
-        return perfumeDao
-            .updateSimilarPerfumes(perfumeSimilarRequest)
-            .catch((err: Error) => {
-                throw err;
-            });
+    async updateSimilarPerfumes(perfumeSimilarRequest: any): Promise<any> {
+        try {
+            logger.debug(
+                `${LOG_TAG} updateSimilarPerfumes(perfumeSimilarRequest = ${perfumeSimilarRequest})`
+            );  
+            
+            return await perfumeDao.updateSimilarPerfumes(perfumeSimilarRequest)
+        } catch(err: any) {
+            throw err;
+        }
     }
         
     /**
@@ -464,7 +468,6 @@ class PerfumeService {
                 )
             );
         } catch (err) {
-            console.log('getRecommendedSimilarPerfumes Error', err);
             throw err;
         }
     }
