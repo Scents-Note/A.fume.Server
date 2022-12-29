@@ -20,13 +20,14 @@ import {
     MSG_ABNORMAL_ACCESS,
     MSG_GET_RECOMMEND_SIMILAR_PERFUMES,
     BASE_PATH,
+    MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS
 } from '@utils/strings';
 
 import {
     DEFAULT_RECOMMEND_REQUEST_SIZE,
     DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE,
-    DEFAULT_SIMILAR_PERFUMES_REQUEST_SIZE,
     DEFAULT_RECOMMEND_COMMON_REQUEST_SIZE,
+    DEFAULT_OP_CODE
 } from '@utils/constants';
 
 import { ResponseDTO, SimpleResponseDTO } from '@response/common';
@@ -324,7 +325,7 @@ describe('# Perfume Integral Test', () => {
                     .get(`${basePath}/perfume/new`)
                     .expect((res: request.Response) => {
                         expect(res.status).to.be.eq(StatusCode.OK);
-                        const responseDTO: ResponseDTO<
+                           const responseDTO: ResponseDTO<
                             ListAndCountDTO<PerfumeResponse>
                         > = res.body;
                         expect(responseDTO.message).to.be.eq(
@@ -342,23 +343,47 @@ describe('# Perfume Integral Test', () => {
             });
         });
         describe('# recommendSimilarPerfume Test', () => {
-            it('success case', (done: Done) => {
-                request(app)
-                    .get(`${basePath}/perfume/1/similar`)
-                    .expect((res: request.Response) => {
-                        expect(res.status).to.be.eq(StatusCode.OK);
-                        const responseDTO: ResponseDTO<
-                            ListAndCountDTO<PerfumeRecommendResponse>
-                        > = res.body;
-                        expect(responseDTO.message).to.be.eq(
-                            MSG_GET_RECOMMEND_SIMILAR_PERFUMES
-                        );
-                        expect(responseDTO.data.count).to.be.eq(
-                            DEFAULT_SIMILAR_PERFUMES_REQUEST_SIZE
-                        );
-                        done();
-                    })
-                    .catch((err: Error) => done(err));
+            it('update success case', async () => {
+                try {
+                    const res: request.Response = await request(app)
+                        .post(`${basePath}/perfume/recommend/simmilar`)
+                        .send({10: [1,2,3]});
+
+                    const responseDTO: ResponseDTO<
+                        ListAndCountDTO<PerfumeRecommendResponse>
+                    > = res.body;
+
+                    expect(res.status).to.be.eq(StatusCode.OK);
+                    expect(responseDTO.message).to.be.eq(
+                        MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS
+                    );
+                    expect(responseDTO.opcode).to.be.eq(DEFAULT_OP_CODE);
+                } catch (err: any) {
+                    throw err;
+                }
+            });
+
+            it('read success case', async () => {
+                try {
+                    const res: request.Response = await request(app)
+                        .get(`${basePath}/perfume/10/similar`);
+
+                    const responseDTO: ResponseDTO<
+                        ListAndCountDTO<PerfumeRecommendResponse>
+                    > = res.body;
+
+                    expect(res.status).to.be.eq(StatusCode.OK);
+                    expect(responseDTO.message).to.be.eq(
+                        MSG_GET_RECOMMEND_SIMILAR_PERFUMES
+                    );
+                    expect(responseDTO.data.count).to.be.eq(
+                        3
+                    );
+                    expect(responseDTO.opcode).to.be.eq(DEFAULT_OP_CODE);
+
+                } catch (err: any) {
+                    throw err;
+                }
             });
         });
     });
