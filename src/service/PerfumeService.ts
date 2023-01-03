@@ -215,12 +215,16 @@ class PerfumeService {
      * @param {Object} perfumeSimilarRequest
      * @returns {Promise}
      **/
-    async updateSimilarPerfumes(perfumeSimilarRequest: any): Promise<boolean> {
-        return perfumeDao
-            .updateSimilarPerfumes(perfumeSimilarRequest)
-            .catch((err: Error) => {
-                throw err;
-            });
+    async updateSimilarPerfumes(perfumeSimilarRequest: any): Promise<any> {
+        try {
+            logger.debug(
+                `${LOG_TAG} updateSimilarPerfumes(perfumeSimilarRequest = ${perfumeSimilarRequest})`
+            );  
+            
+            return await perfumeDao.updateSimilarPerfumes(perfumeSimilarRequest)
+        } catch(err: any) {
+            throw err;
+        }
     }
         
     /**
@@ -429,6 +433,43 @@ class PerfumeService {
                     )(item);
                 });
             });
+    }
+
+    /**
+     * 비슷한 향수 추천 목록 조회
+     * 
+     * @todo Fix error handling
+     * @param {number} perfumeIdx
+     * @param {number} size
+     * @returns {Promise<PerfumeThumbKeywordDTO[]>}
+     **/
+    async getRecommendedSimilarPerfumeList(
+        perfumeIdx: number,
+        size: number
+    ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
+        try {
+            logger.debug(`${LOG_TAG} getRecommendedSimilarPerfumes(perfumeIdx = ${perfumeIdx}, size = ${size})`);
+            
+            let perfumeList: PerfumeThumbDTO[];
+
+            const perfumeIdxList : number[] = await perfumeDao.getSimilarPerfumeIdxList(perfumeIdx, size);
+            
+            if (perfumeIdxList.length > 0) {
+                perfumeList = await perfumeDao.getPerfumesByIdxList(perfumeIdxList);
+            }
+            else {
+                perfumeList = await perfumeDao.getPerfumesByRandom(size);
+            }
+
+            return this.convertToThumbKeyword(
+                new ListAndCountDTO<PerfumeThumbDTO>(
+                    perfumeList.length,
+                    perfumeList
+                )
+            );
+        } catch (err) {
+            throw err;
+        }
     }
 
     /**

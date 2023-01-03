@@ -392,12 +392,10 @@ class PerfumeDao {
     /**
      * 비슷한 향수 추천 데이터 저장
      * @todo Consider error handling
-     * @todo Fix type annotations
-     * @param {number} userIdx
-     * @param {PagingDTO} pagingDTO order is ignored
-     * @returns {Promise<Perfume[]>}
+     * @param {{[x: number]: number[]}} similarPerfumes
+     * @returns {[err: number, result: number][]} 
      */
-    async updateSimilarPerfumes(similarPerfumes: any) : Promise<any> {
+    async updateSimilarPerfumes(similarPerfumes: {[x: number]: number[]}) : Promise<[err: number, result: number][]> {
         try {
             const redis = require('@utils/db/redis.js');
             
@@ -410,7 +408,6 @@ class PerfumeDao {
                     multi.rpush(`recs.perfume:${key}`, v)
                 })
             }
-
             return await multi.exec();
         } catch (err) {
             throw err
@@ -515,6 +512,28 @@ class PerfumeDao {
     async readAll(): Promise<PerfumeThumbDTO[]> {
         logger.debug(`${LOG_TAG} readAll()`);
         return Perfume.findAll();
+    }
+
+    /**
+     * 비슷한 향수 인덱스 목록 조회
+     *
+     * @todo Fix error handling
+     * @param {number} perfumeIdx
+     * @param {number} size
+     * @returns {Promise<Perfume[]>}
+     */
+    async getSimilarPerfumeIdxList(perfumeIdx: number, size: number): Promise<number[]> {
+        try {
+            logger.debug(`${LOG_TAG} getSimilarPerfumeIdxList(perfumeIdx = ${perfumeIdx}, size = ${size})`);
+            
+            const client = require('@utils/db/redis.js');
+
+            const result = await client.lrange(`recs.perfume:${perfumeIdx}`, 0, size-1);
+            
+            return result.map((it: string) =>  Number(it));
+        } catch (err) {
+            throw err;
+        }      
     }
 
     /**

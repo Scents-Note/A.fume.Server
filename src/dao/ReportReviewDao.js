@@ -25,7 +25,6 @@ module.exports.create = async ({ reporterIdx, reviewIdx, reason }) => {
             ) {
                 throw new DuplicatedEntryError();
             }
-            console.log(err)
             throw new FailedToCreateError();
         }
 };
