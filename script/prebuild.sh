@@ -1,4 +1,7 @@
 #!/bin/sh
+
+pm2 stop ecosystem.json
+
 npm ci
 
 npm install -g pm2

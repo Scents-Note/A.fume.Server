@@ -1,12 +1,12 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
 
-name: Deploy development server to ec2
+name: Deploy development(test) server to ec2
 
 on:
     push:
         branches:
-            - dev
+            - bug/issue-448
 
 jobs:
     build:
@@ -17,19 +17,19 @@ jobs:
                 # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
         defaults:
             run:
-                working-directory: ${{ env.NODE_ENV }}
+                working-directory: deploy-test
         steps:
             - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 #v3.1.0
               with:
-                  path: ${{ env.NODE_ENV }}
+                  path: deploy-test
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 #v.3.5.1
               with:
                   node-version: ${{ matrix.node-version }}
             - run: cp ~/config-injection/ecosystem-${{ env.NODE_ENV }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
             - run: cp ~/config-injection/.env ${{ env.PROJECT_PATH }}/.env
-            - run: sudo ${{ env.PROJECT_PATH }}/script/prebuild.sh
+            #     - run: sudo ${{ env.PROJECT_PATH }}/script/prebuild.sh
             - run: ${{ env.PROJECT_PATH }}/script/reload.sh
         env:
             NODE_ENV: development
-            PROJECT_PATH: ~/actions-runner/_work/A.fume.Server/A.fume.Server/development
+            PROJECT_PATH: ~/actions-runner/_work/A.fume.Server/A.fume.Server/deploy-test
