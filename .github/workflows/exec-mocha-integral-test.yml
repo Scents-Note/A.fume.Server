@@ -16,6 +16,7 @@ jobs:
             - uses: actions/checkout@v2
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v2
+            - run: sudo ./script/setup-global.sh
             - run: sudo ./script/prebuild.sh
             - name: run integral test code
               run: npm run test-integral
