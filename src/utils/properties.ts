@@ -18,6 +18,7 @@ const REQUIRED_ENV_LIST: string[] = [
 ];
 
 const NULLABLE_ENV_MAP: { [key: string]: any } = {
+    SERVER_NAME: process.env.name || 'unknown',
     NODE_ENV: 'development',
     CORS_ALLOW_LIST: '',
     SERVER_IP: 'localhost',
@@ -26,6 +27,8 @@ const NULLABLE_ENV_MAP: { [key: string]: any } = {
     NODE_LOCATION: 'local',
     REDIS_PORT: '6379',
     REDIS_HOST: 'localhost',
+    DISCORD_HOOK_FOR_SERVICE_MONITORING: undefined,
+    DISCORD_HOOK_FOR_REPORT_REVIEW: undefined,
 };
 
 type Properties = {
@@ -63,6 +66,9 @@ type Properties = {
     CORS_ALLOW_LIST: string;
     SERVER_IP: string;
     LOG_PATH: string;
+    SERVER_NAME: string;
+    DISCORD_HOOK_FOR_SERVICE_MONITORING: string;
+    DISCORD_HOOK_FOR_REPORT_REVIEW: string;
     // TODO: below properties will be removed after detaching afume(previous) bucket
     AWS_ACCESS_KEY_ID_LEGACY: string;
     AWS_SECRET_ACCESS_KEY_LEGACY: string;
