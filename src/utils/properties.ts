@@ -18,7 +18,7 @@ const REQUIRED_ENV_LIST: string[] = [
 ];
 
 const NULLABLE_ENV_MAP: { [key: string]: any } = {
-    SERVER_NAME: 'unknown',
+    SERVER_NAME: process.env.name || 'unknown',
     NODE_ENV: 'development',
     CORS_ALLOW_LIST: '',
     SERVER_IP: 'localhost',
