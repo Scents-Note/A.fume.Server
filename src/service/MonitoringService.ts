@@ -9,7 +9,7 @@ const { Webhook } = require('discord-webhook-node');
 class MonitoringService {
     hook: typeof Webhook | undefined;
     constructor() {
-        this.hook = discordManager.getServerStatusHook();
+        this.hook = discordManager.getServiceMonitoringHook();
     }
 
     /**

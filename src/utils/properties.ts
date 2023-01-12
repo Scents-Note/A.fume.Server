@@ -27,7 +27,7 @@ const NULLABLE_ENV_MAP: { [key: string]: any } = {
     NODE_LOCATION: 'local',
     REDIS_PORT: '6379',
     REDIS_HOST: 'localhost',
-    DISCORD_HOOK_FOR_SERVER_STATUS: undefined,
+    DISCORD_HOOK_FOR_SERVICE_MONITORING: undefined,
     DISCORD_HOOK_FOR_REPORT_REVIEW: undefined,
 };
 
@@ -67,7 +67,7 @@ type Properties = {
     SERVER_IP: string;
     LOG_PATH: string;
     SERVER_NAME: string;
-    DISCORD_HOOK_FOR_SERVER_STATUS: string;
+    DISCORD_HOOK_FOR_SERVICE_MONITORING: string;
     DISCORD_HOOK_FOR_REPORT_REVIEW: string;
     // TODO: below properties will be removed after detaching afume(previous) bucket
     AWS_ACCESS_KEY_ID_LEGACY: string;

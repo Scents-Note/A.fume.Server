@@ -3,7 +3,7 @@ import { Webhook } from 'discord-webhook-node';
 
 interface DiscordManager {
     getReportReviewHook(): Webhook | undefined;
-    getServerStatusHook(): Webhook | undefined;
+    getServiceMonitoringHook(): Webhook | undefined;
 }
 
 class DiscordManagerImpl implements DiscordManager {
@@ -19,9 +19,11 @@ class DiscordManagerImpl implements DiscordManager {
         return undefined;
     }
 
-    getServerStatusHook(): Webhook | undefined {
-        if (properties.DISCORD_HOOK_FOR_SERVER_STATUS) {
-            const hook = new Webhook(properties.DISCORD_HOOK_FOR_SERVER_STATUS);
+    getServiceMonitoringHook(): Webhook | undefined {
+        if (properties.DISCORD_HOOK_FOR_SERVICE_MONITORING) {
+            const hook = new Webhook(
+                properties.DISCORD_HOOK_FOR_SERVICE_MONITORING
+            );
 
             hook.setUsername('센츠 노트 서버 모니터링');
             hook.setAvatar('https://i.ibb.co/7CbpQyx/logo.png');
