@@ -8,19 +8,20 @@ interface DiscordManager {
 
 class DiscordManagerImpl implements DiscordManager {
     getReportReviewHook(): Webhook | undefined {
-        const hook = new Webhook(
-            'https://discord.com/api/webhooks/957212284617375744/hQOZd1qGPnv35YuhCXTHJB9ZtlRifhigpjXup8nbYiivX3PkJVaNePH-IDnC9zDuC4Z0'
-        );
+        if (properties.DISCORD_HOOK_FOR_REPORT_REVIEW) {
+            const hook = new Webhook(properties.DISCORD_HOOK_FOR_REPORT_REVIEW);
 
-        const IMAGE_URL = 'https://i.ibb.co/7CbpQyx/logo.png';
-        hook.setUsername('시향노트 신고 알림봇');
-        hook.setAvatar(IMAGE_URL);
-        return hook;
+            const IMAGE_URL = 'https://i.ibb.co/7CbpQyx/logo.png';
+            hook.setUsername('시향노트 신고 알림봇');
+            hook.setAvatar(IMAGE_URL);
+            return hook;
+        }
+        return undefined;
     }
 
     getServerStatusHook(): Webhook | undefined {
-        if (properties.DISCORD_URL_FOR_SERVER_STATUS) {
-            const hook = new Webhook(properties.DISCORD_URL_FOR_SERVER_STATUS);
+        if (properties.DISCORD_HOOK_FOR_SERVER_STATUS) {
+            const hook = new Webhook(properties.DISCORD_HOOK_FOR_SERVER_STATUS);
 
             hook.setUsername('센츠 노트 서버 모니터링');
             hook.setAvatar('https://i.ibb.co/7CbpQyx/logo.png');
