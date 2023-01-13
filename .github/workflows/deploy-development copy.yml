@@ -30,6 +30,7 @@ jobs:
             - run: cp ~/config-injection/ecosystem-${{ env.NODE_ENV }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
             - run: cp ~/config-injection/.env ${{ env.PROJECT_PATH }}/.env
             - run: sh ${{ env.PROJECT_PATH }}/script/version.sh
+            - run: sh ${{ env.PROJECT_PATH }}/script/prebuild.sh
         env:
             NODE_ENV: development
             PROJECT_PATH: ~/actions-runner/_work/A.fume.Server/A.fume.Server/development
