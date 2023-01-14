@@ -6,6 +6,27 @@ const LOG_TAG: string = '[Monitoring/Service]';
 
 const { Webhook } = require('discord-webhook-node');
 
+function currentDateString() {
+    return new Date().toLocaleString('ko-KR');
+}
+
+class MonitoringToken {
+    startTime: string;
+    numberOfHttpRequest: number;
+    visitors: Set<number>;
+    constructor() {
+        this.startTime = currentDateString();
+        this.numberOfHttpRequest = 0;
+        this.visitors = new Set<number>();
+    }
+    refresh() {
+        this.startTime = currentDateString();
+        this.numberOfHttpRequest = 0;
+        this.visitors = new Set<number>();
+    }
+    static instance = new MonitoringToken();
+}
+
 class MonitoringService {
     hook: typeof Webhook | undefined;
     constructor() {
@@ -25,15 +46,25 @@ class MonitoringService {
             return;
         }
 
+        const token: MonitoringToken = MonitoringToken.instance;
         this.hook.send(
             [
-                `서버 : ${properties.SERVER_NAME}`,
-                `ip : ${properties.SERVER_IP}`,
-                `port : ${properties.PORT}`,
-                `profile : ${properties.NODE_ENV}`,
-                `date : ${new Date()}`,
+                `▷▷▷▷▷\t\t서버 : ${properties.SERVER_NAME} \t\t◁◁◁◁◁`,
+                `▷ ${properties.SERVER_IP}:${properties.PORT}`,
+                `▷ profile : ${properties.NODE_ENV}`,
+                `▷ date : ${token.startTime} ~ ${currentDateString()}`,
+                `▷ info `,
+                `▷▷ number of requests: ${token.numberOfHttpRequest}`,
+                `▷▷ number of visitors: ${token.visitors.size}`,
+                `▷▷ visitors: ${[...token.visitors].join(',')}`,
+                '----------------------------------------------------------',
             ].join('\n')
         );
+        MonitoringToken.instance.refresh();
+    }
+
+    static getToken(): MonitoringToken {
+        return MonitoringToken.instance;
     }
 }
 
