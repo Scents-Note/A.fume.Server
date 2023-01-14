@@ -14,15 +14,18 @@ class MonitoringToken {
     startTime: string;
     numberOfHttpRequest: number;
     visitors: Set<number>;
+    responseStatusCodeMap: Map<number, number>;
     constructor() {
         this.startTime = currentDateString();
         this.numberOfHttpRequest = 0;
         this.visitors = new Set<number>();
+        this.responseStatusCodeMap = new Map<number, number>();
     }
     refresh() {
         this.startTime = currentDateString();
         this.numberOfHttpRequest = 0;
         this.visitors = new Set<number>();
+        this.responseStatusCodeMap = new Map<number, number>();
     }
     static instance = new MonitoringToken();
 }
@@ -55,6 +58,9 @@ class MonitoringService {
                 `▷ date : ${token.startTime} ~ ${currentDateString()}`,
                 `▷ info `,
                 `▷▷ number of requests: ${token.numberOfHttpRequest}`,
+                `▷▷ status code of responses: ${[
+                    ...token.responseStatusCodeMap.entries(),
+                ].map((it) => `${it[0]}:${it[1]}`)}`,
                 `▷▷ number of visitors: ${token.visitors.size}`,
                 `▷▷ visitors: ${[...token.visitors].join(',')}`,
                 '----------------------------------------------------------',

@@ -21,7 +21,7 @@ import express from 'express';
  */
 function updateMonitoringToken(
     req: express.Request | any,
-    _res: express.Response,
+    res: express.Response,
     next: express.NextFunction
 ) {
     const token = MonitoringService.getToken();
@@ -29,6 +29,11 @@ function updateMonitoringToken(
     if (req.middlewareToken.loginUserIdx != -1) {
         token.visitors.add(req.middlewareToken.loginUserIdx);
     }
+    res.once('finish', () => {
+        const prev: number =
+            token.responseStatusCodeMap.get(res.statusCode) || 0;
+        token.responseStatusCodeMap.set(res.statusCode, prev + 1);
+    });
     return next(null);
 }
 
