@@ -27,7 +27,7 @@ class SchedulerManager {
             );
             reloadSearchHistory();
         }),
-        cron.schedule('0 0 2/* * * *', (now: Date) => {
+        cron.schedule('0 0 */2 * * *', (now: Date) => {
             logger.debug(
                 TAG,
                 `execute sendServerStatusMessage() by schedule [0 0 */2 * * *] at ${now}`
