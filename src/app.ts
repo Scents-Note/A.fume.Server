@@ -14,6 +14,7 @@ import makeMorgan from '@modules/morgan';
 import { HttpError } from '@errors';
 import statusCode from '@utils/statusCode';
 import { verifyTokenMiddleware, encryptPassword } from '@middleware/auth';
+import { updateMonitoringToken } from '@middleware/monitoring';
 import { swaggerRouter } from '@controllers/index';
 import SchedulerManager from '@schedules/index';
 
@@ -62,6 +63,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use(swaggerMetadataHandler);
 app.use(specs.basePath, verifyTokenMiddleware);
 app.use(specs.basePath, encryptPassword);
+app.use(specs.basePath, updateMonitoringToken);
 app.use(specs.basePath, swaggerRouter(specs));
 
 // catch 404 and forward to error handler
