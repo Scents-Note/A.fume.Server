@@ -59,7 +59,7 @@ class MonitoringService {
                 `▷ info `,
                 `▷▷ number of requests: ${token.numberOfHttpRequest}`,
                 `▷▷ status code of responses: ${[
-                    ...token.responseStatusCodeMap.entries(),
+                    ...token.responseStatusCodeMap.entries()
                 ].map((it) => `${it[0]}:${it[1]}`)}`,
                 `▷▷ number of visitors: ${token.visitors.size}`,
                 `▷▷ visitors: ${[...token.visitors].join(',')}`,
