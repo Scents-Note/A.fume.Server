@@ -17,20 +17,20 @@ jobs:
                 # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
         defaults:
             run:
-                working-directory: ${{ env.SERVER_NAME }}
+                working-directory: ${{ env.SERVER_PROFILE }}
         steps:
             - uses: actions/checkout@v2
               with:
-                  path: ${{ env.SERVER_NAME }}
+                  path: ${{ env.SERVER_PROFILE }}
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v2
               with:
                   node-version: ${{ matrix.node-version }}
-            - run: cp ~/config-injection/ecosystem-${{ env.SERVER_NAME }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
+            - run: cp ~/config-injection/ecosystem-${{ env.SERVER_PROFILE }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
             - run: cp ~/config-injection/envs/.env.${{ env.NODE_ENV }} ${{ env.PROJECT_PATH }}/.env
             - run: sh ${{ env.PROJECT_PATH }}/script/prebuild.sh
             - run: sh ${{ env.PROJECT_PATH }}/script/reload.sh
         env:
             NODE_ENV: production
-            SERVER_NAME: production-2
+            SERVER_PROFILE: production-2
             PROJECT_PATH: ~/actions-runner/_work/A.fume.Server/A.fume.Server/production-2
