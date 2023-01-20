@@ -450,6 +450,38 @@ describe('# Perfume Service Test', () => {
                 .catch((err: Error) => done(err));
         });
     });
+    describe ('# updateSimilarPerfumes Test', async () => {
+        it('# Success Case', async () => {
+            try {
+                const result = await Perfume.updateSimilarPerfumes({10:[1,2,3]});
+                expect(result.length).to.be.eq(4);
+            } catch (err: any) {
+                throw err;
+            }
+        })
+    });
+    describe ('# getRecommendedSimilarPerfumeList Test', async () => {
+        it('# Success Case 1: If perfumeIdxList is not empty', async () => {
+            try {
+                const result = await Perfume.getRecommendedSimilarPerfumeList(10, 2);
+                expect(result.count).to.be.eq(2);
+                expect(result.rows.length).to.be.eq(2);
+
+            } catch (err: any) {
+                throw err;
+            }
+        })
+        it('# Success Case 2: If perfumeIdxList is empty', async () => {
+            try {
+                const result = await Perfume.getRecommendedSimilarPerfumeList(0, 2);
+                expect(result.count).to.be.eq(2);
+                expect(result.rows.length).to.be.eq(2);
+
+            } catch (err: any) {
+                throw err;
+            }
+        })
+    });
     describe('# like Test', () => {
         it('# likePerfume Test (좋아요)', (done: Done) => {
             mockLikePerfumeDao.read = async (_: number, __: number) => {

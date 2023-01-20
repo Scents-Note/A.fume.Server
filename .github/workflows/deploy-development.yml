@@ -4,34 +4,33 @@
 name: Deploy development server to ec2
 
 on:
-  push:
-    branches: 
-    - dev
+    push:
+        branches:
+            - dev
 
 jobs:
-  build:
-    runs-on: self-hosted
-    strategy:
-      matrix:
-        node-version: [12.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-    defaults:
-      run:
-        working-directory: ${{ env.NODE_ENV }}
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        path: ${{ env.NODE_ENV }}
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v2
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: ${{ env.NODE_ENV }}/package-lock.json
-    - run: cp ~/config-injection/ecosystem-${{ env.NODE_ENV }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
-    - run: cp ~/config-injection/.env ${{ env.PROJECT_PATH }}/.env
-    - run: sudo ${{ env.PROJECT_PATH }}/script/prebuild.sh
-    - run: ${{ env.PROJECT_PATH }}/script/reload.sh
-    env:
-      NODE_ENV: development
-      PROJECT_PATH: ~/actions-runner/_work/A.fume.Server/A.fume.Server/development
+    build:
+        runs-on: self-hosted
+        strategy:
+            matrix:
+                node-version: [16.x]
+                # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        defaults:
+            run:
+                working-directory: ${{ env.SERVER_PROFILE }}
+        steps:
+            - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 #v3.1.0
+              with:
+                  path: ${{ env.SERVER_PROFILE }}
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 #v.3.5.1
+              with:
+                  node-version: ${{ matrix.node-version }}
+            - run: cp ~/config-injection/ecosystem-${{ env.SERVER_PROFILE }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
+            - run: cp ~/config-injection/envs/.env.${{ env.NODE_ENV }} ${{ env.PROJECT_PATH }}/.env
+            - run: sh ${{ env.PROJECT_PATH }}/script/prebuild.sh
+            - run: sh ${{ env.PROJECT_PATH }}/script/reload.sh
+        env:
+            NODE_ENV: development
+            SERVER_PROFILE: development
+            PROJECT_PATH: ~/actions-runner/_work/A.fume.Server/A.fume.Server/development

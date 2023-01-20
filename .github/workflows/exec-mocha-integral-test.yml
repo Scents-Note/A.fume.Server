@@ -10,13 +10,14 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [10.x]
+                node-version: [16.x]
 
         steps:
             - uses: actions/checkout@v2
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v2
-            - run: sudo ./script/prebuild.sh
+            - run: sh ./script/setup-global.sh
+            - run: sh ./script/prebuild.sh
             - name: run integral test code
               run: npm run test-integral
               env:
@@ -41,3 +42,6 @@ jobs:
                   AWS_S3_URL_LEGACY: '${{ secrets.AWS_S3_URL_LEGACY }}'
                   AWS_ACCESS_KEY_ID_LEGACY: '${{ secrets.AWS_ACCESS_KEY_ID_LEGACY }}'
                   AWS_SECRET_ACCESS_KEY_LEGACY: '${{ secrets.AWS_SECRET_ACCESS_KEY_LEGACY }}'
+                  REDIS_HOST: '${{ secrets.REDIS_HOST }}'
+                  REDIS_PORT: '${{ secrets.REDIS_PORT }}'
+                  REDIS_DB_ID: '${{ secrets.REDIS_PRD_DB_ID }}'

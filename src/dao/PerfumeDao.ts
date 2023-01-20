@@ -390,6 +390,31 @@ class PerfumeDao {
     }
 
     /**
+     * 비슷한 향수 추천 데이터 저장
+     * @todo Consider error handling
+     * @param {{[x: number]: number[]}} similarPerfumes
+     * @returns {[err: number, result: number][]} 
+     */
+    async updateSimilarPerfumes(similarPerfumes: {[x: number]: number[]}) : Promise<[err: number, result: number][]> {
+        try {
+            const redis = require('@utils/db/redis.js');
+            
+            const obj = similarPerfumes;
+            const multi = await redis.multi();
+
+            for (const key in obj) {
+                multi.del(`recs.perfume:${key}`)
+                obj[key].forEach((v: any) => {
+                    multi.rpush(`recs.perfume:${key}`, v)
+                })
+            }
+            return await multi.exec();
+        } catch (err) {
+            throw err
+        }      
+    }
+
+    /**
      * 나이 및 성별에 기반한 향수 추천
      *
      * @param {string} gender
@@ -487,6 +512,28 @@ class PerfumeDao {
     async readAll(): Promise<PerfumeThumbDTO[]> {
         logger.debug(`${LOG_TAG} readAll()`);
         return Perfume.findAll();
+    }
+
+    /**
+     * 비슷한 향수 인덱스 목록 조회
+     *
+     * @todo Fix error handling
+     * @param {number} perfumeIdx
+     * @param {number} size
+     * @returns {Promise<Perfume[]>}
+     */
+    async getSimilarPerfumeIdxList(perfumeIdx: number, size: number): Promise<number[]> {
+        try {
+            logger.debug(`${LOG_TAG} getSimilarPerfumeIdxList(perfumeIdx = ${perfumeIdx}, size = ${size})`);
+            
+            const client = require('@utils/db/redis.js');
+
+            const result = await client.lrange(`recs.perfume:${perfumeIdx}`, 0, size-1);
+            
+            return result.map((it: string) =>  Number(it));
+        } catch (err) {
+            throw err;
+        }      
     }
 
     /**

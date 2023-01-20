@@ -11,7 +11,7 @@ import app from '@src/app';
 import { TokenSetDTO } from '@dto/index';
 import { BASE_PATH, ABNORMAL_CONNECTION } from '@utils/strings';
 
-import { ResponseDTO, SimpleResponseDTO, Opcode } from '@response/common';
+import { ResponseDTO, SimpleResponseDTO, OpCode } from '@response/common';
 import { LoginResponse } from '@response/user';
 
 const basePath: string = BASE_PATH;
@@ -122,7 +122,7 @@ describe('# Auth Controller Test', () => {
                                                 responseDTO.message
                                             ).to.be.eq(ABNORMAL_CONNECTION);
                                             expect(responseDTO.opcode).to.be.eq(
-                                                Opcode.LOGOUT
+                                                OpCode.LOGOUT
                                             );
                                             done();
                                         }
