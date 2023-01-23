@@ -40,6 +40,8 @@ const MIDDLE: string = 'middle';
 const BASE: string = 'base';
 const SINGLE: string = 'single';
 
+const PRIVATE: string = '비공개';
+
 const MSG_GET_BRAND_FILTER_SUCCESS: string = `브랜드 필터 ${_get} ${_success}`;
 const MSG_GET_BRAND_ALL_SUCCESS: string = `브랜드 ${_all} ${_get} ${_success}`;
 const MSG_GET_SEARCH_INGREDIENT_SUCCESS: string = `재료 ${_search} ${_get} ${_success}`;
@@ -143,6 +145,7 @@ export {
     MIDDLE,
     BASE,
     SINGLE,
+    PRIVATE,
     MSG_GET_BRAND_FILTER_SUCCESS,
     MSG_GET_BRAND_ALL_SUCCESS,
     MSG_GET_SEARCH_INGREDIENT_SUCCESS,

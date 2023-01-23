@@ -12,6 +12,7 @@ import UserDao from '@dao/UserDao';
 import LikePerfumeDao from '@dao/LikePerfumeDao';
 import ReviewDao from '@dao/ReviewDao';
 import KeywordDao from '../dao/KeywordDao';
+import { PRIVATE } from '@src/utils/strings';
 
 const userDao = new UserDao();
 const likePerfumeDao = new LikePerfumeDao();
@@ -264,6 +265,12 @@ exports.getReviewOfPerfumeByLike = async ({ perfumeIdx, userIdx }) => {
                 createTime: it.createdAt,
                 isReported: reportedReviewIdxList.includes(it.reviewIdx)
             };
+            if (currentResult.userGender == 0) {
+                currentResult.userGender = 0; // PRIVATE;
+            }
+            if (it.User.birth == 0) {
+                currentResult.age = PRIVATE;
+            }
             prevResult.push(currentResult);
             return Promise.resolve(prevResult);
         }, Promise.resolve([]));
