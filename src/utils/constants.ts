@@ -11,6 +11,7 @@ import {
     SINGLE,
 } from '@utils/strings';
 
+const GENDER_NONE: number = 0;
 const GENDER_MAN: number = 1;
 const GENDER_WOMAN: number = 2;
 const GRADE_USER: number = 0;
@@ -50,12 +51,13 @@ const DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE: number = 7;
 const DEFAULT_RECOMMEND_COMMON_REQUEST_SIZE: number = 15;
 const DEFAULT_BRAND_REQUEST_SIZE: number = 1000;
 const DEFAULT_INGREDIENT_REQUEST_SIZE: number = 2000;
-const DEFAULT_OP_CODE:number = 0;
+const DEFAULT_OP_CODE: number = 0;
 
 const ACCESS_PUBLIC: number = 1;
 const ACCESS_PRIVATE: number = 0;
 
 export {
+    GENDER_NONE,
     GENDER_MAN,
     GENDER_WOMAN,
     GRADE_USER,
@@ -82,5 +84,5 @@ export {
     DEFAULT_INGREDIENT_REQUEST_SIZE,
     ACCESS_PUBLIC,
     ACCESS_PRIVATE,
-    DEFAULT_OP_CODE
+    DEFAULT_OP_CODE,
 };

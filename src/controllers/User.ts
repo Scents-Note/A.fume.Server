@@ -36,7 +36,13 @@ import {
     LoginResponse,
 } from '@response/user';
 
-import { UserAuthDTO, UserInputDTO, LoginInfoDTO, SurveyDTO } from '@dto/index';
+import {
+    UserAuthDTO,
+    UserInputDTO,
+    LoginInfoDTO,
+    SurveyDTO,
+    UserDTO,
+} from '@dto/index';
 
 const LOG_TAG: string = '[User/Controller]';
 
@@ -165,7 +171,16 @@ const loginUser: RequestHandler = (
     const password: string = req.body.password;
     User.loginUser(email, password)
         .then((result: LoginInfoDTO) => {
-            return LoginResponse.createByJson(result);
+            const loginResponse: any = LoginResponse.createByJson(result);
+            // TODO gender, birth nullable로 변경한 이후 아래 코드 삭제하기
+            if (loginResponse.gender == 0) {
+                delete loginResponse.gender;
+            }
+            if (loginResponse.birth == 0) {
+                delete loginResponse.birth;
+            }
+
+            return loginResponse;
         })
         .then((response: LoginResponse) => {
             LoggerHelper.logTruncated(
@@ -673,7 +688,7 @@ const updateUser: RequestHandler = (
     }
     const userEditRequest = UserEditRequest.createByJson(req.body);
     User.updateUser(userEditRequest.toUserInputDTO(userIdx))
-        .then((result: UserResponse) => {
+        .then((result: UserDTO) => {
             return UserResponse.createByJson(result);
         })
         .then((response: UserResponse) => {
