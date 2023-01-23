@@ -28,7 +28,7 @@ jobs:
                   node-version: ${{ matrix.node-version }}
             - run: cp ~/config-injection/ecosystem-${{ env.SERVER_PROFILE }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
             - run: cp ~/config-injection/envs/.env.${{ env.NODE_ENV }} ${{ env.PROJECT_PATH }}/.env
-            - run: sh ${{ env.PROJECT_PATH }}/script/prebuild.sh
+            - run: bash ${{ env.PROJECT_PATH }}/script/prebuild.sh
             - run: sh ${{ env.PROJECT_PATH }}/script/reload.sh
         env:
             NODE_ENV: development
