@@ -32,6 +32,19 @@ class UserInputDTO {
     public toString(): string {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
+
+    static createByJson(json: any): UserInputDTO {
+        return new UserInputDTO(
+            json.userIdx,
+            json.nickname,
+            json.password,
+            json.gender,
+            json.email,
+            json.birth,
+            json.grade,
+            json.accessTime
+        );
+    }
 }
 
 export { UserInputDTO };
