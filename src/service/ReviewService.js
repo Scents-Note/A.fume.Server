@@ -13,6 +13,7 @@ import LikePerfumeDao from '@dao/LikePerfumeDao';
 import ReviewDao from '@dao/ReviewDao';
 import KeywordDao from '../dao/KeywordDao';
 import { PRIVATE } from '@src/utils/strings';
+import { BIRTH_NONE, GENDER_NONE } from '@src/utils/constants';
 
 const userDao = new UserDao();
 const likePerfumeDao = new LikePerfumeDao();
@@ -71,14 +72,13 @@ exports.postReview = async ({
         );
         try {
             await likePerfumeDao.delete(userIdx, perfumeIdx);
-        }
-        catch (err) {
-            if (err instanceof NotMatchedError) {}
-            else throw err;
+        } catch (err) {
+            if (err instanceof NotMatchedError) {
+            } else throw err;
         }
         return reviewIdx;
     } catch (err) {
-        console.log(err)
+        console.log(err);
         throw err;
     }
 };
@@ -243,15 +243,19 @@ exports.getReviewOfPerfumeByLike = async ({ perfumeIdx, userIdx }) => {
         const reviewList = await reviewDao.readAllOfPerfume(perfumeIdx);
 
         // 유저가 신고한 시향노트 인덱스 목록 조회
-        const allReportedReviewByUser = await reportReviewDao.readAllReportedReviewByUser(userIdx)
+        const allReportedReviewByUser =
+            await reportReviewDao.readAllReportedReviewByUser(userIdx);
         const reportedReviewIdxList = allReportedReviewByUser.map((it) => {
-                    return it.reviewIdx;
+            return it.reviewIdx;
         });
 
         const result = await reviewList.reduce(async (prevPromise, it) => {
             let prevResult = await prevPromise.then();
             const approxAge = getApproxAge(it.User.birth);
-            const readLikeResult = await likeReviewDao.read(userIdx, it.reviewIdx);
+            const readLikeResult = await likeReviewDao.read(
+                userIdx,
+                it.reviewIdx
+            );
             const currentResult = {
                 reviewIdx: it.reviewIdx,
                 score: it.score,
@@ -263,12 +267,12 @@ exports.getReviewOfPerfumeByLike = async ({ perfumeIdx, userIdx }) => {
                 age: approxAge,
                 nickname: it.User.nickname,
                 createTime: it.createdAt,
-                isReported: reportedReviewIdxList.includes(it.reviewIdx)
+                isReported: reportedReviewIdxList.includes(it.reviewIdx),
             };
-            if (currentResult.userGender == 0) {
-                currentResult.userGender = 0; // PRIVATE;
+            if (currentResult.userGender == GENDER_NONE) {
+                currentResult.userGender = GENDER_NONE; // PRIVATE;
             }
-            if (it.User.birth == 0) {
+            if (it.User.birth == BIRTH_NONE) {
                 currentResult.age = PRIVATE;
             }
             prevResult.push(currentResult);
@@ -276,8 +280,8 @@ exports.getReviewOfPerfumeByLike = async ({ perfumeIdx, userIdx }) => {
         }, Promise.resolve([]));
         return result;
     } catch (err) {
-        console.log(err)
-        throw err
+        console.log(err);
+        throw err;
     }
 };
 
@@ -309,28 +313,30 @@ exports.likeReview = async (reviewIdx, userIdx) => {
  * @param {Number} userIdx
  * @returns {Promise}
  **/
-exports.reportReview = async ({
-    userIdx,
-    reviewIdx,
-    reason
-}) => {
+exports.reportReview = async ({ userIdx, reviewIdx, reason }) => {
     try {
-        const userInfo = await userDao.readByIdx(userIdx)
+        const userInfo = await userDao.readByIdx(userIdx);
         const userNickname = userInfo.nickname;
         const reviewData = await reviewDao.read(reviewIdx);
-        const perfumeName = reviewData.Perfume.name
-        const reviewContent = reviewData.content
+        const perfumeName = reviewData.Perfume.name;
+        const reviewContent = reviewData.content;
 
         // 신고 정보 저장
-        await reportReviewDao.create({ reporterIdx: userIdx, reviewIdx, reason })
+        await reportReviewDao.create({
+            reporterIdx: userIdx,
+            reviewIdx,
+            reason,
+        });
 
         // 디스코드로 신고 알림 전송
-        await discordHook.send(`시향노트 신고가 들어왔습니다.\n\n신고 사유 : ${reason} \n향수명 : ${perfumeName} \n시향노트 내용 : ${reviewContent} \n신고자 : ${userNickname} \n시향노트 Idx : ${reviewIdx} `);
+        await discordHook.send(
+            `시향노트 신고가 들어왔습니다.\n\n신고 사유 : ${reason} \n향수명 : ${perfumeName} \n시향노트 내용 : ${reviewContent} \n신고자 : ${userNickname} \n시향노트 Idx : ${reviewIdx} `
+        );
 
-    return true;
+        return true;
     } catch (err) {
-        console.log(err)
-        throw err
+        console.log(err);
+        throw err;
     }
 };
 
@@ -341,16 +347,17 @@ exports.reportReview = async ({
  * @returns {Promise<reviewIdx[]>} reviewIdx List
  */
 
- module.exports.readAllReportedReviewByUser = async (userIdx) => {
+module.exports.readAllReportedReviewByUser = async (userIdx) => {
     try {
-        const allReportedReviewByUser = await reportReviewDao.readAllReportedReviewByUser(userIdx)
-        console.log('allReportedReviewByUser', allReportedReviewByUser)
+        const allReportedReviewByUser =
+            await reportReviewDao.readAllReportedReviewByUser(userIdx);
+        console.log('allReportedReviewByUser', allReportedReviewByUser);
         return result.map((it) => {
-                return it.reviewIdx;
+            return it.reviewIdx;
         });
     } catch (err) {
-        console.log(err)
-        throw err
+        console.log(err);
+        throw err;
     }
 };
 

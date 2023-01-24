@@ -4,7 +4,7 @@ import { logger, LoggerHelper } from '@modules/winston';
 
 import { UnAuthorizedError } from '@errors';
 
-import { GRADE_USER } from '@utils/constants';
+import { GENDER_NONE, BIRTH_NONE, GRADE_USER } from '@utils/constants';
 
 import {
     MSG_REGISTER_SUCCESS,
@@ -176,7 +176,7 @@ const loginUser: RequestHandler = (
             if (loginResponse.gender == GENDER_NONE) {
                 delete loginResponse.gender;
             }
-            if (loginResponse.birth == 0) {
+            if (loginResponse.birth == BIRTH_NONE) {
                 delete loginResponse.birth;
             }
 

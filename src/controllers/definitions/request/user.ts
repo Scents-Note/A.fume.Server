@@ -2,7 +2,7 @@ import { logger } from '@modules/winston';
 
 import { InvalidInputError } from '@src/utils/errors/errors';
 import { GenderMap, GradeMap, GradeKey } from '@utils/enumType';
-import { GENDER_NONE, GRADE_USER } from '@utils/constants';
+import { GRADE_USER, GENDER_NONE } from '@utils/constants';
 import { UserInputDTO } from '@src/data/dto';
 
 interface UserInputRequest {

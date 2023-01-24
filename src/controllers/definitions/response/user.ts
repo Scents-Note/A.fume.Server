@@ -1,3 +1,4 @@
+import { BIRTH_NONE } from '@src/utils/constants';
 import { GenderInvMap } from '@utils/enumType';
 
 /**
@@ -62,7 +63,8 @@ class LoginResponse {
 
     static createByJson(json: any): LoginResponse {
         const genderString: string | null = GenderInvMap[json.gender] || null;
-        const birth: number | null = json.birth == 0 ? null : json.birth;
+        const birth: number | null =
+            json.birth == BIRTH_NONE ? null : json.birth;
         return new LoginResponse(
             json.userIdx,
             json.nickname,
