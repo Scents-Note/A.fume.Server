@@ -87,17 +87,39 @@ class UserDao {
      */
     async update(userInputDTO: UserInputDTO): Promise<number> {
         logger.debug(`${LOG_TAG} update(userInputDTO = ${userInputDTO})`);
-        const result = await User.update(
-            { ...userInputDTO },
-            {
-                where: { userIdx: userInputDTO.userIdx },
-            }
-        );
-        const affectedRows = result[0];
-        if (affectedRows == 0) {
+        const user: any = await User.findOne({
+            where: { userIdx: userInputDTO.userIdx },
+        });
+        if (user == null) {
             throw new NotMatchedError();
         }
-        return affectedRows;
+
+        if (userInputDTO.accessTime != null) {
+            user.accessTime = userInputDTO.accessTime;
+        }
+        if (userInputDTO.nickname != null) {
+            user.nickname = userInputDTO.nickname;
+        }
+        if (userInputDTO.password != null) {
+            user.password = userInputDTO.password;
+        }
+        if (userInputDTO.gender != null) {
+            user.gender = userInputDTO.gender;
+        }
+        if (userInputDTO.email != null) {
+            user.email = userInputDTO.email;
+        }
+        if (userInputDTO.birth != null) {
+            user.birth = userInputDTO.birth;
+        }
+        if (userInputDTO.grade != null) {
+            user.grade = userInputDTO.grade;
+        }
+        if (userInputDTO.accessTime != null) {
+            user.accessTime = userInputDTO.accessTime;
+        }
+        await user.save();
+        return 1;
     }
 
     /**

@@ -256,7 +256,7 @@ describe('# userDao Test', () => {
             });
         });
 
-        describe.skip('# case: null of gender or birth', () => {
+        describe('# case: null of gender or birth', () => {
             let userIdx: number = 4;
 
             [
