@@ -22,16 +22,22 @@ const { User } = require('@sequelize');
 
 const NO_OP = () => {};
 
-function createUserInputDTO(json: any = {}): UserInputDTO {
-    const expected: UserInputDTO = UserInputDTO.createByJson({
-        nickname: '생성 테스트',
-        password: 'hashed',
-        gender: 1,
-        email: 'createTest@afume.com',
-        birth: '1995',
-        grade: 1,
-    });
-    return UserInputDTO.createByJson(Object.assign(expected, json));
+class MockGenerator {
+    static _userIdx: number = 6;
+
+    static createUserInputDTO(json: any = {}): UserInputDTO {
+        const userIdx: number = json.userIdx ? json.userIdx : this._userIdx++;
+        const expected: any = {
+            userIdx,
+            nickname: `user${userIdx}`,
+            password: 'hashed',
+            gender: 1,
+            email: `user${userIdx}@scents.note.com`,
+            birth: '1995',
+            grade: 1,
+        };
+        return UserInputDTO.createByJson(Object.assign(expected, json));
+    }
 }
 
 describe('# userDao Test', () => {
@@ -57,7 +63,9 @@ describe('# userDao Test', () => {
             await User.destroy({ where: { email: 'createTest@afume.com' } });
         });
         it('# success case', async () => {
-            const input: UserInputDTO = createUserInputDTO();
+            const input: UserInputDTO = MockGenerator.createUserInputDTO({
+                userIdx: null,
+            });
             try {
                 await createCommonTest(input);
             } catch (err: any) {
@@ -65,8 +73,9 @@ describe('# userDao Test', () => {
             }
         });
         it('# DuplicatedEntryError case', async () => {
-            const input: UserInputDTO = createUserInputDTO({
-                email: 'createTest@afume.com',
+            const input: UserInputDTO = MockGenerator.createUserInputDTO({
+                email: 'email1@afume.com',
+                userIdx: null,
             });
             try {
                 await createCommonTest(input);
@@ -177,7 +186,9 @@ describe('# userDao Test', () => {
         before(async () => {
             userIdx = (
                 await userDao.create(
-                    createUserInputDTO({ email: 'updateTest@afume.com' })
+                    MockGenerator.createUserInputDTO({
+                        email: 'updateTest@afume.com',
+                    })
                 )
             ).idx;
         });
@@ -216,7 +227,9 @@ describe('# userDao Test', () => {
         before(async () => {
             userIdx = (
                 await userDao.create(
-                    createUserInputDTO({ email: 'deleteTest@afume.com' })
+                    MockGenerator.createUserInputDTO({
+                        email: 'deleteTest@afume.com',
+                    })
                 )
             ).idx;
         });
