@@ -17,7 +17,7 @@ jobs:
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v2
             - run: sh ./script/setup-global.sh
-            - run: sh ./script/prebuild.sh
+            - run: bash ./script/prebuild.sh
             - name: run unit test code
               run: npm run test-unit
               env:
