@@ -34,11 +34,13 @@ class UserDao {
                 );
             })
             .catch((err: Error | any) => {
-                if (
-                    err.parent.errno === 1062 ||
-                    err.parent.code === 'ER_DUP_ENTRY'
-                ) {
-                    throw new DuplicatedEntryError();
+                if (err.parent) {
+                    if (
+                        err.parent.errno === 1062 ||
+                        err.parent.code === 'ER_DUP_ENTRY'
+                    ) {
+                        throw new DuplicatedEntryError();
+                    }
                 }
                 throw err;
             });
