@@ -62,16 +62,46 @@ describe('# userDao Test', () => {
         before(async () => {
             await User.destroy({ where: { email: 'createTest@afume.com' } });
         });
-        it('# success case', async () => {
-            const input: UserInputDTO = MockGenerator.createUserInputDTO({
+        [
+            MockGenerator.createUserInputDTO({
                 userIdx: null,
+            }),
+            MockGenerator.createUserInputDTO({
+                userIdx: null,
+                gender: null,
+            }),
+            MockGenerator.createUserInputDTO({
+                userIdx: null,
+                birth: null,
+            }),
+            MockGenerator.createUserInputDTO({
+                userIdx: null,
+                gender: null,
+                birth: null,
+            }),
+            MockGenerator.createUserInputDTO({
+                userIdx: null,
+                gender: undefined,
+            }),
+            MockGenerator.createUserInputDTO({
+                userIdx: null,
+                birth: undefined,
+            }),
+            MockGenerator.createUserInputDTO({
+                userIdx: null,
+                gender: undefined,
+                birth: undefined,
+            }),
+        ].forEach((input: UserInputDTO, index: number) => {
+            it(`# P${index + 1}`, async () => {
+                try {
+                    await createCommonTest(input);
+                } catch (err: any) {
+                    throw err;
+                }
             });
-            try {
-                await createCommonTest(input);
-            } catch (err: any) {
-                throw err;
-            }
         });
+
         it('# DuplicatedEntryError case', async () => {
             const input: UserInputDTO = MockGenerator.createUserInputDTO({
                 email: 'email1@afume.com',
@@ -91,29 +121,34 @@ describe('# userDao Test', () => {
 
     describe(' # read Test', () => {
         async function readCommonTest(
-            method: (...args: any) => Promise<UserDTO>,
-            args: any[],
+            method: any,
             validator: (userDTO: UserDTO) => void = NO_OP
         ) {
-            const result: UserDTO = await method(...args);
+            const result: UserDTO = await method.call(userDao);
             UserMockHelper.validTest.call(result);
             validator(result);
         }
-        describe('# readByEmail Test', () => {
-            it('# success case', async () => {
-                try {
-                    await readCommonTest(userDao.read, [
-                        { email: 'email1@afume.com' },
-                    ]);
-                } catch (err: any) {
-                    throw err;
+
+        describe('# read Test', () => {
+            [userDao.read.bind(null, { email: 'email1@afume.com' })].forEach(
+                (testSet: any, index: number) => {
+                    it(`# P${index + 1}`, async () => {
+                        try {
+                            await readCommonTest(testSet);
+                        } catch (err: any) {
+                            throw err;
+                        }
+                    });
                 }
-            });
+            );
+
             it('# Not Matched case', async () => {
                 try {
-                    await readCommonTest(userDao.read, [
-                        { email: '존재하지 않는 아이디' },
-                    ]);
+                    await readCommonTest(
+                        userDao.read.bind(null, {
+                            email: '존재하지 않는 아이디',
+                        })
+                    );
                     throw new UnExpectedError(NotMatchedError);
                 } catch (err) {
                     expect(err).instanceOf(NotMatchedError);
@@ -124,8 +159,7 @@ describe('# userDao Test', () => {
             it('# success case', async () => {
                 try {
                     await readCommonTest(
-                        userDao.readByIdx,
-                        [1],
+                        userDao.readByIdx.bind(null, 1),
                         (result: UserDTO) => {
                             expect(result.userIdx).to.be.eq(1);
                         }
@@ -137,8 +171,7 @@ describe('# userDao Test', () => {
             it('# Not Matched case', async () => {
                 try {
                     await readCommonTest(
-                        userDao.readByIdx,
-                        [0],
+                        userDao.readByIdx.bind(null, 0),
                         (result: UserDTO) => {
                             expect(result.userIdx).to.be.eq(1);
                         }
