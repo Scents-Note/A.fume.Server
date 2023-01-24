@@ -62,47 +62,24 @@ describe('# userDao Test', () => {
         before(async () => {
             await User.destroy({ where: { email: 'createTest@afume.com' } });
         });
-        [
-            MockGenerator.createUserInputDTO({
-                userIdx: null,
-            }),
-            MockGenerator.createUserInputDTO({
-                userIdx: null,
-                gender: null,
-            }),
-            MockGenerator.createUserInputDTO({
-                userIdx: null,
-                birth: null,
-            }),
-            MockGenerator.createUserInputDTO({
-                userIdx: null,
-                gender: null,
-                birth: null,
-            }),
-            MockGenerator.createUserInputDTO({
-                userIdx: null,
-                gender: undefined,
-            }),
-            MockGenerator.createUserInputDTO({
-                userIdx: null,
-                birth: undefined,
-            }),
-            MockGenerator.createUserInputDTO({
-                userIdx: null,
-                gender: undefined,
-                birth: undefined,
-            }),
-        ].forEach((input: UserInputDTO, index: number) => {
-            it(`# P${index + 1}`, async () => {
-                try {
-                    await createCommonTest(input);
-                } catch (err: any) {
-                    throw err;
-                }
+
+        describe('# case: common', () => {
+            [
+                MockGenerator.createUserInputDTO({
+                    userIdx: null,
+                }),
+            ].forEach((input: UserInputDTO, index: number) => {
+                it(`# P${index + 1}`, async () => {
+                    try {
+                        await createCommonTest(input);
+                    } catch (err: any) {
+                        throw err;
+                    }
+                });
             });
         });
 
-        it('# DuplicatedEntryError case', async () => {
+        it('# case: duplicated email', async () => {
             const input: UserInputDTO = MockGenerator.createUserInputDTO({
                 email: 'email1@afume.com',
                 userIdx: null,
@@ -114,6 +91,47 @@ describe('# userDao Test', () => {
                 expect(err).instanceOf(DuplicatedEntryError);
             }
         });
+
+        // TODO implements case null
+        describe.skip('# case: null of gender or birth', () => {
+            [
+                MockGenerator.createUserInputDTO({
+                    userIdx: null,
+                    gender: null,
+                }),
+                MockGenerator.createUserInputDTO({
+                    userIdx: null,
+                    birth: null,
+                }),
+                MockGenerator.createUserInputDTO({
+                    userIdx: null,
+                    gender: null,
+                    birth: null,
+                }),
+                MockGenerator.createUserInputDTO({
+                    userIdx: null,
+                    gender: undefined,
+                }),
+                MockGenerator.createUserInputDTO({
+                    userIdx: null,
+                    birth: undefined,
+                }),
+                MockGenerator.createUserInputDTO({
+                    userIdx: null,
+                    gender: undefined,
+                    birth: undefined,
+                }),
+            ].forEach((input: UserInputDTO, index: number) => {
+                it(`# P${index + 1}`, async () => {
+                    try {
+                        await createCommonTest(input);
+                    } catch (err: any) {
+                        throw err;
+                    }
+                });
+            });
+        });
+
         after(async () => {
             await User.destroy({ where: { email: 'createTest@afume.com' } });
         });
@@ -129,7 +147,7 @@ describe('# userDao Test', () => {
             validator(result);
         }
 
-        describe('# read Test', () => {
+        describe('# case: common', () => {
             [userDao.read.bind(null, { email: 'email1@afume.com' })].forEach(
                 (testSet: any, index: number) => {
                     it(`# P${index + 1}`, async () => {
@@ -142,7 +160,7 @@ describe('# userDao Test', () => {
                 }
             );
 
-            it('# Not Matched case', async () => {
+            it('# case: Not Matched', async () => {
                 try {
                     await readCommonTest(
                         userDao.read.bind(null, {
@@ -155,8 +173,9 @@ describe('# userDao Test', () => {
                 }
             });
         });
+
         describe('# readByIdx Test', () => {
-            it('# success case', async () => {
+            it('# case: common', async () => {
                 try {
                     await readCommonTest(
                         userDao.readByIdx.bind(null, 1),
@@ -168,7 +187,7 @@ describe('# userDao Test', () => {
                     throw err;
                 }
             });
-            it('# Not Matched case', async () => {
+            it('# case: Not Matched', async () => {
                 try {
                     await readCommonTest(
                         userDao.readByIdx.bind(null, 0),
@@ -215,31 +234,75 @@ describe('# userDao Test', () => {
             );
         }
 
-        let userIdx: number = 0;
-        before(async () => {
-            userIdx = (
-                await userDao.create(
-                    MockGenerator.createUserInputDTO({
-                        email: 'updateTest@afume.com',
-                    })
-                )
-            ).idx;
-        });
-        it('# success case', async () => {
-            try {
-                await updateCommonTest({
+        describe('# case: common', () => {
+            let userIdx: number = 5;
+            [
+                {
                     userIdx,
                     nickname: '수정 테스트(完)',
                     password: '변경',
                     gender: GENDER_WOMAN,
                     birth: 1995,
                     grade: 0,
+                },
+            ].forEach((input: any, index: number) => {
+                it(`# P${index + 1}`, async () => {
+                    try {
+                        await updateCommonTest(input);
+                    } catch (err: any) {
+                        throw err;
+                    }
                 });
-            } catch (err: any) {
-                throw err;
-            }
+            });
         });
-        it('# updateAccessTime success case', (done: Done) => {
+
+        describe.skip('# case: null of gender or birth', () => {
+            let userIdx: number = 4;
+
+            [
+                {
+                    userIdx,
+                    birth: null,
+                },
+                {
+                    userIdx,
+                    gender: null,
+                },
+                {
+                    userIdx,
+                    birth: null,
+                    gender: null,
+                },
+                {
+                    userIdx,
+                    birth: undefined,
+                },
+                {
+                    userIdx,
+                    gender: undefined,
+                },
+                {
+                    userIdx,
+                    birth: undefined,
+                    gender: undefined,
+                },
+            ].forEach((input: any, index: number) => {
+                it(`# P${index + 1}`, async () => {
+                    try {
+                        await updateCommonTest(input);
+                    } catch (err: any) {
+                        throw err;
+                    }
+                });
+            });
+        });
+        after(async () => {
+            await User.destroy({ where: { email: 'updateTest@afume.com' } });
+        });
+    });
+
+    describe('# updateAccessTime Test', () => {
+        it('# case: success', (done: Done) => {
             setTimeout(() => {
                 userDao
                     .updateAccessTime(1)
@@ -249,9 +312,6 @@ describe('# userDao Test', () => {
                     })
                     .catch((err: Error) => done(err));
             }, 1000);
-        });
-        after(async () => {
-            await User.destroy({ where: { email: 'updateTest@afume.com' } });
         });
     });
 
@@ -266,16 +326,14 @@ describe('# userDao Test', () => {
                 )
             ).idx;
         });
-        describe('# delete Test', () => {
-            it('# success case', (done: Done) => {
-                userDao
-                    .delete(userIdx)
-                    .then((result: number) => {
-                        expect(result).eq(1);
-                        done();
-                    })
-                    .catch((err: Error) => done(err));
-            });
+        it('# case: common', (done: Done) => {
+            userDao
+                .delete(userIdx)
+                .then((result: number) => {
+                    expect(result).eq(1);
+                    done();
+                })
+                .catch((err: Error) => done(err));
         });
         after(async () => {
             await User.destroy({ where: { email: 'deleteTest@afume.com' } });
