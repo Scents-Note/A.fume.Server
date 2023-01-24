@@ -173,7 +173,7 @@ const loginUser: RequestHandler = (
         .then((result: LoginInfoDTO) => {
             const loginResponse: any = LoginResponse.createByJson(result);
             // TODO gender, birth nullable로 변경한 이후 아래 코드 삭제하기
-            if (loginResponse.gender == 0) {
+            if (loginResponse.gender == GENDER_NONE) {
                 delete loginResponse.gender;
             }
             if (loginResponse.birth == 0) {
