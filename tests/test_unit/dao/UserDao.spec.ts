@@ -302,16 +302,18 @@ describe('# userDao Test', () => {
     });
 
     describe('# updateAccessTime Test', () => {
-        it('# case: success', (done: Done) => {
-            setTimeout(() => {
-                userDao
-                    .updateAccessTime(1)
-                    .then((result: number) => {
-                        expect(result).eq(1);
-                        done();
-                    })
-                    .catch((err: Error) => done(err));
-            }, 1000);
+        it('# case: success', () => {
+            setTimeout(async () => {
+                try {
+                    const userIdx: number = 1;
+                    const affectedRows: number = await userDao.updateAccessTime(
+                        userIdx
+                    );
+                    expect(affectedRows).to.be.eq(1);
+                } catch (err: any) {
+                    throw err;
+                }
+            }, 3000);
         });
     });
 
@@ -326,14 +328,14 @@ describe('# userDao Test', () => {
                 )
             ).idx;
         });
-        it('# case: common', (done: Done) => {
-            userDao
-                .delete(userIdx)
-                .then((result: number) => {
-                    expect(result).eq(1);
-                    done();
-                })
-                .catch((err: Error) => done(err));
+
+        it('# case: common', async () => {
+            try {
+                const affectedRows: number = await userDao.delete(userIdx);
+                expect(affectedRows).to.be.eq(1);
+            } catch (err: any) {
+                throw err;
+            }
         });
         after(async () => {
             await User.destroy({ where: { email: 'deleteTest@afume.com' } });
