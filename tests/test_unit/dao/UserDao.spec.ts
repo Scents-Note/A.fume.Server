@@ -1,26 +1,30 @@
 import { expect } from 'chai';
-import dotenv from 'dotenv';
 import { Done } from 'mocha';
-dotenv.config();
+
+import { NotMatchedError, DuplicatedEntryError } from '@errors';
 
 import {
-    NotMatchedError,
-    DuplicatedEntryError,
-    UnExpectedError,
-} from '@errors';
-
-import { GENDER_WOMAN } from '@utils/constants';
+    GENDER_MAN,
+    GENDER_WOMAN,
+    GRADE_MANAGER,
+    GRADE_USER,
+    GRADE_SYSTEM_ADMIN,
+} from '@utils/constants';
 
 import UserDao from '@dao/UserDao';
 
 import { CreatedResultDTO, UserDTO, UserInputDTO } from '@dto/index';
 
-import UserMockHelper from '../mock_helper/UserMockHelper';
+import {
+    composeValidator,
+    Executor,
+    ParameterizedTest,
+    TestSingle,
+    Validator,
+} from '../../internal/TestHelper';
 
 const userDao = new UserDao();
 const { User } = require('@sequelize');
-
-const NO_OP = () => {};
 
 class MockGenerator {
     static _userIdx: number = 6;
@@ -40,17 +44,23 @@ class MockGenerator {
     }
 }
 
-describe('# userDao Test', () => {
+describe('▣ UserDao', () => {
     before(async function () {
         await require('./common/presets.js')(this);
     });
-    describe('# create Test', () => {
-        async function createCommonTest(input: UserInputDTO) {
-            const result: CreatedResultDTO<UserDTO> = await userDao.create(
-                input
-            );
+    describe('▶ create Test', function () {
+        function commonValidator(
+            result: CreatedResultDTO<UserDTO> | null,
+            err: any,
+            parameter: any[]
+        ) {
+            expect(result).to.be.not.null;
+            expect(err).to.be.eq(null);
+
             expect(result).instanceOf(CreatedResultDTO);
-            const created: UserDTO = result.created;
+            const created: UserDTO = result!!.created;
+
+            const input: UserInputDTO = parameter[0];
             expect(created.nickname).to.be.eq(input.nickname);
             expect(created.password).to.be.eq(input.password);
             expect(created.gender).to.be.eq(input.gender);
@@ -59,265 +69,309 @@ describe('# userDao Test', () => {
             expect(created.grade).to.be.eq(input.grade);
         }
 
-        before(async () => {
-            await User.destroy({ where: { email: 'createTest@afume.com' } });
-        });
+        describe('# method: create', function () {
+            new TestSingle<CreatedResultDTO<UserDTO>>(
+                'common',
+                userDao.create,
+                [
+                    MockGenerator.createUserInputDTO({
+                        userIdx: null,
+                    }),
+                ],
+                commonValidator
+            ).test(it);
 
-        describe('# case: common', () => {
-            [
-                MockGenerator.createUserInputDTO({
-                    userIdx: null,
-                }),
-            ].forEach((input: UserInputDTO, index: number) => {
-                it(`# P${index + 1}`, async () => {
-                    try {
-                        await createCommonTest(input);
-                    } catch (err: any) {
-                        throw err;
-                    }
-                });
-            });
-        });
+            new TestSingle<CreatedResultDTO<UserDTO>>(
+                'duplicated email',
+                userDao.create,
+                [
+                    MockGenerator.createUserInputDTO({
+                        userIdx: null,
+                    }),
+                    (result: CreatedResultDTO<UserDTO>, err: any) => {
+                        expect(result).to.be.eq(null);
+                        expect(err).instanceOf(DuplicatedEntryError);
+                    },
+                ]
+            ).test(it);
 
-        it('# case: duplicated email', async () => {
-            const input: UserInputDTO = MockGenerator.createUserInputDTO({
-                email: 'email1@afume.com',
-                userIdx: null,
-            });
-            try {
-                await createCommonTest(input);
-                throw new UnExpectedError(DuplicatedEntryError);
-            } catch (err: any) {
-                expect(err).instanceOf(DuplicatedEntryError);
-            }
-        });
-
-        // TODO implements case null
-        describe.skip('# case: null of gender or birth', () => {
-            [
-                MockGenerator.createUserInputDTO({
-                    userIdx: null,
-                    gender: null,
-                }),
-                MockGenerator.createUserInputDTO({
-                    userIdx: null,
-                    birth: null,
-                }),
-                MockGenerator.createUserInputDTO({
-                    userIdx: null,
-                    gender: null,
-                    birth: null,
-                }),
-                MockGenerator.createUserInputDTO({
-                    userIdx: null,
-                    gender: undefined,
-                }),
-                MockGenerator.createUserInputDTO({
-                    userIdx: null,
-                    birth: undefined,
-                }),
-                MockGenerator.createUserInputDTO({
-                    userIdx: null,
-                    gender: undefined,
-                    birth: undefined,
-                }),
-            ].forEach((input: UserInputDTO, index: number) => {
-                it(`# P${index + 1}`, async () => {
-                    try {
-                        await createCommonTest(input);
-                    } catch (err: any) {
-                        throw err;
-                    }
-                });
-            });
-        });
-
-        after(async () => {
-            await User.destroy({ where: { email: 'createTest@afume.com' } });
+            new ParameterizedTest<CreatedResultDTO<UserDTO>>(
+                'null of gender or birth',
+                userDao.create,
+                commonValidator
+            )
+                .addParameterAll(
+                    [
+                        MockGenerator.createUserInputDTO({
+                            userIdx: null,
+                            gender: null,
+                        }),
+                        MockGenerator.createUserInputDTO({
+                            userIdx: null,
+                            birth: null,
+                        }),
+                        MockGenerator.createUserInputDTO({
+                            userIdx: null,
+                            gender: null,
+                            birth: null,
+                        }),
+                        MockGenerator.createUserInputDTO({
+                            userIdx: null,
+                            gender: undefined,
+                        }),
+                        MockGenerator.createUserInputDTO({
+                            userIdx: null,
+                            birth: undefined,
+                        }),
+                        MockGenerator.createUserInputDTO({
+                            userIdx: null,
+                            gender: undefined,
+                            birth: undefined,
+                        }),
+                    ].map((it: UserInputDTO): any[] => [it])
+                )
+                .test(describe.skip, it);
         });
     });
 
-    describe(' # read Test', () => {
-        async function readCommonTest(
-            method: any,
-            validator: (userDTO: UserDTO) => void = NO_OP
-        ) {
-            const result: UserDTO = await method.call(userDao);
-            UserMockHelper.validTest.call(result);
-            validator(result);
+    describe('▶ read Test', () => {
+        function commonValidator(result: UserDTO | null, err: any, _: any[]) {
+            expect(result).to.be.not.null;
+            expect(err).to.be.null;
+
+            expect(result).to.be.instanceOf(UserDTO);
+            const userDto: UserDTO = result!!;
+            expect(userDto.userIdx).to.be.gt(0);
+            expect(userDto.nickname).to.be.ok;
+            expect(userDto.email).to.be.ok;
+            expect(userDto.password).to.be.ok;
+            expect(userDto.gender).to.be.oneOf([GENDER_MAN, GENDER_WOMAN]);
+            expect(userDto.birth).to.be.ok;
+            expect(userDto.grade).to.be.oneOf([
+                GRADE_USER,
+                GRADE_MANAGER,
+                GRADE_SYSTEM_ADMIN,
+            ]);
+            expect(userDto.createdAt).to.be.ok;
+            expect(userDto.updatedAt).to.be.ok;
         }
 
-        describe('# case: common', () => {
-            [userDao.read.bind(null, { email: 'email1@afume.com' })].forEach(
-                (testSet: any, index: number) => {
-                    it(`# P${index + 1}`, async () => {
-                        try {
-                            await readCommonTest(testSet);
-                        } catch (err: any) {
-                            throw err;
-                        }
-                    });
-                }
-            );
+        describe('# method: read', () => {
+            new TestSingle<UserDTO>(
+                'common',
+                userDao.read,
+                [{ email: 'email1@afume.com' }],
+                composeValidator<UserDTO>(
+                    commonValidator,
+                    (result: UserDTO | null, _: any, parameter: any[]) => {
+                        const condition: any = parameter[0];
+                        expect(result!!.email).to.be.eq(condition.email);
+                    }
+                )
+            ).test(it);
 
-            it('# case: Not Matched', async () => {
-                try {
-                    await readCommonTest(
-                        userDao.read.bind(null, {
-                            email: '존재하지 않는 아이디',
-                        })
-                    );
-                    throw new UnExpectedError(NotMatchedError);
-                } catch (err) {
+            new TestSingle<UserDTO>(
+                'common',
+                userDao.read,
+                [{ email: 'email1@afume.com' }],
+                composeValidator<UserDTO>(
+                    commonValidator,
+                    (result: UserDTO | null, _: any, parameter: any[]) => {
+                        const condition: any = parameter[0];
+                        expect(result!!.email).to.be.eq(condition.email);
+                    }
+                )
+            ).test(it);
+
+            new TestSingle<UserDTO>(
+                'not matched',
+                userDao.read,
+                [{ email: '존재하지 않는 아이디' }],
+                (result: UserDTO | null, err: any, _: any[]) => {
+                    expect(result).to.be.null;
                     expect(err).instanceOf(NotMatchedError);
                 }
-            });
+            ).test(it);
         });
 
-        describe('# readByIdx Test', () => {
-            it('# case: common', async () => {
-                try {
-                    await readCommonTest(
-                        userDao.readByIdx.bind(null, 1),
-                        (result: UserDTO) => {
-                            expect(result.userIdx).to.be.eq(1);
-                        }
-                    );
-                } catch (err: any) {
-                    throw err;
-                }
-            });
-            it('# case: Not Matched', async () => {
-                try {
-                    await readCommonTest(
-                        userDao.readByIdx.bind(null, 0),
-                        (result: UserDTO) => {
-                            expect(result.userIdx).to.be.eq(1);
-                        }
-                    );
-                    throw new UnExpectedError(NotMatchedError);
-                } catch (err: any) {
-                    expect(err).instanceOf(NotMatchedError);
-                }
-            });
+        describe('# method: readByIdx', () => {
+            new TestSingle<UserDTO>(
+                'common',
+                userDao.readByIdx,
+                [[1]],
+                composeValidator<UserDTO>(
+                    commonValidator,
+                    (result: UserDTO | null, _: any, __: any[]) => {
+                        expect(result!!.userIdx).to.be.eq(1);
+                    }
+                )
+            ).test(it);
+
+            new TestSingle<UserDTO>(
+                'not matched',
+                userDao.readByIdx,
+                [[0]],
+                composeValidator<UserDTO>(
+                    commonValidator,
+                    (result: UserDTO | null, err: any, __: any[]) => {
+                        expect(result).to.be.null;
+                        expect(err).instanceOf(NotMatchedError);
+                    }
+                )
+            ).test(it);
         });
     });
 
-    describe('# update Test', () => {
-        async function updateCommonTest(input: UserInputDTO) {
-            const original: UserDTO = await userDao.readByIdx(input.userIdx!!);
-            const affectedRows: number = await userDao.update(input);
-            expect(affectedRows).to.be.eq(1);
-            const result: UserDTO = await userDao.readByIdx(input.userIdx!!);
-            expect(result.nickname).to.be.eq(
-                input.nickname != null ? input.nickname : original.nickname
-            );
-            expect(result.password).to.be.eq(
-                input.password != null ? input.password : original.password
-            );
-            expect(result.gender).to.be.eq(
-                input.gender != null ? input.gender : original.gender
-            );
-            expect(result.email).to.be.eq(
-                input.email != null ? input.email : original.email
-            );
-            expect(result.birth).to.be.eq(
-                input.birth != null ? input.birth : original.birth
-            );
-            expect(result.grade).to.be.eq(
-                input.grade != null ? input.grade : original.grade
-            );
-            expect(result.accessTime).to.be.eq(
-                input.accessTime != null
-                    ? input.accessTime
-                    : original.accessTime
-            );
-        }
-
-        describe('# case: common', () => {
-            let userIdx: number = 5;
-            [
-                {
-                    userIdx,
-                    nickname: '수정 테스트(完)',
-                    password: '변경',
-                    gender: GENDER_WOMAN,
-                    birth: 1995,
-                    grade: 0,
+    describe('▶ update Test', () => {
+        function generatorExecutorAndValidator(): [
+            executor: Executor<number>,
+            validator: Validator<number>
+        ] {
+            let input: UserInputDTO;
+            let original: UserDTO;
+            return [
+                async (...args: any[]): Promise<number> => {
+                    input = args[0];
+                    original = await userDao.readByIdx(input.userIdx!!);
+                    return userDao.update(input);
                 },
-            ].forEach((input: any, index: number) => {
-                it(`# P${index + 1}`, async () => {
-                    try {
-                        await updateCommonTest(input);
-                    } catch (err: any) {
-                        throw err;
-                    }
-                });
-            });
-        });
+                async (result: number | null, err: any, _: any) => {
+                    expect(result).to.be.not.null;
+                    expect(err).to.be.null;
 
-        describe('# case: null of gender or birth', () => {
+                    expect(result).to.be.eq(1);
+
+                    const userDto: UserDTO = await userDao.readByIdx(
+                        input.userIdx!!
+                    );
+                    expect(userDto.nickname).to.be.eq(
+                        input.nickname != null
+                            ? input.nickname
+                            : original.nickname
+                    );
+                    expect(userDto.password).to.be.eq(
+                        input.password != null
+                            ? input.password
+                            : original.password
+                    );
+                    expect(userDto.gender).to.be.eq(
+                        input.gender != null ? input.gender : original.gender
+                    );
+                    expect(userDto.email).to.be.eq(
+                        input.email != null ? input.email : original.email
+                    );
+                    expect(userDto.birth).to.be.eq(
+                        input.birth != null ? input.birth : original.birth
+                    );
+                    expect(userDto.grade).to.be.eq(
+                        input.grade != null ? input.grade : original.grade
+                    );
+                    expect(userDto.accessTime).to.be.eq(
+                        input.accessTime != null
+                            ? input.accessTime
+                            : original.accessTime
+                    );
+                },
+            ];
+        }
+
+        describe('# method: update', () => {
+            const funcs: [
+                executor: Executor<number>,
+                validator: Validator<number>
+            ] = generatorExecutorAndValidator();
+
+            new TestSingle<number>(
+                'common',
+                funcs[0],
+                [
+                    {
+                        userIdx: 5,
+                        nickname: '수정 테스트(完)',
+                        password: '변경',
+                        gender: GENDER_WOMAN,
+                        birth: 1995,
+                        grade: 0,
+                    },
+                ],
+                funcs[1]
+            ).test(it);
+
             let userIdx: number = 4;
-
-            [
-                {
-                    userIdx,
-                    birth: null,
-                },
-                {
-                    userIdx,
-                    gender: null,
-                },
-                {
-                    userIdx,
-                    birth: null,
-                    gender: null,
-                },
-                {
-                    userIdx,
-                    birth: undefined,
-                },
-                {
-                    userIdx,
-                    gender: undefined,
-                },
-                {
-                    userIdx,
-                    birth: undefined,
-                    gender: undefined,
-                },
-            ].forEach((input: any, index: number) => {
-                it(`# P${index + 1}`, async () => {
-                    try {
-                        await updateCommonTest(input);
-                    } catch (err: any) {
-                        throw err;
-                    }
-                });
-            });
+            new ParameterizedTest<number>(
+                'null of gender or birth',
+                funcs[0],
+                funcs[1]
+            )
+                .addParameterAll(
+                    [
+                        {
+                            userIdx,
+                            birth: null,
+                        },
+                        {
+                            userIdx,
+                            gender: null,
+                        },
+                        {
+                            userIdx,
+                            birth: null,
+                            gender: null,
+                        },
+                        {
+                            userIdx,
+                            birth: undefined,
+                        },
+                        {
+                            userIdx,
+                            gender: undefined,
+                        },
+                        {
+                            userIdx,
+                            birth: undefined,
+                            gender: undefined,
+                        },
+                    ].map((it: any) => [it])
+                )
+                .test(describe.skip, it);
         });
+
+        describe('# method: updateAccessTime', () => {
+            new TestSingle<number>(
+                'common',
+                (...args: any[]): Promise<number> => {
+                    const userIdx: number = args[0];
+                    return new Promise(
+                        (
+                            resolve: (value: number) => void,
+                            reject: (reason?: any) => void
+                        ) => {
+                            try {
+                                setTimeout(async () => {
+                                    const affectedRows: number =
+                                        await userDao.updateAccessTime(userIdx);
+                                    resolve(affectedRows);
+                                }, 3000);
+                            } catch (err: any) {
+                                reject(err);
+                            }
+                        }
+                    );
+                },
+                [[1]],
+                (res: number | null, err: any, _: any[]) => {
+                    expect(err).to.be.not.null;
+                    expect(res).to.be.eq(1);
+                }
+            ).test(it);
+        });
+
         after(async () => {
             await User.destroy({ where: { email: 'updateTest@afume.com' } });
         });
     });
 
-    describe('# updateAccessTime Test', () => {
-        it('# case: success', () => {
-            setTimeout(async () => {
-                try {
-                    const userIdx: number = 1;
-                    const affectedRows: number = await userDao.updateAccessTime(
-                        userIdx
-                    );
-                    expect(affectedRows).to.be.eq(1);
-                } catch (err: any) {
-                    throw err;
-                }
-            }, 3000);
-        });
-    });
-
-    describe('# delete Test', () => {
+    describe('▶ delete Test', () => {
         let userIdx: number = 0;
         before(async () => {
             userIdx = (
@@ -329,20 +383,22 @@ describe('# userDao Test', () => {
             ).idx;
         });
 
-        it('# case: common', async () => {
-            try {
-                const affectedRows: number = await userDao.delete(userIdx);
-                expect(affectedRows).to.be.eq(1);
-            } catch (err: any) {
-                throw err;
+        new TestSingle<number>(
+            'common',
+            userDao.delete,
+            [[userIdx]],
+            (res: number | null, err: any, _: any[]) => {
+                expect(err).to.be.not.null;
+                expect(res).to.be.eq(1);
             }
-        });
+        ).test(it);
+
         after(async () => {
             await User.destroy({ where: { email: 'deleteTest@afume.com' } });
         });
     });
 
-    describe('# postSurvey Test', () => {
+    describe.skip('# postSurvey Test', () => {
         it('# success case', (done: Done) => {
             // TODO set mongoDB test
             done();
