@@ -48,9 +48,9 @@ class UserDTO {
             json.email,
             json.birth,
             json.grade,
-            json.accessTime,
-            json.createdAt,
-            json.updatedAt
+            json.accessTime + '',
+            json.createdAt + '',
+            json.updatedAt + ''
         );
     }
 }
