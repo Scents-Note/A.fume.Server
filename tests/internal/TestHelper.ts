@@ -19,6 +19,7 @@ class TestSingle<T> {
     readonly executor: Executor<T>;
     readonly parameter: any[];
     readonly validator: Validator<T>;
+    private precondition?: () => void;
     constructor(
         title: string,
         executor: Executor<T>,
@@ -31,6 +32,11 @@ class TestSingle<T> {
         this.validator = validator;
     }
 
+    addPrecondition(precondition: () => void) {
+        this.precondition = precondition;
+        return this;
+    }
+
     test(it: TestFunction) {
         it(`# case: ${this.title}`, () => {
             this.command();
@@ -39,6 +45,9 @@ class TestSingle<T> {
 
     async command() {
         try {
+            if (this.precondition) {
+                this.precondition();
+            }
             const result: T = await this.executor.apply(
                 this.executor,
                 this.parameter
