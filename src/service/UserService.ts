@@ -24,7 +24,6 @@ import {
     SurveyDTO,
     TokenSetDTO,
 } from '@dto/index';
-import { BIRTH_NONE, GENDER_NONE } from '@src/utils/constants';
 
 const LOG_TAG: string = '[User/Service]';
 
@@ -66,13 +65,6 @@ class UserService {
             .then((user: UserDTO | any) => {
                 delete user.password;
                 const payload = Object.assign({}, user);
-                // TODO gender, birth nullable로 변경한 이후 아래 코드 삭제하기
-                if (payload.gender == GENDER_NONE) {
-                    delete payload.gender;
-                }
-                if (payload.birth == BIRTH_NONE) {
-                    delete payload.birth;
-                }
 
                 const { userIdx } = user;
                 const { token, refreshToken } = this.jwt.publish(payload);
@@ -174,13 +166,6 @@ class UserService {
         this.userDao.updateAccessTime(user.userIdx);
 
         const payload: any = TokenPayloadDTO.createByJson(user);
-        // TODO gender, birth nullable로 변경한 이후 아래 코드 삭제하기
-        if (payload.gender == GENDER_NONE) {
-            delete payload.gender;
-        }
-        if (payload.birth == BIRTH_NONE) {
-            delete payload.birth;
-        }
 
         const { token, refreshToken } = this.jwt.publish(payload);
         await this.tokenDao

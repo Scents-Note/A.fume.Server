@@ -40,7 +40,7 @@ class MockGenerator {
             birth: '1995',
             grade: 1,
         };
-        return UserInputDTO.createByJson(Object.assign(expected, json));
+        return Object.assign(expected, json);
     }
 }
 
@@ -63,9 +63,10 @@ describe('▣ UserDao', () => {
             const input: UserInputDTO = parameter[0];
             expect(created.nickname).to.be.eq(input.nickname);
             expect(created.password).to.be.eq(input.password);
-            expect(created.gender).to.be.eq(input.gender);
+
+            expect(created.gender).to.be.eq(input.gender || null);
             expect(created.email).to.be.eq(input.email);
-            expect(created.birth).to.be.eq(input.birth);
+            expect(created.birth).to.be.eq(input.birth || null);
             expect(created.grade).to.be.eq(input.grade);
         }
 
@@ -130,7 +131,7 @@ describe('▣ UserDao', () => {
                         }),
                     ].map((it: UserInputDTO): any[] => [it])
                 )
-                .test(describe.skip, it);
+                .test(describe, it);
         });
     });
 
@@ -333,7 +334,7 @@ describe('▣ UserDao', () => {
                         },
                     ].map((it: any) => [it])
                 )
-                .test(describe.skip, it);
+                .test(describe, it);
         });
 
         describe('# method: updateAccessTime', () => {

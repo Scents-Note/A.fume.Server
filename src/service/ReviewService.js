@@ -13,7 +13,6 @@ import LikePerfumeDao from '@dao/LikePerfumeDao';
 import ReviewDao from '@dao/ReviewDao';
 import KeywordDao from '../dao/KeywordDao';
 import { PRIVATE } from '@src/utils/strings';
-import { BIRTH_NONE, GENDER_NONE } from '@src/utils/constants';
 
 const userDao = new UserDao();
 const likePerfumeDao = new LikePerfumeDao();
@@ -251,7 +250,9 @@ exports.getReviewOfPerfumeByLike = async ({ perfumeIdx, userIdx }) => {
 
         const result = await reviewList.reduce(async (prevPromise, it) => {
             let prevResult = await prevPromise.then();
-            const approxAge = getApproxAge(it.User.birth);
+            const approxAge = it.User.birth
+                ? getApproxAge(it.User.birth)
+                : PRIVATE;
             const readLikeResult = await likeReviewDao.read(
                 userIdx,
                 it.reviewIdx
@@ -263,18 +264,12 @@ exports.getReviewOfPerfumeByLike = async ({ perfumeIdx, userIdx }) => {
                 content: it.content,
                 likeCount: it.LikeReview.likeCount,
                 isLiked: readLikeResult ? true : false,
-                userGender: it.User.gender,
+                userGender: it.User.gender || PRIVATE,
                 age: approxAge,
                 nickname: it.User.nickname,
                 createTime: it.createdAt,
                 isReported: reportedReviewIdxList.includes(it.reviewIdx),
             };
-            if (currentResult.userGender == GENDER_NONE) {
-                currentResult.userGender = GENDER_NONE; // PRIVATE;
-            }
-            if (it.User.birth == BIRTH_NONE) {
-                currentResult.age = PRIVATE;
-            }
             prevResult.push(currentResult);
             return Promise.resolve(prevResult);
         }, Promise.resolve([]));

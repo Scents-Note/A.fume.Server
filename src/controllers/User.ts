@@ -4,7 +4,7 @@ import { logger, LoggerHelper } from '@modules/winston';
 
 import { UnAuthorizedError } from '@errors';
 
-import { GENDER_NONE, BIRTH_NONE, GRADE_USER } from '@utils/constants';
+import { GRADE_USER } from '@utils/constants';
 
 import {
     MSG_REGISTER_SUCCESS,
@@ -171,16 +171,7 @@ const loginUser: RequestHandler = (
     const password: string = req.body.password;
     User.loginUser(email, password)
         .then((result: LoginInfoDTO) => {
-            const loginResponse: any = LoginResponse.createByJson(result);
-            // TODO gender, birth nullable로 변경한 이후 아래 코드 삭제하기
-            if (loginResponse.gender == GENDER_NONE) {
-                delete loginResponse.gender;
-            }
-            if (loginResponse.birth == BIRTH_NONE) {
-                delete loginResponse.birth;
-            }
-
-            return loginResponse;
+            return LoginResponse.createByJson(result);
         })
         .then((response: LoginResponse) => {
             LoggerHelper.logTruncated(
@@ -686,8 +677,10 @@ const updateUser: RequestHandler = (
         next(new UnAuthorizedError());
         return;
     }
-    const userEditRequest = UserEditRequest.createByJson(req.body);
-    User.updateUser(userEditRequest.toUserInputDTO(userIdx))
+    const userEditRequest = UserEditRequest.createByJson(
+        Object.assign({}, { userIdx }, req.body)
+    );
+    User.updateUser(userEditRequest.toUserInputDTO())
         .then((result: UserDTO) => {
             return UserResponse.createByJson(result);
         })

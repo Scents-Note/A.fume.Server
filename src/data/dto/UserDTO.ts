@@ -4,9 +4,9 @@ class UserDTO {
     readonly userIdx: number;
     readonly nickname: string;
     readonly password: string;
-    readonly gender: Gender;
+    readonly gender: Gender | null;
     readonly email: string;
-    readonly birth: number;
+    readonly birth: number | null;
     readonly grade: Grade;
     readonly accessTime: string;
     readonly createdAt: string;
@@ -15,9 +15,9 @@ class UserDTO {
         userIdx: number,
         nickname: string,
         password: string,
-        gender: Gender,
+        gender: Gender | null,
         email: string,
-        birth: number,
+        birth: number | null,
         grade: Grade,
         accessTime: string,
         createdAt: string,
@@ -41,18 +41,20 @@ class UserDTO {
 
     static createByJson(json: any): UserDTO {
         return new UserDTO(
-            json.userIdx,
-            json.nickname,
-            json.password,
-            json.gender,
-            json.email,
-            json.birth,
-            json.grade,
-            json.accessTime + '',
-            json.createdAt + '',
-            json.updatedAt + ''
+            json.userIdx!!,
+            json.nickname!!,
+            json.password!!,
+            json.gender || null,
+            json.email!!,
+            json.birth || null,
+            json.grade!!,
+            json.accessTime!! + '',
+            json.createdAt!! + '',
+            json.updatedAt!! + ''
         );
     }
 }
 
-export { UserDTO };
+type UserInputDTO = Partial<UserDTO>;
+
+export { UserDTO, UserInputDTO };
