@@ -54,8 +54,8 @@ describe('▣ UserDao', () => {
             err: any,
             parameter: any[]
         ) {
-            expect(result).to.be.not.null;
             expect(err).to.be.eq(null);
+            expect(result).to.be.not.null;
 
             expect(result).instanceOf(CreatedResultDTO);
             const created: UserDTO = result!!.created;
@@ -89,8 +89,8 @@ describe('▣ UserDao', () => {
                         userIdx: null,
                     }),
                     (result: CreatedResultDTO<UserDTO>, err: any) => {
-                        expect(result).to.be.eq(null);
                         expect(err).instanceOf(DuplicatedEntryError);
+                        expect(result).to.be.eq(null);
                     },
                 ]
             ).test(it);
