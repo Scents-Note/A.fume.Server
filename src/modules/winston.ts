@@ -97,7 +97,7 @@ class TestLoggerAdapter implements ILoggerAdapter {
             transports: [
                 new winston.transports.Stream({
                     stream: process.stderr,
-                    level: 'debug',
+                    level: 'error',
                 }),
             ],
         });

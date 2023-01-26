@@ -53,10 +53,10 @@ class UserService {
      * 유저 회원 가입
      *
      * @param {UserInputDTO} UserInputDTO
-     * @returns {Promise}
+     * @returns {Promise<TokenGroupDTO>}
      * @throws {FailedToCreateError} if failed to create user
      **/
-    async createUser(userInputDTO: UserInputDTO) {
+    async createUser(userInputDTO: UserInputDTO): Promise<TokenGroupDTO> {
         logger.debug(`${LOG_TAG} createUser(userInputDTO = ${userInputDTO})`);
         return this.userDao
             .create(userInputDTO)
