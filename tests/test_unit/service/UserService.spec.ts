@@ -25,6 +25,27 @@ const userService = new UserService(
     mockJWT
 );
 
+class MockGenerator {
+    static _userIdx: number = 6;
+
+    static createUserDTO(json: any = {}): UserDTO {
+        const userIdx: number = json.userIdx ? json.userIdx : this._userIdx++;
+        const expected: any = {
+            userIdx,
+            nickname: `user${userIdx}`,
+            password: userService.crypto.encrypt('encrypted'),
+            gender: GENDER_WOMAN,
+            email: `email${userIdx}@afume.com`,
+            birth: 1995,
+            grade: 1,
+            accessTime: '2021-07-13T11:33:49.000Z',
+            createdAt: '2021-07-13T11:33:49.000Z',
+            updatedAt: '2021-08-07T09:20:29.000Z',
+        };
+        return UserDTO.createByJson(Object.assign(expected, json));
+    }
+}
+
 describe('▣ UserService', () => {
     describe('▶ create Test', () => {
         describe('# method: createUser', () => {
@@ -123,17 +144,8 @@ describe('▣ UserService', () => {
                     };
 
                     mockUserDao.read = () => {
-                        return UserDTO.createByJson({
-                            userIdx: 1,
-                            nickname: 'user1',
+                        return MockGenerator.createUserDTO({
                             password: userService.crypto.encrypt('encrypted'),
-                            gender: 2,
-                            email: 'email1@afume.com',
-                            birth: 1995,
-                            grade: 1,
-                            accessTime: '2021-07-13T11:33:49.000Z',
-                            createdAt: '2021-07-13T11:33:49.000Z',
-                            updatedAt: '2021-08-07T09:20:29.000Z',
                         });
                     };
                 })
@@ -153,17 +165,8 @@ describe('▣ UserService', () => {
             )
                 .addPrecondition(() => {
                     mockUserDao.read = () => {
-                        return UserDTO.createByJson({
-                            userIdx: 1,
-                            nickname: 'user1',
+                        return MockGenerator.createUserDTO({
                             password: userService.crypto.encrypt('encrypted'),
-                            gender: 2,
-                            email: 'email1@afume.com',
-                            birth: 1995,
-                            grade: 1,
-                            accessTime: '2021-07-13T11:33:49.000Z',
-                            createdAt: '2021-07-13T11:33:49.000Z',
-                            updatedAt: '2021-08-07T09:20:29.000Z',
                         });
                     };
                 })
@@ -182,17 +185,8 @@ describe('▣ UserService', () => {
             )
                 .addPrecondition(() => {
                     mockUserDao.readByIdx = () => {
-                        return UserDTO.createByJson({
-                            userIdx: 1,
-                            nickname: 'user1',
+                        return MockGenerator.createUserDTO({
                             password: userService.crypto.encrypt('encrypted'),
-                            gender: 2,
-                            email: 'email1@afume.com',
-                            birth: 1995,
-                            grade: 1,
-                            accessTime: '2021-07-13T11:33:49.000Z',
-                            createdAt: '2021-07-13T11:33:49.000Z',
-                            updatedAt: '2021-08-07T09:20:29.000Z',
                         });
                     };
                 })
@@ -209,17 +203,8 @@ describe('▣ UserService', () => {
             )
                 .addPrecondition(() => {
                     mockUserDao.readByIdx = () => {
-                        return UserDTO.createByJson({
-                            userIdx: 1,
-                            nickname: 'user1',
+                        return MockGenerator.createUserDTO({
                             password: userService.crypto.encrypt('encrypted'),
-                            gender: 2,
-                            email: 'email1@afume.com',
-                            birth: 1995,
-                            grade: 1,
-                            accessTime: '2021-07-13T11:33:49.000Z',
-                            createdAt: '2021-07-13T11:33:49.000Z',
-                            updatedAt: '2021-08-07T09:20:29.000Z',
                         });
                     };
                 })
@@ -258,17 +243,8 @@ describe('▣ UserService', () => {
             )
                 .addPrecondition(() => {
                     mockUserDao.readByIdx = () => {
-                        return UserDTO.createByJson({
-                            userIdx: 1,
-                            nickname: 'user1',
+                        return MockGenerator.createUserDTO({
                             password: userService.crypto.encrypt('encrypted'),
-                            gender: 2,
-                            email: 'email1@afume.com',
-                            birth: 1995,
-                            grade: 1,
-                            accessTime: '2021-07-13T11:33:49.000Z',
-                            createdAt: '2021-07-13T11:33:49.000Z',
-                            updatedAt: '2021-08-07T09:20:29.000Z',
                         });
                     };
                 })
@@ -289,17 +265,8 @@ describe('▣ UserService', () => {
             )
                 .addPrecondition(() => {
                     mockUserDao.readByIdx = () => {
-                        return UserDTO.createByJson({
-                            userIdx: 1,
-                            nickname: 'user1',
+                        return MockGenerator.createUserDTO({
                             password: userService.crypto.encrypt('encrypted'),
-                            gender: 2,
-                            email: 'email1@afume.com',
-                            birth: 1995,
-                            grade: 1,
-                            accessTime: '2021-07-13T11:33:49.000Z',
-                            createdAt: '2021-07-13T11:33:49.000Z',
-                            updatedAt: '2021-08-07T09:20:29.000Z',
                         });
                     };
                 })
@@ -320,17 +287,8 @@ describe('▣ UserService', () => {
             )
                 .addPrecondition(() => {
                     mockUserDao.readByIdx = () => {
-                        return UserDTO.createByJson({
-                            userIdx: 1,
-                            nickname: 'user1',
+                        return MockGenerator.createUserDTO({
                             password: userService.crypto.encrypt('encrypted'),
-                            gender: 2,
-                            email: 'email1@afume.com',
-                            birth: 1995,
-                            grade: 1,
-                            accessTime: '2021-07-13T11:33:49.000Z',
-                            createdAt: '2021-07-13T11:33:49.000Z',
-                            updatedAt: '2021-08-07T09:20:29.000Z',
                         });
                     };
                 })
