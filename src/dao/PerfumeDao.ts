@@ -484,16 +484,21 @@ class PerfumeDao {
      * @returns {Promise<Perfume[]>}
      */
     async readPerfumeSurvey(
-        gender: number
+        gender: number | null
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
-        logger.debug(`${LOG_TAG} readPerfumeSurvey(gender = ${gender})`);
+        logger.debug(
+            `${LOG_TAG} readPerfumeSurvey(gender = ${gender || 'all'})`
+        );
         const options = _.merge({}, defaultOption);
+        const where: any = gender
+            ? {
+                  gender,
+              }
+            : {};
         options.include.push({
             model: PerfumeSurvey,
             as: 'PerfumeSurvey',
-            where: {
-                gender,
-            },
+            where,
             require: true,
         });
         return Perfume.findAndCountAll(options).then((it: any) => {
@@ -522,18 +527,27 @@ class PerfumeDao {
      * @param {number} size
      * @returns {Promise<Perfume[]>}
      */
-    async getSimilarPerfumeIdxList(perfumeIdx: number, size: number): Promise<number[]> {
+    async getSimilarPerfumeIdxList(
+        perfumeIdx: number,
+        size: number
+    ): Promise<number[]> {
         try {
-            logger.debug(`${LOG_TAG} getSimilarPerfumeIdxList(perfumeIdx = ${perfumeIdx}, size = ${size})`);
-            
+            logger.debug(
+                `${LOG_TAG} getSimilarPerfumeIdxList(perfumeIdx = ${perfumeIdx}, size = ${size})`
+            );
+
             const client = require('@utils/db/redis.js');
 
-            const result = await client.lrange(`recs.perfume:${perfumeIdx}`, 0, size-1);
-            
-            return result.map((it: string) =>  Number(it));
+            const result = await client.lrange(
+                `recs.perfume:${perfumeIdx}`,
+                0,
+                size - 1
+            );
+
+            return result.map((it: string) => Number(it));
         } catch (err) {
             throw err;
-        }      
+        }
     }
 
     /**

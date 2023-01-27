@@ -11,10 +11,6 @@ import {
     SINGLE,
 } from '@utils/strings';
 
-// TODO: Remove below variables after refactoring
-const BIRTH_NONE: number = 0;
-const GENDER_NONE: number = 0;
-
 const GENDER_MAN: number = 1;
 const GENDER_WOMAN: number = 2;
 const GRADE_USER: number = 0;
@@ -60,8 +56,6 @@ const ACCESS_PUBLIC: number = 1;
 const ACCESS_PRIVATE: number = 0;
 
 export {
-    BIRTH_NONE,
-    GENDER_NONE,
     GENDER_MAN,
     GENDER_WOMAN,
     GRADE_USER,
