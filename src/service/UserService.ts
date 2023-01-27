@@ -210,6 +210,32 @@ class UserService {
     }
 
     /**
+     * 유저 비밀번호 확인
+     *
+     * @param {number} userIdx
+     * @param {string} encryptPassword
+     * @returns {Promise<boolean>} true if password is correct
+     * @throws {WrongPasswordError} if password is wrong
+     * @throws {NotMatchedError} if there is no User
+     **/
+    async checkPassword(
+        userIdx: number,
+        encryptPassword: string
+    ): Promise<boolean> {
+        logger.debug(
+            `${LOG_TAG} checkPassword(userIdx = ${userIdx}, password = ${encryptPassword})`
+        );
+        const user: UserDTO = await this.userDao.readByIdx(userIdx);
+        if (
+            this.crypto.decrypt(user.password) !=
+            this.crypto.decrypt(encryptPassword)
+        ) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * 유저 비밀번호 변경
      *
      * @param {number} userIdx

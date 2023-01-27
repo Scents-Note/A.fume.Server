@@ -18,7 +18,8 @@ const likePerfumeDao = new LikePerfumeDao();
 const reviewDao = new ReviewDao();
 const keywordDao = new KeywordDao();
 
-const discordHook = require('../utils/discordHook')
+const discordHook =
+    require('../utils/discordHook').discordManager.getReportReviewHook();
 
 /**
  * 시향노트 작성

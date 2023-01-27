@@ -224,4 +224,52 @@ describe('# User Service Test', () => {
                 .catch((err: Error) => done(err));
         });
     });
+    describe('# checkPassword Test', () => {
+        it('# case: valid password', (done: Done) => {
+            mockUserDao.readByIdx = () => {
+                return UserDTO.createByJson({
+                    userIdx: 1,
+                    nickname: 'user1',
+                    password: userService.crypto.encrypt('encrypted'),
+                    gender: 2,
+                    email: 'email1@afume.com',
+                    birth: 1995,
+                    grade: 1,
+                    accessTime: '2021-07-13T11:33:49.000Z',
+                    createdAt: '2021-07-13T11:33:49.000Z',
+                    updatedAt: '2021-08-07T09:20:29.000Z',
+                });
+            };
+            userService
+                .checkPassword(1, userService.crypto.encrypt('encrypted'))
+                .then((isSuccess: boolean) => {
+                    expect(isSuccess).to.be.true;
+                    done();
+                })
+                .catch((err: Error) => done(err));
+        });
+        it('# case: invalid password', (done: Done) => {
+            mockUserDao.readByIdx = () => {
+                return UserDTO.createByJson({
+                    userIdx: 1,
+                    nickname: 'user1',
+                    password: userService.crypto.encrypt('encrypted'),
+                    gender: 2,
+                    email: 'email1@afume.com',
+                    birth: 1995,
+                    grade: 1,
+                    accessTime: '2021-07-13T11:33:49.000Z',
+                    createdAt: '2021-07-13T11:33:49.000Z',
+                    updatedAt: '2021-08-07T09:20:29.000Z',
+                });
+            };
+            userService
+                .checkPassword(1, userService.crypto.encrypt('encrypted2'))
+                .then((isSuccess: boolean) => {
+                    expect(isSuccess).to.be.false;
+                    done();
+                })
+                .catch((err: Error) => done(err));
+        });
+    });
 });
