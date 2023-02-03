@@ -17,13 +17,14 @@ import app from '@src/app';
 const basePath: string = BASE_PATH;
 
 const System: any = require('@controllers/System');
+const androidChecker = System.VersionCheckerFactory.factory('android');
 
 describe('# System Controller Test', () => {
     describe('# getSupportable Test', () => {
         it('# case : same version', (done: Done) => {
             request(app)
                 .get(
-                    `${basePath}/system/supportable?apkversion=${System.latestVersion}`
+                    `${basePath}/system/supportable?apkversion=${androidChecker.latestVersion}`
                 )
                 .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
@@ -39,7 +40,7 @@ describe('# System Controller Test', () => {
         it('# case : over version', (done: Done) => {
             request(app)
                 .get(
-                    `${basePath}/system/supportable?apkversion=${System.latestVersion.increase()}`
+                    `${basePath}/system/supportable?apkversion=${androidChecker.latestVersion.increase()}`
                 )
                 .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
@@ -55,7 +56,7 @@ describe('# System Controller Test', () => {
         it('# case : previous version', (done: Done) => {
             request(app)
                 .get(
-                    `${basePath}/system/supportable?apkversion=${System.prevVersion}`
+                    `${basePath}/system/supportable?apkversion=${androidChecker.prevVersion}`
                 )
                 .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
