@@ -150,7 +150,7 @@ class VersionCheckerAndroid implements IVersionChecker {
 
 class VersionCheckeriOS implements IVersionChecker {
     prevVersion: Version = new Version(1, 0, 0);
-    latestVersion: Version = new Version(1, 0, 0);
+    latestVersion: Version = new Version(1, 0, 1);
 
     isSupportVersion(apkVersion: string): Boolean {
         const version: Version = Version.create(apkVersion);
