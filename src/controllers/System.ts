@@ -55,6 +55,7 @@ const getSupportable: RequestHandler = (
     _: NextFunction
 ) => {
     const apkVersion: string = req.query.apkversion?.toString() || '';
+    // 초기 안드로이드 apk의 경우 deviceOS를 보내주지 않고 있어서 기본 값을 안드로이드로 설정. deviceOS server v0.0.9에서 추가
     const deviceOS: string = req.query.deviceOS?.toString() || 'android';
     logger.debug(
         `${LOG_TAG} getSupportable(apkVersion = ${apkVersion}, deviceOS = ${deviceOS})`
@@ -130,6 +131,8 @@ interface IVersionChecker {
 }
 
 class VersionCheckerAndroid implements IVersionChecker {
+    // TODO: prevVersion, latestVersion을 삭제하고 minimumVersion으로 변경
+    //       유연한 변경을 위해서 코드 레벨이 아닌 환경 변수 주입으로 변경 필요
     prevVersion: Version = new Version(1, 4, 0);
     latestVersion: Version = new Version(1, 4, 1);
 
