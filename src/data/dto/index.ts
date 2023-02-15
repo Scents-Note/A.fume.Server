@@ -27,5 +27,4 @@ export * from './TokenGroupDTO';
 export * from './TokenPayloadDTO';
 export * from './UserAuthDTO';
 export * from './UserDTO';
-export * from './UserInputDTO';
 export * from './TokenSetDTO';

@@ -128,7 +128,7 @@ describe('# Auth Controller Test', () => {
                                         }
                                     );
                             });
-                    }, 1000);
+                    }, 3000);
                 });
         });
     });

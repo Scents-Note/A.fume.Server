@@ -1,4 +1,4 @@
-import { GenderInvMap, GenderKey } from '@utils/enumType';
+import { GenderInvMap } from '@utils/enumType';
 
 /**
  * @swagger
@@ -14,10 +14,13 @@ import { GenderInvMap, GenderKey } from '@utils/enumType';
  *         example: nickname
  *       gender:
  *         type: string
+ *         enum: [MAN, WOMAN]
  *         example: MAN
+ *         nullable: true
  *       birth:
  *         type: integer
  *         example: 1995
+ *         nullable: true
  *       token:
  *         type: string
  *         description: login용 userToken
@@ -30,17 +33,17 @@ import { GenderInvMap, GenderKey } from '@utils/enumType';
 class LoginResponse {
     readonly userIdx: number;
     readonly nickname: string;
-    readonly gender: GenderKey;
+    readonly gender: string | null;
     readonly email: string;
-    readonly birth: number;
+    readonly birth: number | null;
     readonly token: string;
     readonly refreshToken: string;
     constructor(
         userIdx: number,
         nickname: string,
-        gender: GenderKey,
+        gender: string | null,
         email: string,
-        birth: number,
+        birth: number | null,
         token: string,
         refreshToken: string
     ) {
@@ -58,12 +61,14 @@ class LoginResponse {
     }
 
     static createByJson(json: any): LoginResponse {
+        const genderString: string | null = GenderInvMap[json.gender] || null;
+        const birth: number | null = json.birth;
         return new LoginResponse(
             json.userIdx,
             json.nickname,
-            GenderInvMap[json.gender],
+            genderString,
             json.email,
-            json.birth,
+            birth,
             json.token,
             json.refreshToken
         );
@@ -157,8 +162,10 @@ class UserRegisterResponse {
  *       gender:
  *         type: string
  *         enum: [MAN, WOMAN]
+ *         nullable: true
  *       birth:
  *         type: integer
+ *         nullable: true
  *       grade:
  *         type: string
  *         enum: [USER, MANAGER, SYSTEM_ADMIN]
@@ -172,15 +179,15 @@ class UserRegisterResponse {
 class UserResponse {
     readonly userIdx: number;
     readonly nickname: string;
-    readonly gender: GenderKey;
+    readonly gender: string | null;
     readonly email: string;
-    readonly birth: number;
+    readonly birth: number | null;
     constructor(
         userIdx: number,
         nickname: string,
-        gender: GenderKey,
+        gender: string | null,
         email: string,
-        birth: number
+        birth: number | null
     ) {
         this.userIdx = userIdx;
         this.nickname = nickname;

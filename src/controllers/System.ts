@@ -27,6 +27,14 @@ const LOG_TAG: string = '[System/Controller]';
  *         in: query
  *         type: string
  *         required: true
+ *       - name: deviceOS
+ *         in: query
+ *         type: string
+ *         required: false
+ *         default: android
+ *         enum:
+ *         - android
+ *         - iOS
  *       responses:
  *         200:
  *           description: 성공
@@ -47,8 +55,14 @@ const getSupportable: RequestHandler = (
     _: NextFunction
 ) => {
     const apkVersion: string = req.query.apkversion?.toString() || '';
-    logger.debug(`${LOG_TAG} getSupportable(apkVersion = ${apkVersion})`);
-    if (isSupportVersion(apkVersion)) {
+    // 초기 안드로이드 apk의 경우 deviceOS를 보내주지 않고 있어서 기본 값을 안드로이드로 설정. deviceOS server v0.0.9에서 추가
+    const deviceOS: string = req.query.deviceOS?.toString() || 'android';
+    logger.debug(
+        `${LOG_TAG} getSupportable(apkVersion = ${apkVersion}, deviceOS = ${deviceOS})`
+    );
+    const versionChecker: IVersionChecker =
+        VersionCheckerFactory.factory(deviceOS);
+    if (versionChecker.isSupportVersion(apkVersion)) {
         res.status(StatusCode.OK).json(
             new ResponseDTO<Boolean>(MSG_GET_SUPPORTABLE_YES, true)
         );
@@ -103,20 +117,58 @@ class Version {
     }
 }
 
-const prevVersion: Version = new Version(1, 4, 0);
-const latestVersion: Version = new Version(1, 4, 1);
+class VersionCheckerFactory {
+    static factory(deviceOS: string): IVersionChecker {
+        if (deviceOS == 'iOS') {
+            return new VersionCheckeriOS();
+        }
+        return new VersionCheckerAndroid();
+    }
+}
 
-function isSupportVersion(apkVersion: string): Boolean {
-    const version: Version = Version.create(apkVersion);
-    if (prevVersion.isEqual(version) || latestVersion.isEqual(version)) {
-        return true;
+interface IVersionChecker {
+    isSupportVersion(apkVersion: string): Boolean;
+}
+
+class VersionCheckerAndroid implements IVersionChecker {
+    // TODO: prevVersion, latestVersion을 삭제하고 minimumVersion으로 변경
+    //       유연한 변경을 위해서 코드 레벨이 아닌 환경 변수 주입으로 변경 필요
+    prevVersion: Version = new Version(1, 4, 0);
+    latestVersion: Version = new Version(1, 4, 1);
+
+    isSupportVersion(apkVersion: string): Boolean {
+        const version: Version = Version.create(apkVersion);
+        if (
+            this.prevVersion.isEqual(version) ||
+            this.latestVersion.isEqual(version)
+        ) {
+            return true;
+        }
+        if (version.isOverThan(this.latestVersion)) {
+            return true;
+        }
+        return false;
     }
-    if (version.isOverThan(latestVersion)) {
-        return true;
+}
+
+class VersionCheckeriOS implements IVersionChecker {
+    prevVersion: Version = new Version(1, 0, 0);
+    latestVersion: Version = new Version(1, 0, 1);
+
+    isSupportVersion(apkVersion: string): Boolean {
+        const version: Version = Version.create(apkVersion);
+        if (
+            this.prevVersion.isEqual(version) ||
+            this.latestVersion.isEqual(version)
+        ) {
+            return true;
+        }
+        if (version.isOverThan(this.latestVersion)) {
+            return true;
+        }
+        return false;
     }
-    return false;
 }
 
 module.exports.getSupportable = getSupportable;
-module.exports.prevVersion = prevVersion;
-module.exports.latestVersion = latestVersion;
+module.exports.VersionCheckerFactory = VersionCheckerFactory;

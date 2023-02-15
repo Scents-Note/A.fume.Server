@@ -145,6 +145,9 @@ npm run test-each ./test/...
 
 # 업데이트 내역
 
+-   0.0.9
+    -   User gender, birth nullable 로 변경
+    -   엔드포인트 변경 - `/system/supportable` 내 deviceOS 파라미터 추가
 -   0.0.8
     -   ioredis 의존 추가
     -   엔드포인트 추가 - 비슷한 향수 추천 데이터 DB 반영

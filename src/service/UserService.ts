@@ -52,10 +52,10 @@ class UserService {
      * 유저 회원 가입
      *
      * @param {UserInputDTO} UserInputDTO
-     * @returns {Promise}
+     * @returns {Promise<TokenGroupDTO>}
      * @throws {FailedToCreateError} if failed to create user
      **/
-    async createUser(userInputDTO: UserInputDTO) {
+    async createUser(userInputDTO: UserInputDTO): Promise<TokenGroupDTO> {
         logger.debug(`${LOG_TAG} createUser(userInputDTO = ${userInputDTO})`);
         return this.userDao
             .create(userInputDTO)
@@ -65,6 +65,7 @@ class UserService {
             .then((user: UserDTO | any) => {
                 delete user.password;
                 const payload = Object.assign({}, user);
+
                 const { userIdx } = user;
                 const { token, refreshToken } = this.jwt.publish(payload);
                 return TokenGroupDTO.createByJSON({
@@ -163,9 +164,10 @@ class UserService {
             throw new WrongPasswordError();
         }
         this.userDao.updateAccessTime(user.userIdx);
-        const { token, refreshToken } = this.jwt.publish(
-            TokenPayloadDTO.createByJson(user)
-        );
+
+        const payload: any = TokenPayloadDTO.createByJson(user);
+
+        const { token, refreshToken } = this.jwt.publish(payload);
         await this.tokenDao
             .create(new TokenSetDTO(token, refreshToken))
             .then((result: boolean) => {

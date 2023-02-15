@@ -17,13 +17,31 @@ import app from '@src/app';
 const basePath: string = BASE_PATH;
 
 const System: any = require('@controllers/System');
+const androidChecker = System.VersionCheckerFactory.factory('android');
+const iOSChecker = System.VersionCheckerFactory.factory('iOS');
 
 describe('# System Controller Test', () => {
     describe('# getSupportable Test', () => {
         it('# case : same version', (done: Done) => {
             request(app)
                 .get(
-                    `${basePath}/system/supportable?apkversion=${System.latestVersion}`
+                    `${basePath}/system/supportable?apkversion=${androidChecker.latestVersion}`
+                )
+                .expect((res: any) => {
+                    expect(res.status).to.be.eq(StatusCode.OK);
+                    const { message, data } = res.body;
+
+                    expect(message).to.be.eq(MSG_GET_SUPPORTABLE_YES);
+                    expect(data).to.be.eq(true);
+                    done();
+                })
+                .catch((err: Error) => done(err));
+        });
+
+        it('# case : same version', (done: Done) => {
+            request(app)
+                .get(
+                    `${basePath}/system/supportable?apkversion=${iOSChecker.latestVersion}&deviceOS=iOS`
                 )
                 .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
@@ -39,7 +57,23 @@ describe('# System Controller Test', () => {
         it('# case : over version', (done: Done) => {
             request(app)
                 .get(
-                    `${basePath}/system/supportable?apkversion=${System.latestVersion.increase()}`
+                    `${basePath}/system/supportable?apkversion=${androidChecker.latestVersion.increase()}`
+                )
+                .expect((res: any) => {
+                    expect(res.status).to.be.eq(StatusCode.OK);
+                    const { message, data } = res.body;
+
+                    expect(message).to.be.eq(MSG_GET_SUPPORTABLE_YES);
+                    expect(data).to.be.eq(true);
+                    done();
+                })
+                .catch((err: Error) => done(err));
+        });
+
+        it('# case : over version', (done: Done) => {
+            request(app)
+                .get(
+                    `${basePath}/system/supportable?apkversion=${iOSChecker.latestVersion.increase()}&deviceOS=iOS`
                 )
                 .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
@@ -55,7 +89,23 @@ describe('# System Controller Test', () => {
         it('# case : previous version', (done: Done) => {
             request(app)
                 .get(
-                    `${basePath}/system/supportable?apkversion=${System.prevVersion}`
+                    `${basePath}/system/supportable?apkversion=${androidChecker.prevVersion}`
+                )
+                .expect((res: any) => {
+                    expect(res.status).to.be.eq(StatusCode.OK);
+                    const { message, data } = res.body;
+
+                    expect(message).to.be.eq(MSG_GET_SUPPORTABLE_YES);
+                    expect(data).to.be.eq(true);
+                    done();
+                })
+                .catch((err: Error) => done(err));
+        });
+
+        it('# case : previous version', (done: Done) => {
+            request(app)
+                .get(
+                    `${basePath}/system/supportable?apkversion=${iOSChecker.prevVersion}&deviceOS=iOS`
                 )
                 .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
@@ -81,9 +131,26 @@ describe('# System Controller Test', () => {
                 })
                 .catch((err: Error) => done(err));
         });
+
         it('# case : old version', (done: Done) => {
             request(app)
                 .get(`${basePath}/system/supportable?apkversion=0.9.9`)
+                .expect((res: any) => {
+                    expect(res.status).to.be.eq(StatusCode.OK);
+                    const { message, data } = res.body;
+
+                    expect(message).to.be.eq(MSG_GET_SUPPORTABLE_NO);
+                    expect(data).to.be.eq(false);
+                    done();
+                })
+                .catch((err: Error) => done(err));
+        });
+
+        it('# case : old version', (done: Done) => {
+            request(app)
+                .get(
+                    `${basePath}/system/supportable?apkversion=0.9.9&deviceOS=iOS`
+                )
                 .expect((res: any) => {
                     expect(res.status).to.be.eq(StatusCode.OK);
                     const { message, data } = res.body;

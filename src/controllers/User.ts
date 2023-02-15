@@ -36,7 +36,13 @@ import {
     LoginResponse,
 } from '@response/user';
 
-import { UserAuthDTO, UserInputDTO, LoginInfoDTO, SurveyDTO } from '@dto/index';
+import {
+    UserAuthDTO,
+    UserInputDTO,
+    LoginInfoDTO,
+    SurveyDTO,
+    UserDTO,
+} from '@dto/index';
 
 const LOG_TAG: string = '[User/Controller]';
 
@@ -671,9 +677,11 @@ const updateUser: RequestHandler = (
         next(new UnAuthorizedError());
         return;
     }
-    const userEditRequest = UserEditRequest.createByJson(req.body);
-    User.updateUser(userEditRequest.toUserInputDTO(userIdx))
-        .then((result: UserResponse) => {
+    const userEditRequest = UserEditRequest.createByJson(
+        Object.assign({}, { userIdx }, req.body)
+    );
+    User.updateUser(userEditRequest.toUserInputDTO())
+        .then((result: UserDTO) => {
             return UserResponse.createByJson(result);
         })
         .then((response: UserResponse) => {

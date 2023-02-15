@@ -57,6 +57,9 @@ const commonJob = [
         'updatedAt'
     ),
 ];
+
+const DEFAULT_GENDER: number = GENDER_WOMAN;
+const DEFAULT_AGE: number = 20;
 class PerfumeService {
     /**
      * 향수 세부 정보 조회
@@ -219,14 +222,16 @@ class PerfumeService {
         try {
             logger.debug(
                 `${LOG_TAG} updateSimilarPerfumes(perfumeSimilarRequest = ${perfumeSimilarRequest})`
-            );  
-            
-            return await perfumeDao.updateSimilarPerfumes(perfumeSimilarRequest)
-        } catch(err: any) {
+            );
+
+            return await perfumeDao.updateSimilarPerfumes(
+                perfumeSimilarRequest
+            );
+        } catch (err: any) {
             throw err;
         }
     }
-        
+
     /**
      * 향수 좋아요
      *
@@ -551,14 +556,16 @@ class PerfumeService {
     ): Promise<{ gender: number; ageGroup: number }> {
         if (userIdx == -1) {
             return {
-                gender: GENDER_WOMAN,
-                ageGroup: 20,
+                gender: DEFAULT_GENDER,
+                ageGroup: DEFAULT_AGE,
             };
         }
         const user: UserDTO = await userDao.readByIdx(userIdx);
         const today: Date = new Date();
-        const age: number = today.getFullYear() - user.birth + 1;
-        const gender: number = user.gender;
+        const age: number = user.birth
+            ? today.getFullYear() - user.birth + 1
+            : DEFAULT_AGE;
+        const gender: number = user.gender || DEFAULT_GENDER;
         const ageGroup: number = Math.floor(age / 10) * 10;
         return { gender, ageGroup };
     }
