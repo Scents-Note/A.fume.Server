@@ -46,8 +46,10 @@ function verifyTokenMiddleware(
         throw new InvalidTokenError();
     }
     const tokenString: string = token.split(' ')[1];
-    const { userIdx }: { userIdx: number } = JwtController.verify(tokenString);
+    const { userIdx, gender }: { userIdx: number; gender: string } =
+        JwtController.verify(tokenString);
     req.middlewareToken.loginUserIdx = userIdx;
+    req.middlewareToken.userGender = gender;
     return next(null);
 }
 
@@ -66,6 +68,12 @@ function encryptPassword(
 ) {
     if (req.body.password) {
         req.body.password = encrypt(req.body.password);
+    }
+    if (req.body.prevPassword) {
+        req.body.prevPassword = encrypt(req.body.prevPassword);
+    }
+    if (req.body.newPassword) {
+        req.body.newPassword = encrypt(req.body.newPassword);
     }
     return next(null);
 }

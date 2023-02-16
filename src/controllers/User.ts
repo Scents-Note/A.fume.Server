@@ -12,6 +12,7 @@ import {
     MSG_LOGIN_SUCCESS,
     MSG_MODIFY_USER_SUCCESS,
     MSG_CHANGE_PASSWORD_SUCCESS,
+    MSG_CHECK_PASSWORD,
     MSG_GET_AUTHORIZE_INFO,
     MSG_DUPLICATE_CHECK_EMAIL_AVAILABLE,
     MSG_DUPLICATE_CHECK_EMAIL_UNAVAILABLE,
@@ -35,7 +36,13 @@ import {
     LoginResponse,
 } from '@response/user';
 
-import { UserAuthDTO, UserInputDTO, LoginInfoDTO, SurveyDTO } from '@dto/index';
+import {
+    UserAuthDTO,
+    UserInputDTO,
+    LoginInfoDTO,
+    SurveyDTO,
+    UserDTO,
+} from '@dto/index';
 
 const LOG_TAG: string = '[User/Controller]';
 
@@ -83,7 +90,7 @@ const registerUser: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    logger.debug(`${LOG_TAG} registerUser(body = ${req.body})`);
+    logger.debug(`${LOG_TAG} registerUser(body = ${JSON.stringify(req.body)})`);
     const userRegisterRequest: UserRegisterRequest =
         UserRegisterRequest.createByJson(req.body);
 
@@ -159,7 +166,7 @@ const loginUser: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    logger.debug(`${LOG_TAG} loginUser(body = ${req.body})`);
+    logger.debug(`${LOG_TAG} loginUser(body = ${JSON.stringify(req.body)})`);
     const email: string = req.body.email;
     const password: string = req.body.password;
     User.loginUser(email, password)
@@ -173,6 +180,75 @@ const loginUser: RequestHandler = (
             );
             res.status(StatusCode.OK).json(
                 new ResponseDTO<LoginResponse>(MSG_LOGIN_SUCCESS, response)
+            );
+        })
+        .catch((err: Error) => next(err));
+};
+
+/**
+ * @swagger
+ *   /user/checkPassword:
+ *     put:
+ *       tags:
+ *       - user
+ *       description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 유저 비밀번호 변경 <br/>
+ *       operationId: checkPassword
+ *       security:
+ *         - userToken: []
+ *       x-security-scopes:
+ *         - user
+ *       produces:
+ *       - application/json
+ *       consumes:
+ *       - application/json
+ *       parameters:
+ *       - in: body
+ *         name: body
+ *         required: true
+ *         schema:
+ *           type: object
+ *           properties:
+ *             password:
+ *               type: string
+ *           example:
+ *             password: test
+ *       responses:
+ *         200:
+ *           description: 비밀번호 일치
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 비밀번호 확인
+ *               data:
+ *                  type: boolean
+ *                  example: true
+ *                  description: true if password is correct
+ *         default:
+ *           description: successful operation
+ *       x-swagger-router-controller: User
+ *  */
+const checkPassword: RequestHandler = (
+    req: Request | any,
+    res: Response,
+    next: NextFunction
+) => {
+    const userIdx = req.middlewareToken.loginUserIdx;
+    logger.debug(
+        `${LOG_TAG} checkPassword(userIdx = ${userIdx}, body = ${JSON.stringify(
+            req.body
+        )})`
+    );
+    const { password } = req.body;
+    User.checkPassword(userIdx, password)
+        .then((isSuccess: boolean) => {
+            LoggerHelper.logTruncated(
+                logger.debug,
+                `${LOG_TAG} checkPassword isSuccess ${isSuccess}`
+            );
+            res.status(StatusCode.OK).json(
+                new ResponseDTO(MSG_CHECK_PASSWORD, isSuccess)
             );
         })
         .catch((err: Error) => next(err));
@@ -220,7 +296,9 @@ const changePassword: RequestHandler = (
 ) => {
     const userIdx = req.middlewareToken.loginUserIdx;
     logger.debug(
-        `${LOG_TAG} changePassword(userIdx = ${userIdx}, body = ${req.body})`
+        `${LOG_TAG} changePassword(userIdx = ${userIdx}, body = ${JSON.stringify(
+            req.body
+        )})`
     );
     const { prevPassword, newPassword } = req.body;
     User.changePassword(userIdx, prevPassword, newPassword)
@@ -275,7 +353,7 @@ const authUser: RequestHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    logger.debug(`${LOG_TAG} authUser(body = ${req.body})`);
+    logger.debug(`${LOG_TAG} authUser(body = ${JSON.stringify(req.body)})`);
     const { token } = req.body;
     User.authUser(token)
         .then((result: UserAuthDTO) => {
@@ -485,7 +563,9 @@ const postSurvey: RequestHandler = (
 ) => {
     const userIdx: number = req.middlewareToken.loginUserIdx;
     logger.debug(
-        `${LOG_TAG} postSurvey(userIdx = ${userIdx}, body = ${req.body})`
+        `${LOG_TAG} postSurvey(userIdx = ${userIdx}, body = ${JSON.stringify(
+            req.body
+        )})`
     );
     const {
         keywordList,
@@ -588,16 +668,20 @@ const updateUser: RequestHandler = (
     const userIdx = req.params['userIdx'];
     const tokenUserIdx = req.middlewareToken.loginUserIdx;
     logger.debug(
-        `${LOG_TAG} updateUser(userIdx = ${tokenUserIdx}, params = ${req.params}, body = ${req.body})`
+        `${LOG_TAG} updateUser(userIdx = ${tokenUserIdx}, params = ${
+            req.params
+        }, body = ${JSON.stringify(req.body)})`
     );
     if (userIdx != tokenUserIdx) {
         logger.warn('userIdx and tokenUserIdx is not same');
         next(new UnAuthorizedError());
         return;
     }
-    const userEditRequest = UserEditRequest.createByJson(req.body);
-    User.updateUser(userEditRequest.toUserInputDTO(userIdx))
-        .then((result: UserResponse) => {
+    const userEditRequest = UserEditRequest.createByJson(
+        Object.assign({}, { userIdx }, req.body)
+    );
+    User.updateUser(userEditRequest.toUserInputDTO())
+        .then((result: UserDTO) => {
             return UserResponse.createByJson(result);
         })
         .then((response: UserResponse) => {
@@ -664,6 +748,7 @@ module.exports.deleteUser = deleteUser;
 module.exports.loginUser = loginUser;
 module.exports.updateUser = updateUser;
 module.exports.changePassword = changePassword;
+module.exports.checkPassword = checkPassword;
 module.exports.authUser = authUser;
 module.exports.validateEmail = validateEmail;
 module.exports.validateName = validateName;

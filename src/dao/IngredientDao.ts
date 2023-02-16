@@ -56,13 +56,21 @@ class IngredientDao {
      * @return {Promise<ListAndCountDTO>} listAndCountDTO
      * @throws {NotMatchedError} if there is no ingredient
      */
-    async readAll(where: any): Promise<ListAndCountDTO<IngredientDTO>> {
+    async readAll(
+        where: any,
+        pagingDTO?: PagingDTO
+    ): Promise<ListAndCountDTO<IngredientDTO>> {
         logger.debug(`${LOG_TAG} readAll(where = ${JSON.stringify(where)})`);
-        const result = await Ingredient.findAndCountAll({
-            where,
-            nest: true,
-            raw: true,
-        });
+        const result = await Ingredient.findAndCountAll(
+            Object.assign(
+                {
+                    where,
+                    raw: true,
+                    nest: true,
+                },
+                pagingDTO ? pagingDTO.sequelizeOption() : {}
+            )
+        );
         if (!result) {
             throw new NotMatchedError();
         }
@@ -146,6 +154,27 @@ class IngredientDao {
                 throw new NotMatchedError();
             }
             return IngredientDTO.createByJson(result);
+        });
+    }
+
+    /**
+     * 카테고리 리스트에 해당하는 ingredientIdx 리스트 조회
+     *
+     * @param {string[]} categoryList
+     * @returns {Promise<IngredientDTO[]>} listAndCountDTO<IngredientDTO>
+     */
+    async getIngredientIdxByCategories(
+        categoryIdxList: number[]
+    ): Promise<IngredientDTO[]> {
+        logger.debug(`${LOG_TAG} getIngredientIdxByCategories()`);
+        return Ingredient.findAll({
+            raw: true,
+            nest: true,
+            where: {
+                categoryIdx: {
+                    [Op.in]: categoryIdxList,
+                },
+            },
         });
     }
 }

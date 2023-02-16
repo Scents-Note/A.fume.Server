@@ -3,6 +3,7 @@ dotenv.config();
 import cookieParser from 'cookie-parser';
 import cors, { CorsOptions, CorsOptionsDelegate } from 'cors';
 import express, { Express } from 'express';
+const bodyParser = require('body-parser');
 import createError from 'http-errors';
 
 import properties from '@properties';
@@ -13,7 +14,9 @@ import makeMorgan from '@modules/morgan';
 import { HttpError } from '@errors';
 import statusCode from '@utils/statusCode';
 import { verifyTokenMiddleware, encryptPassword } from '@middleware/auth';
+import { updateMonitoringToken } from '@middleware/monitoring';
 import { swaggerRouter } from '@controllers/index';
+import SchedulerManager from '@schedules/index';
 
 const {
     swaggerUi,
@@ -47,11 +50,10 @@ const corsOptionsDelegate: CorsOptionsDelegate<express.Request> = function (
 };
 
 app.use(cors(corsOptionsDelegate));
-app.use(express.json());
+app.use(bodyParser.json({ limit: "5mb"}));
 
 app.use(
     makeMorgan((message: string) => {
-        console.log(message);
         logger.http(message);
     })
 );
@@ -61,6 +63,7 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use(swaggerMetadataHandler);
 app.use(specs.basePath, verifyTokenMiddleware);
 app.use(specs.basePath, encryptPassword);
+app.use(specs.basePath, updateMonitoringToken);
 app.use(specs.basePath, swaggerRouter(specs));
 
 // catch 404 and forward to error handler
@@ -99,6 +102,7 @@ app.use(function (
     res.end();
 });
 
-require('./lib/cron.js');
+const scheduleManager = new SchedulerManager();
+scheduleManager.start();
 
 export default app;

@@ -8,7 +8,8 @@ const longevityTypeArr = ['매우 약함', '약함', '보통', '강함', '매우
 const genderTypeArr = ['남성', '중성', '여성'];
 
 // TODO converter가 특정 dao에 의존하는 것은 불필요한 의존성을 만드는 거 같네요.
-const KeywordDao = require('@dao/KeywordDao');
+import KeywordDao from '@dao/KeywordDao';
+const keywordDao = new KeywordDao();
 
 const INSTEAD_NULL_VALUE = -1;
 
@@ -50,7 +51,7 @@ module.exports.inputStrToDBIntOfReview = async ({
                     if (typeof it == 'number') {
                         return it;
                     } else if (typeof it == 'string') {
-                        return KeywordDao.readKeywordIdx(it);
+                        return keywordDao.readKeywordIdx(it);
                     } else {
                         throw new InvalidValueError();
                     }
@@ -154,7 +155,7 @@ module.exports.InputIntToDBIntOfReview = async ({
                     if (typeof it == 'number') {
                         return it;
                     } else if (typeof it == 'string') {
-                        return KeywordDao.readKeywordIdx(it);
+                        return keywordDao.readKeywordIdx(it);
                     } else {
                         throw new InvalidValueError();
                     }

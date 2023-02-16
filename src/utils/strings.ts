@@ -40,12 +40,16 @@ const MIDDLE: string = 'middle';
 const BASE: string = 'base';
 const SINGLE: string = 'single';
 
+const PRIVATE: string = '비공개';
+
 const MSG_GET_BRAND_FILTER_SUCCESS: string = `브랜드 필터 ${_get} ${_success}`;
 const MSG_GET_BRAND_ALL_SUCCESS: string = `브랜드 ${_all} ${_get} ${_success}`;
 const MSG_GET_SEARCH_INGREDIENT_SUCCESS: string = `재료 ${_search} ${_get} ${_success}`;
 
 const MSG_GET_PERFUME_DETAIL_SUCCESS: string = `향수 ${_detail} ${_get} ${_success}`;
 const MSG_GET_SEARCH_PERFUME_SUCCESS: string = `향수 ${_search} ${_get} ${_success}`;
+
+const MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS: string = `비슷한 향수 추천 데이터 ${_post} ${_success}`;
 
 const LIKE_PERFUME: string = '향수 좋아요';
 const LIKE_PERFUME_CANCEL: string = `${LIKE_PERFUME} ${_cancel}`;
@@ -54,6 +58,8 @@ const MSG_GET_RECENT_SEARCH_PERFUME_SUCCESS: string = `최근 검색한 향수 $
 
 const MSG_GET_RECOMMEND_PERFUME_BY_USER: string = `향수 개인 맞춤 ${_recommend}`;
 const MSG_GET_RECOMMEND_PERFUME_BY_AGE_AND_GENDER: string = `향수 일반 ${_recommend} (성별, 나이 반영)`;
+const MSG_GET_RECOMMEND_SIMILAR_PERFUMES: string =
+    '현재 향수와 비슷한 향수들 입니다.';
 
 const MSG_GET_PERFUME_FOR_SURVEY_SUCCESS: string = `서베이 향수 ${_get} ${_success}`;
 
@@ -74,6 +80,7 @@ const MSG_DELETE_USER_SUCCESS: string = `유저 ${_delete} ${_success}`;
 const MSG_LOGIN_SUCCESS: string = `로그인 ${_success}`;
 const MSG_MODIFY_USER_SUCCESS: string = `유저 ${_update} ${_success}`;
 const MSG_CHANGE_PASSWORD_SUCCESS: string = `비밀번호 변경 ${_success}`;
+const MSG_CHECK_PASSWORD: string = `비밀번호 확인`;
 const MSG_GET_AUTHORIZE_INFO: string = `권한 ${_get}`;
 
 const MSG_DUPLICATE_CHECK_EMAIL: string = 'Email 중복 체크';
@@ -99,10 +106,16 @@ const MSG_EXPIRED_TOKEN: string = '만료된 토큰입니다.';
 const MSG_WRONG_PASSWORD: string = '비밀번호가 잘못되었습니다';
 const MSG_CANT_USE_PASSWORD_BY_POLICY: string =
     '사용할 수 없는 패스워드입니다. 패스워드 정책을 확인해주세요.';
+const MSG_GET_SUPPORTABLE_YES: string = '현재 apk Version은 이용 가능합니다.';
+const MSG_GET_SUPPORTABLE_NO: string =
+    '현재 apk Version은 업데이트가 필요합니다.';
+
+const MSG_REISSUE_SUCCESS: string = '토큰이 재발행 되었습니다.';
 
 const NO_AUTHORIZE: string = '권한이 없습니다.';
+const ABNORMAL_CONNECTION: string = '비정상 적인 접근 입니다.';
 
-const CURRENT_VERSION: string = process.env.npm_package_version || '0.0.2';
+const CURRENT_VERSION: string = process.env.npm_package_version || '0.0.4';
 /* TODO BASE PATH 는 MAJOR만 따르도록 수정할 것. 0.0.1 -> 1.0 -> 2.0 */
 const BASE_PATH: string = '/A.fume/api/0.0.1';
 
@@ -132,16 +145,19 @@ export {
     MIDDLE,
     BASE,
     SINGLE,
+    PRIVATE,
     MSG_GET_BRAND_FILTER_SUCCESS,
     MSG_GET_BRAND_ALL_SUCCESS,
     MSG_GET_SEARCH_INGREDIENT_SUCCESS,
     MSG_GET_PERFUME_DETAIL_SUCCESS,
     MSG_GET_SEARCH_PERFUME_SUCCESS,
+    MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS,
     LIKE_PERFUME,
     LIKE_PERFUME_CANCEL,
     MSG_GET_RECENT_SEARCH_PERFUME_SUCCESS,
     MSG_GET_RECOMMEND_PERFUME_BY_USER,
     MSG_GET_RECOMMEND_PERFUME_BY_AGE_AND_GENDER,
+    MSG_GET_RECOMMEND_SIMILAR_PERFUMES,
     MSG_GET_PERFUME_FOR_SURVEY_SUCCESS,
     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
     MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
@@ -154,6 +170,7 @@ export {
     MSG_LOGIN_SUCCESS,
     MSG_MODIFY_USER_SUCCESS,
     MSG_CHANGE_PASSWORD_SUCCESS,
+    MSG_CHECK_PASSWORD,
     MSG_GET_AUTHORIZE_INFO,
     MSG_DUPLICATE_CHECK_EMAIL_AVAILABLE,
     MSG_DUPLICATE_CHECK_EMAIL_UNAVAILABLE,
@@ -171,7 +188,11 @@ export {
     MSG_EXPIRED_TOKEN,
     MSG_WRONG_PASSWORD,
     MSG_CANT_USE_PASSWORD_BY_POLICY,
+    MSG_GET_SUPPORTABLE_YES,
+    MSG_GET_SUPPORTABLE_NO,
+    MSG_REISSUE_SUCCESS,
     NO_AUTHORIZE,
+    ABNORMAL_CONNECTION,
     CURRENT_VERSION,
     BASE_PATH,
 };

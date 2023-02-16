@@ -54,27 +54,29 @@
 
         /* Module Resolution Options */
         // "moduleResolution": "node",                  /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
-        "baseUrl": "src",                             /* Base directory to resolve non-absolute module names. */
+        "baseUrl": "src" /* Base directory to resolve non-absolute module names. */,
         "paths": {
-            "@src/*" : ["*"],
+            "@src/*": ["*"],
 
-            "@errors" : ["utils/errors/errors"],
-            "@properties" : ["utils/properties"],
+            "@errors": ["utils/errors/errors"],
+            "@properties": ["utils/properties"],
             "@mongoose": ["mongoose_models/index"],
-            "@sequelize" : ["models/index"],
+            "@sequelize": ["models/index"],
 
-            "@controllers/*" : ["controllers/*"],
-            "@services/*" : ["service/*"],
-            "@dao/*" : ["dao/*"],
-            "@dto/*" : ["data/dto/*"],
-            "@modules/*" : ["modules/*"],
-            "@utils/*" : ["utils/*"],
-            "@libs/*" : ["lib/*"],
-            "@request/*" : ["controllers/definitions/request/*"],
-            "@response/*" : ["controllers/definitions/response/*"],
-            "@middleware/*" : ["middleware/*"],
-            "@configs/*" : ["config/*"]
-        },                                 /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
+            "@controllers/*": ["controllers/*"],
+            "@services/*": ["service/*"],
+            "@dao/*": ["dao/*"],
+            "@dto/*": ["data/dto/*"],
+            "@vo/*": ["data/vo/*"],
+            "@modules/*": ["modules/*"],
+            "@utils/*": ["utils/*"],
+            "@libs/*": ["lib/*"],
+            "@request/*": ["controllers/definitions/request/*"],
+            "@response/*": ["controllers/definitions/response/*"],
+            "@middleware/*": ["middleware/*"],
+            "@configs/*": ["config/*"],
+            "@schedules/*": ["schedules/*"]
+        } /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */,
         // "rootDirs": [],                              /* List of root folders whose combined content represents the structure of the project at runtime. */
         // "typeRoots": [],                             /* List of folders to include type definitions from. */
         "types": ["node", "mocha"],
@@ -101,11 +103,6 @@
         /* Skip type checking of declaration files. */
         "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
     },
-    "include": [
-        "./src/**/*"
-    ],
-    "exclude": [
-        "./node_modules/**",
-        "**/*.spec.ts"
-    ]
+    "include": ["./src/**/*"],
+    "exclude": ["./node_modules/**", "**/*.spec.ts"]
 }

@@ -29,11 +29,12 @@ class BrandService {
     /**
      * 브랜드 전체 조회
      *
+     * @params {PagingDTO} pagingDTO
      * @returns {Promise<ListAndCountDTO<BrandDTO>>} listAndCountDTO
      **/
-    getBrandAll(): Promise<ListAndCountDTO<BrandDTO>> {
-        logger.debug(`${LOG_TAG} getBrandAll()`);
-        return this.brandDao.readAll();
+    getBrandAll(pagingDTO?: PagingDTO): Promise<ListAndCountDTO<BrandDTO>> {
+        logger.debug(`${LOG_TAG} getBrandAll(pagingDTO = ${pagingDTO})`);
+        return this.brandDao.readAll(pagingDTO);
     }
 
     /**

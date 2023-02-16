@@ -25,12 +25,12 @@ module.exports = (sequelize, DataTypes) => {
             },
             gender: {
                 type: DataTypes.INTEGER,
-                allowNull: false,
+                allowNull: true,
                 comment: '1: 남자, 2: 여자',
             },
             birth: {
                 type: DataTypes.INTEGER,
-                allowNull: false,
+                allowNull: true,
             },
             grade: {
                 type: DataTypes.INTEGER,
@@ -46,6 +46,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             modelName: 'User',
+            paranoid: true,
             timestamps: true,
             underscored: true,
             sequelize,

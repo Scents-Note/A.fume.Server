@@ -5,6 +5,7 @@ class IngredientDTO {
     readonly description: string;
     readonly imageUrl: string;
     readonly seriesIdx: number;
+    readonly categoryIdx: number;
     readonly createdAt: string;
     readonly updatedAt: string;
     constructor(
@@ -14,6 +15,7 @@ class IngredientDTO {
         description: string,
         imageUrl: string,
         seriesIdx: number,
+        categoryIdx: number,
         createdAt: string,
         updatedAt: string
     ) {
@@ -23,6 +25,7 @@ class IngredientDTO {
         this.description = description;
         this.imageUrl = imageUrl;
         this.seriesIdx = seriesIdx;
+        this.categoryIdx = categoryIdx;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -36,6 +39,7 @@ class IngredientDTO {
         const description: string = json.description;
         const imageUrl: string = json.imageUrl;
         const seriesIdx: number = json.seriesIdx;
+        const categoryIdx: number = json.categoryIdx;
         const createdAt: string = json.createdAt;
         const updatedAt: string = json.updatedAt;
         return new IngredientDTO(
@@ -45,6 +49,7 @@ class IngredientDTO {
             description,
             imageUrl,
             seriesIdx,
+            categoryIdx,
             createdAt,
             updatedAt
         );

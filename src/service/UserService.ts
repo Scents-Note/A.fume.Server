@@ -9,6 +9,7 @@ import {
 } from '@errors';
 
 import UserDao from '@dao/UserDao';
+import { TokenDao, TokenDaoSequelize } from '@dao/TokenDao';
 
 import { encrypt as _encrypt, decrypt as _decrypt } from '@libs/crypto';
 import JwtController from '@libs/JwtController';
@@ -21,16 +22,24 @@ import {
     UserInputDTO,
     UserDTO,
     SurveyDTO,
+    TokenSetDTO,
 } from '@dto/index';
 
 const LOG_TAG: string = '[User/Service]';
 
 class UserService {
     userDao: UserDao;
+    tokenDao: TokenDao;
     crypto: any;
     jwt: any;
-    constructor(userDao?: UserDao, crypto?: any, jwt?: any) {
+    constructor(
+        userDao?: UserDao,
+        tokenDao?: TokenDao,
+        crypto?: any,
+        jwt?: any
+    ) {
         this.userDao = userDao || new UserDao();
+        this.tokenDao = tokenDao || new TokenDaoSequelize();
         this.crypto = crypto || { encrypt: _encrypt, decrypt: _decrypt };
         this.jwt = jwt || {
             create: JwtController.create,
@@ -43,10 +52,10 @@ class UserService {
      * 유저 회원 가입
      *
      * @param {UserInputDTO} UserInputDTO
-     * @returns {Promise}
+     * @returns {Promise<TokenGroupDTO>}
      * @throws {FailedToCreateError} if failed to create user
      **/
-    async createUser(userInputDTO: UserInputDTO) {
+    async createUser(userInputDTO: UserInputDTO): Promise<TokenGroupDTO> {
         logger.debug(`${LOG_TAG} createUser(userInputDTO = ${userInputDTO})`);
         return this.userDao
             .create(userInputDTO)
@@ -56,6 +65,7 @@ class UserService {
             .then((user: UserDTO | any) => {
                 delete user.password;
                 const payload = Object.assign({}, user);
+
                 const { userIdx } = user;
                 const { token, refreshToken } = this.jwt.publish(payload);
                 return TokenGroupDTO.createByJSON({
@@ -144,11 +154,9 @@ class UserService {
         encryptPassword: string
     ): Promise<LoginInfoDTO> {
         logger.debug(
-            `${LOG_TAG} authUser(email = ${email}, encrypt_password = ${encryptPassword})`
+            `${LOG_TAG} loginUser(email = ${email}, encrypt_password = ${encryptPassword})`
         );
         const user: UserDTO = await this.userDao.read({ email });
-        console.log(user.password);
-        console.log(encryptPassword);
         if (
             this.crypto.decrypt(user.password) !=
             this.crypto.decrypt(encryptPassword)
@@ -156,9 +164,20 @@ class UserService {
             throw new WrongPasswordError();
         }
         this.userDao.updateAccessTime(user.userIdx);
-        const { token, refreshToken } = this.jwt.publish(
-            TokenPayloadDTO.createByJson(user)
-        );
+
+        const payload: any = TokenPayloadDTO.createByJson(user);
+
+        const { token, refreshToken } = this.jwt.publish(payload);
+        await this.tokenDao
+            .create(new TokenSetDTO(token, refreshToken))
+            .then((result: boolean) => {
+                if (!result) {
+                    logger.error('Failed to create tokenset on storage');
+                }
+            })
+            .catch((err: Error) => {
+                logger.error(err);
+            });
         return LoginInfoDTO.createByJson(
             Object.assign({}, user, {
                 token,
@@ -193,11 +212,37 @@ class UserService {
     }
 
     /**
+     * 유저 비밀번호 확인
+     *
+     * @param {number} userIdx
+     * @param {string} encryptPassword
+     * @returns {Promise<boolean>} true if password is correct
+     * @throws {WrongPasswordError} if password is wrong
+     * @throws {NotMatchedError} if there is no User
+     **/
+    async checkPassword(
+        userIdx: number,
+        encryptPassword: string
+    ): Promise<boolean> {
+        logger.debug(
+            `${LOG_TAG} checkPassword(userIdx = ${userIdx}, password = ${encryptPassword})`
+        );
+        const user: UserDTO = await this.userDao.readByIdx(userIdx);
+        if (
+            this.crypto.decrypt(user.password) !=
+            this.crypto.decrypt(encryptPassword)
+        ) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * 유저 비밀번호 변경
      *
      * @param {number} userIdx
-     * @param {string} prevPassword
-     * @param {string} newPassword
+     * @param {string} encryptPrevPassword
+     * @param {string} encryptNewPassword
      * @returns {Promise<number>} affected rows
      * @throws {WrongPasswordError} if password is wrong
      * @throws {PasswordPolicyError} if new password is same with previous password
@@ -205,19 +250,23 @@ class UserService {
      **/
     async changePassword(
         userIdx: number,
-        prevPassword: string,
-        newPassword: string
+        encryptPrevPassword: string,
+        encryptNewPassword: string
     ): Promise<number> {
-        const encryptPrevPassword: string = this.crypto.encrypt(prevPassword);
-        const encryptNewPassword: string = this.crypto.encrypt(newPassword);
         logger.debug(
-            `${LOG_TAG} authUser(userIdx = ${userIdx}, prevPassword = ${prevPassword}, newPassword = ${newPassword})`
+            `${LOG_TAG} authUser(userIdx = ${userIdx}, encrypt = ${encryptPrevPassword}, newPassword = ${encryptNewPassword})`
         );
         const user: UserDTO = await this.userDao.readByIdx(userIdx);
-        if (user.password !== encryptPrevPassword) {
+        if (
+            this.crypto.decrypt(user.password) !=
+            this.crypto.decrypt(encryptPrevPassword)
+        ) {
             throw new WrongPasswordError();
         }
-        if (user.password === encryptNewPassword) {
+        if (
+            this.crypto.decrypt(encryptPrevPassword) ==
+            this.crypto.decrypt(encryptNewPassword)
+        ) {
             throw new PasswordPolicyError();
         }
         const password: string = encryptNewPassword;

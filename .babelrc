@@ -1,8 +1,5 @@
 {
-    "presets": [
-        "@babel/preset-typescript",
-        "@babel/preset-env"
-    ],
+    "presets": ["@babel/preset-typescript", "@babel/preset-env"],
     "plugins": [
         "@babel/proposal-class-properties",
         "@babel/proposal-object-rest-spread",
@@ -12,22 +9,23 @@
             {
                 "root": ["./src"],
                 "alias": {
-                    "@src" : "./src",
+                    "@src": "./src",
                     "@controllers": "./src/controllers",
                     "@services": "./src/service",
-                    "@dao" : "./src/dao",
+                    "@dao": "./src/dao",
                     "@modules": "./src/modules",
-                    "@errors" : "./src/utils/errors/errors",
-                    "@properties" : "./src/utils/properties",
+                    "@errors": "./src/utils/errors/errors",
+                    "@properties": "./src/utils/properties",
                     "@mongoose": "./src/mongoose_models/index",
-                    "@sequelize" : "./src/models/index",
-                    "@utils" : "./src/utils",
-                    "@libs" : "./src/lib",
-                    "@middleware" : "./src/middleware",
-                    "@configs" : "./src/config",
-                    "@request" : "./src/controllers/definitions/request",
-                    "@response" : "./src/controllers/definitions/response",
-                    "@dto" : "./src/data/dto"
+                    "@sequelize": "./src/models/index",
+                    "@utils": "./src/utils",
+                    "@libs": "./src/lib",
+                    "@middleware": "./src/middleware",
+                    "@configs": "./src/config",
+                    "@request": "./src/controllers/definitions/request",
+                    "@response": "./src/controllers/definitions/response",
+                    "@dto": "./src/data/dto",
+                    "@schedules": "./src/schedules"
                 }
             }
         ]

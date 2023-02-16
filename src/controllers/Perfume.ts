@@ -5,6 +5,7 @@ import { logger, LoggerHelper } from '@modules/winston';
 import {
     MSG_GET_PERFUME_DETAIL_SUCCESS,
     MSG_GET_SEARCH_PERFUME_SUCCESS,
+    MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS,
     LIKE_PERFUME,
     LIKE_PERFUME_CANCEL,
     MSG_GET_RECENT_SEARCH_PERFUME_SUCCESS,
@@ -14,6 +15,7 @@ import {
     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
     MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
     MSG_ABNORMAL_ACCESS,
+    MSG_GET_RECOMMEND_SIMILAR_PERFUMES,
 } from '@utils/strings';
 
 import StatusCode from '@utils/statusCode';
@@ -26,6 +28,7 @@ import {
     PerfumeDetailResponse,
     PerfumeResponse,
     PerfumeRecommendResponse,
+    PerfumeWishedResponse,
 } from '@response/perfume';
 
 import { PagingRequestDTO } from '@request/index';
@@ -35,13 +38,21 @@ import {
     ListAndCountDTO,
     PerfumeSearchResultDTO,
     PerfumeThumbDTO,
+    PerfumeThumbWithReviewDTO,
     PerfumeThumbKeywordDTO,
     PerfumeSearchDTO,
+    PagingDTO,
 } from '@dto/index';
+import { GenderMap } from '@src/utils/enumType';
+import {
+    DEFAULT_RECOMMEND_REQUEST_SIZE,
+    DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE,
+    DEFAULT_SIMILAR_PERFUMES_REQUEST_SIZE,
+    DEFAULT_NEW_PERFUME_REQUEST_SIZE,
+} from '@utils/constants';
+import _ from 'lodash';
 
 const LOG_TAG: string = '[Perfume/Controller]';
-const DEFAULT_RECOMMEND_REQUEST_SIZE: number = 7;
-const DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE: number = 7;
 
 let Perfume: PerfumeService = new PerfumeService();
 let SearchHistory: SearchHistoryService = new SearchHistoryService();
@@ -94,11 +105,17 @@ const getPerfume: RequestHandler = (
     }
     const loginUserIdx: number = req.middlewareToken.loginUserIdx || -1;
     logger.debug(
-        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, params = ${req.params})`
+        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, params = ${JSON.stringify(
+            req.params
+        )})`
     );
     Promise.all([
         Perfume.getPerfumeById(perfumeIdx, loginUserIdx),
-        SearchHistory.incrementCount(loginUserIdx, perfumeIdx),
+        SearchHistory.recordInquire(
+            loginUserIdx,
+            perfumeIdx,
+            '' /* 향후 경로가 다양화 되면 경로 기록 용 */
+        ),
     ])
         .then(([result, _]: [PerfumeIntegralDTO, void]) => {
             return PerfumeDetailResponse.createByPerfumeIntegralDTO(result);
@@ -187,7 +204,9 @@ const searchPerfume: RequestHandler = (
         req.query
     );
     logger.debug(
-        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, query = ${req.query}, body = ${req.body})`
+        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(
+            req.query
+        )}, body = ${JSON.stringify(req.body)})`
     );
     const perfumeSearchDTO: PerfumeSearchDTO =
         perfumeSearchRequest.toPerfumeSearchDTO(loginUserIdx);
@@ -209,6 +228,71 @@ const searchPerfume: RequestHandler = (
         })
         .catch((err: Error) => next(err));
 };
+
+/**
+ * @todo Fix type annotations
+ * @todo Fix error handling
+ * @swagger
+ *   /perfume/recommend/simmilar:
+ *     post:
+ *       tags:
+ *       - perfume
+ *       summary: 비슷한 향수 추천 데이터 저장
+ *       operationId: updateSimilarPerfumes
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - in: body
+ *         name: body 
+ *         schema:
+ *           type: object  
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 비슷한 향수 추천 데이터 등록 성공
+ *               opcode:
+ *                 type: integer
+ *                 example: 0
+ *       x-swagger-router-controller: Perfume
+ * */
+const updateSimilarPerfumes: RequestHandler = async (
+    req: Request | any,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        const perfumeSimilarRequest : any = req.body;
+
+        logger.debug(
+            `${LOG_TAG} updateSimilarPerfumes(
+                body = ${JSON.stringify(req.body)}
+            )`
+        );
+    
+        const result: any = await Perfume.updateSimilarPerfumes(perfumeSimilarRequest);
+        
+        LoggerHelper.logTruncated(
+            logger.debug,
+            `${LOG_TAG} updateSimilarPerfumes's result = ${result}`
+        );
+        
+        res.status(StatusCode.OK).json(
+            new SimpleResponseDTO(
+                MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS
+            )
+        );
+    } catch(err: any) {
+        next(err);
+    } 
+
+
+};
+
 
 /**
  * @swagger
@@ -258,7 +342,9 @@ const likePerfume: RequestHandler = (
     const perfumeIdx: number = req.params['perfumeIdx'];
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
     logger.debug(
-        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, params = ${req.params})`
+        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, params = ${JSON.stringify(
+            req.params
+        )})`
     );
     Perfume.likePerfume(loginUserIdx, perfumeIdx)
         .then((result: boolean) => {
@@ -330,13 +416,16 @@ const getRecentPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
-    req.query.requestSize =
-        req.query.requestSize || DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE;
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
-        req.query
+        req.query,
+        {
+            requestSize: DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE,
+        }
     );
     logger.debug(
-        `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
+        `${LOG_TAG} getRecentPerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(
+            req.query
+        )})`
     );
     Perfume.recentSearch(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
@@ -364,12 +453,8 @@ const getRecentPerfume: RequestHandler = (
  *       tags:
  *       - perfume
  *       summary: 향수 개인 맞춤 추천
- *       description: <h3> 🎫로그인 토큰 필수🎫 </h3> <br/> 데이터를 활용해서 향수를 추천해준다. <br/> 반환 되는 정보 [향수, 좋아요 여부]
+ *       description: 데이터를 활용해서 향수를 추천해준다. <br/> 반환 되는 정보 [향수, 좋아요 여부] <br/> <h3> 미 로그인 시 랜덤 기반 향수 추천 </h3> <br/>
  *       operationId: recommendPersonalPerfume
- *       security:
- *         - userToken: []
- *       x-security-scopes:
- *         - user
  *       produces:
  *       - application/json
  *       parameters:
@@ -401,8 +486,6 @@ const getRecentPerfume: RequestHandler = (
  *                     items:
  *                       allOf:
  *                       - $ref: '#/definitions/PerfumeRecommendResponse'
- *         401:
- *           description: Token is missing or invalid
  *       x-swagger-router-controller: Perfume
  * */
 const recommendPersonalPerfume: RequestHandler = (
@@ -411,15 +494,37 @@ const recommendPersonalPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
-    req.query.requestSize =
-        req.query.requestSize || DEFAULT_RECOMMEND_REQUEST_SIZE;
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
-        req.query
+        req.query,
+        {
+            requestSize: DEFAULT_RECOMMEND_REQUEST_SIZE,
+        }
     );
     logger.debug(
-        `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
+        `${LOG_TAG} recommendPersonalPerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(
+            req.query
+        )})`
     );
-    Perfume.recommendByUser(loginUserIdx, pagingRequestDTO.toPageDTO())
+    const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
+    // FIXME : recommendByUser 는 pagingDTO를 만족해서 반환해줘야 하는데 아닌경우가 존재하지만 재현이 안되어서 방어 코드 추가
+    return (
+        loginUserIdx > 0
+            ? Perfume.recommendByUser(loginUserIdx, pagingDTO).then(
+                  (it: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
+                      if (it.rows.length <= pagingDTO.limit) {
+                          return it;
+                      }
+                      return new ListAndCountDTO<PerfumeThumbKeywordDTO>(
+                          it.count,
+                          it.rows.slice(0, pagingDTO.limit)
+                      );
+                  }
+              )
+            : Perfume.getPerfumesByRandom(pagingDTO.limit)
+    )
+        .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
+            return supplementPerfumeWithRandom(result, pagingDTO.limit);
+        })
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return result.convertType(PerfumeRecommendResponse.createByJson);
         })
@@ -439,6 +544,93 @@ const recommendPersonalPerfume: RequestHandler = (
 };
 
 /**
+ * @todo Fix error handling
+ * @swagger
+ *   /perfume/{perfumeIdx}/similar:
+ *     get:
+ *       tags:
+ *       - perfume
+ *       summary: 비슷한 향수 추천
+ *       description: 현재 향수와 유사한 향수들을 추천 해준다,
+ *       operationId: recommendSimilarPerfumeList
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: requestSize
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       - name: lastPosition
+ *         in: query
+ *         type: integer
+ *         required: false
+ *       - name: perfumeIdx
+ *         in: path
+ *         required: true
+ *         type: integer
+ *         format: int64
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 현재 향수와 비슷한 향수 리스트 입니다.
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   count:
+ *                     type: integer
+ *                     example: 1
+ *                   rows:
+ *                     type: array
+ *                     items:
+ *                       allOf:
+ *                       - $ref: '#/definitions/PerfumeRecommendResponse'
+ *       x-swagger-router-controller: Perfume
+ * */
+const recommendSimilarPerfumeList: RequestHandler = async (
+    req: Request | any,
+    res: Response,
+    next: NextFunction
+): Promise<any> => {
+    try {
+        const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
+            req.query,
+            {
+                requestSize: DEFAULT_SIMILAR_PERFUMES_REQUEST_SIZE,
+            }
+        );
+        logger.debug(
+            `${LOG_TAG} recommendSimilarPerfumeList(query = ${JSON.stringify(
+                req.query
+            )})`
+        );
+        const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
+        const perfumeIdx: number = req.params['perfumeIdx'];
+
+        const similarPerfumeList: ListAndCountDTO<PerfumeThumbKeywordDTO> =  await Perfume.getRecommendedSimilarPerfumeList(perfumeIdx, pagingDTO.limit)
+        const response: ListAndCountDTO<PerfumeRecommendResponse> = similarPerfumeList.convertType(PerfumeRecommendResponse.createByJson);
+        
+        LoggerHelper.logTruncated(
+            logger.debug,
+            `${LOG_TAG} recommendPersonalPerfume's result = ${response}`
+        );
+        
+        res.status(StatusCode.OK).json(
+            new ResponseDTO<ListAndCountDTO<PerfumeRecommendResponse>>(
+                MSG_GET_RECOMMEND_SIMILAR_PERFUMES,
+                response
+            )
+        );
+    } catch(err: any) {
+        next(err);
+    } 
+};
+
+/**
  * @swagger
  *   /perfume/recommend/common:
  *     get:
@@ -452,13 +644,16 @@ const recommendPersonalPerfume: RequestHandler = (
  *       produces:
  *       - application/json
  *       parameters:
- *       - name: requestSize
+ *       - name: age
  *         in: query
  *         type: integer
  *         required: false
- *       - name: lastPosition
+ *       - name: gender
  *         in: query
- *         type: integer
+ *         type: string
+ *         enum:
+ *         - MAN
+ *         - WOMAN
  *         required: false
  *       responses:
  *         200:
@@ -488,15 +683,30 @@ const recommendCommonPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
-    const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
-        req.query
-    );
+    const gender: number =
+        GenderMap[req.query.gender] || req.middlewareToken.userGender;
     logger.debug(
-        `${LOG_TAG} recommendCommonPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
+        `${LOG_TAG} recommendCommonPerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(
+            req.query
+        )})`
     );
-    Perfume.recommendByUser(loginUserIdx, pagingRequestDTO.toPageDTO())
-        .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-            return result.convertType(PerfumeRecommendResponse.createByJson);
+    // FIXME : perfumeIdxList는 외부로 부터 받아야 하지만 현재는 고정된 값을 반환함. 외부로 부터 가져오는 시스템 구축 시 아래 코드는 수정되어야함.
+    const perfumeIdxList: number[] =
+        gender == GenderMap.MAN
+            ? [
+                  5508, 2999, 3007, 2649, 2647, 2192, 5, 7392, 7381, 7380, 2234,
+                  2813, 6081, 2450, 49,
+              ]
+            : [
+                  49, 2450, 2465, 1767, 2176, 3040, 16, 1522, 2192, 5, 7420,
+                  7392, 7381, 7380, 1537,
+              ];
+    Perfume.getPerfumesByIdxList(perfumeIdxList, loginUserIdx)
+        .then((result: PerfumeThumbKeywordDTO[]) => {
+            return new ListAndCountDTO(
+                result.length,
+                result.map(PerfumeRecommendResponse.createByJson)
+            );
         })
         .then((response: ListAndCountDTO<PerfumeRecommendResponse>) => {
             LoggerHelper.logTruncated(
@@ -628,13 +838,16 @@ const getNewPerfume: RequestHandler = (
     next: NextFunction
 ): any => {
     const loginUserIdx: number = req.middlewareToken.loginUserIdx;
-    req.query.requestSize =
-        req.query.requestSize || DEFAULT_RECOMMEND_REQUEST_SIZE;
     const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
-        req.query
+        req.query,
+        {
+            requestSize: DEFAULT_NEW_PERFUME_REQUEST_SIZE,
+        }
     );
     logger.debug(
-        `${LOG_TAG} getNewPerfume(userIdx = ${loginUserIdx}, query = ${req.query})`
+        `${LOG_TAG} getNewPerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(
+            req.query
+        )})`
     );
     Perfume.getNewPerfume(loginUserIdx, pagingRequestDTO.toPageDTO())
         .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
@@ -696,7 +909,7 @@ const getNewPerfume: RequestHandler = (
  *                 type: array
  *                 items:
  *                   allOf:
- *                   - $ref: '#/definitions/PerfumeResponse'
+ *                   - $ref: '#/definitions/PerfumeWishedResponse'
  *         default:
  *           description: successful operation
  *       x-swagger-router-controller: Perfume
@@ -712,7 +925,9 @@ const getLikedPerfume: RequestHandler = (
         req.query
     );
     logger.debug(
-        `${LOG_TAG} getLikedPerfume(userIdx = ${userIdx}, loginUserIdx = ${loginUserIdx}, query = ${req.query})`
+        `${LOG_TAG} getLikedPerfume(userIdx = ${userIdx}, loginUserIdx = ${loginUserIdx}, query = ${JSON.stringify(
+            req.query
+        )})`
     );
     if (loginUserIdx != userIdx) {
         res.status(StatusCode.FORBIDDEN).json(
@@ -721,16 +936,16 @@ const getLikedPerfume: RequestHandler = (
         return;
     }
     Perfume.getLikedPerfume(userIdx, pagingRequestDTO.toPageDTO())
-        .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-            return result.convertType(PerfumeResponse.createByJson);
+        .then((result: ListAndCountDTO<PerfumeThumbWithReviewDTO>) => {
+            return result.convertType(PerfumeWishedResponse.createByJson);
         })
-        .then((response: ListAndCountDTO<PerfumeResponse>) => {
+        .then((response: ListAndCountDTO<PerfumeWishedResponse>) => {
             LoggerHelper.logTruncated(
                 logger.debug,
                 `${LOG_TAG} getLikedPerfume's result = ${response}`
             );
             res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
+                new ResponseDTO<ListAndCountDTO<PerfumeWishedResponse>>(
                     MSG_GET_LIKED_PERFUME_LIST_SUCCESS,
                     response
                 )
@@ -741,6 +956,21 @@ const getLikedPerfume: RequestHandler = (
         });
 };
 
+function supplementPerfumeWithRandom(
+    origin: ListAndCountDTO<PerfumeThumbKeywordDTO>,
+    size: number
+): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
+    return Perfume.getPerfumesByRandom(size).then(
+        (randomList: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
+            const needSize: number = size - origin.rows.length;
+            return new ListAndCountDTO<PerfumeThumbKeywordDTO>(
+                size,
+                _.concat(origin.rows, randomList.rows.slice(0, needSize))
+            );
+        }
+    );
+}
+
 module.exports.getPerfume = getPerfume;
 module.exports.searchPerfume = searchPerfume;
 module.exports.likePerfume = likePerfume;
@@ -750,6 +980,8 @@ module.exports.recommendCommonPerfume = recommendCommonPerfume;
 module.exports.getSurveyPerfume = getSurveyPerfume;
 module.exports.getNewPerfume = getNewPerfume;
 module.exports.getLikedPerfume = getLikedPerfume;
+module.exports.recommendSimilarPerfumeList = recommendSimilarPerfumeList;
+module.exports.updateSimilarPerfumes = updateSimilarPerfumes;
 
 module.exports.setPerfumeService = (service: PerfumeService) => {
     Perfume = service;

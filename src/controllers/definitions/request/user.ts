@@ -1,18 +1,9 @@
 import { logger } from '@modules/winston';
 
 import { InvalidInputError } from '@src/utils/errors/errors';
-import { GenderMap, GradeMap, GradeKey, GenderKey } from '@utils/enumType';
+import { GenderMap, GradeMap, GradeKey } from '@utils/enumType';
 import { GRADE_USER } from '@utils/constants';
 import { UserInputDTO } from '@src/data/dto';
-
-interface UserInputRequest {
-    grade?: GradeKey;
-    gender?: GenderKey;
-    nickname?: string;
-    password?: string;
-    email?: string;
-    birth?: number;
-}
 
 /**
  * @swagger
@@ -35,21 +26,24 @@ interface UserInputRequest {
  *         type: string
  *         enum: [USER, MANAGER, SYSTEM_ADMIN]
  *  */
-class UserEditRequest implements UserInputRequest {
+class UserEditRequest {
+    readonly userIdx?: number;
     readonly grade?: GradeKey;
-    readonly gender?: GenderKey;
+    readonly gender?: string | null;
     readonly nickname?: string;
     readonly password?: string;
     readonly email?: string;
-    readonly birth?: number;
+    readonly birth?: number | null;
     constructor(
+        userIdx?: number,
         nickname?: string,
         password?: string,
-        gender?: GenderKey,
+        gender?: string | null,
         email?: string,
-        birth?: number,
+        birth?: number | null,
         grade?: GradeKey
     ) {
+        this.userIdx = userIdx;
         this.grade = grade;
         this.gender = gender;
         this.nickname = nickname;
@@ -62,12 +56,13 @@ class UserEditRequest implements UserInputRequest {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
 
-    public toUserInputDTO(userIdx: number): UserInputDTO {
-        return createByRequest(userIdx, this);
+    public toUserInputDTO(): UserInputDTO {
+        return createByRequest(this);
     }
 
     static createByJson(json: any): UserEditRequest {
         return new UserEditRequest(
+            json.userIdx,
             json.nickname,
             json.password,
             json.gender,
@@ -87,37 +82,44 @@ class UserEditRequest implements UserInputRequest {
  *       password:
  *         type: string
  *         required: true
+ *         example: 1234
  *       email:
  *         type: string
  *         required: true
+ *         example: heesung6701@naver.com
  *       nickname:
  *         type: string
  *         required: true
+ *         example: quokkaman
  *       gender:
  *         type: string
  *         enum: [MAN, WOMAN]
- *         required: true
+ *         required: false
+ *         nullable: true
+ *         example: MAN
  *       birth:
  *         type: integer
- *         required: true
+ *         required: false
+ *         nullable: true
+ *         example: 1995
  *       grade:
  *         type: string
  *         enum: [USER, MANAGER, SYSTEM_ADMIN]
- *         required: true
+ *         example: USER
  *  */
-class UserRegisterRequest implements UserInputRequest {
+class UserRegisterRequest {
     readonly nickname: string;
     readonly password: string;
-    readonly gender: GenderKey;
-    readonly birth: number;
+    readonly gender: string | null;
+    readonly birth: number | null;
     readonly email: string;
     readonly grade: GradeKey;
     constructor(
         nickname: string,
         password: string,
-        gender: GenderKey,
+        gender: string | null,
         email: string,
-        birth: number,
+        birth: number | null,
         grade: GradeKey
     ) {
         this.grade = grade;
@@ -133,16 +135,16 @@ class UserRegisterRequest implements UserInputRequest {
     }
 
     public toUserInputDTO(): UserInputDTO {
-        return createByRequest(undefined, this);
+        return createByRequest(this);
     }
 
     static createByJson(json: any): UserRegisterRequest {
         return new UserRegisterRequest(
             json.nickname,
             json.password,
-            json.gender,
+            json.gender || null,
             json.email,
-            json.birth,
+            json.birth || null,
             json.grade | GRADE_USER
         );
     }
@@ -150,37 +152,34 @@ class UserRegisterRequest implements UserInputRequest {
 
 const LOG_TAG: string = '[definition/UserInputRequest]';
 
-function createByRequest(
-    userIdx: number | undefined,
-    request: UserInputRequest
-): UserInputDTO {
-    let genderCode: any = undefined;
-    if (request.gender) {
-        if (GenderMap[request.gender] == undefined) {
-            logger.debug(`${LOG_TAG} invalid gender: ${request.gender}`);
+function createByRequest(json: any): UserInputDTO {
+    let genderVal: number | null = null;
+    if (json.gender) {
+        if (GenderMap[json.gender] == undefined) {
+            logger.debug(`${LOG_TAG} invalid gender: ${json.gender}`);
             throw new InvalidInputError();
         }
-        genderCode = GenderMap[request.gender];
+        genderVal = GenderMap[json.gender];
     }
     let gradeCode: number = GRADE_USER;
-    if (request.grade) {
-        if (GradeMap[request.grade] == undefined) {
-            logger.debug(`${LOG_TAG} invalid grade: ${request.grade}`);
+    if (json.grade) {
+        if (GradeMap[json.grade] == undefined) {
+            logger.debug(`${LOG_TAG} invalid grade: ${json.grade}`);
             throw new InvalidInputError();
         }
-        gradeCode = GradeMap[request.grade];
+        gradeCode = GradeMap[json.grade];
     }
 
-    return new UserInputDTO(
-        userIdx,
-        request.nickname,
-        request.password,
-        genderCode,
-        request.email,
-        request.birth,
-        gradeCode,
-        undefined
-    );
+    return {
+        userIdx: json!!.userIdx,
+        nickname: json!!.nickname,
+        password: json!!.password,
+        gender: genderVal || null,
+        email: json.email,
+        birth: json.birth || null,
+        grade: gradeCode,
+        accessTime: undefined,
+    };
 }
 
-export { UserInputRequest, UserEditRequest, UserRegisterRequest };
+export { UserEditRequest, UserRegisterRequest };
