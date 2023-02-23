@@ -587,7 +587,8 @@ class PerfumeDao {
     
     /**
      * 유효 시향기 n개 이상 보유 조건을 만족하는 랜덤 향수 조회
-     *
+     * 
+     * @todo sequelize raw query 대신 findall 사용하도록 변경하기
      * @param {number} size
      * @param {number} minReviewCount
      * @returns {Promise<PerfumeThumbDTO[]>}
