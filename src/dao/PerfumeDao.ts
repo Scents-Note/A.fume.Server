@@ -21,7 +21,6 @@ const {
     Brand,
     InquireHistory,
     LikePerfume,
-    Review,
     sequelize,
     Sequelize,
 } = require('@sequelize');
