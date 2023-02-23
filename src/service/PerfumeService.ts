@@ -479,28 +479,32 @@ class PerfumeService {
 
     /**
      * 랜덤 향수 조회
+     * minReviewCount 지정시, 유효 시향기 n개 이상 보유 조건을 만족하는 향수 조회
      *
      * @param {number} size
-     * @returns {Promise<PerfumeThumbKeywordDTO[]>}
+     * @param {number} minReviewCount
+     * @returns {Promise<ListAndCountDTO<PerfumeThumbDTO>>}
      **/
-    getPerfumesByRandom(
-        size: number
+    async getPerfumesByRandom(
+        size: number,
+        minReviewCount: number = 0
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
         logger.debug(`${LOG_TAG} getPerfumesByRandom(size = ${size})`);
-        return perfumeDao
-            .getPerfumesByRandom(size)
-            .then(
-                (
-                    result: [PerfumeThumbDTO]
-                ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> => {
-                    return this.convertToThumbKeyword(
-                        new ListAndCountDTO<PerfumeThumbDTO>(
-                            result.length,
-                            result
-                        )
-                    );
-                }
-            );
+        let result:  PerfumeThumbDTO[] | [] = [];
+        
+        if (minReviewCount == 0) {
+            result = await perfumeDao.getPerfumesByRandom(size)
+        }
+        if (minReviewCount > 0) {
+            result = await perfumeDao.getPerfumesWithMinReviewsByRandom(size, minReviewCount)
+        }
+
+        return await this.convertToThumbKeyword(
+             new ListAndCountDTO<PerfumeThumbDTO>(
+                result.length,
+                result
+            )
+        );
     }
 
     /**
