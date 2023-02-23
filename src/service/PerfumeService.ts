@@ -490,7 +490,7 @@ class PerfumeService {
         minReviewCount: number = 0
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
         logger.debug(`${LOG_TAG} getPerfumesByRandom(size = ${size})`);
-        let result:  PerfumeThumbDTO[] | [] = [];
+        let result:  PerfumeThumbDTO[] = [];
         
         if (minReviewCount == 0) {
             result = await perfumeDao.getPerfumesByRandom(size)
