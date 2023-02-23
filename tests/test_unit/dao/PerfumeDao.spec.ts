@@ -594,9 +594,9 @@ describe('# perfumeDao Test', () => {
                     perfumeDao.getPerfumesByRandom(defaultPagingDTO.limit),
                     perfumeDao.getPerfumesByRandom(defaultPagingDTO.limit),
                 ])
-                    .then((result: [[PerfumeThumbDTO], [PerfumeThumbDTO]]) => {
-                        const result1: [PerfumeThumbDTO] = result[0];
-                        const result2: [PerfumeThumbDTO] = result[1];
+                    .then((result: [PerfumeThumbDTO[], PerfumeThumbDTO[]]) => {
+                        const result1: PerfumeThumbDTO[] = result[0];
+                        const result2: PerfumeThumbDTO[] = result[1];
                         expect(
                             _.zip(result1, result2).filter(
                                 (
