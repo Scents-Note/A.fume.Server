@@ -520,7 +520,7 @@ const recommendPersonalPerfume: RequestHandler = (
                       );
                   }
               )
-            : Perfume.getPerfumesByRandom(pagingDTO.limit)
+            : Perfume.getPerfumesByRandom(pagingDTO.limit, 3)
     )
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return supplementPerfumeWithRandom(result, pagingDTO.limit);
