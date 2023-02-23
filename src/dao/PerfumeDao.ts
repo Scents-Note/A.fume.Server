@@ -21,6 +21,7 @@ const {
     Brand,
     InquireHistory,
     LikePerfume,
+    Review,
     sequelize,
     Sequelize,
 } = require('@sequelize');
@@ -86,6 +87,22 @@ const SQL_SEARCH_PERFUME_SELECT_COUNT: string =
     'FROM perfumes p ' +
     'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
     'WHERE p.deleted_at IS NULL AND (:whereCondition) ';
+
+const SQL_SEARCH_RANDOM_PERFUME_WITH_MIN_REVIEW_COUNT: string = 
+    'SELECT ' +
+    '`Perfume`.perfume_idx AS perfumeIdx, `Perfume`.brand_idx AS brandIdx, `Perfume`.name, `Perfume`.english_name AS englishName, `Perfume`.image_url AS imageUrl, `Perfume`.created_at AS createdAt, `Perfume`.updated_at AS updatedAt, ' +
+    'COUNT(`Review`.`id`), ' +
+    '`Brand`.`brand_idx` AS `Brand.brandIdx`, `Brand`.`name` AS `Brand.name`, `Brand`.`english_name` AS `Brand.englishName`, `Brand`.`first_initial` AS `Brand.firstInitial`, `Brand`.`image_url` AS `Brand.imageUrl`, `Brand`.`description` AS `Brand.description`, `Brand`.`created_at` AS `Brand.createdAt`, `Brand`.`updated_at` AS `Brand.updatedAt`, `Brand`.`deleted_at` AS `Brand.deletedAt` ' +
+    'FROM `perfumes` AS `Perfume` ' +
+    'INNER JOIN `brands` AS `Brand` ' +
+    'ON `Perfume`.`brand_idx` = `Brand`.`brand_idx` ' +
+    'INNER JOIN `reviews` As `Review` ' +
+    'ON `Perfume`.`perfume_idx` = `Review`.`perfume_idx` ' +
+    'WHERE (`Brand`.`deleted_at` IS NULL) AND (`Perfume`.`deleted_at` IS NULL) AND (`Review`.`deleted_at` IS NULL) AND (`Review`.`access` = 1) ' +
+    'GROUP BY `Perfume`.`perfume_idx` ' +
+    'HAVING COUNT(`Review`.`id`) >= :minReviewCount ' +
+    'ORDER BY rand() ' +
+    'LIMIT :size '
 
 const defaultOption: { [key: string]: any } = {
     include: [
@@ -554,9 +571,9 @@ class PerfumeDao {
      * 랜덤 향수 조회
      *
      * @param {number} size
-     * @returns {Promise<Perfume[]>}
+     * @returns {Promise<PerfumeThumbDTO[]>}
      */
-    async getPerfumesByRandom(size: number): Promise<[PerfumeThumbDTO]> {
+    async getPerfumesByRandom(size: number): Promise< PerfumeThumbDTO[]> {
         logger.debug(`${LOG_TAG} getPerfumesByRandom(size = ${size})`);
         const options: { [key: string]: any } = _.merge({}, defaultOption, {
             order: Sequelize.literal('rand()'),
@@ -565,6 +582,31 @@ class PerfumeDao {
         return Perfume.findAll(options).then((rows: any[]) => {
             return rows.map(PerfumeThumbDTO.createByJson);
         });
+    }
+
+    
+    /**
+     * 유효 시향기 n개 이상 보유 조건을 만족하는 랜덤 향수 조회
+     *
+     * @param {number} size
+     * @param {number} minReviewCount
+     * @returns {Promise<PerfumeThumbDTO[]>}
+     */
+    async getPerfumesWithMinReviewsByRandom(size: number, minReviewCount: number): Promise<PerfumeThumbDTO[]> {
+        logger.debug(`${LOG_TAG} getPerfumesWithMinReviewsByRandom(size = ${size}, minReviewCount = ${minReviewCount})`);
+        const result: PerfumeThumbDTO[] = (
+            await sequelize.query(
+                SQL_SEARCH_RANDOM_PERFUME_WITH_MIN_REVIEW_COUNT, Object.assign(
+                    {
+                        replacements: {minReviewCount: minReviewCount, size: size},
+                        type: sequelize.QueryTypes.SELECT,
+                        raw: true,
+                        nest: true
+                    }
+                )
+            )
+        )
+        return result.map(PerfumeThumbDTO.createByJson);;
     }
 
     /**
