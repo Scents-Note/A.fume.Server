@@ -606,7 +606,7 @@ class PerfumeDao {
                 )
             )
         )
-        return result.map(PerfumeThumbDTO.createByJson);;
+        return result.map(PerfumeThumbDTO.createByJson);
     }
 
     /**
