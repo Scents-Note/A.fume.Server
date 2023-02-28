@@ -433,6 +433,7 @@ class PerfumeDao {
     /**
      * 나이 및 성별에 기반한 향수 추천
      *
+     * @deprecated since version 0.0.9
      * @param {string} gender
      * @param {number} ageGroup
      * @param {PagingDTO} pagingDTO
