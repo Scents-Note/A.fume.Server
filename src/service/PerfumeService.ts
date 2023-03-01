@@ -301,7 +301,8 @@ class PerfumeService {
 
     /**
      * 유저 연령대 및 성별에 따른 향수 추천
-     *
+     * 
+     * @deprecated since version 0.0.9
      * @param {number} userIdx
      * @param {PagingDTO} pagingDTO
      * @param {number} ageGroup
@@ -340,6 +341,7 @@ class PerfumeService {
     /**
      * 유저 연령대 및 성별에 따른 향수 추천
      *
+     * @deprecated since version 0.0.9
      * @param {number} gender
      * @param {number} ageGroup
      * @param {PagingDTO} pagingDTO
