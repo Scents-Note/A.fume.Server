@@ -506,22 +506,7 @@ const recommendPersonalPerfume: RequestHandler = (
         )})`
     );
     const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
-    // FIXME : recommendByUser 는 pagingDTO를 만족해서 반환해줘야 하는데 아닌경우가 존재하지만 재현이 안되어서 방어 코드 추가
-    return (
-        loginUserIdx > 0
-            ? Perfume.recommendByUser(loginUserIdx, pagingDTO).then(
-                  (it: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-                      if (it.rows.length <= pagingDTO.limit) {
-                          return it;
-                      }
-                      return new ListAndCountDTO<PerfumeThumbKeywordDTO>(
-                          it.count,
-                          it.rows.slice(0, pagingDTO.limit)
-                      );
-                  }
-              )
-            : Perfume.getPerfumesByRandom(pagingDTO.limit, 3)
-    )
+    return  Perfume.getPerfumesByRandom(pagingDTO.limit, 3)
         .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
             return supplementPerfumeWithRandom(result, pagingDTO.limit);
         })
