@@ -2,6 +2,12 @@
 
 ## 설치/실행 방법
 
+0. 최초 실행시에는, 전역 의존성을 설치해줘야 함
+
+```sh
+./script/setup-global.sh
+```
+
 1. .env 파일 생성
 
 project_root에 .env 생성
