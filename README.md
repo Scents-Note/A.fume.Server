@@ -27,12 +27,6 @@
 
 # [기여하기](./docs/contribution.md)
 
-# 팀원 소개
-
--   윤희성 / @heesung6701 / quokkaman@kakao.com
-
--   조하담 / @ChoHadam /
-
 # [업데이트 내역](./docs/history.md)
 
 # 기술 블로그
