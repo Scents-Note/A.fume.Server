@@ -23,16 +23,27 @@ class ReportsDao {
         logger.debug(
             `${LOG_TAG} readUserInquirePerfume(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx})`
         );
-        return ReportUserInquirePerfume.findOne({
+        // return ReportUserInquirePerfume.findOne({
+        //     where: { userIdx, perfumeIdx },
+        //     raw: true,
+        //     nest: true,
+        // }).then((it: any) => {
+        //     if (it == null) {
+        //         throw new NotMatchedError();
+        //     }
+        //     return ReportUserInquirePerfumeDTO.createByJson(it);
+        // });
+
+        const it = await ReportUserInquirePerfume.findOne({
             where: { userIdx, perfumeIdx },
             raw: true,
             nest: true,
-        }).then((it: any) => {
-            if (it == null) {
-                throw new NotMatchedError();
-            }
-            return ReportUserInquirePerfumeDTO.createByJson(it);
         });
+
+        if (it == null) {
+            throw new NotMatchedError();
+        }
+        return ReportUserInquirePerfumeDTO.createByJson(it);
     }
 
     /**

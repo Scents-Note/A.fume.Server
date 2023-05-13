@@ -56,7 +56,23 @@ class SeriesDao {
         where: any = {}
     ): Promise<ListAndCountDTO<SeriesDTO>> {
         logger.debug(`${LOG_TAG} readAll(pagingDTO = ${pagingDTO})`);
-        return Series.findAndCountAll(
+        // return Series.findAndCountAll(
+        //     Object.assign(
+        //         {
+        //             where,
+        //             raw: true,
+        //             nest: true,
+        //         },
+        //         pagingDTO.sequelizeOption()
+        //     )
+        // ).then((it: any) => {
+        //     return new ListAndCountDTO<SeriesDTO>(
+        //         it.count,
+        //         it.rows.map(SeriesDTO.createByJson)
+        //     );
+        // });
+
+        const it = await Series.findAndCountAll(
             Object.assign(
                 {
                     where,
@@ -65,12 +81,12 @@ class SeriesDao {
                 },
                 pagingDTO.sequelizeOption()
             )
-        ).then((it: any) => {
-            return new ListAndCountDTO<SeriesDTO>(
-                it.count,
-                it.rows.map(SeriesDTO.createByJson)
-            );
-        });
+        );
+
+        return new ListAndCountDTO<SeriesDTO>(
+            it.count,
+            it.rows.map(SeriesDTO.createByJson)
+        );
     }
 
     /**
