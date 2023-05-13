@@ -23,9 +23,7 @@
 
 # [시작하기](./docs/getting_started.md)
 
-# 라이센스
-
-`GNU GENERAL PUBLIC LICENSE Version 3` 라이센스를 준수하며 `LICENSE`에서 자세한 정보를 확인할 수 있습니다.
+# [라이센스](./LICENSE)
 
 # [기여하기](./docs/contribution.md)
 
