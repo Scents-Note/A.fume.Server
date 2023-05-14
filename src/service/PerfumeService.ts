@@ -720,15 +720,6 @@ class PerfumeService {
             return imageFromS3;
         }
 
-        // TODO: Below logic will be removed after detaching afume(previous) bucket
-        const imageFromS3Legacy: string[] = await s3FileDao
-            .getS3ImageList(perfumeIdx)
-            .catch((_: any) => []);
-
-        if (imageFromS3Legacy.length > 0) {
-            return [imageFromS3Legacy[0]];
-        }
-
         return [defaultImage];
     }
 }
