@@ -21,19 +21,6 @@ const s3MainInfo: S3Info = {
     },
 };
 
-// TODO: This variable will be removed after detaching afume(previous) bucket
-const s3LegacyInfo: S3Info = {
-    getConfig: (): AWS.ConfigurationOptions => {
-        return {
-            accessKeyId: properties.AWS_ACCESS_KEY_ID_LEGACY,
-            secretAccessKey: properties.AWS_SECRET_ACCESS_KEY_LEGACY,
-        };
-    },
-    getUrl: (): string => {
-        return properties.AWS_S3_URL_LEGACY;
-    },
-};
-
 class S3Adapter {
     readonly info: S3Info;
     readonly s3: AWS.S3;
@@ -73,11 +60,6 @@ class S3Adapter {
 
     static getMainS3Adapter(): S3Adapter {
         return new S3Adapter(s3MainInfo);
-    }
-
-    // TODO: This method will be removed after detaching afume(previous) bucket
-    static getLegacyS3Adapter(): S3Adapter {
-        return new S3Adapter(s3LegacyInfo);
     }
 }
 
