@@ -121,5 +121,21 @@ module.exports.delete = async (userIdx, reviewIdx) => {
         return Promise.all([deleteLike, updateLikeCnt]).then((it) => {
             return it;
         });
+
+        // const deleteLike = await LikeReview.destroy({
+        //     where: { userIdx, reviewIdx },
+        //     transaction: t,
+        // });
+        // if (deleteLike == 0) throw new NotMatchedError();
+
+        // const updateLikeCnt = Review.update(
+        //     { likeCnt: sequelize.literal('like_cnt - 1') },
+        //     {
+        //         where: { id: reviewIdx },
+        //         transaction: t,
+        //     }
+        // );
+        // await Promise.all([deleteLike, updateLikeCnt]);
+        // return;
     });
 };

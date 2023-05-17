@@ -61,23 +61,37 @@ class IngredientDao {
         pagingDTO?: PagingDTO
     ): Promise<ListAndCountDTO<IngredientDTO>> {
         logger.debug(`${LOG_TAG} readAll(where = ${JSON.stringify(where)})`);
-        const result = await Ingredient.findAndCountAll(
-            Object.assign(
-                {
-                    where,
-                    raw: true,
-                    nest: true,
-                },
-                pagingDTO ? pagingDTO.sequelizeOption() : {}
-            )
-        );
+        // const result = await Ingredient.findAndCountAll(
+        //     Object.assign(
+        //         {
+        //             where,
+        //             raw: true,
+        //             nest: true,
+        //         },
+        //         pagingDTO ? pagingDTO.sequelizeOption() : {}
+        //     )
+        // );
+        // if (!result) {
+        //     throw new NotMatchedError();
+        // }
+        // return new ListAndCountDTO<IngredientDTO>(
+        //     result.count,
+        //     result.rows.map((it: any) => IngredientDTO.createByJson(it))
+        // );
+        const options = {
+            where,
+            raw: true,
+            nest: true,
+            ...(pagingDTO ? pagingDTO.sequelizeOption() : {}),
+        };
+        const result = await Ingredient.findAndCountAll(options);
         if (!result) {
             throw new NotMatchedError();
         }
-        return new ListAndCountDTO<IngredientDTO>(
-            result.count,
-            result.rows.map((it: any) => IngredientDTO.createByJson(it))
+        const rows = result.rows.map((it: any) =>
+            IngredientDTO.createByJson(it)
         );
+        return new ListAndCountDTO<IngredientDTO>(result.count, rows);
     }
     /**
      * 재료 검색
@@ -89,21 +103,36 @@ class IngredientDao {
         pagingDTO: PagingDTO
     ): Promise<ListAndCountDTO<IngredientDTO>> {
         logger.debug(`${LOG_TAG} search(pagingDTO = ${pagingDTO})`);
-        return Ingredient.findAndCountAll(
-            Object.assign(
-                {
-                    raw: true,
-                    nest: true,
-                },
-                pagingDTO.sequelizeOption
-            )
-        ).then((result: any) => {
+        // return Ingredient.findAndCountAll(
+        //     Object.assign(
+        //         {
+        //             raw: true,
+        //             nest: true,
+        //         },
+        //         pagingDTO.sequelizeOption
+        //     )
+        // ).then((result: any) => {
+        //     const { count, rows } = result;
+        //     return new ListAndCountDTO<IngredientDTO>(
+        //         count,
+        //         rows.map((it: any) => IngredientDTO.createByJson(it))
+        //     );
+        // });
+        try {
+            const options = {
+                raw: true,
+                nest: true,
+                ...pagingDTO.sequelizeOption,
+            };
+            const result = await Ingredient.findAndCountAll(options);
             const { count, rows } = result;
-            return new ListAndCountDTO<IngredientDTO>(
-                count,
-                rows.map((it: any) => IngredientDTO.createByJson(it))
+            const mappedRows = rows.map((it: any) =>
+                IngredientDTO.createByJson(it)
             );
-        });
+            return new ListAndCountDTO<IngredientDTO>(count, mappedRows);
+        } catch (error) {
+            throw error;
+        }
     }
 
     /**
@@ -118,17 +147,31 @@ class IngredientDao {
         logger.debug(
             `${LOG_TAG} readBySeriesIdxList(seriesIdxList = ${seriesIdxList})`
         );
-        return Ingredient.findAll({
-            where: {
-                seriesIdx: {
-                    [Op.in]: seriesIdxList,
+        // return Ingredient.findAll({
+        //     where: {
+        //         seriesIdx: {
+        //             [Op.in]: seriesIdxList,
+        //         },
+        //     },
+        //     raw: true,
+        //     nest: true,
+        // }).then((result: any) => {
+        //     return result.map((it: any) => IngredientDTO.createByJson(it));
+        // });
+        try {
+            const result = await Ingredient.findAll({
+                where: {
+                    seriesIdx: {
+                        [Op.in]: seriesIdxList,
+                    },
                 },
-            },
-            raw: true,
-            nest: true,
-        }).then((result: any) => {
+                raw: true,
+                nest: true,
+            });
             return result.map((it: any) => IngredientDTO.createByJson(it));
-        });
+        } catch (error) {
+            throw error;
+        }
     }
     /**
      * 재료 검색
@@ -144,17 +187,28 @@ class IngredientDao {
             )})`
         );
         // reason for converting json is remove key that has undefined value
+        // condition = JSON.parse(JSON.stringify(condition));
+        // return Ingredient.findOne({
+        //     where: condition,
+        //     raw: true,
+        //     nest: true,
+        // }).then((result: any) => {
+        //     if (!result) {
+        //         throw new NotMatchedError();
+        //     }
+        //     return IngredientDTO.createByJson(result);
+        // });
         condition = JSON.parse(JSON.stringify(condition));
-        return Ingredient.findOne({
+
+        const result = await Ingredient.findOne({
             where: condition,
             raw: true,
             nest: true,
-        }).then((result: any) => {
-            if (!result) {
-                throw new NotMatchedError();
-            }
-            return IngredientDTO.createByJson(result);
         });
+        if (!result) {
+            throw new NotMatchedError();
+        }
+        return IngredientDTO.createByJson(result);
     }
 
     /**

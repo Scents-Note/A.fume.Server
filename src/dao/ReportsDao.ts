@@ -60,14 +60,23 @@ class ReportsDao {
         logger.debug(
             `${LOG_TAG} createUserInquirePerfume(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx}, count = ${count})`
         );
-        return ReportUserInquirePerfume.create(
-            { userIdx, perfumeIdx, count },
-            { raw: true, nest: true }
-        )
-            .then((result: any) => {
-                return result.dataValues;
-            })
-            .then(ReportUserInquirePerfumeDTO.createByJson);
+        // return ReportUserInquirePerfume.create(
+        //     { userIdx, perfumeIdx, count },
+        //     { raw: true, nest: true }
+        // )
+        //     .then((result: any) => {
+        //         return result.dataValues;
+        //     })
+        //     .then(ReportUserInquirePerfumeDTO.createByJson);
+        try {
+            const result = await ReportUserInquirePerfume.create(
+                { userIdx, perfumeIdx, count },
+                { raw: true, nest: true }
+            );
+            return ReportUserInquirePerfumeDTO.createByJson(result.dataValues);
+        } catch (error) {
+            throw error;
+        }
     }
 
     /**

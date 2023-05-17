@@ -35,18 +35,32 @@ class BrandDao {
      */
     async search(pagingDTO: PagingDTO): Promise<ListAndCountDTO<BrandDTO>> {
         logger.debug(`${LOG_TAG} search(PagingDTO = ${pagingDTO})`);
-        return Brand.findAndCountAll(
-            Object.assign(
-                {
-                    raw: true,
-                    nest: true,
-                },
-                pagingDTO.sequelizeOption()
-            )
-        ).then((it: any) => {
-            it.rows = it.rows.map((it: any) => BrandDTO.createByJson(it));
-            return new ListAndCountDTO<BrandDTO>(it.count, it.rows);
-        });
+        // return Brand.findAndCountAll(
+        //     Object.assign(
+        //         {
+        //             raw: true,
+        //             nest: true,
+        //         },
+        //         pagingDTO.sequelizeOption()
+        //     )
+        // ).then((it: any) => {
+        //     it.rows = it.rows.map((it: any) => BrandDTO.createByJson(it));
+        //     return new ListAndCountDTO<BrandDTO>(it.count, it.rows);
+        // });
+        try {
+            const options = {
+                raw: true,
+                nest: true,
+                ...pagingDTO.sequelizeOption(),
+            };
+            const { count, rows } = await Brand.findAndCountAll(options);
+            const mappedRows = rows.map((row: any) =>
+                BrandDTO.createByJson(row)
+            );
+            return new ListAndCountDTO<BrandDTO>(count, mappedRows);
+        } catch (error) {
+            throw error;
+        }
     }
 
     /**
@@ -57,20 +71,34 @@ class BrandDao {
      */
     async readAll(pagingDTO?: PagingDTO): Promise<ListAndCountDTO<BrandDTO>> {
         logger.debug(`${LOG_TAG} readAll(pagingDTO = ${pagingDTO})`);
-        return Brand.findAndCountAll(
-            Object.assign(
-                {
-                    raw: true,
-                    nest: true,
-                },
-                pagingDTO ? pagingDTO.sequelizeOption() : {}
-            )
-        ).then((result: any) => {
-            return new ListAndCountDTO<BrandDTO>(
-                result.count,
-                result.rows.map(BrandDTO.createByJson)
+        // return Brand.findAndCountAll(
+        //     Object.assign(
+        //         {
+        //             raw: true,
+        //             nest: true,
+        //         },
+        //         pagingDTO ? pagingDTO.sequelizeOption() : {}
+        //     )
+        // ).then((result: any) => {
+        //     return new ListAndCountDTO<BrandDTO>(
+        //         result.count,
+        //         result.rows.map(BrandDTO.createByJson)
+        //     );
+        // });
+        try {
+            const options = {
+                raw: true,
+                nest: true,
+                ...(pagingDTO ? pagingDTO.sequelizeOption() : {}),
+            };
+            const result = await Brand.findAndCountAll(options);
+            const rows = result.rows.map((row: any) =>
+                BrandDTO.createByJson(row)
             );
-        });
+            return new ListAndCountDTO<BrandDTO>(result.count, rows);
+        } catch (error) {
+            throw error;
+        }
     }
 
     /**
@@ -84,16 +112,25 @@ class BrandDao {
         logger.debug(
             `${LOG_TAG} findBrand(condition = ${JSON.stringify(condition)})`
         );
-        return Brand.findOne({
+        // return Brand.findOne({
+        //     where: { ...condition },
+        //     nest: true,
+        //     raw: true,
+        // }).then((it: any) => {
+        //     if (!it) {
+        //         throw new NotMatchedError();
+        //     }
+        //     return BrandDTO.createByJson(it);
+        // });
+        const it = await Brand.findOne({
             where: { ...condition },
             nest: true,
             raw: true,
-        }).then((it: any) => {
-            if (!it) {
-                throw new NotMatchedError();
-            }
-            return BrandDTO.createByJson(it);
         });
+        if (!it) {
+            throw new NotMatchedError();
+        }
+        return BrandDTO.createByJson(it);
     }
 }
 

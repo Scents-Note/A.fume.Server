@@ -21,29 +21,49 @@ class UserDao {
         userInputDTO: UserInputDTO
     ): Promise<CreatedResultDTO<UserDTO>> {
         logger.debug(`${LOG_TAG} create(userInputDTO = ${userInputDTO})`);
-        return User.create(
-            Object.assign(
-                { accessTime: sequelize.literal('CURRENT_TIMESTAMP') },
-                { ...userInputDTO }
-            )
-        )
-            .then((it: UserDTO) => {
-                return new CreatedResultDTO<UserDTO>(
-                    it.userIdx,
-                    UserDTO.createByJson(it)
-                );
-            })
-            .catch((err: Error | any) => {
-                if (err.parent) {
-                    if (
-                        err.parent.errno === 1062 ||
-                        err.parent.code === 'ER_DUP_ENTRY'
-                    ) {
-                        throw new DuplicatedEntryError();
-                    }
-                }
-                throw err;
+        // return User.create(
+        //     Object.assign(
+        //         { accessTime: sequelize.literal('CURRENT_TIMESTAMP') },
+        //         { ...userInputDTO }
+        //     )
+        // )
+        //     .then((it: UserDTO) => {
+        //         return new CreatedResultDTO<UserDTO>(
+        //             it.userIdx,
+        //             UserDTO.createByJson(it)
+        //         );
+        //     })
+        //     .catch((err: Error | any) => {
+        //         if (err.parent) {
+        //             if (
+        //                 err.parent.errno === 1062 ||
+        //                 err.parent.code === 'ER_DUP_ENTRY'
+        //             ) {
+        //                 throw new DuplicatedEntryError();
+        //             }
+        //         }
+        //         throw err;
+        //     });
+        try {
+            const it = await User.create({
+                accessTime: sequelize.literal('CURRENT_TIMESTAMP'),
+                ...userInputDTO,
             });
+            return new CreatedResultDTO<UserDTO>(
+                it.userIdx,
+                UserDTO.createByJson(it)
+            );
+        } catch (err: any) {
+            if (err.parent) {
+                if (
+                    err.parent.errno === 1062 ||
+                    err.parent.code === 'ER_DUP_ENTRY'
+                ) {
+                    throw new DuplicatedEntryError();
+                }
+            }
+            throw err;
+        }
     }
 
     /**

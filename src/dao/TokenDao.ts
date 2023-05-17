@@ -42,43 +42,84 @@ interface TokenDao {
 }
 
 class TokenDaoSequelize implements TokenDao {
-    read(accessToken: string): Promise<TokenSetDTO | null> {
+    async read(accessToken: string): Promise<TokenSetDTO | null> {
         logger.debug(`${LOG_TAG} read(accessToken = ${accessToken}})`);
 
-        return Token.findOne({
-            where: {
-                accessToken,
-            },
-            nest: true,
-            raw: true,
-        }).then((it: any) => {
+        // return Token.findOne({
+        //     where: {
+        //         accessToken,
+        //     },
+        //     nest: true,
+        //     raw: true,
+        // }).then((it: any) => {
+        //     if (!it) {
+        //         return null;
+        //     }
+        //     return new TokenSetDTO(it.accessToken, it.refreshToken);
+        // });
+        try {
+            const it = await Token.findOne({
+                where: {
+                    accessToken,
+                },
+                nest: true,
+                raw: true,
+            });
             if (!it) {
                 return null;
             }
             return new TokenSetDTO(it.accessToken, it.refreshToken);
-        });
+        } catch (error) {
+            throw error;
+        }
     }
 
-    create(tokenSet: TokenSetDTO): Promise<boolean> {
+    async create(tokenSet: TokenSetDTO): Promise<boolean> {
         logger.debug(`${LOG_TAG} read(tokenSet = ${tokenSet})`);
 
-        return Token.create({
+        // return Token.create({
+        //     accessToken: tokenSet.accessToken,
+        //     refreshToken: tokenSet.refreshToken,
+        // }).then((it: any) => {
+        //     if (!it) {
+        //         return false;
+        //     }
+        //     return true;
+        // });
+        const it = await Token.create({
             accessToken: tokenSet.accessToken,
             refreshToken: tokenSet.refreshToken,
-        }).then((it: any) => {
-            if (!it) {
-                return false;
-            }
-            return true;
         });
+        if (!it) {
+            return false;
+        }
+        return true;
     }
 
-    update(prevAccessToken: string, newAccessToken: string): Promise<boolean> {
+    async update(
+        prevAccessToken: string,
+        newAccessToken: string
+    ): Promise<boolean> {
         logger.debug(
             `${LOG_TAG} read(prevAccessToken = ${prevAccessToken}, newAccessToken = ${newAccessToken}})`
         );
 
-        return Token.update(
+        // return Token.update(
+        //     { accessToken: newAccessToken },
+        //     {
+        //         where: {
+        //             accessToken: prevAccessToken,
+        //         },
+        //         nest: true,
+        //         raw: true,
+        //     }
+        // ).then((it: any) => {
+        //     if (!it || it[0] == 0) {
+        //         return false;
+        //     }
+        //     return true;
+        // });
+        const it = await Token.update(
             { accessToken: newAccessToken },
             {
                 where: {
@@ -87,27 +128,33 @@ class TokenDaoSequelize implements TokenDao {
                 nest: true,
                 raw: true,
             }
-        ).then((it: any) => {
-            if (!it || it[0] == 0) {
-                return false;
-            }
-            return true;
-        });
+        );
+        if (!it || it[0] == 0) {
+            return false;
+        }
+        return true;
     }
 
-    delete(condition: any): Promise<boolean> {
+    async delete(condition: any): Promise<boolean> {
         logger.debug(
             `${LOG_TAG} read(condition = ${JSON.stringify(condition)})`
         );
 
-        return Token.destroy({
+        // return Token.destroy({
+        //     where: condition,
+        // }).then((it: any) => {
+        //     if (!it || it[0] == 0) {
+        //         return false;
+        //     }
+        //     return true;
+        // });
+        const it = await Token.destroy({
             where: condition,
-        }).then((it: any) => {
-            if (!it || it[0] == 0) {
-                return false;
-            }
-            return true;
         });
+        if (!it || it[0] == 0) {
+            return false;
+        }
+        return true;
     }
 }
 

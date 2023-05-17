@@ -97,20 +97,32 @@ class SeriesDao {
      */
     async search(pagingDTO: PagingDTO): Promise<ListAndCountDTO<SeriesDTO>> {
         logger.debug(`${LOG_TAG} search(pagingDTO = ${pagingDTO})`);
-        return Series.findAndCountAll(
-            Object.assign(
-                {
-                    raw: true,
-                    nest: true,
-                },
-                pagingDTO.sequelizeOption()
-            )
-        ).then((it: any) => {
-            return new ListAndCountDTO<SeriesDTO>(
-                it.count,
-                it.rows.map(SeriesDTO.createByJson)
-            );
-        });
+        // return Series.findAndCountAll(
+        //     Object.assign(
+        //         {
+        //             raw: true,
+        //             nest: true,
+        //         },
+        //         pagingDTO.sequelizeOption()
+        //     )
+        // ).then((it: any) => {
+        //     return new ListAndCountDTO<SeriesDTO>(
+        //         it.count,
+        //         it.rows.map(SeriesDTO.createByJson)
+        //     );
+        // });
+
+        try {
+            const it = await Series.findAndCountAll({
+                ...pagingDTO.sequelizeOption(),
+                raw: true,
+                nest: true,
+            });
+            const seriesDTOs = it.rows.map(SeriesDTO.createByJson);
+            return new ListAndCountDTO<SeriesDTO>(it.count, seriesDTOs);
+        } catch (error) {
+            throw error;
+        }
     }
 
     /**

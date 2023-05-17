@@ -16,26 +16,38 @@ class LikePerfumeDao {
      * @returns {Promise}
      * @throws {DuplicatedEntryError} if there is already likePerfume
      */
-    create(
+    async create(
         userIdx: number,
         perfumeIdx: number
     ): Promise<{ userIdx: number; perfumeIdx: number }> {
         logger.debug(
             `${LOG_TAG} create(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx})`
         );
-        return LikePerfume.create({ userIdx, perfumeIdx })
-            .then((it: { userIdx: number; perfumeIdx: number }) => {
-                return { userIdx: it.userIdx, perfumeIdx: it.perfumeIdx };
-            })
-            .catch((err: Error | any) => {
-                if (
-                    err.parent.errno === 1062 ||
-                    err.parent.code === 'ER_DUP_ENTRY'
-                ) {
-                    throw new DuplicatedEntryError();
-                }
-                throw err;
-            });
+        // return LikePerfume.create({ userIdx, perfumeIdx })
+        //     .then((it: { userIdx: number; perfumeIdx: number }) => {
+        //         return { userIdx: it.userIdx, perfumeIdx: it.perfumeIdx };
+        //     })
+        //     .catch((err: Error | any) => {
+        //         if (
+        //             err.parent.errno === 1062 ||
+        //             err.parent.code === 'ER_DUP_ENTRY'
+        //         ) {
+        //             throw new DuplicatedEntryError();
+        //         }
+        //         throw err;
+        //     });
+        try {
+            const it = await LikePerfume.create({ userIdx, perfumeIdx });
+            return { userIdx: it.userIdx, perfumeIdx: it.perfumeIdx };
+        } catch (err: Error | any) {
+            if (
+                err.parent.errno === 1062 ||
+                err.parent.code === 'ER_DUP_ENTRY'
+            ) {
+                throw new DuplicatedEntryError();
+            }
+            throw err;
+        }
     }
 
     /**
@@ -46,21 +58,28 @@ class LikePerfumeDao {
      * @returns {Promise}
      * @throws {NotMatchedError} if there is no likePerfume
      */
-    read(
+    async read(
         userIdx: number,
         perfumeIdx: number
     ): Promise<{ userIdx: number; perfumeIdx: number }> {
         logger.debug(
             `${LOG_TAG} read(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx})`
         );
-        return LikePerfume.findOne({
+        // return LikePerfume.findOne({
+        //     where: { userIdx, perfumeIdx },
+        // }).then((it: any) => {
+        //     if (!it) {
+        //         throw new NotMatchedError();
+        //     }
+        //     return { userIdx: it.userIdx, perfumeIdx: it.perfumeIdx };
+        // });
+        const it = await LikePerfume.findOne({
             where: { userIdx, perfumeIdx },
-        }).then((it: any) => {
-            if (!it) {
-                throw new NotMatchedError();
-            }
-            return { userIdx: it.userIdx, perfumeIdx: it.perfumeIdx };
         });
+        if (!it) {
+            throw new NotMatchedError();
+        }
+        return { userIdx: it.userIdx, perfumeIdx: it.perfumeIdx };
     }
 
     /**
@@ -71,18 +90,25 @@ class LikePerfumeDao {
      * @returns {Promise}
      * @throws {NotMatchedError} if there is no likePerfume
      */
-    delete(userIdx: number, perfumeIdx: number): Promise<number> {
+    async delete(userIdx: number, perfumeIdx: number): Promise<number> {
         logger.debug(
             `${LOG_TAG} delete(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx})`
         );
-        return LikePerfume.destroy({
+        // return LikePerfume.destroy({
+        //     where: { userIdx, perfumeIdx },
+        //     raw: true,
+        //     nest: true,
+        // }).then((it: number) => {
+        //     if (it == 0) throw new NotMatchedError();
+        //     return it;
+        // });
+        const it = await LikePerfume.destroy({
             where: { userIdx, perfumeIdx },
             raw: true,
             nest: true,
-        }).then((it: number) => {
-            if (it == 0) throw new NotMatchedError();
-            return it;
         });
+        if (it == 0) throw new NotMatchedError();
+        return it;
     }
 
     /**
@@ -116,20 +142,38 @@ class LikePerfumeDao {
                 ', '
             )})`
         );
-        return LikePerfume.findAll({
-            where: {
-                userIdx,
-                perfumeIdx: {
-                    [Op.in]: perfumeIdxList,
+        // return LikePerfume.findAll({
+        //     where: {
+        //         userIdx,
+        //         perfumeIdx: {
+        //             [Op.in]: perfumeIdxList,
+        //         },
+        //     },
+        //     raw: true,
+        //     nest: true,
+        // }).then((res: any[]) => {
+        //     return res.map((it: any) => {
+        //         return { userIdx: it.userIdx, perfumeIdx: it.perfumeIdx };
+        //     });
+        // });
+        try {
+            const res = await LikePerfume.findAll({
+                where: {
+                    userIdx,
+                    perfumeIdx: {
+                        [Op.in]: perfumeIdxList,
+                    },
                 },
-            },
-            raw: true,
-            nest: true,
-        }).then((res: any[]) => {
-            return res.map((it: any) => {
-                return { userIdx: it.userIdx, perfumeIdx: it.perfumeIdx };
+                raw: true,
+                nest: true,
             });
-        });
+            return res.map((it: any) => ({
+                userIdx: it.userIdx,
+                perfumeIdx: it.perfumeIdx,
+            }));
+        } catch (error) {
+            throw error;
+        }
     }
 }
 

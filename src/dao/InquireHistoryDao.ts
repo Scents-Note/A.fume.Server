@@ -20,16 +20,25 @@ class InquireHistoryDao {
         logger.debug(
             `${LOG_TAG} create(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx}, routes = ${routes})`
         );
-        return InquireHistory.create(
-            { userIdx, perfumeIdx, routes },
-            { raw: true, nest: true }
-        )
-            .then((_: any) => {
-                return true;
-            })
-            .catch((_: Error) => {
-                return false;
-            });
+        // return InquireHistory.create(
+        //     { userIdx, perfumeIdx, routes },
+        //     { raw: true, nest: true }
+        // )
+        //     .then((_: any) => {
+        //         return true;
+        //     })
+        //     .catch((_: Error) => {
+        //         return false;
+        //     });
+        try {
+            await InquireHistory.create(
+                { userIdx, perfumeIdx, routes },
+                { raw: true, nest: true }
+            );
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     /**
@@ -45,13 +54,23 @@ class InquireHistoryDao {
         logger.debug(
             `${LOG_TAG} read(where = ${JSON.stringify(whereCondition)})`
         );
-        return InquireHistory.findAll({
-            where: whereCondition,
-            raw: true,
-            nest: true,
-        }).then((rows: any[]) => {
-            return rows.map(InquireHistoryDTO.createByJson);
-        });
+        // return InquireHistory.findAll({
+        //     where: whereCondition,
+        //     raw: true,
+        //     nest: true,
+        // }).then((rows: any[]) => {
+        //     return rows.map(InquireHistoryDTO.createByJson);
+        // });
+        try {
+            const rows = await InquireHistory.findAll({
+                where: whereCondition,
+                raw: true,
+                nest: true,
+            });
+            return rows.map((row: any) => InquireHistoryDTO.createByJson(row));
+        } catch (error) {
+            throw error;
+        }
     }
 }
 
