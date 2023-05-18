@@ -1,27 +1,26 @@
 'use strict';
-const { Model } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
+const { sequelize } = require('./sequelize');
 
-module.exports = (sequelize, DataTypes) => {
-    class Token extends Model {}
-    Token.init(
-        {
-            accessToken: {
-                type: DataTypes.STRING(500),
-                allowNull: false,
-                primaryKey: true,
-            },
-            refreshToken: {
-                type: DataTypes.STRING(500),
-                allowNull: false,
-                primaryKey: true,
-            },
+class Token extends Model {}
+Token.init(
+    {
+        accessToken: {
+            type: DataTypes.STRING(500),
+            allowNull: false,
+            primaryKey: true,
         },
-        {
-            modelName: 'Token',
-            timestamps: true,
-            underscored: true,
-            sequelize,
-        }
-    );
-    return Token;
-};
+        refreshToken: {
+            type: DataTypes.STRING(500),
+            allowNull: false,
+            primaryKey: true,
+        },
+    },
+    {
+        modelName: 'Token',
+        timestamps: true,
+        underscored: true,
+        sequelize,
+    }
+);
+module.exports = Token;

@@ -1,46 +1,45 @@
 'use strict';
-const { Model } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
+const { sequelize } = require('./sequelize');
 
-module.exports = (sequelize, DataTypes) => {
-    class Brand extends Model {}
-    Brand.init(
-        {
-            brandIdx: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                allowNull: false,
-                primaryKey: true,
-            },
-            name: {
-                type: DataTypes.STRING,
-                allowNull: false,
-                unique: true,
-            },
-            englishName: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            firstInitial: {
-                type: DataTypes.CHAR(1),
-                allowNull: false,
-                comment: '첫글자 카테고리',
-            },
-            imageUrl: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
-            description: {
-                type: DataTypes.STRING,
-                allowNull: false,
-            },
+class Brand extends Model {}
+Brand.init(
+    {
+        brandIdx: {
+            type: DataTypes.INTEGER,
+            autoIncrement: true,
+            allowNull: false,
+            primaryKey: true,
         },
-        {
-            modelName: 'Brand',
-            timestamps: true,
-            underscored: true,
-            paranoid: true,
-            sequelize,
-        }
-    );
-    return Brand;
-};
+        name: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true,
+        },
+        englishName: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        firstInitial: {
+            type: DataTypes.CHAR(1),
+            allowNull: false,
+            comment: '첫글자 카테고리',
+        },
+        imageUrl: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        description: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+    },
+    {
+        modelName: 'Brand',
+        timestamps: true,
+        underscored: true,
+        paranoid: true,
+        sequelize,
+    }
+);
+module.exports = Brand;
