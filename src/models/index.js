@@ -1,20 +1,9 @@
-import properties from '@properties';
-
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const basename = path.basename(__filename);
 
-const env = properties.NODE_ENV;
-const config = require('@configs/config')[env];
-
-const sequelize = new Sequelize(
-    config.database,
-    config.username,
-    config.password,
-    config
-);
-
+const { sequelize } = require('./sequelize');
 const db = {};
 
 fs.readdirSync(__dirname)
@@ -22,7 +11,8 @@ fs.readdirSync(__dirname)
         return (
             file.indexOf('.') !== 0 &&
             file !== basename &&
-            file.slice(-3) === '.js'
+            file.slice(-3) === '.js' &&
+            !file.startsWith('sequelize')
         );
     })
     .forEach((file) => {
