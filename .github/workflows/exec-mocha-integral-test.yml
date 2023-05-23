@@ -2,7 +2,7 @@ name: Execute Mocha Integral Test
 
 on:
     pull_request:
-        branches: [dev, main, production-1, production-2]
+        branches: [dev, main]
 
 jobs:
     build:
