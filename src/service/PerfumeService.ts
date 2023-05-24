@@ -301,7 +301,7 @@ class PerfumeService {
 
     /**
      * 유저 연령대 및 성별에 따른 향수 추천
-     * 
+     *
      * @deprecated since version 0.0.9
      * @param {number} userIdx
      * @param {PagingDTO} pagingDTO
@@ -444,7 +444,7 @@ class PerfumeService {
 
     /**
      * 비슷한 향수 추천 목록 조회
-     * 
+     *
      * @todo Fix error handling
      * @param {number} perfumeIdx
      * @param {number} size
@@ -455,16 +455,20 @@ class PerfumeService {
         size: number
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
         try {
-            logger.debug(`${LOG_TAG} getRecommendedSimilarPerfumes(perfumeIdx = ${perfumeIdx}, size = ${size})`);
-            
+            logger.debug(
+                `${LOG_TAG} getRecommendedSimilarPerfumes(perfumeIdx = ${perfumeIdx}, size = ${size})`
+            );
+
             let perfumeList: PerfumeThumbDTO[];
 
-            const perfumeIdxList : number[] = await perfumeDao.getSimilarPerfumeIdxList(perfumeIdx, size);
-            
+            const perfumeIdxList: number[] =
+                await perfumeDao.getSimilarPerfumeIdxList(perfumeIdx, size);
+
             if (perfumeIdxList.length > 0) {
-                perfumeList = await perfumeDao.getPerfumesByIdxList(perfumeIdxList);
-            }
-            else {
+                perfumeList = await perfumeDao.getPerfumesByIdxList(
+                    perfumeIdxList
+                );
+            } else {
                 perfumeList = await perfumeDao.getPerfumesByRandom(size);
             }
 
@@ -492,20 +496,20 @@ class PerfumeService {
         minReviewCount: number = 0
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
         logger.debug(`${LOG_TAG} getPerfumesByRandom(size = ${size})`);
-        let result:  PerfumeThumbDTO[] = [];
-        
+        let result: PerfumeThumbDTO[] = [];
+
         if (minReviewCount == 0) {
-            result = await perfumeDao.getPerfumesByRandom(size)
+            result = await perfumeDao.getPerfumesByRandom(size);
         }
         if (minReviewCount > 0) {
-            result = await perfumeDao.getPerfumesWithMinReviewsByRandom(size, minReviewCount)
+            result = await perfumeDao.getPerfumesWithMinReviewsByRandom(
+                size,
+                minReviewCount
+            );
         }
 
         return await this.convertToThumbKeyword(
-             new ListAndCountDTO<PerfumeThumbDTO>(
-                result.length,
-                result
-            )
+            new ListAndCountDTO<PerfumeThumbDTO>(result.length, result)
         );
     }
 
@@ -721,6 +725,10 @@ class PerfumeService {
         }
 
         return [defaultImage];
+    }
+
+    async readPage(offset: number, limit: number): Promise<PerfumeThumbDTO[]> {
+        return perfumeDao.readPage(offset, limit);
     }
 }
 
