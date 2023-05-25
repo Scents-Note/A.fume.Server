@@ -11,10 +11,6 @@ const REQUIRED_ENV_LIST: string[] = [
     'AWS_ACCESS_KEY_ID',
     'AWS_SECRET_ACCESS_KEY',
     'AWS_S3_URL',
-    // TODO: below environments will be removed after detaching afume(previous) bucket
-    'AWS_ACCESS_KEY_ID_LEGACY',
-    'AWS_SECRET_ACCESS_KEY_LEGACY',
-    'AWS_S3_URL_LEGACY',
 ];
 
 const NULLABLE_ENV_MAP: { [key: string]: any } = {
@@ -69,10 +65,6 @@ type Properties = {
     SERVER_NAME: string;
     DISCORD_HOOK_FOR_SERVICE_MONITORING: string;
     DISCORD_HOOK_FOR_REPORT_REVIEW: string;
-    // TODO: below properties will be removed after detaching afume(previous) bucket
-    AWS_ACCESS_KEY_ID_LEGACY: string;
-    AWS_SECRET_ACCESS_KEY_LEGACY: string;
-    AWS_S3_URL_LEGACY: string;
 };
 const properties: { [key: string]: any } = {};
 
