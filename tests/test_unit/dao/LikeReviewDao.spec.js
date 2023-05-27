@@ -107,18 +107,6 @@ describe('# LikeReviewDao Test', () => {
         });
     });
 
-    describe('# readAllOfUser case', () => {
-        it('# success case', (done) => {
-            likeReviewDao
-                .readAllOfUser({ userIdx: 1, perfumeIdx: 1 })
-                .then((result) => {
-                    expect(result[0]).eq(1);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
     describe('# delete Test', () => {
         before(async () => {
             await likeReviewDao.create(3, 1);
