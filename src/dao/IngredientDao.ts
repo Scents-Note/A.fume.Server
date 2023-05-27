@@ -131,33 +131,6 @@ class IngredientDao {
         });
     }
     /**
-     * 재료 검색
-     *
-     * @param {Object} condition
-     * @returns {Promise<IngredientDTO>} ingredientDTO
-     * @throws {NotMatchedError} if there is no ingredient
-     */
-    async findIngredient(condition: any): Promise<IngredientDTO> {
-        logger.debug(
-            `${LOG_TAG} findIngredient(condition = ${JSON.stringify(
-                condition
-            )})`
-        );
-        // reason for converting json is remove key that has undefined value
-        condition = JSON.parse(JSON.stringify(condition));
-        return Ingredient.findOne({
-            where: condition,
-            raw: true,
-            nest: true,
-        }).then((result: any) => {
-            if (!result) {
-                throw new NotMatchedError();
-            }
-            return IngredientDTO.createByJson(result);
-        });
-    }
-
-    /**
      * 카테고리 리스트에 해당하는 ingredientIdx 리스트 조회
      *
      * @param {string[]} categoryList
