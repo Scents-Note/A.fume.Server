@@ -32,35 +32,6 @@ describe('# brandDao Test', () => {
                 })
                 .catch((err: Error) => done(err));
         });
-
-        it('# findBrand success case', (done: Done) => {
-            brandDao
-                .findBrand({
-                    name: '브랜드1',
-                })
-                .then((result: BrandDTO) => {
-                    expect(result.brandIdx).to.be.eq(1);
-                    expect(result.name).to.be.eq('브랜드1');
-                    expect(result.firstInitial).to.be.eq('ㅂ');
-                    BrandHelper.validTest.call(result);
-                    done();
-                })
-                .catch((err: Error) => done(err));
-        });
-        it('# findBrand not found case', (done: Done) => {
-            brandDao
-                .findBrand({
-                    name: '브랜드10',
-                })
-                .then(() => {
-                    done(new UnExpectedError(NotMatchedError));
-                })
-                .catch((err: Error) => {
-                    expect(err).instanceOf(NotMatchedError);
-                    done();
-                })
-                .catch((err: Error) => done(err));
-        });
     });
 
     describe('# search Test', () => {

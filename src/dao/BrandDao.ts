@@ -72,29 +72,6 @@ class BrandDao {
             );
         });
     }
-
-    /**
-     * 브랜드 검색
-     *
-     * @param {Object} condition
-     * @returns {Promise<BrandDTO>}
-     * @throws {NotMatchedError} if there is no brand
-     */
-    async findBrand(condition: any): Promise<BrandDTO> {
-        logger.debug(
-            `${LOG_TAG} findBrand(condition = ${JSON.stringify(condition)})`
-        );
-        return Brand.findOne({
-            where: { ...condition },
-            nest: true,
-            raw: true,
-        }).then((it: any) => {
-            if (!it) {
-                throw new NotMatchedError();
-            }
-            return BrandDTO.createByJson(it);
-        });
-    }
 }
 
 export default BrandDao;

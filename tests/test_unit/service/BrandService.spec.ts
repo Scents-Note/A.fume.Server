@@ -28,7 +28,6 @@ const mockBrandDAO: BrandDao | any = {
     read: async (_: number) => BrandHelper.createWithIdx(1),
     search: async (_: PagingDTO) => mockListAndCountDTO,
     readAll: async () => mockListAndCountDTO,
-    findBrand: async (_: any) => BrandHelper.createWithIdx(1),
 };
 const Brand: BrandService = new BrandService(mockBrandDAO);
 
