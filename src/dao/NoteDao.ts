@@ -19,21 +19,6 @@ type IngredientEntry = {
 
 class NoteDao {
     /**
-     * 노트 조회
-     *
-     * @param {Object} where
-     * @returns {Promise<Note[]>}
-     */
-    read(where: any): Promise<NoteDTO[]> {
-        logger.debug(`${LOG_TAG} read(where = ${JSON.stringify(where)})`);
-        return Note.findAll({
-            where,
-            nest: true,
-            raw: true,
-        }).then((it: any) => it.map(NoteDTO.createByJson));
-    }
-
-    /**
      * 향수에 해당하는 재료 조회
      *
      * @param {number} perfumeIdx

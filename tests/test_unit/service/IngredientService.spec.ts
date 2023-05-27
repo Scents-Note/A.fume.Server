@@ -7,11 +7,7 @@ dotenv.config();
 import IngredientService from '@services/IngredientService';
 import IngredientDao from '@dao/IngredientDao';
 
-import {
-    IngredientDTO,
-    ListAndCountDTO,
-    IngredientConditionDTO,
-} from '@dto/index';
+import { IngredientDTO, ListAndCountDTO } from '@dto/index';
 
 import IngredientMockHelper from '../mock_helper/IngredientMockHelper';
 
@@ -21,23 +17,6 @@ ingredientService.setIngredientDao(mockIngredientDAO);
 
 describe('# Ingredient Service Test', () => {
     describe('# read test', () => {
-        describe('# findSIngredient Test', () => {
-            mockIngredientDAO.findIngredient = async (condition: any) => {
-                return IngredientMockHelper.create(condition);
-            };
-            it('# success Test', (done: Done) => {
-                ingredientService
-                    .findIngredient(
-                        new IngredientConditionDTO(undefined, '재료 이름')
-                    )
-                    .then((result: IngredientDTO) => {
-                        IngredientMockHelper.validTest.call(result);
-                        done();
-                    })
-                    .catch((err: Error) => done(err));
-            });
-        });
-
         describe('# getIngredientAll Test', () => {
             mockIngredientDAO.readAll = async (where: any = {}) => {
                 const seriesIdx = where.seriesIdx || 1;

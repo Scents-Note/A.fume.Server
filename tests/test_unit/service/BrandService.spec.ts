@@ -28,40 +28,16 @@ const mockBrandDAO: BrandDao | any = {
     read: async (_: number) => BrandHelper.createWithIdx(1),
     search: async (_: PagingDTO) => mockListAndCountDTO,
     readAll: async () => mockListAndCountDTO,
-    findBrand: async (_: any) => BrandHelper.createWithIdx(1),
 };
 const Brand: BrandService = new BrandService(mockBrandDAO);
 
 describe('# Brand Service Test', () => {
-    describe('# searchBrand Test', () => {
-        it('# success Test', (done: Done) => {
-            Brand.searchBrand(PagingDTO.createByJson({}))
-                .then((res: ListAndCountDTO<BrandDTO>) => {
-                    expect(res.count).to.be.gt(0);
-                    expect(res.rows.length).to.be.gt(0);
-                    done();
-                })
-                .catch((err: Error) => done(err));
-        });
-    });
-
     describe('# getBrandAll Test', () => {
         it('# success Test', (done: Done) => {
             Brand.getBrandAll()
                 .then((res: ListAndCountDTO<BrandDTO>) => {
                     expect(res.count).to.be.gt(0);
                     expect(res.rows.length).to.be.gt(0);
-                    done();
-                })
-                .catch((err: Error) => done(err));
-        });
-    });
-
-    describe('# getBrandByIdx Test', () => {
-        it('# success Test', (done: Done) => {
-            Brand.getBrandByIdx(1)
-                .then((brandDTO: BrandDTO) => {
-                    BrandHelper.validTest.call(brandDTO);
                     done();
                 })
                 .catch((err: Error) => done(err));

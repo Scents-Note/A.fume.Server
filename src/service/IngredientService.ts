@@ -2,12 +2,7 @@ import { logger } from '@modules/winston';
 
 import IngredientDao from '@dao/IngredientDao';
 
-import {
-    IngredientConditionDTO,
-    ListAndCountDTO,
-    IngredientDTO,
-    PagingDTO,
-} from '@dto/index';
+import { ListAndCountDTO, IngredientDTO, PagingDTO } from '@dto/index';
 
 const LOG_TAG: string = '[Ingredient/Service]';
 
@@ -29,22 +24,6 @@ class IngredientService {
     ): Promise<ListAndCountDTO<IngredientDTO>> {
         logger.debug(`${LOG_TAG} getIngredientAll()`);
         return this.ingredientDao.readAll({}, pagingDTO);
-    }
-
-    /**
-     * 재료 검색
-     *
-     * @param {IngredientConditionDTO} ingredientConditionDTO
-     * @returns {Promise<IngredientDTO>} ingredientDTO
-     * @throws {NotMatchedError} if there is no Ingredient
-     **/
-    findIngredient(
-        ingredientConditionDTO: IngredientConditionDTO
-    ): Promise<IngredientDTO> {
-        logger.debug(
-            `${LOG_TAG} findIngredient(ingredientConditionDTO = ${ingredientConditionDTO})`
-        );
-        return this.ingredientDao.findIngredient(ingredientConditionDTO);
     }
 
     /**

@@ -17,20 +17,6 @@ describe('# NoteDao Test', () => {
     });
 
     describe(' # read Test', () => {
-        it('# success case', (done) => {
-            noteDao
-                .read({ perfumeIdx: 1 })
-                .then((result: NoteDTO[]) => {
-                    expect(result.length).gte(1);
-                    for (const note of result) {
-                        expect(note.perfumeIdx).to.be.eq(1);
-                        expect(note.type).to.be.within(1, 4);
-                    }
-                    done();
-                })
-                .catch((err: Error) => done(err));
-        });
-
         it(' # readByPerfumeIdx test', (done: Done) => {
             noteDao
                 .readByPerfumeIdx(1)
