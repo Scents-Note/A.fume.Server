@@ -38,18 +38,6 @@ class BrandService {
     }
 
     /**
-     * 브랜드 조회
-     *
-     * @param {number} brandIdx
-     * @returns {Promise<BrandDTO>} brandDTO
-     * @throws {NotMatchedError} if there is no Brand
-     **/
-    getBrandByIdx(brandIdx: number): Promise<BrandDTO> {
-        logger.debug(`${LOG_TAG} getBrandByIdx(brandIdx = ${brandIdx})`);
-        return this.brandDao.read(brandIdx);
-    }
-
-    /**
      * 브랜드 필터 조회
      *
      * @returns {Promise<BrandFilterDTO[]>} brandFilterDTO[]

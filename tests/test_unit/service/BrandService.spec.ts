@@ -56,17 +56,6 @@ describe('# Brand Service Test', () => {
         });
     });
 
-    describe('# getBrandByIdx Test', () => {
-        it('# success Test', (done: Done) => {
-            Brand.getBrandByIdx(1)
-                .then((brandDTO: BrandDTO) => {
-                    BrandHelper.validTest.call(brandDTO);
-                    done();
-                })
-                .catch((err: Error) => done(err));
-        });
-    });
-
     describe('# getFilterBrand Test', () => {
         it('# success Test', (done: Done) => {
             Brand.getFilterBrand()
