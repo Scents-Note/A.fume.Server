@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 import { expect } from 'chai';
-import { Done } from 'mocha';
 dotenv.config();
 
 import BrandService from '@services/BrandService';
@@ -15,7 +14,6 @@ import {
 } from '@dto/index';
 
 import BrandHelper from '../mock_helper/BrandHelper';
-import BrandFilterHelper from '../mock_helper/BrandFilterHelper';
 
 const mockListAndCountDTO: ListAndCountDTO<BrandDTO> =
     new ListAndCountDTO<BrandDTO>(1, [
@@ -31,29 +29,29 @@ const mockBrandDAO: BrandDao | any = {
 };
 const Brand: BrandService = new BrandService(mockBrandDAO);
 
+const FIRST_INITIAL_REGEX = /^[ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅍㅌㅎ]$/;
+
 describe('# Brand Service Test', () => {
     describe('# getBrandAll Test', () => {
-        it('# success Test', (done: Done) => {
-            Brand.getBrandAll()
-                .then((res: ListAndCountDTO<BrandDTO>) => {
-                    expect(res.count).to.be.gt(0);
-                    expect(res.rows.length).to.be.gt(0);
-                    done();
-                })
-                .catch((err: Error) => done(err));
+        it('# success Test', () => {
+            Brand.getBrandAll().then((res: ListAndCountDTO<BrandDTO>) => {
+                expect(res.count).to.be.gt(0);
+                expect(res.rows.length).to.be.gt(0);
+            });
         });
     });
 
     describe('# getFilterBrand Test', () => {
-        it('# success Test', (done: Done) => {
-            Brand.getFilterBrand()
-                .then((result: BrandFilterDTO[]) => {
-                    for (const item of result) {
-                        BrandFilterHelper.validTest.call(item);
+        it('# success Test', () => {
+            Brand.getFilterBrand().then((result: BrandFilterDTO[]) => {
+                for (const item of result) {
+                    expect(item.firstInitial).to.be.match(FIRST_INITIAL_REGEX);
+                    expect(item.brands).to.be.ok;
+                    for (const brand of item.brands) {
+                        BrandHelper.validTest.call(brand);
                     }
-                    done();
-                })
-                .catch((err: Error) => done(err));
+                }
+            });
         });
     });
 });

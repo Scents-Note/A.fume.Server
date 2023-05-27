@@ -1,18 +1,6 @@
-import { expect } from 'chai';
-
 import { SeriesDTO } from '@dto/index';
 
 class SeriesMockHelper {
-    static validTest(this: SeriesDTO) {
-        expect(this.seriesIdx).to.be.ok;
-        expect(this.englishName).to.be.ok;
-        expect(this.name).to.be.ok;
-        expect(this.imageUrl).to.be.ok;
-        expect(this.description).to.be.not.undefined;
-        expect(this.createdAt).to.be.ok;
-        expect(this.updatedAt).to.be.ok;
-    }
-
     static create(condition: any): SeriesDTO {
         return SeriesDTO.createByJson(
             Object.assign(
