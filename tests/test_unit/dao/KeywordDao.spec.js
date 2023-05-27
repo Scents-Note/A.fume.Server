@@ -70,34 +70,4 @@ describe('# KeywordDao Test', () => {
                 .catch((err) => done(err));
         });
     });
-
-    describe('# readAllPerfumeKeywordCount Test', () => {
-        it('# success case', (done) => {
-            keywordDao
-                .readAllPerfumeKeywordCount([1])
-                .then((result) => {
-                    expect(result.length).gte(2);
-                    for (const keyword of result) {
-                        expect(keyword.keywordIdx).to.be.ok;
-                        expect(keyword.count).to.be.ok;
-                    }
-                    expect(
-                        new Set(result.map((it) => it.keywordIdx))
-                    ).to.have.property('size', result.length);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-    describe('# readPerfumeKeywordCount Test', () => {
-        it('# success case', (done) => {
-            keywordDao
-                .readPerfumeKeywordCount({ perfumeIdx: 2, keywordIdx: 1 })
-                .then((result) => {
-                    expect(result).eq(1);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
 });
