@@ -298,12 +298,12 @@ describe('# reviewDao Test', () => {
                 })
             );
         });
-        it('# success case', (done) => {
+        it('# success case', () => {
             keywordDao
                 .deleteReviewKeyword({ reviewIdx, perfumeIdx: 3 })
                 .then(async () => {
                     const keywordCountAfter = await keywordDao
-                        .readAllOfPerfume()
+                        .readAllOfPerfume(perfumeIdx)
                         .catch((err) => {
                             if (err instanceof NotMatchedError) {
                                 return 0;
