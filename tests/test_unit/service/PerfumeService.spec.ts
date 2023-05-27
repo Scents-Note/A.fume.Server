@@ -381,14 +381,10 @@ describe('# Perfume Service Test', () => {
     });
     describe('# updateSimilarPerfumes Test', async () => {
         it('# Success Case', async () => {
-            try {
-                const result = await Perfume.updateSimilarPerfumes({
-                    10: [1, 2, 3],
-                });
-                expect(result.length).to.be.eq(4);
-            } catch (err: any) {
-                throw err;
-            }
+            const result = await Perfume.updateSimilarPerfumes({
+                10: [1, 2, 3],
+            });
+            expect(result.length).to.be.eq(4);
         });
     });
     describe('# getRecommendedSimilarPerfumeList Test', async () => {
@@ -414,28 +410,17 @@ describe('# Perfume Service Test', () => {
         };
 
         it('# Success Case 1: If perfumeIdxList is not empty', async () => {
-            try {
-                const result = await Perfume.getRecommendedSimilarPerfumeList(
-                    10,
-                    2
-                );
-                expect(result.count).to.be.eq(2);
-                expect(result.rows.length).to.be.eq(2);
-            } catch (err: any) {
-                throw err;
-            }
+            const result = await Perfume.getRecommendedSimilarPerfumeList(
+                10,
+                2
+            );
+            expect(result.count).to.be.eq(2);
+            expect(result.rows.length).to.be.eq(2);
         });
         it('# Success Case 2: If perfumeIdxList is empty', async () => {
-            try {
-                const result = await Perfume.getRecommendedSimilarPerfumeList(
-                    0,
-                    2
-                );
-                expect(result.count).to.be.eq(2);
-                expect(result.rows.length).to.be.eq(2);
-            } catch (err: any) {
-                throw err;
-            }
+            const result = await Perfume.getRecommendedSimilarPerfumeList(0, 2);
+            expect(result.count).to.be.eq(2);
+            expect(result.rows.length).to.be.eq(2);
         });
     });
     describe('# like Test', () => {

@@ -462,69 +462,60 @@ describe('# Perfume Controller Test', () => {
 
         describe('# recommendSimilarPerfume Test', () => {
             it('update success case', async () => {
-                try {
-                    mockPerfumeService.updateSimilarPerfumes = () => {
-                        return [
-                            [null, 0],
-                            [null, 1],
-                            [null, 2],
-                            [null, 3],
-                            [null, 4],
-                            [null, 5],
-                            [null, 6],
-                            [null, 7],
-                        ];
-                    };
+                mockPerfumeService.updateSimilarPerfumes = () => {
+                    return [
+                        [null, 0],
+                        [null, 1],
+                        [null, 2],
+                        [null, 3],
+                        [null, 4],
+                        [null, 5],
+                        [null, 6],
+                        [null, 7],
+                    ];
+                };
 
-                    const res: request.Response = await request(app)
-                        .post(`${basePath}/perfume/recommend/simmilar`)
-                        .send({ 11: [20, 21, 22, 23, 24, 25, 26] });
+                const res: request.Response = await request(app)
+                    .post(`${basePath}/perfume/recommend/simmilar`)
+                    .send({ 11: [20, 21, 22, 23, 24, 25, 26] });
 
-                    const responseDTO: ResponseDTO<
-                        ListAndCountDTO<PerfumeRecommendResponse>
-                    > = res.body;
+                const responseDTO: ResponseDTO<
+                    ListAndCountDTO<PerfumeRecommendResponse>
+                > = res.body;
 
-                    expect(res.status).to.be.eq(StatusCode.OK);
-                    expect(responseDTO.message).to.be.eq(
-                        MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS
-                    );
-                    expect(responseDTO.opcode).to.be.eq(DEFAULT_OP_CODE);
-                } catch (err: any) {
-                    throw err;
-                }
+                expect(res.status).to.be.eq(StatusCode.OK);
+                expect(responseDTO.message).to.be.eq(
+                    MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS
+                );
+                expect(responseDTO.opcode).to.be.eq(DEFAULT_OP_CODE);
             });
 
             it('read success case', async () => {
-                try {
-                    mockPerfumeService.getRecommendedSimilarPerfumeList =
-                        () => {
-                            return new ListAndCountDTO(
-                                DEFAULT_RECOMMEND_REQUEST_SIZE,
-                                mockPerfumeList.slice(
-                                    0,
-                                    DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE
-                                )
-                            );
-                        };
-                    const res: request.Response = await request(app).get(
-                        `${basePath}/perfume/11/similar`
+                mockPerfumeService.getRecommendedSimilarPerfumeList = () => {
+                    return new ListAndCountDTO(
+                        DEFAULT_RECOMMEND_REQUEST_SIZE,
+                        mockPerfumeList.slice(
+                            0,
+                            DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE
+                        )
                     );
+                };
+                const res: request.Response = await request(app).get(
+                    `${basePath}/perfume/11/similar`
+                );
 
-                    const responseDTO: ResponseDTO<
-                        ListAndCountDTO<PerfumeRecommendResponse>
-                    > = res.body;
+                const responseDTO: ResponseDTO<
+                    ListAndCountDTO<PerfumeRecommendResponse>
+                > = res.body;
 
-                    expect(res.status).to.be.eq(StatusCode.OK);
-                    expect(responseDTO.message).to.be.eq(
-                        MSG_GET_RECOMMEND_SIMILAR_PERFUMES
-                    );
-                    expect(responseDTO.data.count).to.be.eq(
-                        DEFAULT_RECOMMEND_REQUEST_SIZE
-                    );
-                    expect(responseDTO.opcode).to.be.eq(DEFAULT_OP_CODE);
-                } catch (err: any) {
-                    throw err;
-                }
+                expect(res.status).to.be.eq(StatusCode.OK);
+                expect(responseDTO.message).to.be.eq(
+                    MSG_GET_RECOMMEND_SIMILAR_PERFUMES
+                );
+                expect(responseDTO.data.count).to.be.eq(
+                    DEFAULT_RECOMMEND_REQUEST_SIZE
+                );
+                expect(responseDTO.opcode).to.be.eq(DEFAULT_OP_CODE);
             });
         });
     });

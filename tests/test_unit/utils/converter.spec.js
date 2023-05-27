@@ -83,87 +83,67 @@ describe('# converter Test', () => {
     });
     describe(' # ApproxAge Test', () => {
         it(' # 20대 테스트', async () => {
-            try {
-                const thisYear = new Date().getFullYear();
-                for (let age = 20; age <= 23; age++) {
-                    const it = await converter.getApproxAge(thisYear - age + 1);
-                    expect(it).to.be.eq('20대 초반');
-                }
+            const thisYear = new Date().getFullYear();
+            for (let age = 20; age <= 23; age++) {
+                const it = await converter.getApproxAge(thisYear - age + 1);
+                expect(it).to.be.eq('20대 초반');
+            }
 
-                for (let age = 24; age <= 26; age++) {
-                    const it = await converter.getApproxAge(thisYear - age + 1);
-                    expect(it).to.be.eq('20대 중반');
-                }
-                for (let age = 27; age <= 29; age++) {
-                    const it = await converter.getApproxAge(thisYear - age + 1);
-                    expect(it).to.be.eq('20대 후반');
-                }
-            } catch (err) {
-                expect(err).to.be.undefined;
+            for (let age = 24; age <= 26; age++) {
+                const it = await converter.getApproxAge(thisYear - age + 1);
+                expect(it).to.be.eq('20대 중반');
+            }
+            for (let age = 27; age <= 29; age++) {
+                const it = await converter.getApproxAge(thisYear - age + 1);
+                expect(it).to.be.eq('20대 후반');
             }
         });
 
         it(' # 30대 테스트', async () => {
-            try {
-                const thisYear = new Date().getFullYear();
-                for (let age = 37; age <= 39; age++) {
-                    const it = await converter.getApproxAge(thisYear - age + 1);
-                    expect(it).to.be.eq('30대 후반');
-                }
-            } catch (err) {
-                expect(err).to.be.undefined;
+            const thisYear = new Date().getFullYear();
+            for (let age = 37; age <= 39; age++) {
+                const it = await converter.getApproxAge(thisYear - age + 1);
+                expect(it).to.be.eq('30대 후반');
             }
         });
 
         it(' # 50대 테스트', async () => {
-            try {
-                const thisYear = new Date().getFullYear();
-                for (let age = 50; age <= 53; age++) {
-                    const it = await converter.getApproxAge(thisYear - age + 1);
-                    expect(it).to.be.eq('50대 초반');
-                }
-            } catch (err) {
-                expect(err).to.be.undefined;
+            const thisYear = new Date().getFullYear();
+            for (let age = 50; age <= 53; age++) {
+                const it = await converter.getApproxAge(thisYear - age + 1);
+                expect(it).to.be.eq('50대 초반');
             }
         });
 
         it(' # 0대 테스트', async () => {
-            try {
-                const thisYear = new Date().getFullYear();
-                for (let age = 0; age <= 3; age++) {
-                    const it = await converter.getApproxAge(thisYear - age + 1);
-                    expect(it).to.be.eq('0대 초반');
-                }
-                for (let age = 4; age <= 6; age++) {
-                    const it = await converter.getApproxAge(thisYear - age + 1);
-                    expect(it).to.be.eq('0대 중반');
-                }
-                for (let age = 7; age <= 9; age++) {
-                    const it = await converter.getApproxAge(thisYear - age + 1);
-                    expect(it).to.be.eq('0대 후반');
-                }
-            } catch (err) {
-                expect(err).to.be.undefined;
+            const thisYear = new Date().getFullYear();
+            for (let age = 0; age <= 3; age++) {
+                const it = await converter.getApproxAge(thisYear - age + 1);
+                expect(it).to.be.eq('0대 초반');
+            }
+            for (let age = 4; age <= 6; age++) {
+                const it = await converter.getApproxAge(thisYear - age + 1);
+                expect(it).to.be.eq('0대 중반');
+            }
+            for (let age = 7; age <= 9; age++) {
+                const it = await converter.getApproxAge(thisYear - age + 1);
+                expect(it).to.be.eq('0대 후반');
             }
         });
 
         it(' # 100대 테스트', async () => {
-            try {
-                const thisYear = new Date().getFullYear();
-                for (let age = 100; age <= 103; age++) {
-                    const it = await converter.getApproxAge(thisYear - age + 1);
-                    expect(it).to.be.eq('100대 초반');
-                }
-                for (let age = 104; age <= 106; age++) {
-                    const it = await converter.getApproxAge(thisYear - age + 1);
-                    expect(it).to.be.eq('100대 중반');
-                }
-                for (let age = 107; age <= 109; age++) {
-                    const it = await converter.getApproxAge(thisYear - age + 1);
-                    expect(it).to.be.eq('100대 후반');
-                }
-            } catch (err) {
-                expect(err).to.be.undefined;
+            const thisYear = new Date().getFullYear();
+            for (let age = 100; age <= 103; age++) {
+                const it = await converter.getApproxAge(thisYear - age + 1);
+                expect(it).to.be.eq('100대 초반');
+            }
+            for (let age = 104; age <= 106; age++) {
+                const it = await converter.getApproxAge(thisYear - age + 1);
+                expect(it).to.be.eq('100대 중반');
+            }
+            for (let age = 107; age <= 109; age++) {
+                const it = await converter.getApproxAge(thisYear - age + 1);
+                expect(it).to.be.eq('100대 후반');
             }
         });
     });

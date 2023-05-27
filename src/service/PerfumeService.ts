@@ -215,17 +215,11 @@ class PerfumeService {
      * @returns {Promise}
      **/
     async updateSimilarPerfumes(perfumeSimilarRequest: any): Promise<any> {
-        try {
-            logger.debug(
-                `${LOG_TAG} updateSimilarPerfumes(perfumeSimilarRequest = ${perfumeSimilarRequest})`
-            );
+        logger.debug(
+            `${LOG_TAG} updateSimilarPerfumes(perfumeSimilarRequest = ${perfumeSimilarRequest})`
+        );
 
-            return await perfumeDao.updateSimilarPerfumes(
-                perfumeSimilarRequest
-            );
-        } catch (err: any) {
-            throw err;
-        }
+        return await perfumeDao.updateSimilarPerfumes(perfumeSimilarRequest);
     }
 
     /**
@@ -387,33 +381,27 @@ class PerfumeService {
         perfumeIdx: number,
         size: number
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
-        try {
-            logger.debug(
-                `${LOG_TAG} getRecommendedSimilarPerfumes(perfumeIdx = ${perfumeIdx}, size = ${size})`
-            );
+        logger.debug(
+            `${LOG_TAG} getRecommendedSimilarPerfumes(perfumeIdx = ${perfumeIdx}, size = ${size})`
+        );
 
-            let perfumeList: PerfumeThumbDTO[];
+        let perfumeList: PerfumeThumbDTO[];
 
-            const perfumeIdxList: number[] =
-                await perfumeDao.getSimilarPerfumeIdxList(perfumeIdx, size);
+        const perfumeIdxList: number[] =
+            await perfumeDao.getSimilarPerfumeIdxList(perfumeIdx, size);
 
-            if (perfumeIdxList.length > 0) {
-                perfumeList = await perfumeDao.getPerfumesByIdxList(
-                    perfumeIdxList
-                );
-            } else {
-                perfumeList = await perfumeDao.getPerfumesByRandom(size);
-            }
-
-            return this.convertToThumbKeyword(
-                new ListAndCountDTO<PerfumeThumbDTO>(
-                    perfumeList.length,
-                    perfumeList
-                )
-            );
-        } catch (err) {
-            throw err;
+        if (perfumeIdxList.length > 0) {
+            perfumeList = await perfumeDao.getPerfumesByIdxList(perfumeIdxList);
+        } else {
+            perfumeList = await perfumeDao.getPerfumesByRandom(size);
         }
+
+        return this.convertToThumbKeyword(
+            new ListAndCountDTO<PerfumeThumbDTO>(
+                perfumeList.length,
+                perfumeList
+            )
+        );
     }
 
     /**
