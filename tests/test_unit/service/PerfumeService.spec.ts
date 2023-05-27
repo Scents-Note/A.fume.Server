@@ -392,6 +392,27 @@ describe('# Perfume Service Test', () => {
         });
     });
     describe('# getRecommendedSimilarPerfumeList Test', async () => {
+        mockKeywordDao.readAllOfPerfumeIdxList = async (_: number[]) => {
+            return [
+                {
+                    perfumeIdx: 1,
+                    Keyword: { name: '키워드1' },
+                },
+                {
+                    perfumeIdx: 1,
+                    Keyword: { name: '키워드2' },
+                },
+                {
+                    perfumeIdx: 2,
+                    Keyword: { name: '키워드3' },
+                },
+                {
+                    perfumeIdx: 3,
+                    Keyword: { name: '키워드2' },
+                },
+            ];
+        };
+
         it('# Success Case 1: If perfumeIdxList is not empty', async () => {
             try {
                 const result = await Perfume.getRecommendedSimilarPerfumeList(
