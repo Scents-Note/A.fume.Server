@@ -12,8 +12,6 @@ const { expect } = chai;
 const reviewDao = new ReviewDao();
 const keywordDao = new KeywordDao();
 const { Review } = require('@sequelize');
-const noteDao = new NoteDao();
-const { read } = noteDao;
 
 describe('# reviewDao Test', () => {
     before(async function () {

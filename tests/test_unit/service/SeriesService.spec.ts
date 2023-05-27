@@ -22,12 +22,10 @@ import { ETC } from '@src/utils/strings';
 const mockSeriesDAO: any = {};
 const mockIngredientDAO: any = {};
 const mockIngredientCategoryDao: any = {};
-const mockNoteDAO: any = {};
 const seriesService = new SeriesService(
     mockSeriesDAO,
     mockIngredientDAO,
-    mockIngredientCategoryDao,
-    mockNoteDAO
+    mockIngredientCategoryDao
 );
 const defaultPagingDTO: PagingDTO = PagingDTO.createByJson({});
 

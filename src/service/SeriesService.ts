@@ -4,7 +4,6 @@ import _, { Dictionary } from 'lodash';
 import IngredientDao from '@dao/IngredientDao';
 import IngredientCategoryDao from '@src/dao/IngredientCategoryDao';
 import SeriesDao from '@dao/SeriesDao';
-import NoteDao from '@dao/NoteDao';
 
 import {
     PagingDTO,
@@ -24,18 +23,15 @@ class SeriesService {
     seriesDao: SeriesDao;
     ingredientDao: IngredientDao;
     ingredientCategoryDao: IngredientCategoryDao;
-    noteDao: any;
     constructor(
         seriesDao?: SeriesDao,
         ingredientDao?: IngredientDao,
-        ingredientCategoryDao?: IngredientCategoryDao,
-        noteDao?: any
+        ingredientCategoryDao?: IngredientCategoryDao
     ) {
         this.seriesDao = seriesDao ?? new SeriesDao();
         this.ingredientDao = ingredientDao ?? new IngredientDao();
         this.ingredientCategoryDao =
             ingredientCategoryDao ?? new IngredientCategoryDao();
-        this.noteDao = noteDao ?? new NoteDao();
     }
 
     /**
