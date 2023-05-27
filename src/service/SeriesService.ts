@@ -39,18 +39,6 @@ class SeriesService {
     }
 
     /**
-     * 특정 계열 조회
-     *
-     * @param {integer} seriesIdx
-     * @returns {Promise<SeriesDTO>} seriesDTO
-     * @throws {NotMatchedError} if there is no series
-     **/
-    getSeriesByIdx(seriesIdx: number): Promise<SeriesDTO> {
-        logger.debug(`${LOG_TAG} getSeriesByIdx(seriesIdx = ${seriesIdx})`);
-        return this.seriesDao.readByIdx(seriesIdx);
-    }
-
-    /**
      * 계열 전체 목록 조회
      *
      * @param {PagingDTO} pagingDTO

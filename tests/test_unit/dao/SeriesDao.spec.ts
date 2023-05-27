@@ -32,18 +32,6 @@ describe('# seriesDao Test', () => {
                 })
             )[0].seriesIdx;
         });
-        it('# success case(readyByIdx)', (done: Done) => {
-            seriesDao
-                .readByIdx(seriesIdx)
-                .then((result: SeriesDTO) => {
-                    SeriesMockHelper.validTest.call(result);
-                    expect(result.seriesIdx).to.be.eq(seriesIdx);
-                    expect(result.name).to.be.eq('읽기 데이터');
-                    expect(result.englishName).to.be.eq('Test Data');
-                    done();
-                })
-                .catch((err) => done(err));
-        });
         after(async () => {
             await Series.destroy({ where: { seriesIdx } });
         });

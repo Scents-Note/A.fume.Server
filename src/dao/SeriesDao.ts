@@ -10,22 +10,6 @@ const { Series } = require('@sequelize');
 
 class SeriesDao {
     /**
-     * 계열 조회
-     *
-     * @param {number} seriesIdx
-     * @return {Promise<SeriesDTO>} seriesDTO
-     * @throws {NotMatchedError} if there is no Series
-     */
-    async readByIdx(seriesIdx: number): Promise<SeriesDTO> {
-        logger.debug(`${LOG_TAG} readByIdx(seriesIdx = ${seriesIdx})`);
-        const result = await Series.findByPk(seriesIdx);
-        if (!result) {
-            throw new NotMatchedError();
-        }
-        return SeriesDTO.createByJson(result.dataValues);
-    }
-
-    /**
      * 계열 전체 조회
      *
      * @param {PagingDTO} pagingDTO

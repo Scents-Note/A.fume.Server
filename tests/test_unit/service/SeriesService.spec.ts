@@ -32,20 +32,6 @@ const seriesService = new SeriesService(
 const defaultPagingDTO: PagingDTO = PagingDTO.createByJson({});
 
 describe('# Series Service Test', () => {
-    describe('# getSeriesByIdx Test', () => {
-        it('# success Test', (done: Done) => {
-            mockSeriesDAO.readByIdx = async (): Promise<SeriesDTO> =>
-                SeriesHelper.createWithIdx(1);
-            seriesService
-                .getSeriesByIdx(1)
-                .then((seriesDTO: SeriesDTO) => {
-                    SeriesHelper.validTest.call(seriesDTO);
-                    done();
-                })
-                .catch((err: Error) => done(err));
-        });
-    });
-
     describe('# getSeriesAll Test', () => {
         it('# success Test', (done: Done) => {
             mockSeriesDAO.readAll = async (): Promise<

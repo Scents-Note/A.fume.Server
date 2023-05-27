@@ -11,25 +11,6 @@ const LOG_TAG: string = '[Ingredient/DAO]';
 
 class IngredientDao {
     /**
-     * 재료 PK로 조회
-     *
-     * @param {number} ingredientIdx
-     * @return {Promise<IngredientDTO>} ingredientDTO
-     * @throws {NotMatchedError} if there is no ingredient
-     */
-    async readByIdx(ingredientIdx: number): Promise<IngredientDTO> {
-        logger.debug(`${LOG_TAG} readByIdx(ingredientIdx = ${ingredientIdx})`);
-        const result: any = await Ingredient.findByPk(ingredientIdx, {
-            nest: true,
-            raw: true,
-        });
-        if (!result) {
-            throw new NotMatchedError();
-        }
-        return IngredientDTO.createByJson(result);
-    }
-
-    /**
      * 재료 조회
      *
      * @param {IngredientDTO} where

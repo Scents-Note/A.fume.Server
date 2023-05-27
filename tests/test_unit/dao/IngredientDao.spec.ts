@@ -16,18 +16,6 @@ describe('# ingredientDao Test', () => {
         await require('./common/presets.js')(this);
     });
 
-    describe(' # read test', () => {
-        it(' # success case (By PrimaryKey)', (done: Done) => {
-            ingredientDao
-                .readByIdx(1)
-                .then((result: IngredientDTO) => {
-                    IngredientMockHelper.validTest.call(result);
-                    done();
-                })
-                .catch((err: Error) => done(err));
-        });
-    });
-
     describe(' # readAll Test', () => {
         it(' # success case', (done: Done) => {
             ingredientDao
