@@ -86,21 +86,6 @@ class LikePerfumeDao {
     }
 
     /**
-     * 위시 리스트 향수 전체 삭제
-     *
-     * @param {number} userIdx
-     * @returns {Promise}
-     */
-    deleteByUserIdx(userIdx: number): Promise<void> {
-        logger.debug(`${LOG_TAG} deleteByUserIdx(userIdx = ${userIdx})`);
-        return LikePerfume.destroy({
-            where: {
-                userIdx,
-            },
-        });
-    }
-
-    /**
      * 향수 좋아요 정보
      *
      * @param {number[]} userIdx
