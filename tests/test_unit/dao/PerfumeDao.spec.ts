@@ -538,11 +538,10 @@ describe('# perfumeDao Test', () => {
         describe('# recommend similar Test', () => {
             it('# update recommended similar perfumes ', async () => {
                 try {
-                    const result: any[] =
-                        await perfumeDao.updateSimilarPerfumes({
-                            1: [2, 3],
-                            2: [3, 4, 5],
-                        });
+                    const result: any = await perfumeDao.updateSimilarPerfumes({
+                        1: [2, 3],
+                        2: [3, 4, 5],
+                    });
 
                     expect(result.length).to.be.eq(7);
 

@@ -35,6 +35,8 @@ const PERFUME_THUMB_COLUMNS: string[] = [
     'updatedAt',
 ];
 
+import redis from '@utils/db/redis';
+
 const SQL_SEARCH_PERFUME_SELECT: string =
     'SELECT ' +
     'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.created_at AS createdAt, p.updated_at AS updatedAt, ' +
@@ -391,23 +393,17 @@ class PerfumeDao {
      */
     async updateSimilarPerfumes(similarPerfumes: {
         [x: number]: number[];
-    }): Promise<[err: number, result: number][]> {
-        try {
-            const redis = require('@utils/db/redis.js');
+    }): Promise<[error: Error | null, result: unknown][] | null> {
+        const obj = similarPerfumes;
+        const multi = await redis.multi();
 
-            const obj = similarPerfumes;
-            const multi = await redis.multi();
-
-            for (const key in obj) {
-                multi.del(`recs.perfume:${key}`);
-                obj[key].forEach((v: any) => {
-                    multi.rpush(`recs.perfume:${key}`, v);
-                });
-            }
-            return await multi.exec();
-        } catch (err) {
-            throw err;
+        for (const key in obj) {
+            multi.del(`recs.perfume:${key}`);
+            obj[key].forEach((v: any) => {
+                multi.rpush(`recs.perfume:${key}`, v);
+            });
         }
+        return await multi.exec();
     }
     /**
      * 서베이 추천 향수 조회
@@ -468,9 +464,7 @@ class PerfumeDao {
                 `${LOG_TAG} getSimilarPerfumeIdxList(perfumeIdx = ${perfumeIdx}, size = ${size})`
             );
 
-            const client = require('@utils/db/redis.js');
-
-            const result = await client.lrange(
+            const result = await redis.lrange(
                 `recs.perfume:${perfumeIdx}`,
                 0,
                 size - 1
