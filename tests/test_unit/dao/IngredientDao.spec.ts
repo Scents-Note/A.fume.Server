@@ -26,15 +26,6 @@ describe('# ingredientDao Test', () => {
                 })
                 .catch((err: Error) => done(err));
         });
-        it(' # success case (By Name)', (done) => {
-            ingredientDao
-                .readByName('재료2')
-                .then((result: IngredientDTO) => {
-                    IngredientMockHelper.validTest.call(result);
-                    done();
-                })
-                .catch((err: Error) => done(err));
-        });
     });
 
     describe(' # readAll Test', () => {

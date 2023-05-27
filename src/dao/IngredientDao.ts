@@ -30,26 +30,6 @@ class IngredientDao {
     }
 
     /**
-     * 재료 이름으로 조회
-     *
-     * @param {string} ingredientName
-     * @return {Promise<IngredientDTO>} ingredientDTO
-     * @throws {NotMatchedError} if there is no ingredient
-     */
-    async readByName(ingredientName: string): Promise<IngredientDTO> {
-        logger.debug(
-            `${LOG_TAG} readByName(ingredientName = ${ingredientName})`
-        );
-        const result = await Ingredient.findOne({
-            where: { name: ingredientName },
-        });
-        if (!result) {
-            throw new NotMatchedError();
-        }
-        return IngredientDTO.createByJson(result);
-    }
-
-    /**
      * 재료 조회
      *
      * @param {IngredientDTO} where

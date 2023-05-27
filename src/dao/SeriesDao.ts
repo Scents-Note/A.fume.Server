@@ -26,26 +26,6 @@ class SeriesDao {
     }
 
     /**
-     * 계열 조회
-     *
-     * @param {string} seriesName
-     * @return {Promise<SeriesDTO>} seriesDTO
-     * @throws {NotMatchedError} if there is no Series
-     */
-    async readByName(seriesName: string): Promise<SeriesDTO> {
-        logger.debug(`${LOG_TAG} readByName(seriesIdx = ${seriesName})`);
-        const result = await Series.findOne({
-            where: { name: seriesName },
-            nest: true,
-            raw: true,
-        });
-        if (!result) {
-            throw new NotMatchedError();
-        }
-        return SeriesDTO.createByJson(result);
-    }
-
-    /**
      * 계열 전체 조회
      *
      * @param {PagingDTO} pagingDTO
