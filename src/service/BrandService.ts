@@ -17,16 +17,6 @@ class BrandService {
         this.brandDao = brandDao ?? new BrandDao();
     }
     /**
-     * 브랜드 검색
-     *
-     * @param {PagingDTO} pagingDTO
-     * @returns {Promise<ListAndCountDTO<BrandDTO>>} listAndCountDTO
-     **/
-    searchBrand(pagingDTO: PagingDTO): Promise<ListAndCountDTO<BrandDTO>> {
-        logger.debug(`${LOG_TAG} searchBrand(pagingDTO = ${pagingDTO})`);
-        return this.brandDao.search(pagingDTO);
-    }
-    /**
      * 브랜드 전체 조회
      *
      * @params {PagingDTO} pagingDTO
