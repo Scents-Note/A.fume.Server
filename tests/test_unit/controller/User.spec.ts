@@ -31,11 +31,11 @@ import {
     UserAuthDTO,
     UserDTO,
     TokenGroupDTO,
+    LoginInfoDTO,
 } from '@dto/index';
 
 import UserMockHelper from '../mock_helper/UserMockHelper';
-import LoginInfoMockHelper from '../mock_helper/LoginInfoMockHelper';
-import TokenGroupMockHelper from '../mock_helper/TokenGroupMockHelper';
+import { GENDER_WOMAN } from '@src/utils/constants';
 
 const expect = require('../utils/expect');
 
@@ -55,7 +55,16 @@ const invalidToken =
 describe('# User Controller Test', () => {
     describe('# registerUser Test', () => {
         mockUserService.createUser = async (): Promise<TokenGroupDTO> =>
-            TokenGroupMockHelper.createMock({});
+            TokenGroupDTO.createByJSON(
+                Object.assign(
+                    {
+                        userIdx: 1,
+                        token: 'token',
+                        refreshToken: 'refreshToken',
+                    },
+                    {}
+                )
+            );
         it('success case', (done: Done) => {
             request(app)
                 .post(`${basePath}/user/register`)
@@ -102,7 +111,20 @@ describe('# User Controller Test', () => {
 
     describe('# loginUser Test', () => {
         mockUserService.loginUser = async (email: string, _: string) => {
-            return LoginInfoMockHelper.createMock({ email });
+            return LoginInfoDTO.createByJson(
+                Object.assign(
+                    {
+                        userIdx: 1,
+                        nickname: 'user1',
+                        gender: GENDER_WOMAN,
+                        email: 'email@a.fume.com',
+                        birth: 1995,
+                        token: 'token',
+                        refreshToken: 'refreshToken',
+                    },
+                    { email }
+                )
+            );
         };
         it('success case', (done: Done) => {
             request(app)
