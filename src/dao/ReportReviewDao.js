@@ -13,20 +13,19 @@ const { sequelize, ReportReview, Review, User } = require('../models');
  */
 
 module.exports.create = async ({ reporterIdx, reviewIdx, reason }) => {
-        try {
-            const createLike = await ReportReview.create(
-                { reporterIdx: Number(reporterIdx), reviewIdx: Number(reviewIdx), reason }
-            )
-            return createLike
-        } catch (err) {
-            if (
-                err.original.code === 'ER_DUP_ENTRY' ||
-                err.parent.errno === 1062
-            ) {
-                throw new DuplicatedEntryError();
-            }
-            throw new FailedToCreateError();
+    try {
+        const createLike = await ReportReview.create({
+            reporterIdx: Number(reporterIdx),
+            reviewIdx: Number(reviewIdx),
+            reason,
+        });
+        return createLike;
+    } catch (err) {
+        if (err.original.code === 'ER_DUP_ENTRY' || err.parent.errno === 1062) {
+            throw new DuplicatedEntryError();
         }
+        throw new FailedToCreateError();
+    }
 };
 
 /**
@@ -36,16 +35,11 @@ module.exports.create = async ({ reporterIdx, reviewIdx, reason }) => {
  * @returns {Promise<ReportReview[]>} ReportReviewObj List
  */
 
- module.exports.readAllReportedReviewByUser = async (userIdx) => {
-    try {
-        const result = await ReportReview.findAll({
-            where: { reporterIdx: userIdx },
-            raw: true,
-            nest: true,
-        })
-        return result
-
-    } catch (err) {
-        throw err;
-    }
+module.exports.readAllReportedReviewByUser = async (userIdx) => {
+    const result = await ReportReview.findAll({
+        where: { reporterIdx: userIdx },
+        raw: true,
+        nest: true,
+    });
+    return result;
 };

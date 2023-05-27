@@ -459,21 +459,17 @@ class PerfumeDao {
         perfumeIdx: number,
         size: number
     ): Promise<number[]> {
-        try {
-            logger.debug(
-                `${LOG_TAG} getSimilarPerfumeIdxList(perfumeIdx = ${perfumeIdx}, size = ${size})`
-            );
+        logger.debug(
+            `${LOG_TAG} getSimilarPerfumeIdxList(perfumeIdx = ${perfumeIdx}, size = ${size})`
+        );
 
-            const result = await redis.lrange(
-                `recs.perfume:${perfumeIdx}`,
-                0,
-                size - 1
-            );
+        const result = await redis.lrange(
+            `recs.perfume:${perfumeIdx}`,
+            0,
+            size - 1
+        );
 
-            return result.map((it: string) => Number(it));
-        } catch (err) {
-            throw err;
-        }
+        return result.map((it: string) => Number(it));
     }
 
     /**
