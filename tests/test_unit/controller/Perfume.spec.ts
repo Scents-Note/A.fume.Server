@@ -21,13 +21,13 @@ import {
     MSG_ABNORMAL_ACCESS,
     MSG_GET_RECOMMEND_SIMILAR_PERFUMES,
     BASE_PATH,
-    MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS
+    MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS,
 } from '@utils/strings';
 
 import {
     DEFAULT_RECOMMEND_REQUEST_SIZE,
     DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE,
-    DEFAULT_OP_CODE
+    DEFAULT_OP_CODE,
 } from '@utils/constants';
 
 import JwtController from '@libs/JwtController';
@@ -260,13 +260,6 @@ describe('# Perfume Controller Test', () => {
 
         describe('# recommendPersonalPerfume Test', () => {
             it('success case', (done: Done) => {
-                mockPerfumeService.recommendByUser = async () => {
-                    return new ListAndCountDTO(
-                        1,
-                        mockPerfumeKeywordList.slice(0, 1)
-                    );
-                };
-
                 mockPerfumeService.getPerfumesByRandom = async () => {
                     return new ListAndCountDTO(
                         DEFAULT_RECOMMEND_REQUEST_SIZE,
@@ -296,10 +289,6 @@ describe('# Perfume Controller Test', () => {
             });
 
             it('# success case: but less than default recommend size', (done: Done) => {
-                mockPerfumeService.recommendByUser = async () => {
-                    return new ListAndCountDTO(1, mockPerfumeList.slice(0, 1));
-                };
-
                 mockPerfumeService.getPerfumesByRandom = async () => {
                     return new ListAndCountDTO(
                         DEFAULT_RECOMMEND_REQUEST_SIZE,
@@ -483,13 +472,13 @@ describe('# Perfume Controller Test', () => {
                             [null, 4],
                             [null, 5],
                             [null, 6],
-                            [null, 7]
-                        ]
+                            [null, 7],
+                        ];
                     };
-    
+
                     const res: request.Response = await request(app)
                         .post(`${basePath}/perfume/recommend/simmilar`)
-                        .send({11: [20,21,22,23,24,25,26]});
+                        .send({ 11: [20, 21, 22, 23, 24, 25, 26] });
 
                     const responseDTO: ResponseDTO<
                         ListAndCountDTO<PerfumeRecommendResponse>
@@ -500,7 +489,6 @@ describe('# Perfume Controller Test', () => {
                         MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS
                     );
                     expect(responseDTO.opcode).to.be.eq(DEFAULT_OP_CODE);
-
                 } catch (err: any) {
                     throw err;
                 }
@@ -508,17 +496,19 @@ describe('# Perfume Controller Test', () => {
 
             it('read success case', async () => {
                 try {
-                    mockPerfumeService.getRecommendedSimilarPerfumeList = () => {
-                        return new ListAndCountDTO(
-                            DEFAULT_RECOMMEND_REQUEST_SIZE,
-                            mockPerfumeList.slice(
-                                0,
-                                DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE
-                            )
-                        );
-                    };
-                    const res: request.Response = await request(app)
-                        .get(`${basePath}/perfume/11/similar`);
+                    mockPerfumeService.getRecommendedSimilarPerfumeList =
+                        () => {
+                            return new ListAndCountDTO(
+                                DEFAULT_RECOMMEND_REQUEST_SIZE,
+                                mockPerfumeList.slice(
+                                    0,
+                                    DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE
+                                )
+                            );
+                        };
+                    const res: request.Response = await request(app).get(
+                        `${basePath}/perfume/11/similar`
+                    );
 
                     const responseDTO: ResponseDTO<
                         ListAndCountDTO<PerfumeRecommendResponse>
