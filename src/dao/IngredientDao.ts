@@ -40,32 +40,6 @@ class IngredientDao {
             result.rows.map((it: any) => IngredientDTO.createByJson(it))
         );
     }
-    /**
-     * 재료 검색
-     *
-     * @param {PagingDTO} pagingDTO
-     * @returns {Promise<ListAndCountDTO<IngredientDTO>>} listAndCountDTO<IngredientDTO>
-     */
-    async search(
-        pagingDTO: PagingDTO
-    ): Promise<ListAndCountDTO<IngredientDTO>> {
-        logger.debug(`${LOG_TAG} search(pagingDTO = ${pagingDTO})`);
-        return Ingredient.findAndCountAll(
-            Object.assign(
-                {
-                    raw: true,
-                    nest: true,
-                },
-                pagingDTO.sequelizeOption
-            )
-        ).then((result: any) => {
-            const { count, rows } = result;
-            return new ListAndCountDTO<IngredientDTO>(
-                count,
-                rows.map((it: any) => IngredientDTO.createByJson(it))
-            );
-        });
-    }
 
     /**
      * 계열 목록에 해당하는 재료 조회

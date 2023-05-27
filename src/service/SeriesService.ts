@@ -50,17 +50,6 @@ class SeriesService {
     }
 
     /**
-     * 계열 검색
-     *
-     * @param {PagingDTO} pagingDTO
-     * @returns {Promise<ListAndCountDTO<SeriesDTO>>} listAndCountDTO
-     **/
-    searchSeries(pagingDTO: PagingDTO): Promise<ListAndCountDTO<SeriesDTO>> {
-        logger.debug(`${LOG_TAG} searchSeries(pagingDTO = ${pagingDTO})`);
-        return this.seriesDao.search(pagingDTO);
-    }
-
-    /**
      * 필터에서 보여주는 Series 조회
      *
      * @param {PagingDTO} pagingDTO
@@ -118,19 +107,6 @@ class SeriesService {
                 })
             );
         });
-    }
-
-    /**
-     * 계열 영어 이름으로 조회
-     *
-     * @param {string} englishName
-     * @returns {Promise<SeriesDTO>}
-     **/
-    findSeriesByEnglishName(englishName: string): Promise<SeriesDTO> {
-        logger.debug(
-            `${LOG_TAG} findSeriesByEnglishName(englishName = ${englishName})`
-        );
-        return this.seriesDao.findSeries({ englishName });
     }
 }
 

@@ -1,7 +1,5 @@
 import { logger } from '@modules/winston';
 
-import { NotMatchedError } from '@errors';
-
 import { ListAndCountDTO, SeriesDTO, PagingDTO } from '@dto/index';
 
 const LOG_TAG: string = '[Series/DAO]';
@@ -35,50 +33,6 @@ class SeriesDao {
                 it.rows.map(SeriesDTO.createByJson)
             );
         });
-    }
-
-    /**
-     * 계열 검색
-     *
-     * @param {PagingDTO} pagingDTO
-     * @returns {Promise<ListAndCountDTO<SeriesDTO>>} listAndCountDTO
-     */
-    async search(pagingDTO: PagingDTO): Promise<ListAndCountDTO<SeriesDTO>> {
-        logger.debug(`${LOG_TAG} search(pagingDTO = ${pagingDTO})`);
-        return Series.findAndCountAll(
-            Object.assign(
-                {
-                    raw: true,
-                    nest: true,
-                },
-                pagingDTO.sequelizeOption()
-            )
-        ).then((it: any) => {
-            return new ListAndCountDTO<SeriesDTO>(
-                it.count,
-                it.rows.map(SeriesDTO.createByJson)
-            );
-        });
-    }
-
-    /**
-     * 계열 검색
-     *
-     * @param {Object} condition
-     * @returns {Promise<SeriesDTO>} seriesDTO
-     */
-    async findSeries(condition: any): Promise<SeriesDTO> {
-        logger.debug(
-            `${LOG_TAG} findSeries(condition = ${JSON.stringify(condition)})`
-        );
-        return Series.findOne({ where: condition, nest: true, raw: true }).then(
-            (it: any) => {
-                if (!it) {
-                    throw new NotMatchedError();
-                }
-                return SeriesDTO.createByJson(it);
-            }
-        );
     }
 }
 
