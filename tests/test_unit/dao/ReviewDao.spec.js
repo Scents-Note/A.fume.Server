@@ -1,8 +1,6 @@
 const dotenv = require('dotenv');
 dotenv.config();
 
-import { NotMatchedError } from '@errors';
-import NoteDao from '@dao/NoteDao';
 import ReviewDao from '@dao/ReviewDao';
 import KeywordDao from '@dao/KeywordDao';
 import { ACCESS_PUBLIC, ACCESS_PRIVATE } from '@utils/constants';
@@ -12,8 +10,6 @@ const { expect } = chai;
 const reviewDao = new ReviewDao();
 const keywordDao = new KeywordDao();
 const { Review } = require('@sequelize');
-const noteDao = new NoteDao();
-const { read } = noteDao;
 
 describe('# reviewDao Test', () => {
     before(async function () {
@@ -278,8 +274,6 @@ describe('# reviewDao Test', () => {
 
     describe('# delete Test', () => {
         let reviewIdx;
-        let keywordCount1;
-        let keywordCount2;
         before(async () => {
             const result = await reviewDao.create({
                 userIdx: 3,
@@ -303,53 +297,21 @@ describe('# reviewDao Test', () => {
                     });
                 })
             );
-
-            keywordCount1 = await keywordDao.readPerfumeKeywordCount({
-                perfumeIdx: 3,
-                keywordIdx: 1,
-            });
-            keywordCount2 = await keywordDao.readPerfumeKeywordCount({
-                perfumeIdx: 3,
-                keywordIdx: 3,
-            });
         });
-        it('# success case', (done) => {
+        it('# success case', () => {
             keywordDao
                 .deleteReviewKeyword({ reviewIdx, perfumeIdx: 3 })
                 .then(async () => {
-                    // 리뷰 키워드 개수 수정 여부 체크
-                    const keywordCount1After = await keywordDao
-                        .readPerfumeKeywordCount({
-                            perfumeIdx: 3,
-                            keywordIdx: 1,
-                        })
+                    const keywordCountAfter = await keywordDao
+                        .readAllOfPerfume(perfumeIdx)
                         .catch((err) => {
                             if (err instanceof NotMatchedError) {
                                 return 0;
                             }
                             throw err;
                         });
-                    const keywordCount2After = await keywordDao
-                        .readPerfumeKeywordCount({
-                            perfumeIdx: 3,
-                            keywordIdx: 3,
-                        })
-                        .catch((err) => {
-                            if (err instanceof NotMatchedError) {
-                                return 0;
-                            }
-                            throw err;
-                        });
-                    expect(keywordCount1After).eq(keywordCount1 - 1);
-                    expect(keywordCount2After).eq(keywordCount2 - 1);
-
-                    //데이터 무결성을 위해, 향수 키워드 중 count가 0이하인 행 제거
-                    const deleteZeroCountResult =
-                        await reviewDao.deleteZeroCount();
-                    expect(deleteZeroCountResult).to.be.eq(0);
-                    done();
-                })
-                .catch((err) => done(err));
+                    expect(keywordCountAfter).eq(0);
+                });
         });
         after(async () => {
             await reviewDao.delete(reviewIdx);

@@ -23,7 +23,6 @@ import {
     PerfumeSearchResultDTO,
     PerfumeSearchDTO,
     PerfumeThumbDTO,
-    PerfumeThumbKeywordDTO,
     PerfumeThumbWithReviewDTO,
 } from '@dto/index';
 
@@ -335,76 +334,6 @@ describe('# Perfume Service Test', () => {
                 .catch((err: Error) => done(err));
         });
 
-        it('# recommendByUser Test', (done: Done) => {
-            mockUserDao.readByIdx = async () => {
-                return {
-                    gender: GENDER_WOMAN,
-                    birth: 1995,
-                };
-            };
-            mockLikePerfumeDao.readLikeInfo = async (
-                userIdx: number,
-                _: number[]
-            ) => {
-                return [
-                    { userIdx, perfumeIdx: 1 },
-                    { userIdx, perfumeIdx: 2 },
-                    { userIdx, perfumeIdx: 3 },
-                    { userIdx, perfumeIdx: 4 },
-                    { userIdx, perfumeIdx: 5 },
-                ];
-            };
-            mockKeywordDao.readAllOfPerfumeIdxList = async (_: number[]) => {
-                return [
-                    {
-                        perfumeIdx: 1,
-                        Keyword: { name: '키워드1' },
-                    },
-                    {
-                        perfumeIdx: 1,
-                        Keyword: { name: '키워드2' },
-                    },
-                    {
-                        perfumeIdx: 2,
-                        Keyword: { name: '키워드3' },
-                    },
-                    {
-                        perfumeIdx: 3,
-                        Keyword: { name: '키워드2' },
-                    },
-                ];
-            };
-            Perfume.recommendByUser(1, defaultPagingDTO)
-                .then((result: ListAndCountDTO<PerfumeThumbKeywordDTO>) => {
-                    expect(result).to.be.instanceOf(ListAndCountDTO);
-                    for (const item of result.rows) {
-                        switch (item.perfumeIdx) {
-                            case 1:
-                                expect(item.keywordList).to.be.deep.eq([
-                                    '키워드1',
-                                    '키워드2',
-                                ]);
-                                break;
-                            case 2:
-                                expect(item.keywordList).to.be.deep.eq([
-                                    '키워드3',
-                                ]);
-                                break;
-                            case 3:
-                                expect(item.keywordList).to.be.deep.eq([
-                                    '키워드2',
-                                ]);
-                                break;
-                            default:
-                                expect(item.keywordList).to.be.deep.eq([]);
-                                break;
-                        }
-                    }
-                    done();
-                })
-                .catch((err: Error) => done(err));
-        });
-
         it('# getNewPerfume Test', (done: Done) => {
             mockLikePerfumeDao.readLikeInfo = async (
                 userIdx: number,
@@ -450,37 +379,49 @@ describe('# Perfume Service Test', () => {
                 .catch((err: Error) => done(err));
         });
     });
-    describe ('# updateSimilarPerfumes Test', async () => {
+    describe('# updateSimilarPerfumes Test', async () => {
         it('# Success Case', async () => {
-            try {
-                const result = await Perfume.updateSimilarPerfumes({10:[1,2,3]});
-                expect(result.length).to.be.eq(4);
-            } catch (err: any) {
-                throw err;
-            }
-        })
+            const result = await Perfume.updateSimilarPerfumes({
+                10: [1, 2, 3],
+            });
+            expect(result.length).to.be.eq(4);
+        });
     });
-    describe ('# getRecommendedSimilarPerfumeList Test', async () => {
+    describe('# getRecommendedSimilarPerfumeList Test', async () => {
+        mockKeywordDao.readAllOfPerfumeIdxList = async (_: number[]) => {
+            return [
+                {
+                    perfumeIdx: 1,
+                    Keyword: { name: '키워드1' },
+                },
+                {
+                    perfumeIdx: 1,
+                    Keyword: { name: '키워드2' },
+                },
+                {
+                    perfumeIdx: 2,
+                    Keyword: { name: '키워드3' },
+                },
+                {
+                    perfumeIdx: 3,
+                    Keyword: { name: '키워드2' },
+                },
+            ];
+        };
+
         it('# Success Case 1: If perfumeIdxList is not empty', async () => {
-            try {
-                const result = await Perfume.getRecommendedSimilarPerfumeList(10, 2);
-                expect(result.count).to.be.eq(2);
-                expect(result.rows.length).to.be.eq(2);
-
-            } catch (err: any) {
-                throw err;
-            }
-        })
+            const result = await Perfume.getRecommendedSimilarPerfumeList(
+                10,
+                2
+            );
+            expect(result.count).to.be.eq(2);
+            expect(result.rows.length).to.be.eq(2);
+        });
         it('# Success Case 2: If perfumeIdxList is empty', async () => {
-            try {
-                const result = await Perfume.getRecommendedSimilarPerfumeList(0, 2);
-                expect(result.count).to.be.eq(2);
-                expect(result.rows.length).to.be.eq(2);
-
-            } catch (err: any) {
-                throw err;
-            }
-        })
+            const result = await Perfume.getRecommendedSimilarPerfumeList(0, 2);
+            expect(result.count).to.be.eq(2);
+            expect(result.rows.length).to.be.eq(2);
+        });
     });
     describe('# like Test', () => {
         it('# likePerfume Test (좋아요)', (done: Done) => {

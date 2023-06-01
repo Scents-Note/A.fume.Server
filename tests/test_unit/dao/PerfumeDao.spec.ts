@@ -535,56 +535,32 @@ describe('# perfumeDao Test', () => {
             });
         });
 
-        describe('# recommend Test', () => {
-            it('# recommend perfume by age and gender', (done: Done) => {
-                perfumeDao
-                    .recommendPerfumeByAgeAndGender(
-                        GENDER_WOMAN,
-                        20,
-                        defaultPagingDTO
-                    )
-                    .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-                        expect(result.count).to.be.gte(3);
-                        expect(result.rows.length).to.be.gte(3);
-                        for (const perfume of result.rows) {
-                            PerfumeThumbMockHelper.validTest.call(perfume);
-                        }
-                        done();
-                    })
-                    .catch((err: Error) => done(err));
-            });
-        });
-
         describe('# recommend similar Test', () => {
             it('# update recommended similar perfumes ', async () => {
-                try {
-                    const result: any[] = await perfumeDao.updateSimilarPerfumes({ 1: [2,3], 2: [3,4,5] });
-                    
-                    expect(result.length).to.be.eq(7);
+                const result: any = await perfumeDao.updateSimilarPerfumes({
+                    1: [2, 3],
+                    2: [3, 4, 5],
+                });
 
-                    let err: any;
-                    let length: number;
-                    for (const response of result) {
-                        err =  response[0];
-                        length =  response[1];
-                        expect(err).to.be.null;
-                        expect(length).to.be.lte(3);
-                    }
-                } catch (err: any) { 
-                    throw err; 
-                };
+                expect(result.length).to.be.eq(7);
+
+                let err: any;
+                let length: number;
+                for (const response of result) {
+                    err = response[0];
+                    length = response[1];
+                    expect(err).to.be.null;
+                    expect(length).to.be.lte(3);
+                }
             });
 
             it('# get recommended similar perfumes ', async () => {
-                try {
-                    await perfumeDao.updateSimilarPerfumes({1: [1,2,3]});
+                await perfumeDao.updateSimilarPerfumes({ 1: [1, 2, 3] });
 
-                    const result: number[] = await perfumeDao.getSimilarPerfumeIdxList(1, 20);
-                    
-                    expect(result.length).to.be.eq(3);
-                } catch (err: any) { 
-                    throw err;
-                };
+                const result: number[] =
+                    await perfumeDao.getSimilarPerfumeIdxList(1, 20);
+
+                expect(result.length).to.be.eq(3);
             });
         });
 

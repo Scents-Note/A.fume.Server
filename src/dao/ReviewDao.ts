@@ -8,7 +8,6 @@ const {
     Perfume,
     Brand,
     JoinReviewKeyword,
-    JoinPerfumeKeyword,
     Keyword,
 } = require('@sequelize');
 
@@ -58,8 +57,8 @@ class ReviewDao {
         seasonal,
         gender,
         access,
-        content
-    } : {
+        content,
+    }: {
         perfumeIdx: number;
         userIdx: number;
         score: number;
@@ -68,8 +67,8 @@ class ReviewDao {
         seasonal: string[];
         gender: number;
         access: boolean;
-        content: string
-    }) : Promise<any> {
+        content: string;
+    }): Promise<any> {
         try {
             return Review.create({
                 perfumeIdx,
@@ -88,7 +87,7 @@ class ReviewDao {
             }
             throw err;
         }
-    };
+    }
 
     /**
      * 시향노트 조회
@@ -98,9 +97,7 @@ class ReviewDao {
      */
 
     // const SQL_REVIEW_SELECT_BY_IDX = `SELECT p.image_thumbnail_url as imageUrl, b.english_name as brandName, p.name, rv.score, rv.content, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, rv.create_time as createTime, u.user_idx as userIdx, u.nickname FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx JOIN user u ON rv.user_idx = u.user_idx WHERE review_idx = ?`;
-    async read(
-            reviewIdx: number
-        ) : Promise<[]> {
+    async read(reviewIdx: number): Promise<[]> {
         const readReviewResult = await Review.findByPk(reviewIdx, {
             where: { id: reviewIdx },
             include: [
@@ -133,21 +130,21 @@ class ReviewDao {
 
         readReviewResult.keywordList = readKeywordList
             ? readKeywordList.map((it: any) => {
-                return {
-                    keywordIdx: it.Keyword.id,
-                    keyword: it.Keyword.name,
-                };
-            })
+                  return {
+                      keywordIdx: it.Keyword.id,
+                      keyword: it.Keyword.name,
+                  };
+              })
             : [];
 
         return readReviewResult;
-    };
+    }
 
     /**
      * 내가 쓴 시향노트 전체 조회
      *  = 마이퍼퓸 조회
      *  @TODO sort -> PagingDTO로 변경해야함
-     * 
+     *
      *  @param {number} userIdx
      *  @param {string[][]} sort
      *  @returns {Promise<[]>} reviewListDTO
@@ -156,7 +153,7 @@ class ReviewDao {
     readAllOfUser(
         userIdx: number,
         sort: string[][] = [['createdAt', 'desc']]
-    ) : Promise <any> {
+    ): Promise<any> {
         return Review.findAll({
             where: { userIdx },
             include: {
@@ -170,7 +167,7 @@ class ReviewDao {
             raw: true,
             nest: true,
         });
-    };
+    }
 
     /**
      * 특정 상품의 시향노트 전체 조회(인기순 정렬)
@@ -194,7 +191,7 @@ class ReviewDao {
             mapToModel: true,
             type: sequelize.QueryTypes.SELECT,
         });
-    };
+    }
 
     /**
      * 시향노트 수정
@@ -203,7 +200,7 @@ class ReviewDao {
      * @returns {Promise<any>}
      */
 
-     async update({
+    async update({
         score,
         longevity,
         sillage,
@@ -211,8 +208,8 @@ class ReviewDao {
         gender,
         access,
         content,
-        reviewIdx
-    } : {
+        reviewIdx,
+    }: {
         score: number;
         longevity: number;
         sillage: number;
@@ -220,8 +217,8 @@ class ReviewDao {
         gender: number;
         access: boolean;
         content: string;
-        reviewIdx: number
-    }) : Promise<any> {
+        reviewIdx: number;
+    }): Promise<any> {
         const result = await Review.update(
             { score, longevity, sillage, seasonal, gender, access, content },
             { where: { id: reviewIdx } }
@@ -233,7 +230,7 @@ class ReviewDao {
         }
 
         return result;
-    };
+    }
 
     /**
      * 시향노트 삭제
@@ -242,25 +239,9 @@ class ReviewDao {
      * @return {Promise<any>}
      */
 
-    delete (reviewIdx: number) : Promise<any> {
+    delete(reviewIdx: number): Promise<any> {
         return Review.destroy({ where: { id: reviewIdx } });
-    };
-
-    /**
-     * 데이터 무결성을 위해, 향수 키워드 중 count가 0이하인 행 제거
-     *
-     * @return {Promise<any>}
-     */
-
-    deleteZeroCount() : Promise<any> {
-        return JoinPerfumeKeyword.destroy({
-            where: {
-                count: {
-                    [Op.lte]: 0,
-                },
-            },
-        });
-    };
+    }
 
     /**
      * 특정 향수에 관해, 내가 작성한 시향노트 조회
@@ -268,7 +249,13 @@ class ReviewDao {
      * @param {Object}
      * @return {Promise<any>} ReviewDTO
      */
-    findOne ({ userIdx, perfumeIdx } : {userIdx: number; perfumeIdx: number}) : Promise<any> {
+    findOne({
+        userIdx,
+        perfumeIdx,
+    }: {
+        userIdx: number;
+        perfumeIdx: number;
+    }): Promise<any> {
         return Review.findOne({
             where: {
                 userIdx,
@@ -277,7 +264,7 @@ class ReviewDao {
             raw: true,
             nest: true,
         });
-    };
+    }
 
     /**
      * 향수 리스트에 관해, 내가 작성한 시향노트 조회
@@ -299,9 +286,8 @@ class ReviewDao {
             },
             raw: true,
             nest: true,
-        })
+        });
     }
 }
 
 export default ReviewDao;
-

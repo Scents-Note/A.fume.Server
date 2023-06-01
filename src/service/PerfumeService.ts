@@ -4,7 +4,6 @@ import { NotMatchedError, FailedToCreateError } from '@errors';
 
 import { removeKeyJob, flatJob } from '@utils/func';
 import {
-    GENDER_WOMAN,
     PERFUME_NOTE_TYPE_SINGLE,
     PERFUME_NOTE_TYPE_NORMAL,
 } from '@utils/constants';
@@ -57,9 +56,6 @@ const commonJob = [
         'updatedAt'
     ),
 ];
-
-const DEFAULT_GENDER: number = GENDER_WOMAN;
-const DEFAULT_AGE: number = 20;
 class PerfumeService {
     /**
      * 향수 세부 정보 조회
@@ -219,17 +215,11 @@ class PerfumeService {
      * @returns {Promise}
      **/
     async updateSimilarPerfumes(perfumeSimilarRequest: any): Promise<any> {
-        try {
-            logger.debug(
-                `${LOG_TAG} updateSimilarPerfumes(perfumeSimilarRequest = ${perfumeSimilarRequest})`
-            );
+        logger.debug(
+            `${LOG_TAG} updateSimilarPerfumes(perfumeSimilarRequest = ${perfumeSimilarRequest})`
+        );
 
-            return await perfumeDao.updateSimilarPerfumes(
-                perfumeSimilarRequest
-            );
-        } catch (err: any) {
-            throw err;
-        }
+        return await perfumeDao.updateSimilarPerfumes(perfumeSimilarRequest);
     }
 
     /**
@@ -471,15 +461,14 @@ class PerfumeService {
             } else {
                 perfumeList = await perfumeDao.getPerfumesByRandom(size);
             }
-
             return this.convertToThumbKeyword(
                 new ListAndCountDTO<PerfumeThumbDTO>(
                     perfumeList.length,
                     perfumeList
                 )
             );
-        } catch (err) {
-            throw err;
+        } catch (error) {
+            throw error;
         }
     }
 
@@ -559,25 +548,6 @@ class PerfumeService {
 
     setS3FileDao(dao: S3FileDao) {
         s3FileDao = dao;
-    }
-
-    private async getAgeGroupAndGender(
-        userIdx: number
-    ): Promise<{ gender: number; ageGroup: number }> {
-        if (userIdx == -1) {
-            return {
-                gender: DEFAULT_GENDER,
-                ageGroup: DEFAULT_AGE,
-            };
-        }
-        const user: UserDTO = await userDao.readByIdx(userIdx);
-        const today: Date = new Date();
-        const age: number = user.birth
-            ? today.getFullYear() - user.birth + 1
-            : DEFAULT_AGE;
-        const gender: number = user.gender || DEFAULT_GENDER;
-        const ageGroup: number = Math.floor(age / 10) * 10;
-        return { gender, ageGroup };
     }
 
     private async generateNote(perfumeIdx: number): Promise<{

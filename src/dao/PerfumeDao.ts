@@ -25,8 +25,6 @@ const {
     Sequelize,
 } = require('@sequelize');
 
-const { ranking } = require('@mongoose');
-
 const PERFUME_THUMB_COLUMNS: string[] = [
     'perfumeIdx',
     'name',
@@ -37,25 +35,7 @@ const PERFUME_THUMB_COLUMNS: string[] = [
     'updatedAt',
 ];
 
-const SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT: string =
-    'SELECT ' +
-    'COUNT(*) AS "score", ' +
-    'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.created_at AS createdAt, p.updated_at AS updatedAt, ' +
-    'b.brand_idx AS "Brand.brandIdx", ' +
-    'b.name AS "Brand.name", ' +
-    'b.english_name AS "Brand.englishName", ' +
-    'b.first_initial AS "Brand.firstInitial", ' +
-    'b.image_url AS "Brand.imageUrl", ' +
-    'b.description AS "Brand.description", ' +
-    'b.created_at AS "Brand.createdAt", ' +
-    'b.updated_at AS "Brand.updatedAt" ' +
-    'FROM report_user_inquire_perfume ruip ' +
-    'INNER JOIN perfumes p ON ruip.perfume_idx = p.perfume_idx ' +
-    'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
-    'INNER JOIN users u ON ruip.user_idx = u.user_idx ' +
-    'WHERE (u.gender = $1 AND (u.birth BETWEEN $2 AND $3)) AND p.deleted_at IS NULL ' +
-    'GROUP BY ruip.perfume_idx ' +
-    'ORDER BY "score" DESC ';
+import redis from '@utils/db/redis';
 
 const SQL_SEARCH_PERFUME_SELECT: string =
     'SELECT ' +
@@ -495,7 +475,6 @@ class PerfumeDao {
         );
         return ranking.findItem({ gender, ageGroup });
     }
-
     /**
      * 서베이 추천 향수 조회
      *
@@ -550,23 +529,17 @@ class PerfumeDao {
         perfumeIdx: number,
         size: number
     ): Promise<number[]> {
-        try {
-            logger.debug(
-                `${LOG_TAG} getSimilarPerfumeIdxList(perfumeIdx = ${perfumeIdx}, size = ${size})`
-            );
+        logger.debug(
+            `${LOG_TAG} getSimilarPerfumeIdxList(perfumeIdx = ${perfumeIdx}, size = ${size})`
+        );
 
-            const client = require('@utils/db/redis.js');
+        const result = await redis.lrange(
+            `recs.perfume:${perfumeIdx}`,
+            0,
+            size - 1
+        );
 
-            const result = await client.lrange(
-                `recs.perfume:${perfumeIdx}`,
-                0,
-                size - 1
-            );
-
-            return result.map((it: string) => Number(it));
-        } catch (err) {
-            throw err;
-        }
+        return result.map((it: string) => Number(it));
     }
 
     /**

@@ -184,70 +184,6 @@ class KeywordDao {
     }
 
     /**
-     * 향수가 가진 키워드별 개수 조회
-     * @TODO 아래 함수 readAllOfPerfume()와 역할 유사해서 제거/주석 처리 필요해보임
-     * @TODO NotMatchedError 이 단계에서 필요한지 고민
-     *
-     * @param {number} perfumeIdx
-     * @param {string[][]} sort
-     * @returns {Promise<any>} keywordList
-     */
-    async readAllPerfumeKeywordCount(
-        perfumeIdx: number,
-        sort: string[][] = [['count', 'desc']]
-    ): Promise<any> {
-        let result = await JoinPerfumeKeyword.findAll({
-            attributes: {
-                exclude: ['createdAt', 'updatedAt', 'perfumeIdx'],
-            },
-            order: sort,
-            where: { perfumeIdx },
-            raw: true, //Set this to true if you don't have a model definition for your query.
-            nest: true,
-        });
-
-        if (result === undefined) {
-            throw new NotMatchedError();
-        }
-        return result;
-    }
-
-    /**
-     * 향수별 특정 키워드 매칭 정보 조회
-     * @TODO count 리턴 대신, findOne 결과 그대로 리턴하는 방식으로 변경 요구됨.
-     * @TODO 함수 역할과 맞게 함수명 변경.
-     * @TODO 변경사항에 맞게 테스트 코드 변경
-     * @TODO NotMatchedError 이 단계에서 필요한지 고민
-     *
-     * @param {Object}
-     * @returns {Promise<number>} count
-     */
-    async readPerfumeKeywordCount({
-        perfumeIdx,
-        keywordIdx,
-    }: {
-        perfumeIdx: number;
-        keywordIdx: number;
-    }): Promise<number> {
-        let result = await JoinPerfumeKeyword.findOne({
-            attributes: {
-                exclude: ['createdAt', 'updatedAt'],
-            },
-            where: {
-                perfumeIdx,
-                keywordIdx,
-            },
-            raw: true, // To receive a plain response instead, pass { raw: true } as an option to the finder method.
-            nest: true,
-        });
-
-        if (result === null) {
-            throw new NotMatchedError();
-        }
-        return result.count;
-    }
-
-    /**
      * 특정 향수가 가진 키워드 목록 조회
      *
      * @param {number[]} perfumeIdxList
@@ -294,31 +230,6 @@ class KeywordDao {
     }
 
     /**
-     * 특정 시향노트가 가진 키워드 목록 조회
-     *
-     * @param {number} reviewIdx
-     * @returns {any[]} keywordListDTO
-     */
-    readAllOfReview(reviewIdx: number): any[] {
-        return JoinReviewKeyword.findAll({
-            where: { reviewIdx },
-            attributes: {
-                exclude: ['createdAt', 'updatedAt'],
-            },
-            include: [
-                {
-                    model: Keyword,
-                    attributes: {
-                        exclude: ['createdAt', 'updatedAt'],
-                    },
-                },
-            ],
-            raw: true,
-            nest: true,
-        });
-    }
-
-    /**
      * 키워드명으로 키워드 인덱스 조회
      *
      * @param {string} keywordName
@@ -331,21 +242,6 @@ class KeywordDao {
             nest: true,
         });
         return keyword.id;
-    }
-
-    /**
-     * 키워드 인덱스로 키워드명 조회
-     *
-     * @param {number} keywordIdx
-     * @returns {strint} keyword name
-     */
-    async readKeywordName(keywordIdx: number): Promise<any> {
-        const keyword = await Keyword.findByPk({
-            where: { keywordIdx },
-            raw: true,
-            nest: true,
-        });
-        return keyword.name;
     }
 }
 

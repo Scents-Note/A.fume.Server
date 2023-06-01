@@ -103,6 +103,6 @@
         /* Skip type checking of declaration files. */
         "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
     },
-    "include": ["./src/**/*"],
-    "exclude": ["./node_modules/**", "**/*.spec.ts"]
+    "include": ["./src/**/*", "./tests/**/*"],
+    "exclude": ["./node_modules/**"]
 }
