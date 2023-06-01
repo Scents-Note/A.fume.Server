@@ -93,7 +93,7 @@ export const loginAdminUser: RequestHandler = async (req, res, next) => {
 
 /**
  * @swagger
- *  /admin/perfume/{perfumeIdx}:
+ *  /admin/perfumes/{perfumeIdx}:
  *    get:
  *      tags:
  *      - admin
@@ -150,7 +150,7 @@ export const getPerfume: RequestHandler = async (
 
 /**
  * @swagger
- *  /admin/perfumes/list:
+ *  /admin/perfumes:
  *    get:
  *      tags:
  *      - admin
@@ -162,67 +162,53 @@ export const getPerfume: RequestHandler = async (
  *      - application/json
  *      parameters:
  *      - name: page
- *        in : query
+ *        in: query
  *        required: true
  *        type: integer
  *        format: int64
- *       responses:
- *         200:
- *           description: 성공
- *           schema:
- *             type: object
- *             properties:
- *               message:
- *                 type: string
- *                 example: 향수 검색 성공
- *               data:
- *                 type: object
- *                 properties:
- *                   count:
- *                     type: integer
- *                     example: 1
- *                   rows:
- *                     type: array
- *                     items:
- *                       allOf:
- *                       - $ref: '#/definitions/PerfumeResponse'
+ *      responses:
+ *        200:
+ *          description: 성공
+ *          schema:
+ *            type: object
+ *            properties:
+ *              message:
+ *                type: string
+ *                example: 향수 검색 성공
+ *              data:
+ *                type: object
+ *                properties:
+ *                  count:
+ *                    type: integer
+ *                    example: 1
+ *                  rows:
+ *                    type: array
+ *                    items:
+ *                      allOf:
+ *                      - $ref: '#/definitions/PerfumeResponse'
  *      x-swagger-router-controller: Admin
  */
 
 export const getPerfumes: RequestHandler = async (
-    req: Request | any,
+    req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    const page: number = req.query.page;
+    const page: number = Number(req.query.page);
     if (isNaN(page)) {
         next();
         return;
     }
     const limit = 20;
-    const loginUserIdx: number = req.middlewareToken.loginUserIdx;
-    const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
-        req.query,
-        {
-            requestSize: DEFAULT_NEW_PERFUME_REQUEST_SIZE,
-        }
-    );
     const offset = (page - 1) * limit;
     const perfumes = await Perfume.readPage(offset, limit);
 
-    Perfume.getNewPerfume(loginUserIdx, pagingRequestDTO.toPageDTO())
-        .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
-            return result.convertType(PerfumeResponse.createByJson);
-        })
-        .then((response: ListAndCountDTO<PerfumeResponse>) => {
             res.status(StatusCode.OK).json(
                 new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
                     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
-                    response
+            perfumes.convertType(PerfumeResponse.createByJson)
                 )
             );
-        })
-        .catch((err: Error) => next(err));
 };
 
 /**

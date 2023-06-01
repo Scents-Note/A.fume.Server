@@ -697,8 +697,9 @@ class PerfumeService {
         return [defaultImage];
     }
 
-    async readPage(offset: number, limit: number): Promise<PerfumeThumbDTO[]> {
-        return perfumeDao.readPage(offset, limit);
+    async readPage(offset: number, limit: number): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        const perfumes = await  perfumeDao.readPage(offset, limit);
+        return new ListAndCountDTO(perfumes.length, perfumes);
     }
 }
 
