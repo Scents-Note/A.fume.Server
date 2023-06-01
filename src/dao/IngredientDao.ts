@@ -2,7 +2,13 @@ import { logger } from '@modules/winston';
 
 import { NotMatchedError } from '@errors';
 
-import { IngredientDTO, ListAndCountDTO, PagingDTO } from '@dto/index';
+import {
+    IngredientDTO,
+    ListAndCountDTO,
+    PagingDTO,
+    SeriesDTO,
+} from '@dto/index';
+const { Series } = require('@sequelize');
 
 const { Ingredient, Sequelize } = require('@sequelize');
 const { Op } = Sequelize;
@@ -83,6 +89,23 @@ class IngredientDao {
                     [Op.in]: categoryIdxList,
                 },
             },
+        });
+    }
+
+    /**
+     * 향수 전체 조회
+     *
+     * @returns {Promise<IngredientDTO[]>}
+     */
+    async readPage(
+        offset: number,
+        limit: number
+    ): Promise<Array<IngredientDTO & { Series: SeriesDTO }>> {
+        logger.debug(`${LOG_TAG} readAll()`);
+        return Ingredient.findAll({
+            offset,
+            limit,
+            include: { model: Series, as: 'Series' },
         });
     }
 }

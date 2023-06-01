@@ -1,12 +1,6 @@
+import IngredientService from '@services/IngredientService';
 import { AdminService } from '@src/service/AdminService';
-import { NextFunction, Request, RequestHandler, Response } from 'express';
-import {
-    IngredientResponse,
-    LoginResponse,
-    PerfumeDetailResponse,
-    PerfumeResponse,
-    ResponseDTO,
-} from './definitions/response';
+import PerfumeService from '@src/service/PerfumeService';
 import StatusCode from '@src/utils/statusCode';
 import {
     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
@@ -14,19 +8,16 @@ import {
     MSG_GET_SEARCH_INGREDIENT_SUCCESS,
     MSG_LOGIN_SUCCESS,
 } from '@src/utils/strings';
-import PerfumeService from '@src/service/PerfumeService';
-import IngredientService from '@services/IngredientService';
-import { PagingRequestDTO } from './definitions/request';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import {
-    DEFAULT_INGREDIENT_REQUEST_SIZE,
-    DEFAULT_NEW_PERFUME_REQUEST_SIZE,
-} from '@src/utils/constants';
-import {
-    IngredientDTO,
-    ListAndCountDTO,
-    PagingDTO,
-    PerfumeThumbDTO,
-} from '@src/data/dto';
+    IngredientFullResponse,
+    IngredientResponse,
+    LoginResponse,
+    PerfumeDetailResponse,
+    PerfumeResponse,
+    ResponseDTO,
+} from './definitions/response';
+import { ListAndCountDTO } from '@src/data/dto';
 
 let Admin: AdminService = new AdminService();
 let Perfume: PerfumeService = new PerfumeService();
@@ -203,18 +194,18 @@ export const getPerfumes: RequestHandler = async (
     const offset = (page - 1) * limit;
     const perfumes = await Perfume.readPage(offset, limit);
 
-            res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
-                    MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
+    res.status(StatusCode.OK).json(
+        new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
+            MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
             perfumes.convertType(PerfumeResponse.createByJson)
-                )
-            );
+        )
+    );
 };
 
 /**
  *
  * @swagger
- *  /admin/ingredient:
+ *  /admin/ingredients:
  *     get:
  *       tags:
  *       - admin
@@ -224,14 +215,11 @@ export const getPerfumes: RequestHandler = async (
  *       produces:
  *       - application/json
  *       parameters:
- *       - name: requestSize
+ *       - name: page
  *         in: query
+ *         required: true
  *         type: integer
- *         required: false
- *       - name: lastPosition
- *         in: query
- *         type: integer
- *         required: false
+ *         format: int64
  *       responses:
  *         200:
  *           description: 성공
@@ -251,38 +239,30 @@ export const getPerfumes: RequestHandler = async (
  *                     type: array
  *                     items:
  *                       allOf:
- *                         - $ref: '#/definitions/IngredientResponse'
+ *                         - $ref: '#/definitions/IngredientFullResponse'
  *         401:
  *           description: Token is missing or invalid
  *       x-swagger-router-controller: Admin
  */
 
-export const getIngredientAll: RequestHandler = (
+export const getIngredientAll: RequestHandler = async (
     req: Request,
     res: Response,
     next: NextFunction
 ) => {
-    const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
-        req.query,
-        {
-            requestSize: DEFAULT_INGREDIENT_REQUEST_SIZE,
-        }
-    );
+    const page: number = Number(req.query.page);
+    if (isNaN(page)) {
+        next();
+        return;
+    }
+    const limit = 20;
+    const offset = (page - 1) * limit;
+    const ingredients = await Ingredient.readPage(offset, limit);
 
-    const pagingDTO: PagingDTO = pagingRequestDTO.toPageDTO();
-    Ingredient.getIngredientAll(pagingDTO)
-        .then((result: ListAndCountDTO<IngredientDTO>) => {
-            return result.convertType(IngredientResponse.createByJson);
-        })
-        .then((response: ListAndCountDTO<IngredientResponse>) => {
-            res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<IngredientResponse>>(
-                    MSG_GET_SEARCH_INGREDIENT_SUCCESS,
-                    response
-                )
-            );
-        })
-        .catch((err: Error) => {
-            next(err);
-        });
+    res.status(StatusCode.OK).json(
+        new ResponseDTO<ListAndCountDTO<IngredientFullResponse>>(
+            MSG_GET_SEARCH_INGREDIENT_SUCCESS,
+            ingredients.convertType(IngredientFullResponse.createByJson)
+        )
+    );
 };
