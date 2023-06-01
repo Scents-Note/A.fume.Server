@@ -1,0 +1,20 @@
+export { sequelize } from './sequelize';
+
+export * from './tables/Brand';
+export * from './tables/Ingredient';
+export * from './tables/IngredientCategories';
+export * from './tables/InquireHistory';
+export * from './tables/JoinPerfumeKeyword';
+export * from './tables/JoinReviewKeyword';
+export * from './tables/Keyword';
+export * from './tables/LikePerfume';
+export * from './tables/LikeReview';
+export * from './tables/Note';
+export * from './tables/Perfume';
+export * from './tables/PerfumeSurvey';
+export * from './tables/ReportReview';
+export * from './tables/ReportUserInquirePerfume';
+export * from './tables/Review';
+export * from './tables/Series';
+export * from './tables/Token';
+export * from './tables/User';

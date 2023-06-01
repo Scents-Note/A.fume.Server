@@ -1,13 +1,15 @@
 import properties from '@properties';
 
-import { Sequelize } from 'sequelize';
-
 const env = properties.NODE_ENV;
 const config = require('@configs/config')[env];
 
-export const sequelize = new Sequelize(
-    config.database,
-    config.username,
-    config.password,
-    config
-);
+import { Sequelize } from 'sequelize-typescript';
+
+export const sequelize = new Sequelize({
+    database: config.database,
+    username: config.username,
+    password: config.password,
+    host: config.host,
+    dialect: 'mysql',
+    models: [__dirname + '/tables'], // or [Player, Team],
+});
