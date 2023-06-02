@@ -28,12 +28,12 @@ import {
     PerfumeSearchResultDTO,
     UserDTO,
     NoteDictDTO,
-    IngredientDTO,
     PerfumeThumbWithReviewDTO,
 } from '@dto/index';
 import fp from 'lodash/fp';
 import _ from 'lodash';
 import IngredientDao from '@src/dao/IngredientDao';
+import { Ingredient } from '@sequelize';
 
 const LOG_TAG: string = '[Perfume/Service]';
 const DEFAULT_VALUE_OF_INDEX = 0;
@@ -133,10 +133,8 @@ class PerfumeService {
             .getIngredientIdxByCategories(
                 perfumeSearchDTO.ingredientCategoryList
             )
-            .then((ingredientList: IngredientDTO[]) => {
-                return ingredientList.map(
-                    (it: IngredientDTO) => it.ingredientIdx
-                );
+            .then((ingredientList: Ingredient[]) => {
+                return ingredientList.map((it) => it.ingredientIdx);
             })
             .then((ingredientIdxList: number[]) => {
                 return perfumeDao.search(
