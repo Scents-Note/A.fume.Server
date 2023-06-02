@@ -9,7 +9,7 @@ import { PagingDTO, ListAndCountDTO } from '@dto/index';
 
 const seriesDao = new SeriesDao();
 
-const { Series } = require('@sequelize');
+import { Series } from '@sequelize';
 
 describe('# seriesDao Test', () => {
     before(async function () {

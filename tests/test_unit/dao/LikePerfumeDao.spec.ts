@@ -12,7 +12,7 @@ import {
 import LikePerfumeDao from '@dao/LikePerfumeDao';
 
 const likePerfumeDao = new LikePerfumeDao();
-const { LikePerfume } = require('@sequelize');
+import { LikePerfume } from '@sequelize';
 
 describe('# likePerfumeDao Test', () => {
     before(async function () {
@@ -23,15 +23,13 @@ describe('# likePerfumeDao Test', () => {
         before(async () => {
             await LikePerfume.destroy({ where: { userIdx: 5, perfumeIdx: 5 } });
         });
-        it('# success case', (done: Done) => {
+        it('# success case', () => {
             likePerfumeDao
                 .create(5, 5)
                 .then((result: { userIdx: number; perfumeIdx: number }) => {
                     expect(result.userIdx).to.be.eq(5);
                     expect(result.perfumeIdx).to.be.eq(5);
-                    done();
-                })
-                .catch((err: Error) => done(err));
+                });
         });
         it('# DuplicatedEntryError case', (done: Done) => {
             likePerfumeDao

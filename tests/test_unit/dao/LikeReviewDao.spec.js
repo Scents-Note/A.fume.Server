@@ -11,7 +11,7 @@ const chai = require('chai');
 const { expect } = chai;
 const likeReviewDao = require('@dao/LikeReviewDao.js');
 
-const { LikeReview } = require('@sequelize');
+import { LikeReview } from '@sequelize';
 
 describe('# LikeReviewDao Test', () => {
     before(async function () {
