@@ -1,17 +1,15 @@
 import { NotMatchedError, DuplicatedEntryError } from '@errors';
 import { ACCESS_PUBLIC, ACCESS_PRIVATE } from '@utils/constants';
 
-const {
+import {
     sequelize,
-    Sequelize,
     Review,
     Perfume,
     Brand,
     JoinReviewKeyword,
     Keyword,
-} = require('@sequelize');
-
-const { Op } = Sequelize;
+} from '@sequelize';
+import { Op, Order, QueryTypes } from 'sequelize';
 
 const SQL_READ_ALL_OF_PERFUME = `
     SELECT 
@@ -97,16 +95,17 @@ class ReviewDao {
      */
 
     // const SQL_REVIEW_SELECT_BY_IDX = `SELECT p.image_thumbnail_url as imageUrl, b.english_name as brandName, p.name, rv.score, rv.content, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, rv.create_time as createTime, u.user_idx as userIdx, u.nickname FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx JOIN user u ON rv.user_idx = u.user_idx WHERE review_idx = ?`;
-    async read(reviewIdx: number): Promise<[]> {
+    async read(reviewIdx: number): Promise<any> {
         const readReviewResult = await Review.findByPk(reviewIdx, {
-            where: { id: reviewIdx },
             include: [
                 {
                     model: Perfume,
-                    include: {
-                        model: Brand,
-                        as: 'Brand',
-                    },
+                    include: [
+                        {
+                            model: Brand,
+                            as: 'Brand',
+                        },
+                    ],
                 },
             ],
             raw: true,
@@ -122,13 +121,14 @@ class ReviewDao {
             include: [
                 {
                     model: Keyword,
+                    as: 'Keyword',
                 },
             ],
             raw: true,
             nest: true,
         });
 
-        readReviewResult.keywordList = readKeywordList
+        const keywordList = readKeywordList
             ? readKeywordList.map((it: any) => {
                   return {
                       keywordIdx: it.Keyword.id,
@@ -137,7 +137,7 @@ class ReviewDao {
               })
             : [];
 
-        return readReviewResult;
+        return { ...readReviewResult, keywordList };
     }
 
     /**
@@ -152,16 +152,19 @@ class ReviewDao {
 
     readAllOfUser(
         userIdx: number,
-        sort: string[][] = [['createdAt', 'desc']]
+        sort: Order = [['createdAt', 'desc']]
     ): Promise<any> {
         return Review.findAll({
             where: { userIdx },
             include: {
                 model: Perfume,
-                include: {
-                    model: Brand,
-                    as: 'Brand',
-                },
+                as: 'Perfume',
+                include: [
+                    {
+                        model: Brand,
+                        as: 'Brand',
+                    },
+                ],
             },
             order: sort,
             raw: true,
@@ -189,7 +192,7 @@ class ReviewDao {
             raw: true,
             model: Review,
             mapToModel: true,
-            type: sequelize.QueryTypes.SELECT,
+            type: QueryTypes.SELECT,
         });
     }
 

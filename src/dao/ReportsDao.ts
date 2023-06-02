@@ -1,10 +1,9 @@
 import { logger } from '@modules/winston';
 
-import { ReportUserInquirePerfumeDTO } from '@dto/index';
-
 const LOG_TAG: string = '[SearchHistory/DAO]';
 
-const { ReportUserInquirePerfume } = require('@sequelize');
+import { ReportUserInquirePerfume } from '@sequelize';
+import { Transaction } from 'sequelize';
 
 class ReportsDao {
     /**
@@ -12,9 +11,9 @@ class ReportsDao {
      * @return {Promise}
      */
     async bulkInsertUserInquirePerfume(
-        searchHistories: ReportUserInquirePerfumeDTO[],
-        transaction?: any
-    ): Promise<void> {
+        searchHistories: any,
+        transaction: Transaction
+    ): Promise<ReportUserInquirePerfume[]> {
         logger.debug(
             `${LOG_TAG} bulkInsertUserInquirePerfume(searchHistories: ${searchHistories}, transaction: ${transaction})`
         );
@@ -27,7 +26,7 @@ class ReportsDao {
     /**
      * SearchHistory 초기화
      */
-    async clearUserInquirePerfume(transaction?: any): Promise<void> {
+    async clearUserInquirePerfume(transaction: Transaction): Promise<void> {
         logger.debug(
             `${LOG_TAG} clearUserInquirePerfume(transaction: ${transaction})`
         );

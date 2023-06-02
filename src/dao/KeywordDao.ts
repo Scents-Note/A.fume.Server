@@ -1,15 +1,13 @@
 import { logger } from '../modules/winston';
 import { NotMatchedError } from '@errors';
 
-const {
+import {
     Keyword,
-    Sequelize,
     sequelize,
     JoinPerfumeKeyword,
     JoinReviewKeyword,
-} = require('@sequelize');
-
-const { Op } = Sequelize;
+} from '@sequelize';
+import { Op, Order, Transaction } from 'sequelize';
 
 class KeywordDao {
     /**
@@ -27,7 +25,7 @@ class KeywordDao {
         keywordIdx: number;
         perfumeIdx: number;
     }): Promise<any> {
-        return sequelize.transaction(async (t: any) => {
+        return sequelize.transaction(async (t: Transaction) => {
             try {
                 const createReviewKeyword = await JoinReviewKeyword.create(
                     {
@@ -122,8 +120,8 @@ class KeywordDao {
     readAll(
         pagingIndex: number = 1,
         pagingSize: number = 10,
-        sort: string[][] = [['name', 'asc']]
-    ): any[] {
+        sort: Order = [['name', 'asc']]
+    ): Promise<{ rows: Keyword[]; count: number }> {
         //LIMIT는 가져올 게시물의 수, OFFSET은 어디서부터 가져올거냐(몇 페이지를 가져오고 싶냐)
         return Keyword.findAndCountAll({
             attributes: {
@@ -148,8 +146,8 @@ class KeywordDao {
      */
     async readAllOfPerfume(
         perfumeIdx: number,
-        sort: string[][] = [['count', 'desc']],
-        condition: Object = {},
+        sort: Order = [['count', 'desc']],
+        condition: any = {},
         limitSize: number = 9
     ): Promise<any> {
         const result: any[] = await JoinPerfumeKeyword.findAll({
@@ -158,6 +156,7 @@ class KeywordDao {
             },
             include: {
                 model: Keyword,
+                as: 'Keyword',
                 attributes: {
                     exclude: ['createdAt', 'updatedAt'],
                 },
@@ -194,16 +193,17 @@ class KeywordDao {
      */
     async readAllOfPerfumeIdxList(
         perfumeIdxList: any,
-        sort: string[][] = [['count', 'desc']],
-        condition: Object = {},
+        sort: Order = [['count', 'desc']],
+        condition: any = {},
         limitSize: number = 2
     ): Promise<any> {
-        let result = await JoinPerfumeKeyword.findAll({
+        const result = await JoinPerfumeKeyword.findAll({
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
             },
             include: {
                 model: Keyword,
+                as: 'Keyword',
                 attributes: {
                     exclude: ['createdAt', 'updatedAt'],
                 },
@@ -241,7 +241,7 @@ class KeywordDao {
             raw: true,
             nest: true,
         });
-        return keyword.id;
+        return keyword?.id;
     }
 }
 

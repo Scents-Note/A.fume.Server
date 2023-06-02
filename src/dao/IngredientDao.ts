@@ -10,8 +10,8 @@ import {
 } from '@dto/index';
 const { Series, IngredientCategories } = require('@sequelize');
 
-const { Ingredient, Sequelize } = require('@sequelize');
-const { Op } = Sequelize;
+import { Ingredient } from '@sequelize';
+import { Op } from 'sequelize';
 
 const LOG_TAG: string = '[Ingredient/DAO]';
 
@@ -79,7 +79,7 @@ class IngredientDao {
      */
     async getIngredientIdxByCategories(
         categoryIdxList: number[]
-    ): Promise<IngredientDTO[]> {
+    ): Promise<Ingredient[]> {
         logger.debug(`${LOG_TAG} getIngredientIdxByCategories()`);
         return Ingredient.findAll({
             raw: true,
