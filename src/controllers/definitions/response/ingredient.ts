@@ -1,5 +1,5 @@
-import { SeriesDTO } from '@src/data/dto';
-import { SeriesResponse } from './series';
+import { IngredientCategoryDTO, SeriesDTO } from '@src/data/dto';
+import { IngredientCategoryResponse, SeriesResponse } from './series';
 
 /**
  * @swagger
@@ -51,6 +51,8 @@ class IngredientResponse {
  *         type: string
  *       series:
  *         - $ref: '#/definitions/SeriesResponse'
+ *       ingredientCategory:
+ *         - $ref: '#/definitions/IngredientCategoryResponse'
  *
  *     example:
  *       ingredientIdx: 1
@@ -64,19 +66,22 @@ class IngredientFullResponse {
     readonly englishName: string;
     readonly description: string;
     readonly Series: SeriesResponse;
+    readonly IngredientCategory: IngredientCategoryResponse;
 
     constructor(
         ingredientIdx: number,
         name: string,
         englishName: string,
         description: string,
-        Series: SeriesResponse
+        Series: SeriesResponse,
+        IngredientCategory: IngredientCategoryResponse
     ) {
         this.ingredientIdx = ingredientIdx;
         this.name = name;
         this.englishName = englishName;
         this.description = description;
         this.Series = Series;
+        this.IngredientCategory = IngredientCategory;
     }
 
     static createByJson(json: {
@@ -85,13 +90,17 @@ class IngredientFullResponse {
         englishName: string;
         description: string;
         Series: object;
+        IngredientCategory: object;
     }) {
         return new IngredientFullResponse(
             json.ingredientIdx,
             json.name,
             json.englishName,
             json.description,
-            SeriesResponse.create(SeriesDTO.createByJson(json.Series))
+            SeriesResponse.create(SeriesDTO.createByJson(json.Series)),
+            IngredientCategoryResponse.create(
+                IngredientCategoryDTO.createByJson(json.IngredientCategory)
+            )
         );
     }
 }

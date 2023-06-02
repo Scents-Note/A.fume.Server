@@ -290,69 +290,6 @@ class PerfumeService {
     }
 
     /**
-     * 유저 연령대 및 성별에 따른 향수 추천
-     *
-     * @deprecated since version 0.0.9
-     * @param {number} userIdx
-     * @param {PagingDTO} pagingDTO
-     * @param {number} ageGroup
-     * @param {Gender} gender
-     * @returns {Promise<Perfume[]>}
-     **/
-    async recommendByUser(
-        userIdx: number,
-        pagingDTO: PagingDTO,
-        ageGroup?: number,
-        gender?: number
-    ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
-        logger.debug(
-            `${LOG_TAG} recommendByUser(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
-        );
-        const defaultUserInfo: { ageGroup: number; gender: number } =
-            await this.getAgeGroupAndGender(userIdx);
-
-        const recommendedListPromise: Promise<
-            ListAndCountDTO<PerfumeThumbDTO>
-        > = this.recommendByGenderAgeAndGender(
-            gender || defaultUserInfo.gender,
-            ageGroup || defaultUserInfo.ageGroup,
-            pagingDTO
-        );
-
-        return recommendedListPromise.then(
-            (
-                result: ListAndCountDTO<PerfumeThumbDTO>
-            ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> => {
-                return this.convertToThumbKeyword(result, userIdx);
-            }
-        );
-    }
-
-    /**
-     * 유저 연령대 및 성별에 따른 향수 추천
-     *
-     * @deprecated since version 0.0.9
-     * @param {number} gender
-     * @param {number} ageGroup
-     * @param {PagingDTO} pagingDTO
-     * @returns {Promise<Perfume[]>}
-     **/
-    recommendByGenderAgeAndGender(
-        gender: number,
-        ageGroup: number,
-        pagingDTO: PagingDTO
-    ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
-        logger.debug(
-            `${LOG_TAG} recommendByGenderAgeAndGender(gender = ${gender}, ageGroup = ${ageGroup}, pagingDTO = ${pagingDTO})`
-        );
-        return perfumeDao.recommendPerfumeByAgeAndGender(
-            gender,
-            ageGroup,
-            pagingDTO
-        );
-    }
-
-    /**
      * 새로 추가된 향수 조회
      *
      * @param {number} userIdx
@@ -445,10 +382,6 @@ class PerfumeService {
         size: number
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
         try {
-            logger.debug(
-                `${LOG_TAG} getRecommendedSimilarPerfumes(perfumeIdx = ${perfumeIdx}, size = ${size})`
-            );
-
             let perfumeList: PerfumeThumbDTO[];
 
             const perfumeIdxList: number[] =
@@ -484,7 +417,6 @@ class PerfumeService {
         size: number,
         minReviewCount: number = 0
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
-        logger.debug(`${LOG_TAG} getPerfumesByRandom(size = ${size})`);
         let result: PerfumeThumbDTO[] = [];
 
         if (minReviewCount == 0) {
@@ -697,8 +629,11 @@ class PerfumeService {
         return [defaultImage];
     }
 
-    async readPage(offset: number, limit: number): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
-        const perfumes = await  perfumeDao.readPage(offset, limit);
+    async readPage(
+        offset: number,
+        limit: number
+    ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        const perfumes = await perfumeDao.readPage(offset, limit);
         return new ListAndCountDTO(perfumes.length, perfumes);
     }
 }

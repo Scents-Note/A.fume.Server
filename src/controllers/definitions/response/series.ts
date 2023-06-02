@@ -1,4 +1,9 @@
-import { SeriesFilterDTO, SeriesDTO } from '@dto/index';
+import {
+    SeriesFilterDTO,
+    SeriesDTO,
+    IngredientCategoryDTO,
+    IngredientDTO,
+} from '@dto/index';
 
 /**
  * @swagger
@@ -55,15 +60,33 @@ class SeriesResponse {
  *       name: 꿀
  *  */
 class IngredientCategoryResponse {
+    static create(arg0: IngredientCategoryDTO): IngredientCategoryResponse {
+        throw new Error('Method not implemented.');
+    }
     readonly ingredientIdx: number;
     readonly name: string;
-    constructor(ingredientIdx: number, name: string) {
+    // readonly usedCountOnPerfume: number;
+    constructor(
+        ingredientIdx: number,
+        name: string
+        // usedCountOnPerfume: number
+    ) {
         this.ingredientIdx = ingredientIdx;
         this.name = name;
+        // this.usedCountOnPerfume = usedCountOnPerfume;
     }
 
     public toString(): string {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+    public create(
+        ingredientCategoryDTO: IngredientCategoryDTO
+    ): IngredientCategoryResponse {
+        return new IngredientCategoryResponse(
+            ingredientCategoryDTO.ingredientIdx,
+            ingredientCategoryDTO.name
+            // ingredientCategoryDTO.usedCountOnPerfume
+        );
     }
 }
 

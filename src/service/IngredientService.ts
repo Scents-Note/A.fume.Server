@@ -7,6 +7,7 @@ import {
     IngredientDTO,
     PagingDTO,
     SeriesDTO,
+    IngredientCategoryDTO,
 } from '@dto/index';
 
 const LOG_TAG: string = '[Ingredient/Service]';
@@ -52,9 +53,24 @@ class IngredientService {
     async readPage(
         offset: number,
         limit: number
-    ): Promise<ListAndCountDTO<IngredientDTO & { Series: SeriesDTO }>> {
+    ): Promise<
+        ListAndCountDTO<
+            IngredientDTO & { Series: SeriesDTO } & {
+                IngredientCategory: IngredientCategoryDTO;
+            }
+        >
+    > {
         const perfumes = await this.ingredientDao.readPage(offset, limit);
-        return new ListAndCountDTO(perfumes.length, perfumes);
+        const perfumesWithCategory = perfumes.map((perfume) => {
+            return {
+                ...perfume,
+                IngredientCategory: IngredientCategoryDTO(perfume), // Replace this with your actual logic to retrieve the ingredient category
+            };
+        });
+        return new ListAndCountDTO(
+            perfumesWithCategory.length,
+            perfumesWithCategory
+        );
     }
 }
 
