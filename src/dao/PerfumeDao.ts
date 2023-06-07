@@ -393,9 +393,7 @@ class PerfumeDao {
      */
     async updateSimilarPerfumes(similarPerfumes: {
         [x: number]: number[];
-    }): Promise<[err: number, result: number][]> {
-        const redis = require('@utils/db/redis.js');
-
+    }): Promise<[error: Error | null, result: unknown][] | null> {
         const obj = similarPerfumes;
         const multi = await redis.multi();
 
