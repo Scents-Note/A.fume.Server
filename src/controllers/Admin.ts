@@ -11,7 +11,6 @@ import {
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import {
     IngredientFullResponse,
-    IngredientResponse,
     LoginResponse,
     PerfumeDetailResponse,
     PerfumeResponse,

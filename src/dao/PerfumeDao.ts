@@ -394,87 +394,20 @@ class PerfumeDao {
     async updateSimilarPerfumes(similarPerfumes: {
         [x: number]: number[];
     }): Promise<[err: number, result: number][]> {
-        try {
-            const redis = require('@utils/db/redis.js');
+        const redis = require('@utils/db/redis.js');
 
-            const obj = similarPerfumes;
-            const multi = await redis.multi();
+        const obj = similarPerfumes;
+        const multi = await redis.multi();
 
-            for (const key in obj) {
-                multi.del(`recs.perfume:${key}`);
-                obj[key].forEach((v: any) => {
-                    multi.rpush(`recs.perfume:${key}`, v);
-                });
-            }
-            return await multi.exec();
-        } catch (err) {
-            throw err;
+        for (const key in obj) {
+            multi.del(`recs.perfume:${key}`);
+            obj[key].forEach((v: any) => {
+                multi.rpush(`recs.perfume:${key}`, v);
+            });
         }
+        return await multi.exec();
     }
 
-    /**
-     * 나이 및 성별에 기반한 향수 추천
-     *
-     * @deprecated since version 0.0.9
-     * @param {string} gender
-     * @param {number} ageGroup
-     * @param {PagingDTO} pagingDTO
-     * @returns {Promise<Perfume[]>}
-     */
-    async recommendPerfumeByAgeAndGender(
-        gender: number,
-        ageGroup: number,
-        pagingDTO: PagingDTO
-    ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
-        logger.debug(
-            `${LOG_TAG} recommendPerfumeByAgeAndGender(gender = ${gender}, ageGroup = ${ageGroup}, pagingDTO = ${pagingDTO})`
-        );
-        const today: Date = new Date();
-        const startYear: number = today.getFullYear() - ageGroup - 8;
-        const endYear: number = today.getFullYear() - ageGroup + 1;
-        let perfumeList: PerfumeThumbDTO[] = (
-            await sequelize.query(
-                SQL_RECOMMEND_PERFUME_BY_AGE_AND_GENDER_SELECT,
-                Object.assign(
-                    {
-                        bind: [gender, startYear, endYear],
-                        type: sequelize.QueryTypes.SELECT,
-                        attributes: PERFUME_THUMB_COLUMNS,
-                        raw: true,
-                        nest: true,
-                    },
-                    pagingDTO.sequelizeOption()
-                )
-            )
-        ).map(PerfumeThumbDTO.createByJson);
-        const result: ListAndCountDTO<PerfumeThumbDTO> = new ListAndCountDTO(
-            perfumeList.length,
-            perfumeList
-        );
-        ranking.upsert(
-            // mongo DB 응답이 없는 경우 무한 대기하는 현상 방지를 위해 await 제거
-            { gender, ageGroup },
-            { title: '나이 및 성별에 따른 추천', result }
-        );
-        return result;
-    }
-
-    /**
-     * 나이 및 성별에 기반한 향수 추천(MongoDB)
-     *
-     * @param {string} gender
-     * @param {number} ageGroup
-     * @returns {Promise<Perfume[]>}
-     */
-    async recommendPerfumeByAgeAndGenderCached(
-        gender: string,
-        ageGroup: number
-    ): Promise<PerfumeThumbDTO[]> {
-        logger.debug(
-            `${LOG_TAG} recommendPerfumeByAgeAndGenderCached(gender = ${gender}, ageGroup = ${ageGroup})`
-        );
-        return ranking.findItem({ gender, ageGroup });
-    }
     /**
      * 서베이 추천 향수 조회
      *

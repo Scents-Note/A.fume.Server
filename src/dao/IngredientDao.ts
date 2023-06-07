@@ -17,7 +17,7 @@ const LOG_TAG: string = '[Ingredient/DAO]';
 
 class IngredientDao {
     /**
-     * ,7777777uuu재료 조회
+     * 재료 조회
      *
      * @param {IngredientDTO} where
      * @return {Promise<ListAndCountDTO>} listAndCountDTO

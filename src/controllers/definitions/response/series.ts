@@ -62,15 +62,9 @@ class SeriesResponse {
 class IngredientCategoryResponse {
     readonly ingredientIdx: number;
     readonly name: string;
-    // readonly usedCountOnPerfume: number;
-    constructor(
-        ingredientIdx: number,
-        name: string
-        // usedCountOnPerfume: number
-    ) {
+    constructor(ingredientIdx: number, name: string) {
         this.ingredientIdx = ingredientIdx;
         this.name = name;
-        // this.usedCountOnPerfume = usedCountOnPerfume;
     }
 
     public toString(): string {
@@ -82,7 +76,6 @@ class IngredientCategoryResponse {
         return new IngredientCategoryResponse(
             ingredientCategoryDTO.ingredientIdx,
             ingredientCategoryDTO.name
-            // ingredientCategoryDTO.usedCountOnPerfume
         );
     }
 }

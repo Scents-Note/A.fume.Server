@@ -381,28 +381,22 @@ class PerfumeService {
         perfumeIdx: number,
         size: number
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
-        try {
-            let perfumeList: PerfumeThumbDTO[];
+        let perfumeList: PerfumeThumbDTO[];
 
-            const perfumeIdxList: number[] =
-                await perfumeDao.getSimilarPerfumeIdxList(perfumeIdx, size);
+        const perfumeIdxList: number[] =
+            await perfumeDao.getSimilarPerfumeIdxList(perfumeIdx, size);
 
-            if (perfumeIdxList.length > 0) {
-                perfumeList = await perfumeDao.getPerfumesByIdxList(
-                    perfumeIdxList
-                );
-            } else {
-                perfumeList = await perfumeDao.getPerfumesByRandom(size);
-            }
-            return this.convertToThumbKeyword(
-                new ListAndCountDTO<PerfumeThumbDTO>(
-                    perfumeList.length,
-                    perfumeList
-                )
-            );
-        } catch (error) {
-            throw error;
+        if (perfumeIdxList.length > 0) {
+            perfumeList = await perfumeDao.getPerfumesByIdxList(perfumeIdxList);
+        } else {
+            perfumeList = await perfumeDao.getPerfumesByRandom(size);
         }
+        return this.convertToThumbKeyword(
+            new ListAndCountDTO<PerfumeThumbDTO>(
+                perfumeList.length,
+                perfumeList
+            )
+        );
     }
 
     /**
@@ -417,6 +411,7 @@ class PerfumeService {
         size: number,
         minReviewCount: number = 0
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
+        logger.debug(`${LOG_TAG} getPerfumesByRandom(size = ${size})`);
         let result: PerfumeThumbDTO[] = [];
 
         if (minReviewCount == 0) {
