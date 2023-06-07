@@ -381,10 +381,6 @@ class PerfumeService {
         perfumeIdx: number,
         size: number
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
-        logger.debug(
-            `${LOG_TAG} getRecommendedSimilarPerfumes(perfumeIdx = ${perfumeIdx}, size = ${size})`
-        );
-
         let perfumeList: PerfumeThumbDTO[];
 
         const perfumeIdxList: number[] =
@@ -395,7 +391,6 @@ class PerfumeService {
         } else {
             perfumeList = await perfumeDao.getPerfumesByRandom(size);
         }
-
         return this.convertToThumbKeyword(
             new ListAndCountDTO<PerfumeThumbDTO>(
                 perfumeList.length,
@@ -627,6 +622,14 @@ class PerfumeService {
         }
 
         return [defaultImage];
+    }
+
+    async readPage(
+        offset: number,
+        limit: number
+    ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
+        const perfumes = await perfumeDao.readPage(offset, limit);
+        return new ListAndCountDTO(perfumes.length, perfumes);
     }
 }
 

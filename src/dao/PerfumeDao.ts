@@ -405,6 +405,7 @@ class PerfumeDao {
         }
         return await multi.exec();
     }
+
     /**
      * 서베이 추천 향수 조회
      *
@@ -553,6 +554,19 @@ class PerfumeDao {
                         return perfumeThumbMap[idx];
                     });
             });
+    }
+
+    /**
+     * 향수 전체 조회
+     *
+     * @returns {Promise<Perfume[]>}
+     */
+    async readPage(offset: number, limit: number): Promise<PerfumeThumbDTO[]> {
+        logger.debug(`${LOG_TAG} readAll()`);
+        return Perfume.findAll({
+            offset,
+            limit,
+        });
     }
 }
 
