@@ -8,7 +8,7 @@ import {
     PagingDTO,
     SeriesDTO,
 } from '@dto/index';
-const { Series } = require('@sequelize');
+const { Series, IngredientCategories } = require('@sequelize');
 
 const { Ingredient, Sequelize } = require('@sequelize');
 const { Op } = Sequelize;
@@ -17,7 +17,7 @@ const LOG_TAG: string = '[Ingredient/DAO]';
 
 class IngredientDao {
     /**
-     * 재료 조회
+     * ,7777777uuu재료 조회
      *
      * @param {IngredientDTO} where
      * @return {Promise<ListAndCountDTO>} listAndCountDTO
@@ -105,7 +105,10 @@ class IngredientDao {
         return Ingredient.findAll({
             offset,
             limit,
-            include: { model: Series, as: 'Series' },
+            include: [
+                { model: Series, as: 'Series' },
+                { model: IngredientCategories, as: 'IngredientCategories' },
+            ],
         });
     }
 }

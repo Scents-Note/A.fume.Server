@@ -64,7 +64,7 @@ class IngredientService {
         const perfumesWithCategory = perfumes.map((perfume) => {
             return {
                 ...perfume,
-                IngredientCategory: IngredientCategoryDTO(perfume), // Replace this with your actual logic to retrieve the ingredient category
+                IngredientCategory: IngredientCategoryDTO.createByJson(perfume),
             };
         });
         return new ListAndCountDTO(

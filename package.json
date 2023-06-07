@@ -6,7 +6,8 @@
     "type": "commonjs",
     "scripts": {
         "_prestart": "npm install",
-        "start": "cross-env-shell NODE_ENV=development REDIS_DB_ID=2 \"npm run build && nodemon --exec node ./dist/bin/www\"",
+        "start": "cross-env-shell NODE_ENV=development REDIS_DB_ID=2 \"npm run build && node ./dist/bin/www\"",
+        "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
         "test": "cross-env NODE_ENV=test REDIS_DB_ID=3 mocha --recursive --exit -t 5000 ./tests/test_unit/**/*.spec.ts ./tests/test_unit/**/*.spec.js -r ts-node/register -r tsconfig-paths/register",
         "test-unit": "cross-env NODE_ENV=test REDIS_DB_ID=3 mocha --recursive --exit -t 5000 ./tests/test_unit/**/*.spec.ts ./tests/test_unit/**/*.spec.js -r ts-node/register -r tsconfig-paths/register ",
         "test-integral": "cross-env NODE_ENV=production REDIS_DB_ID=1 mocha --recursive --exit -t 5000 ./tests/test_integral/**/*.spec.ts -r ts-node/register -r tsconfig-paths/register --parallel",
