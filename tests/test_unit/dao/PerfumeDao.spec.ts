@@ -460,7 +460,7 @@ describe('# perfumeDao Test', () => {
         });
 
         describe('# readLikedPerfume Test', () => {
-            it('# read likedPerfume', (done: Done) => {
+            it('# read likedPerfume', () => {
                 perfumeDao
                     .readLikedPerfume(1, defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
@@ -469,9 +469,7 @@ describe('# perfumeDao Test', () => {
                         for (const perfume of result.rows) {
                             PerfumeThumbMockHelper.validTest.call(perfume);
                         }
-                        done();
-                    })
-                    .catch((err) => done(err));
+                    });
             });
         });
         describe('# recentSearchPerfumeList Test', () => {
