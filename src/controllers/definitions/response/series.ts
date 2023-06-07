@@ -60,9 +60,6 @@ class SeriesResponse {
  *       name: 꿀
  *  */
 class IngredientCategoryResponse {
-    static create(arg0: IngredientCategoryDTO): IngredientCategoryResponse {
-        throw new Error('Method not implemented.');
-    }
     readonly ingredientIdx: number;
     readonly name: string;
     // readonly usedCountOnPerfume: number;
@@ -79,7 +76,7 @@ class IngredientCategoryResponse {
     public toString(): string {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
     }
-    public create(
+    static create(
         ingredientCategoryDTO: IngredientCategoryDTO
     ): IngredientCategoryResponse {
         return new IngredientCategoryResponse(
