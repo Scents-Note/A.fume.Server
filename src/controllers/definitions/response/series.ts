@@ -1,9 +1,4 @@
-import {
-    SeriesFilterDTO,
-    SeriesDTO,
-    IngredientCategoryDTO,
-    IngredientDTO,
-} from '@dto/index';
+import { SeriesFilterDTO, SeriesDTO, IngredientCategoryDTO } from '@dto/index';
 
 /**
  * @swagger
