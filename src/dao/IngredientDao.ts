@@ -2,15 +2,8 @@ import { logger } from '@modules/winston';
 
 import { NotMatchedError } from '@errors';
 
-import {
-    IngredientDTO,
-    ListAndCountDTO,
-    PagingDTO,
-    SeriesDTO,
-} from '@dto/index';
-const { Series, IngredientCategories } = require('@sequelize');
-
-import { Ingredient } from '@sequelize';
+import { IngredientDTO, ListAndCountDTO, PagingDTO } from '@dto/index';
+import { Series, Ingredient, IngredientCategories } from '@sequelize';
 import { Op } from 'sequelize';
 
 const LOG_TAG: string = '[Ingredient/DAO]';
@@ -97,10 +90,7 @@ class IngredientDao {
      *
      * @returns {Promise<IngredientDTO[]>}
      */
-    async readPage(
-        offset: number,
-        limit: number
-    ): Promise<Array<IngredientDTO & { Series: SeriesDTO }>> {
+    async readPage(offset: number, limit: number) {
         logger.debug(`${LOG_TAG} readAll()`);
         return Ingredient.findAll({
             offset,

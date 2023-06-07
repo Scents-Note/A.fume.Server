@@ -6,21 +6,21 @@ import { NotMatchedError } from '@errors';
 
 import {
     ListAndCountDTO,
-    PerfumeDTO,
-    PerfumeThumbDTO,
-    PerfumeSearchResultDTO,
-    PerfumeInquireHistoryDTO,
     PagingDTO,
+    PerfumeDTO,
+    PerfumeInquireHistoryDTO,
+    PerfumeSearchResultDTO,
+    PerfumeThumbDTO,
 } from '@dto/index';
 
 const LOG_TAG: string = '[Perfume/DAO]';
 
 import {
-    Perfume,
-    PerfumeSurvey,
     Brand,
     InquireHistory,
     LikePerfume,
+    Perfume,
+    PerfumeSurvey,
     sequelize,
 } from '@sequelize';
 
@@ -568,7 +568,7 @@ class PerfumeDao {
      *
      * @returns {Promise<Perfume[]>}
      */
-    async readPage(offset: number, limit: number): Promise<PerfumeThumbDTO[]> {
+    async readPage(offset: number, limit: number) {
         logger.debug(`${LOG_TAG} readAll()`);
         return Perfume.findAll({
             offset,

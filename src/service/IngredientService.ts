@@ -3,11 +3,10 @@ import { logger } from '@modules/winston';
 import IngredientDao from '@dao/IngredientDao';
 
 import {
-    ListAndCountDTO,
-    IngredientDTO,
-    PagingDTO,
-    SeriesDTO,
     IngredientCategoryDTO,
+    IngredientDTO,
+    ListAndCountDTO,
+    PagingDTO,
 } from '@dto/index';
 
 const LOG_TAG: string = '[Ingredient/Service]';
@@ -50,16 +49,7 @@ class IngredientService {
         this.ingredientDao = dao;
     }
 
-    async readPage(
-        offset: number,
-        limit: number
-    ): Promise<
-        ListAndCountDTO<
-            IngredientDTO & { Series: SeriesDTO } & {
-                IngredientCategory: IngredientCategoryDTO;
-            }
-        >
-    > {
+    async readPage(offset: number, limit: number) {
         const perfumes = await this.ingredientDao.readPage(offset, limit);
         const perfumesWithCategory = perfumes.map((perfume) => {
             return {

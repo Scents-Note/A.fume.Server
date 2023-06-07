@@ -627,7 +627,8 @@ class PerfumeService {
         limit: number
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
         const perfumes = await perfumeDao.readPage(offset, limit);
-        return new ListAndCountDTO(perfumes.length, perfumes);
+        const list = perfumes.map((c) => PerfumeThumbDTO.createByJson(c));
+        return new ListAndCountDTO(list.length, list);
     }
 }
 
