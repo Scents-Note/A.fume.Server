@@ -9,7 +9,7 @@ const chai = require('chai');
 const { expect } = chai;
 const reviewDao = new ReviewDao();
 const keywordDao = new KeywordDao();
-const { Review } = require('@sequelize');
+import { Review } from '@sequelize';
 
 describe('# reviewDao Test', () => {
     before(async function () {

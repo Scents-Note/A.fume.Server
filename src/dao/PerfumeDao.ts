@@ -6,24 +6,25 @@ import { NotMatchedError } from '@errors';
 
 import {
     ListAndCountDTO,
-    PerfumeDTO,
-    PerfumeThumbDTO,
-    PerfumeSearchResultDTO,
-    PerfumeInquireHistoryDTO,
     PagingDTO,
+    PerfumeDTO,
+    PerfumeInquireHistoryDTO,
+    PerfumeSearchResultDTO,
+    PerfumeThumbDTO,
 } from '@dto/index';
 
 const LOG_TAG: string = '[Perfume/DAO]';
 
-const {
-    Perfume,
-    PerfumeSurvey,
+import {
     Brand,
     InquireHistory,
     LikePerfume,
+    Perfume,
+    PerfumeSurvey,
     sequelize,
-    Sequelize,
-} = require('@sequelize');
+} from '@sequelize';
+
+import Sequelize, { QueryTypes } from 'sequelize';
 
 const PERFUME_THUMB_COLUMNS: string[] = [
     'perfumeIdx',
@@ -176,7 +177,7 @@ class PerfumeDao {
         if (ingredientIdxList.length == 0) ingredientIdxList.push(-1);
         if (brandIdxList.length == 0) brandIdxList.push(-1);
         if (keywordIdxList.length == 0) keywordIdxList.push(-1);
-        const [{ count }] = await sequelize.query(countSQL, {
+        const [{ count }] = await sequelize.query<{ count: number }>(countSQL, {
             replacements: {
                 keywords: keywordIdxList,
                 brands: brandIdxList,
@@ -184,7 +185,7 @@ class PerfumeDao {
                 categoryCount: categoryIdxList.length,
                 keywordCount: keywordIdxList.length,
             },
-            type: sequelize.QueryTypes.SELECT,
+            type: QueryTypes.SELECT,
             raw: true,
         });
         const rows: PerfumeSearchResultDTO[] = (
@@ -198,7 +199,7 @@ class PerfumeDao {
                     limit: pagingDTO.limit,
                     offset: pagingDTO.offset,
                 },
-                type: sequelize.QueryTypes.SELECT,
+                type: QueryTypes.SELECT,
                 raw: true,
                 nest: true,
             })
@@ -257,7 +258,9 @@ class PerfumeDao {
         const options = _.merge({}, defaultOption, {
             where: { perfumeIdx },
         });
-        const perfume: { [key: string]: any } = await Perfume.findOne(options);
+        const perfume: { [key: string]: any } | null = await Perfume.findOne(
+            options
+        );
         if (!perfume) {
             throw new NotMatchedError();
         }
@@ -295,7 +298,7 @@ class PerfumeDao {
         );
         options.include.push({
             model: LikePerfume,
-            as: 'LikePerfume',
+            as: 'PerfumeLike',
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
             },
@@ -443,7 +446,7 @@ class PerfumeDao {
      *
      * @returns {Promise<Perfume[]>}
      */
-    async readAll(): Promise<PerfumeThumbDTO[]> {
+    async readAll(): Promise<Perfume[]> {
         logger.debug(`${LOG_TAG} readAll()`);
         return Perfume.findAll();
     }
@@ -504,15 +507,19 @@ class PerfumeDao {
         logger.debug(
             `${LOG_TAG} getPerfumesWithMinReviewsByRandom(size = ${size}, minReviewCount = ${minReviewCount})`
         );
-        const result: PerfumeThumbDTO[] = await sequelize.query(
-            SQL_SEARCH_RANDOM_PERFUME_WITH_MIN_REVIEW_COUNT,
-            Object.assign({
-                replacements: { minReviewCount: minReviewCount, size: size },
-                type: sequelize.QueryTypes.SELECT,
-                raw: true,
-                nest: true,
-            })
-        );
+        const result: PerfumeThumbDTO[] =
+            (await sequelize.query<PerfumeThumbDTO[]>(
+                SQL_SEARCH_RANDOM_PERFUME_WITH_MIN_REVIEW_COUNT,
+                Object.assign({
+                    replacements: {
+                        minReviewCount: minReviewCount,
+                        size: size,
+                    },
+                    type: QueryTypes.SELECT,
+                    raw: true,
+                    nest: true,
+                })
+            )) || [];
         return result.map(PerfumeThumbDTO.createByJson);
     }
 
@@ -561,7 +568,7 @@ class PerfumeDao {
      *
      * @returns {Promise<Perfume[]>}
      */
-    async readPage(offset: number, limit: number): Promise<PerfumeThumbDTO[]> {
+    async readPage(offset: number, limit: number) {
         logger.debug(`${LOG_TAG} readAll()`);
         return Perfume.findAll({
             offset,

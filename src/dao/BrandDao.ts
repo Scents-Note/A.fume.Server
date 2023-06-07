@@ -3,7 +3,7 @@ import { NotMatchedError } from '@errors';
 
 import { BrandDTO, PagingDTO, ListAndCountDTO } from '@dto/index';
 
-const { Brand } = require('@sequelize');
+import { Brand } from '@sequelize';
 
 const LOG_TAG: string = '[Brand/DAO]';
 

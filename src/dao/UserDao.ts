@@ -6,7 +6,7 @@ import { CreatedResultDTO, UserDTO, SurveyDTO, UserInputDTO } from '@dto/index';
 
 const LOG_TAG: string = '[User/DAO]';
 
-const { sequelize, User } = require('@sequelize');
+import { sequelize, User } from '@sequelize';
 
 import { User as MongooseUser } from '@mongoose';
 
@@ -28,7 +28,7 @@ class UserDao {
                 { ...userInputDTO }
             )
         )
-            .then((it: UserDTO) => {
+            .then((it: User) => {
                 return new CreatedResultDTO<UserDTO>(
                     it.userIdx,
                     UserDTO.createByJson(it)
@@ -76,7 +76,7 @@ class UserDao {
         if (!result) {
             throw new NotMatchedError();
         }
-        return UserDTO.createByJson(result.dataValues);
+        return UserDTO.createByJson(result);
     }
 
     /**

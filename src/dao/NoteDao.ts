@@ -2,20 +2,9 @@ import { logger } from '@modules/winston';
 
 import { NoteDTO } from '@dto/index';
 
-const { Note, Ingredient } = require('@sequelize');
+import { Note, Ingredient } from '@sequelize';
 
 const LOG_TAG: string = '[Note/DAO]';
-
-type IngredientEntry = {
-    perfumeIdx: number;
-    ingredientIdx: number;
-    type: number;
-    Ingredients: {
-        name: string;
-    };
-    createdAt: Date;
-    updatedAt: Date;
-};
 
 class NoteDao {
     /**
@@ -39,9 +28,9 @@ class NoteDao {
             },
             raw: true,
             nest: true,
-        }).then((it: IngredientEntry[]) => {
+        }).then((it: Note[]) => {
             return it.map(
-                (it: IngredientEntry) =>
+                (it: Note) =>
                     new NoteDTO(
                         it.perfumeIdx,
                         it.ingredientIdx,

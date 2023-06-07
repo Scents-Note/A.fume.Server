@@ -7,7 +7,7 @@ import NoteDao from '@dao/NoteDao';
 
 import { NoteDTO } from '@dto/index';
 
-const { Ingredient } = require('@sequelize');
+import { Ingredient } from '@sequelize';
 
 const noteDao: NoteDao = new NoteDao();
 
@@ -28,7 +28,7 @@ describe('# NoteDao Test', () => {
                         const ingredient = await Ingredient.findByPk(
                             note.ingredientIdx
                         );
-                        expect(note.ingredientName).to.be.eq(ingredient.name);
+                        expect(note.ingredientName).to.be.eq(ingredient?.name);
                     }
                     done();
                 })

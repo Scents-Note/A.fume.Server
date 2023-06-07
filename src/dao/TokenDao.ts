@@ -3,7 +3,7 @@ import { logger } from '@modules/winston';
 import { TokenSetDTO } from '@src/data/dto';
 
 // TODO it shoould be changed to memory-db
-const { Token } = require('@sequelize');
+import { Token } from '@sequelize';
 
 const LOG_TAG: string = '[Token/DAO]';
 
@@ -78,16 +78,13 @@ class TokenDaoSequelize implements TokenDao {
             `${LOG_TAG} read(prevAccessToken = ${prevAccessToken}, newAccessToken = ${newAccessToken}})`
         );
 
-        return Token.update(
-            { accessToken: newAccessToken },
-            {
-                where: {
-                    accessToken: prevAccessToken,
-                },
-                nest: true,
-                raw: true,
-            }
-        ).then((it: any) => {
+        return Token.update({ accessToken: newAccessToken }, {
+            where: {
+                accessToken: prevAccessToken,
+            },
+            nest: true,
+            raw: true,
+        } as any).then((it: any) => {
             if (!it || it[0] == 0) {
                 return false;
             }

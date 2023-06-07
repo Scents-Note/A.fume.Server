@@ -4,7 +4,7 @@ import { ListAndCountDTO, SeriesDTO, PagingDTO } from '@dto/index';
 
 const LOG_TAG: string = '[Series/DAO]';
 
-const { Series } = require('@sequelize');
+import { Series } from '@sequelize';
 
 class SeriesDao {
     /**

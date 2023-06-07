@@ -20,9 +20,10 @@ import {
 import BrandHelper from '../mock_helper/BrandHelper';
 import PerfumeThumbMockHelper from '../mock_helper/PerfumeThumbMockHelper';
 import _ from 'lodash';
+import Sequelize, { Op } from 'sequelize';
 const perfumeDao = new PerfumeDao();
-const { Note, JoinPerfumeKeyword, Sequelize } = require('@sequelize');
-const { Op } = Sequelize;
+import { Note, JoinPerfumeKeyword } from '@sequelize';
+
 const defaultPagingDTO: PagingDTO = PagingDTO.createByJson({});
 
 describe('# perfumeDao Test', () => {
@@ -459,7 +460,7 @@ describe('# perfumeDao Test', () => {
         });
 
         describe('# readLikedPerfume Test', () => {
-            it('# read likedPerfume', (done: Done) => {
+            it('# read likedPerfume', () => {
                 perfumeDao
                     .readLikedPerfume(1, defaultPagingDTO)
                     .then((result: ListAndCountDTO<PerfumeThumbDTO>) => {
@@ -468,9 +469,7 @@ describe('# perfumeDao Test', () => {
                         for (const perfume of result.rows) {
                             PerfumeThumbMockHelper.validTest.call(perfume);
                         }
-                        done();
-                    })
-                    .catch((err) => done(err));
+                    });
             });
         });
         describe('# recentSearchPerfumeList Test', () => {

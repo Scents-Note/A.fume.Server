@@ -2,7 +2,7 @@ import { logger } from '@modules/winston';
 
 import { IngredientCategoryDTO } from '@src/data/dto';
 
-const { IngredientCategories } = require('@sequelize');
+import { IngredientCategories } from '@sequelize';
 
 const LOG_TAG: string = '[IngredientCategory/DAO]';
 

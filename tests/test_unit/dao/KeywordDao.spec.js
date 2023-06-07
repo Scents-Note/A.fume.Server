@@ -6,8 +6,7 @@ import KeywordDao from '@dao/KeywordDao';
 const keywordDao = new KeywordDao();
 
 const { expect } = require('chai');
-const { Sequelize } = require('@sequelize');
-const { Op } = Sequelize;
+import { Op } from 'sequelize';
 
 describe('# KeywordDao Test', () => {
     before(async function () {
