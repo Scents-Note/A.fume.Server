@@ -94,7 +94,7 @@ const registerUser: RequestHandler = (
     const userRegisterRequest: UserRegisterRequest =
         UserRegisterRequest.createByJson(req.body);
 
-    if (userRegisterRequest.grade > GRADE_USER) {
+    if (Number(userRegisterRequest.grade) > GRADE_USER) {
         next(new UnAuthorizedError());
         return;
     }
