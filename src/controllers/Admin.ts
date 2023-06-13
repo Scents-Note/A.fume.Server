@@ -232,6 +232,18 @@ export const getPerfumes: RequestHandler = async (
  *         required: true
  *         type: integer
  *         format: int64
+ *       - name: target
+ *         in: query
+ *         required: false
+ *         type: string
+ *         enum:
+ *         - id
+ *         - name
+ *         - englishName
+ *       - name: keyword
+ *         in: query
+ *         required: false
+ *         type: string
  *       responses:
  *         200:
  *           description: 성공
@@ -269,7 +281,7 @@ export const getIngredientAll: RequestHandler = async (
     }
     const limit = 20;
     const offset = (page - 1) * limit;
-    const ingredients = await Ingredient.readPage(offset, limit);
+    const ingredients = await Ingredient.readPage(offset, limit, req.query);
 
     res.status(StatusCode.OK).json(
         new ResponseDTO<ListAndCountDTO<IngredientFullResponse>>(

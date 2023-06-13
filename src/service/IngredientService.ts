@@ -8,6 +8,7 @@ import {
     ListAndCountDTO,
     PagingDTO,
 } from '@dto/index';
+import { Op } from 'sequelize';
 
 const LOG_TAG: string = '[Ingredient/Service]';
 
@@ -49,8 +50,28 @@ class IngredientService {
         this.ingredientDao = dao;
     }
 
-    async readPage(offset: number, limit: number) {
-        const perfumes = await this.ingredientDao.readPage(offset, limit);
+    async readPage(offset: number, limit: number, query: any) {
+        const { target, keyword } = query;
+        const whereOptions = {} as any;
+        if (target && keyword) {
+            switch (target) {
+                case 'id':
+                    whereOptions.ingredientIdx = keyword;
+                    break;
+                case 'name':
+                    whereOptions.name = { [Op.startsWith]: keyword };
+                    break;
+                case 'englishName':
+                    whereOptions.englishName = { [Op.startsWith]: keyword };
+                    break;
+            }
+        }
+
+        const perfumes = await this.ingredientDao.readPage(
+            offset,
+            limit,
+            whereOptions
+        );
         const perfumesWithCategory = perfumes.map((perfume) => {
             return {
                 ...perfume,
