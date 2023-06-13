@@ -10,21 +10,17 @@ import { SeriesFilterDTO, SeriesDTO, IngredientCategoryDTO } from '@dto/index';
  *         type: number
  *       name:
  *         type: string
- *       imageUrl:
- *         type: string
  *     example:
- *       seriesIdx: 1
- *       name: 꿀
- *       imageUrl: http://
+ *       seriesIdx: 2
+ *       name: 시트러스
+ *
  *  */
 class SeriesResponse {
     readonly seriesIdx: number;
     readonly name: string;
-    readonly imageUrl: string;
-    constructor(seriesIdx: number, name: string, imageUrl: string) {
+    constructor(seriesIdx: number, name: string) {
         this.seriesIdx = seriesIdx;
         this.name = name;
-        this.imageUrl = imageUrl;
     }
 
     public toString(): string {
@@ -34,8 +30,8 @@ class SeriesResponse {
     static create(seriesDTO: SeriesDTO): SeriesResponse {
         return new SeriesResponse(
             seriesDTO.seriesIdx,
-            seriesDTO.name,
-            seriesDTO.imageUrl
+            seriesDTO.name
+            // seriesDTO.imageUrl
         );
     }
 }
@@ -51,8 +47,8 @@ class SeriesResponse {
  *       name:
  *         type: string
  *     example:
- *       ingredientIdx: 1
- *       name: 꿀
+ *       ingredientIdx: 5
+ *       name: 버터오렌지
  *  */
 class IngredientCategoryResponse {
     readonly ingredientIdx: number;

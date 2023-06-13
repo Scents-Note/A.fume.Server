@@ -141,7 +141,6 @@ export const getPerfume: RequestHandler = async (
         next(error);
     }
 };
-
 /**
  * @swagger
  *  /admin/perfumes:
@@ -231,13 +230,13 @@ export const getPerfumes: RequestHandler = async (
  *             properties:
  *               message:
  *                 type: string
- *                 example: ingredient 목록 조회 성공
+ *                 example: 재료 목록 조회 성공
  *               data:
  *                 type: object
  *                 properties:
  *                   count:
  *                     type: integer
- *                     example: 1
+ *                     example: 20
  *                   rows:
  *                     type: array
  *                     items:
@@ -278,7 +277,7 @@ export const getIngredientAll: RequestHandler = async (
  *       tags:
  *       - admin
  *       summary: 재료 카테고리 목록 조회
- *       description: 재료 카테고리 리스트 조회 <br /> 반환 되는 정보 [재료]
+ *       description: 재료 카테고리 목록 조회 <br /> 반환 되는 정보 [재료]
  *       operationId: getIngredientCategoryList
  *       produces:
  *       - application/json
@@ -296,7 +295,7 @@ export const getIngredientAll: RequestHandler = async (
  *             properties:
  *               message:
  *                 type: string
- *                 example: Ingredient Category 목록 조회 성공
+ *                 example: 재료 카테고리 목록 조회 성공
  *               data:
  *                 type: object
  *                 properties:

@@ -13,7 +13,7 @@ import { IngredientCategoryResponse, SeriesResponse } from './series';
  *         type: string
  *     example:
  *       ingredientIdx: 1
- *       name: 씨쏠트
+ *       name: 베르가못
  *  */
 class IngredientResponse {
     readonly ingredientIdx: number;
@@ -54,11 +54,17 @@ class IngredientResponse {
  *       ingredientCategory:
  *         - $ref: '#/definitions/IngredientCategoryResponse'
  *
- *     example:
+ *     examples:
  *       ingredientIdx: 1
  *       name: 씨쏠트
  *       englishName: seesalt
  *       description: 설명
+ *       Series:
+ *         seriesIdx: 2
+ *         name: 시트러스
+ *       IngredientCategory:
+ *         ingredientIdx: 5
+ *         name: 버터오렌지
  *  */
 class IngredientFullResponse {
     readonly ingredientIdx: number;

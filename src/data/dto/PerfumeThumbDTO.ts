@@ -20,7 +20,7 @@ class PerfumeThumbDTO {
     ) {
         this.perfumeIdx = perfumeIdx;
         this.name = name;
-        this.brandName = Brand.name;
+        this.brandName = Brand?.name;
         this.isLiked = isLiked || false;
         this.imageUrl = imageUrl;
         this.createdAt = createdAt;

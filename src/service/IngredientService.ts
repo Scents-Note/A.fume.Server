@@ -51,7 +51,6 @@ class IngredientService {
 
     async readPage(offset: number, limit: number) {
         const perfumes = await this.ingredientDao.readPage(offset, limit);
-        console.log(perfumes);
         const perfumesWithCategory = perfumes.map((perfume) => {
             return {
                 ...perfume,

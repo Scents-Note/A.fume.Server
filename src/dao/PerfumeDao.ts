@@ -573,6 +573,7 @@ class PerfumeDao {
         return Perfume.findAll({
             offset,
             limit,
+            raw: true,
         });
     }
 }
