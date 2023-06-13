@@ -10,17 +10,21 @@ import {
 } from '@src/utils/strings';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import {
+    IngredientCategoryResponse,
     IngredientFullResponse,
+    IngredientResponse,
     LoginResponse,
     PerfumeDetailResponse,
     PerfumeResponse,
     ResponseDTO,
 } from './definitions/response';
-import { ListAndCountDTO } from '@src/data/dto';
+import { ListAndCountDTO, PagingDTO } from '@src/data/dto';
+import SeriesService from '@src/service/SeriesService';
 
 let Admin: AdminService = new AdminService();
 let Perfume: PerfumeService = new PerfumeService();
 let Ingredient: IngredientService = new IngredientService();
+let Category: SeriesService = new SeriesService();
 
 /**
  * @swagger
@@ -262,6 +266,71 @@ export const getIngredientAll: RequestHandler = async (
         new ResponseDTO<ListAndCountDTO<IngredientFullResponse>>(
             MSG_GET_SEARCH_INGREDIENT_SUCCESS,
             ingredients.convertType(IngredientFullResponse.createByJson)
+        )
+    );
+};
+
+/**
+ *
+ * @swagger
+ *  /admin/ingredientCategories:
+ *     get:
+ *       tags:
+ *       - admin
+ *       summary: 재료 카테고리 목록 조회
+ *       description: 재료 카테고리 리스트 조회 <br /> 반환 되는 정보 [재료]
+ *       operationId: getIngredientCategoryList
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: page
+ *         in: query
+ *         required: true
+ *         type: integer
+ *         format: int64
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: Ingredient Category 목록 조회 성공
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   count:
+ *                     type: integer
+ *                     example: 1
+ *                   rows:
+ *                     type: array
+ *                     items:
+ *                       allOf:
+ *                         - $ref: '#/definitions/IngredientResponse'
+ *         401:
+ *           description: Token is missing or invalid
+ *       x-swagger-router-controller: Admin
+ */
+export const getIngredientCategoryList: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const page: number = Number(req.query.page);
+    if (isNaN(page)) {
+        next();
+        return;
+    }
+    const limit = 20;
+    const offset = (page - 1) * limit;
+
+    const categories = await Ingredient.readPage(offset, limit);
+
+    res.status(StatusCode.OK).json(
+        new ResponseDTO<ListAndCountDTO<IngredientResponse>>(
+            MSG_GET_SEARCH_INGREDIENT_SUCCESS,
+            categories.convertType(IngredientResponse.createByJson)
         )
     );
 };

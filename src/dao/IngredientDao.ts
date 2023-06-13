@@ -95,6 +95,8 @@ class IngredientDao {
         return Ingredient.findAll({
             offset,
             limit,
+            raw: true,
+            nest: true,
             include: [
                 { model: Series, as: 'Series' },
                 { model: IngredientCategories, as: 'IngredientCategories' },

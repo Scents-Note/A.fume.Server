@@ -6,12 +6,12 @@ class IngredientCategoryDTO {
     constructor(
         id: number,
         name: string,
-        usedCountOnPerfume: number,
+        // usedCountOnPerfume: number,
         ingredientIdx: number
     ) {
         this.id = id;
         this.name = name;
-        this.usedCountOnPerfume = usedCountOnPerfume;
+        // this.usedCountOnPerfume = usedCountOnPerfume;
         this.ingredientIdx = ingredientIdx;
     }
 
@@ -22,7 +22,7 @@ class IngredientCategoryDTO {
         return new IngredientCategoryDTO(
             json.id,
             json.name,
-            json.usedCountOnPerfume,
+            // json.usedCountOnPerfume,
             json.ingredientIdx
         );
     }
