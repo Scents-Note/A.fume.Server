@@ -34,6 +34,7 @@ import fp from 'lodash/fp';
 import _ from 'lodash';
 import IngredientDao from '@src/dao/IngredientDao';
 import { Ingredient } from '@sequelize';
+import { Op } from 'sequelize';
 
 const LOG_TAG: string = '[Perfume/Service]';
 const DEFAULT_VALUE_OF_INDEX = 0;
@@ -624,9 +625,26 @@ class PerfumeService {
 
     async readPage(
         offset: number,
-        limit: number
+        limit: number,
+        query: any
     ): Promise<ListAndCountDTO<PerfumeThumbDTO>> {
-        const perfumes = await perfumeDao.readPage(offset, limit);
+        const { target, keyword } = query;
+        const whereOptions = {} as any;
+        if (target && keyword) {
+            switch (target) {
+                case 'id':
+                    whereOptions.perfumeIdx = keyword;
+                    break;
+                case 'name':
+                    whereOptions.name = { [Op.startsWith]: keyword };
+                    break;
+                case 'englishName':
+                    whereOptions.englishName = { [Op.startsWith]: keyword };
+                    break;
+            }
+        }
+
+        const perfumes = await perfumeDao.readPage(offset, limit, whereOptions);
         const list = perfumes.map((c) => PerfumeThumbDTO.createByJson(c));
         return new ListAndCountDTO(list.length, list);
     }
