@@ -62,38 +62,6 @@ module.exports.read = async (userIdx, reviewIdx) => {
 };
 
 /**
- * 향수별 나의 '시향노트 좋아요' 목록 조회
- *
- * @param {Object} whereObj
- * @returns {Promise<ReviewIdx[]>} reviewIdxList
- */
-
-module.exports.readAllOfUser = async ({ userIdx, perfumeIdx }) => {
-    const result = await LikeReview.findAll({
-        where: { userIdx },
-        include: [
-            {
-                model: Review,
-                as: 'LikeToReview',
-                where: { perfumeIdx },
-            },
-        ],
-        raw: true,
-        nest: true,
-    }).catch((err) => {
-        throw err;
-    });
-
-    if (result.length > 0) {
-        return result.map((it) => {
-            return it.LikeToReview.id;
-        });
-    }
-
-    return result;
-};
-
-/**
  * 시향노트 좋아요 취소
  *
  * @param {Object} whereObj

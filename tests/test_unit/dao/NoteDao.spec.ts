@@ -7,7 +7,7 @@ import NoteDao from '@dao/NoteDao';
 
 import { NoteDTO } from '@dto/index';
 
-const { Ingredient } = require('@sequelize');
+import { Ingredient } from '@sequelize';
 
 const noteDao: NoteDao = new NoteDao();
 
@@ -17,20 +17,6 @@ describe('# NoteDao Test', () => {
     });
 
     describe(' # read Test', () => {
-        it('# success case', (done) => {
-            noteDao
-                .read({ perfumeIdx: 1 })
-                .then((result: NoteDTO[]) => {
-                    expect(result.length).gte(1);
-                    for (const note of result) {
-                        expect(note.perfumeIdx).to.be.eq(1);
-                        expect(note.type).to.be.within(1, 4);
-                    }
-                    done();
-                })
-                .catch((err: Error) => done(err));
-        });
-
         it(' # readByPerfumeIdx test', (done: Done) => {
             noteDao
                 .readByPerfumeIdx(1)
@@ -42,7 +28,7 @@ describe('# NoteDao Test', () => {
                         const ingredient = await Ingredient.findByPk(
                             note.ingredientIdx
                         );
-                        expect(note.ingredientName).to.be.eq(ingredient.name);
+                        expect(note.ingredientName).to.be.eq(ingredient?.name);
                     }
                     done();
                 })

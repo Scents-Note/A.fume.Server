@@ -1,7 +1,6 @@
 export * from './BrandDTO';
 export * from './BrandFilterDTO';
 export * from './CreatedResultDTO';
-export * from './IngredientConditionDTO';
 export * from './IngredientCategoryDTO';
 export * from './IngredientDTO';
 export * from './ListAndCountDTO';

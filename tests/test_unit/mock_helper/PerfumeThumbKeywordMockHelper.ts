@@ -1,17 +1,6 @@
-import { expect } from 'chai';
-
 import { PerfumeThumbKeywordDTO } from '@dto/index';
 
 class PerfumeThumbKeywordMockHelper {
-    static validTest(this: PerfumeThumbKeywordDTO) {
-        expect(this.perfumeIdx).to.be.ok;
-        expect(this.name).to.be.ok;
-        expect(this.brandName).to.be.ok;
-        expect(this.imageUrl).to.be.ok;
-        expect(this.isLiked).to.be.oneOf([true, false]);
-        expect(this.keywordList).to.be.a('array');
-    }
-
     static createMock(condition: any): PerfumeThumbKeywordDTO {
         return PerfumeThumbKeywordDTO.createByJson(
             Object.assign(

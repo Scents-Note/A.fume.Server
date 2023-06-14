@@ -24,7 +24,7 @@ const {
     swaggerMetadataHandler,
 } = require('@modules/swagger');
 
-const sequelize: any = require('./models').sequelize;
+import { sequelize } from './models';
 sequelize.sync();
 
 require('@utils/db/mongoose.js');
@@ -50,7 +50,7 @@ const corsOptionsDelegate: CorsOptionsDelegate<express.Request> = function (
 };
 
 app.use(cors(corsOptionsDelegate));
-app.use(bodyParser.json({ limit: "5mb"}));
+app.use(bodyParser.json({ limit: '5mb' }));
 
 app.use(
     makeMorgan((message: string) => {

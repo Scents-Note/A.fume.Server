@@ -1,4 +1,4 @@
-const {
+import {
     Brand,
     Series,
     Perfume,
@@ -15,7 +15,7 @@ const {
     JoinPerfumeKeyword,
     JoinReviewKeyword,
     Review,
-} = require('@sequelize');
+} from '@sequelize';
 
 import { GENDER_MAN, GENDER_WOMAN } from '@utils/constants';
 

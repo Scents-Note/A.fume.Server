@@ -1,4 +1,4 @@
-import { SeriesFilterDTO, SeriesDTO } from '@dto/index';
+import { SeriesFilterDTO, SeriesDTO, IngredientCategoryDTO } from '@dto/index';
 
 /**
  * @swagger
@@ -64,6 +64,14 @@ class IngredientCategoryResponse {
 
     public toString(): string {
         return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+    static create(
+        ingredientCategoryDTO: IngredientCategoryDTO
+    ): IngredientCategoryResponse {
+        return new IngredientCategoryResponse(
+            ingredientCategoryDTO.ingredientIdx,
+            ingredientCategoryDTO.name
+        );
     }
 }
 

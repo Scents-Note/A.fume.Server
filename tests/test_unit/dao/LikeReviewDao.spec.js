@@ -11,7 +11,7 @@ const chai = require('chai');
 const { expect } = chai;
 const likeReviewDao = require('@dao/LikeReviewDao.js');
 
-const { LikeReview } = require('@sequelize');
+import { LikeReview } from '@sequelize';
 
 describe('# LikeReviewDao Test', () => {
     before(async function () {
@@ -101,18 +101,6 @@ describe('# LikeReviewDao Test', () => {
                 .then((result) => {
                     expect(result.userIdx).eq(1);
                     expect(result.reviewIdx).eq(1);
-                    done();
-                })
-                .catch((err) => done(err));
-        });
-    });
-
-    describe('# readAllOfUser case', () => {
-        it('# success case', (done) => {
-            likeReviewDao
-                .readAllOfUser({ userIdx: 1, perfumeIdx: 1 })
-                .then((result) => {
-                    expect(result[0]).eq(1);
                     done();
                 })
                 .catch((err) => done(err));
