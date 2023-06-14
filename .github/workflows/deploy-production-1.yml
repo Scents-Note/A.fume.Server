@@ -4,6 +4,7 @@
 name: Deploy production-1 server to ec2
 
 on:
+    workflow_dispatch:
     push:
         branches:
             - production-1
