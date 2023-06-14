@@ -4,7 +4,7 @@ import { NotMatchedError } from '@errors';
 
 import { IngredientDTO, ListAndCountDTO, PagingDTO } from '@dto/index';
 import { Series, Ingredient, IngredientCategories } from '@sequelize';
-import { Op } from 'sequelize';
+import { Op, WhereOptions } from 'sequelize';
 
 const LOG_TAG: string = '[Ingredient/DAO]';
 
@@ -90,17 +90,18 @@ class IngredientDao {
      *
      * @returns {Promise<IngredientDTO[]>}
      */
-    async readPage(offset: number, limit: number) {
+    async readPage(offset: number, limit: number, where?: WhereOptions) {
         logger.debug(`${LOG_TAG} readAll()`);
         return Ingredient.findAll({
             offset,
             limit,
-            raw: true,
-            nest: true,
             include: [
                 { model: Series, as: 'Series' },
                 { model: IngredientCategories, as: 'IngredientCategories' },
             ],
+            where,
+            raw: true,
+            nest: true,
         });
     }
 }

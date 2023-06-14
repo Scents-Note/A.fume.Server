@@ -10,7 +10,6 @@ import {
 } from '@src/utils/strings';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import {
-    IngredientCategoryResponse,
     IngredientFullResponse,
     IngredientResponse,
     LoginResponse,
@@ -18,13 +17,11 @@ import {
     PerfumeResponse,
     ResponseDTO,
 } from './definitions/response';
-import { ListAndCountDTO, PagingDTO } from '@src/data/dto';
-import SeriesService from '@src/service/SeriesService';
+import { ListAndCountDTO } from '@src/data/dto';
 
 let Admin: AdminService = new AdminService();
 let Perfume: PerfumeService = new PerfumeService();
 let Ingredient: IngredientService = new IngredientService();
-let Category: SeriesService = new SeriesService();
 
 /**
  * @swagger
@@ -159,6 +156,18 @@ export const getPerfume: RequestHandler = async (
  *        required: true
  *        type: integer
  *        format: int64
+ *      - name: target
+ *        in: query
+ *        required: false
+ *        type: string
+ #        enum:
+ #        - id
+ #        - name
+ #        - englishName
+ *      - name: keyword
+ *        in: query
+ *        required: false
+ *        type: string
  *      responses:
  *        200:
  *          description: 성공
@@ -194,7 +203,8 @@ export const getPerfumes: RequestHandler = async (
     }
     const limit = 20;
     const offset = (page - 1) * limit;
-    const perfumes = await Perfume.readPage(offset, limit);
+
+    const perfumes = await Perfume.readPage(offset, limit, req.query);
 
     res.status(StatusCode.OK).json(
         new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
@@ -222,6 +232,18 @@ export const getPerfumes: RequestHandler = async (
  *         required: true
  *         type: integer
  *         format: int64
+ *       - name: target
+ *         in: query
+ *         required: false
+ *         type: string
+ *         enum:
+ *         - id
+ *         - name
+ *         - englishName
+ *       - name: keyword
+ *         in: query
+ *         required: false
+ *         type: string
  *       responses:
  *         200:
  *           description: 성공
@@ -259,7 +281,7 @@ export const getIngredientAll: RequestHandler = async (
     }
     const limit = 20;
     const offset = (page - 1) * limit;
-    const ingredients = await Ingredient.readPage(offset, limit);
+    const ingredients = await Ingredient.readPage(offset, limit, req.query);
 
     res.status(StatusCode.OK).json(
         new ResponseDTO<ListAndCountDTO<IngredientFullResponse>>(
@@ -287,6 +309,18 @@ export const getIngredientAll: RequestHandler = async (
  *         required: true
  *         type: integer
  *         format: int64
+ *       - name: target
+ *         in: query
+ *         required: false
+ *         type: string
+ *         enum:
+ *         - id
+ *         - name
+ *         - englishName
+ *       - name: keyword
+ *         in: query
+ *         required: false
+ *         type: string
  *       responses:
  *         200:
  *           description: 성공
@@ -324,7 +358,7 @@ export const getIngredientCategoryList: RequestHandler = async (
     const limit = 20;
     const offset = (page - 1) * limit;
 
-    const categories = await Ingredient.readPage(offset, limit);
+    const categories = await Ingredient.readPage(offset, limit, req.query);
 
     res.status(StatusCode.OK).json(
         new ResponseDTO<ListAndCountDTO<IngredientResponse>>(

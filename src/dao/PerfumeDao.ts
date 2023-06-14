@@ -24,7 +24,7 @@ import {
     sequelize,
 } from '@sequelize';
 
-import Sequelize, { QueryTypes } from 'sequelize';
+import Sequelize, { QueryTypes, WhereOptions } from 'sequelize';
 
 const PERFUME_THUMB_COLUMNS: string[] = [
     'perfumeIdx',
@@ -568,12 +568,15 @@ class PerfumeDao {
      *
      * @returns {Promise<Perfume[]>}
      */
-    async readPage(offset: number, limit: number) {
+    async readPage(offset: number, limit: number, where?: WhereOptions) {
         logger.debug(`${LOG_TAG} readAll()`);
         return Perfume.findAll({
             offset,
             limit,
+            include: [{ model: Brand, as: 'Brand' }],
+            where,
             raw: true,
+            nest: true,
         });
     }
 }
