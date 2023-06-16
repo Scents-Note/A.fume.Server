@@ -1,36 +1,34 @@
-import dotenv from 'dotenv';
 import { expect } from 'chai';
+import dotenv from 'dotenv';
 import { Done } from 'mocha';
 
 dotenv.config();
 
 import PerfumeService from '@services/PerfumeService';
 
-import { NotMatchedError } from '@errors';
-
 import {
-    GENDER_MAN,
-    GRADE_USER,
-    GENDER_WOMAN,
-    ACCESS_PUBLIC,
     ACCESS_PRIVATE,
+    ACCESS_PUBLIC,
+    GENDER_MAN,
+    GENDER_WOMAN,
+    GRADE_USER,
 } from '@utils/constants';
 
 import {
     ListAndCountDTO,
     PagingDTO,
     PerfumeIntegralDTO,
-    PerfumeSearchResultDTO,
     PerfumeSearchDTO,
+    PerfumeSearchResultDTO,
     PerfumeThumbDTO,
     PerfumeThumbWithReviewDTO,
 } from '@dto/index';
 
 import {
-    LongevityProperty,
-    SillageProperty,
     GenderProperty,
+    LongevityProperty,
     SeasonalProperty,
+    SillageProperty,
 } from '@vo/ReviewProperty';
 
 import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
@@ -421,43 +419,6 @@ describe('# Perfume Service Test', () => {
             const result = await Perfume.getRecommendedSimilarPerfumeList(0, 2);
             expect(result.count).to.be.eq(2);
             expect(result.rows.length).to.be.eq(2);
-        });
-    });
-    describe('# like Test', () => {
-        it('# likePerfume Test (좋아요)', (done: Done) => {
-            mockLikePerfumeDao.read = async (_: number, __: number) => {
-                throw new NotMatchedError();
-            };
-            mockLikePerfumeDao.delete = async (_: number, __: number) => {
-                return;
-            };
-            mockLikePerfumeDao.create = async (_: number, __: number) => {
-                return;
-            };
-            Perfume.likePerfume(1, 1)
-                .then((result: boolean) => {
-                    expect(result).to.be.true;
-                    done();
-                })
-                .catch((err: Error) => done(err));
-        });
-
-        it('# likePerfume Test (좋아요 취소)', (done: Done) => {
-            mockLikePerfumeDao.read = async (_: number, __: number) => {
-                return true;
-            };
-            mockLikePerfumeDao.delete = async (_: number, __: number) => {
-                return;
-            };
-            mockLikePerfumeDao.create = async (_: number, __: number) => {
-                return;
-            };
-            Perfume.likePerfume(1, 1)
-                .then((result: boolean) => {
-                    expect(result).to.be.false;
-                    done();
-                })
-                .catch((err: Error) => done(err));
         });
     });
 });

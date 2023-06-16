@@ -1,6 +1,6 @@
 import { logger } from '@modules/winston';
 
-import { FailedToCreateError, NotMatchedError } from '@errors';
+import { NotMatchedError } from '@errors';
 
 import { flatJob, removeKeyJob } from '@utils/func';
 
@@ -215,41 +215,6 @@ class PerfumeService {
         );
 
         return await perfumeDao.updateSimilarPerfumes(perfumeSimilarRequest);
-    }
-
-    /**
-     * 향수 좋아요
-     *
-     * @param {number} userIdx
-     * @param {number} perfumeIdx
-     * @returns {Promise}
-     * @throws {FailedToCreateError} if failed to create likePerfume
-     **/
-    likePerfume(userIdx: number, perfumeIdx: number): Promise<boolean> {
-        logger.debug(
-            `${LOG_TAG} likePerfume(userIdx = ${userIdx}, perfumeIdx = ${perfumeIdx})`
-        );
-        return likePerfumeDao
-            .read(userIdx, perfumeIdx)
-            .then((_: any) => {
-                return likePerfumeDao
-                    .delete(userIdx, perfumeIdx)
-                    .then((_: number) => true);
-            })
-            .catch((err: Error) => {
-                if (err instanceof NotMatchedError) {
-                    return likePerfumeDao
-                        .create(userIdx, perfumeIdx)
-                        .then(() => false);
-                }
-                throw new FailedToCreateError();
-            })
-            .then((exist: boolean) => {
-                return !exist;
-            })
-            .catch((err: Error) => {
-                throw err;
-            });
     }
 
     /**

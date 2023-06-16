@@ -51,11 +51,13 @@ import {
     DEFAULT_NEW_PERFUME_REQUEST_SIZE,
 } from '@utils/constants';
 import _ from 'lodash';
+import { LikePerfumeService } from '@src/service/LikePerfumeService';
 
 const LOG_TAG: string = '[Perfume/Controller]';
 
 let Perfume: PerfumeService = new PerfumeService();
 let SearchHistory: SearchHistoryService = new SearchHistoryService();
+const LikePerfume: LikePerfumeService = new LikePerfumeService();
 
 /**
  * @swagger
@@ -343,7 +345,7 @@ const likePerfume: RequestHandler = (
             req.params
         )})`
     );
-    Perfume.likePerfume(loginUserIdx, perfumeIdx)
+    LikePerfume.likePerfume(loginUserIdx, perfumeIdx)
         .then((result: boolean) => {
             LoggerHelper.logTruncated(
                 logger.debug,
