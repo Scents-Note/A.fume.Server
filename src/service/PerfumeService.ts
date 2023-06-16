@@ -1,40 +1,35 @@
 import { logger } from '@modules/winston';
 
-import { NotMatchedError, FailedToCreateError } from '@errors';
+import { FailedToCreateError, NotMatchedError } from '@errors';
 
-import { removeKeyJob, flatJob } from '@utils/func';
-import {
-    PERFUME_NOTE_TYPE_SINGLE,
-    PERFUME_NOTE_TYPE_NORMAL,
-} from '@utils/constants';
+import { flatJob, removeKeyJob } from '@utils/func';
 
-import UserDao from '@dao/UserDao';
-import PerfumeDao from '@dao/PerfumeDao';
-import NoteDao from '@dao/NoteDao';
-import LikePerfumeDao from '@dao/LikePerfumeDao';
-import S3FileDao from '@dao/S3FileDao';
-import ReviewDao from '@dao/ReviewDao';
 import KeywordDao from '@dao/KeywordDao';
+import LikePerfumeDao from '@dao/LikePerfumeDao';
+import PerfumeDao from '@dao/PerfumeDao';
+import ReviewDao from '@dao/ReviewDao';
+import S3FileDao from '@dao/S3FileDao';
+import UserDao from '@dao/UserDao';
 
 import {
-    PagingDTO,
     ListAndCountDTO,
+    PagingDTO,
+    PerfumeDTO,
+    PerfumeIntegralDTO,
+    PerfumeSearchDTO,
+    PerfumeSearchResultDTO,
+    PerfumeSummaryDTO,
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
-    PerfumeSummaryDTO,
-    PerfumeSearchDTO,
-    PerfumeIntegralDTO,
-    PerfumeDTO,
-    PerfumeSearchResultDTO,
-    UserDTO,
-    NoteDictDTO,
     PerfumeThumbWithReviewDTO,
+    UserDTO,
 } from '@dto/index';
-import fp from 'lodash/fp';
-import _ from 'lodash';
-import IngredientDao from '@src/dao/IngredientDao';
 import { Ingredient } from '@sequelize';
+import IngredientDao from '@src/dao/IngredientDao';
+import _ from 'lodash';
+import fp from 'lodash/fp';
 import { Op } from 'sequelize';
+import { NoteService } from './NoteService';
 
 const LOG_TAG: string = '[Perfume/Service]';
 const DEFAULT_VALUE_OF_INDEX = 0;
@@ -42,7 +37,6 @@ const DEFAULT_VALUE_OF_INDEX = 0;
 let perfumeDao: PerfumeDao = new PerfumeDao();
 let ingredientDao: IngredientDao = new IngredientDao();
 let reviewDao: ReviewDao = new ReviewDao();
-let noteDao: NoteDao = new NoteDao();
 let likePerfumeDao: LikePerfumeDao = new LikePerfumeDao();
 let keywordDao: KeywordDao = new KeywordDao();
 let s3FileDao: S3FileDao = new S3FileDao();
@@ -96,7 +90,9 @@ class PerfumeService {
             perfume.imageUrl
         );
 
-        const { noteType, noteDictDTO } = await this.generateNote(perfumeIdx);
+        const { noteType, noteDictDTO } = await new NoteService().generateNote(
+            perfumeIdx
+        );
         const perfumeSummaryDTO: PerfumeSummaryDTO = await this.generateSummary(
             perfumeIdx
         );
@@ -466,29 +462,6 @@ class PerfumeService {
 
     setS3FileDao(dao: S3FileDao) {
         s3FileDao = dao;
-    }
-
-    private async generateNote(perfumeIdx: number): Promise<{
-        noteType: number;
-        noteDictDTO: {
-            top: string;
-            middle: string;
-            base: string;
-            single: string;
-        };
-    }> {
-        const noteList: any[] = await noteDao.readByPerfumeIdx(perfumeIdx);
-        const noteDictDTO: {
-            top: string;
-            middle: string;
-            base: string;
-            single: string;
-        } = NoteDictDTO.createByNoteList(noteList);
-        const noteType: number =
-            noteDictDTO.single.length > 0
-                ? PERFUME_NOTE_TYPE_SINGLE
-                : PERFUME_NOTE_TYPE_NORMAL;
-        return { noteType, noteDictDTO };
     }
 
     private async generateSummary(
