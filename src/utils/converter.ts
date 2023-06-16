@@ -3,9 +3,6 @@ import { logger } from '@modules/winston';
 import { InvalidValueError } from '@errors';
 
 const seasonalTypeArr = ['봄', '여름', '가을', '겨울'];
-const sillageTypeArr = ['가벼움', '보통', '무거움'];
-const longevityTypeArr = ['매우 약함', '약함', '보통', '강함', '매우 강함'];
-const genderTypeArr = ['남성', '중성', '여성'];
 
 // TODO converter가 특정 dao에 의존하는 것은 불필요한 의존성을 만드는 거 같네요.
 import KeywordDao from '@dao/KeywordDao';
@@ -26,12 +23,18 @@ const INSTEAD_NULL_VALUE = -1;
  * @param {string[]|integer[]} Review.keywordList
  * @returns {Promise<Review>}
  */
-module.exports.InputIntToDBIntOfReview = async ({
+export const InputIntToDBIntOfReview = async ({
     longevity,
     sillage,
     seasonalList,
     gender,
     keywordList,
+}: {
+    longevity: number;
+    sillage: number;
+    seasonalList: string[];
+    gender: number;
+    keywordList: (string | number)[];
 }) => {
     try {
         // seasonalList 변환하기 (비트연산)
@@ -44,7 +47,7 @@ module.exports.InputIntToDBIntOfReview = async ({
         }
 
         // keywordList 변환하기
-        let keywordIdxList;
+        let keywordIdxList = [];
         if (keywordList) {
             keywordIdxList = await Promise.all(
                 keywordList.map((it) => {
@@ -62,9 +65,9 @@ module.exports.InputIntToDBIntOfReview = async ({
         return {
             longevity: longevity + 1 ? longevity + 1 : null,
             sillage: sillage + 1 ? sillage + 1 : null,
-            sumOfBitSeasonal: seasonalList && sum > 0 ? sum : null,
+            sumOfBitSeasonal: seasonalList && sum && sum > 0 ? sum : null,
             gender: gender + 1 ? gender + 1 : null,
-            keywordList: keywordList ? keywordIdxList : [],
+            keywordList: keywordIdxList,
         };
     } catch (err) {
         logger.error(err);
@@ -84,11 +87,16 @@ module.exports.InputIntToDBIntOfReview = async ({
  * @param {number} Review.sumOfBitSeasonal
  * @returns {Promise<Review>}
  */
-module.exports.DBIntToOutputIntOfReview = async ({
+export const DBIntToOutputIntOfReview = ({
     longevity,
     sillage,
     sumOfBitSeasonal,
     gender,
+}: {
+    longevity: number | null;
+    sillage: number | null;
+    sumOfBitSeasonal: number | null;
+    gender: number | null;
 }) => {
     try {
         // seasonalList 변환하기 (비트연산)
@@ -121,10 +129,10 @@ module.exports.DBIntToOutputIntOfReview = async ({
  * getApproxAge(1999)
  * @returns {string} approxAge
  */
-module.exports.getApproxAge = (birthYear) => {
+export const getApproxAge = (birthYear: number) => {
     const thisYear = new Date().getFullYear();
     const exactAge = thisYear - birthYear + 1;
-    const exactAgeTens = parseInt(exactAge / 10) * 10;
+    const exactAgeTens = parseInt(String(exactAge / 10)) * 10;
     const exactAgeUnit = exactAge % 10;
 
     let section;
