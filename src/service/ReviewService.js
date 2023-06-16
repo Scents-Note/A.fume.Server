@@ -1,6 +1,8 @@
 import { NotMatchedError, UnAuthorizedError } from '../utils/errors/errors';
 
-const likeReviewDao = require('../dao/LikeReviewDao');
+import LikeReviewDao from '@dao/LikeReviewDao';
+const likeReviewDao = new LikeReviewDao();
+
 const reportReviewDao = require('../dao/ReportReviewDao');
 const {
     InputIntToDBIntOfReview,

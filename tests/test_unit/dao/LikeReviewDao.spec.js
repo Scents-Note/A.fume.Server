@@ -9,7 +9,8 @@ import {
 
 const chai = require('chai');
 const { expect } = chai;
-const likeReviewDao = require('@dao/LikeReviewDao.js');
+import LikeReviewDao from '@dao/LikeReviewDao';
+const likeReviewDao = new LikeReviewDao();
 
 import { LikeReview } from '@sequelize';
 
