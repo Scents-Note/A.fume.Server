@@ -1,9 +1,11 @@
 'use strict';
 
-const Keyword = require('../service/KeywordService');
+import KeywordService from '../service/KeywordService';
 import { DEFAULT_PAGE_SIZE } from '@src/utils/constants';
 import StatusCode from '../utils/statusCode';
 import { NextFunction, Request, Response } from 'express';
+
+const Keyword = new KeywordService();
 
 export const getKeywordAll = async (
     req: Request,
@@ -30,7 +32,7 @@ export const getKeywordOfPerfume = async (
     res: Response,
     next: NextFunction
 ) => {
-    const perfumeIdx = req.params['perfumeIdx'];
+    const perfumeIdx = parseInt(req.params['perfumeIdx']);
     try {
         const response = await Keyword.getKeywordOfPerfume(perfumeIdx);
         res.status(StatusCode.OK).json({
