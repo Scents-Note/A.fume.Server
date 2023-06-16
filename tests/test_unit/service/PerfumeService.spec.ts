@@ -32,16 +32,16 @@ import {
 } from '@vo/ReviewProperty';
 
 import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
+import { LikePerfumeService } from '@src/service/LikePerfumeService';
 
-const Perfume: PerfumeService = new PerfumeService();
+const mockLikePerfumeDao: any = {};
+const LikePerfume = new LikePerfumeService(mockLikePerfumeDao);
+const Perfume: PerfumeService = new PerfumeService(LikePerfume);
 
 const defaultPagingDTO: PagingDTO = PagingDTO.createByJson({});
 
 const mockS3FileDao: any = {};
 Perfume.setS3FileDao(mockS3FileDao);
-
-const mockLikePerfumeDao: any = {};
-Perfume.setLikePerfumeDao(mockLikePerfumeDao);
 
 const mockUserDao: any = {};
 Perfume.setUserDao(mockUserDao);
