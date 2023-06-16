@@ -448,16 +448,8 @@ class PerfumeService {
             });
     }
 
-    setPerfumeDao(dao: PerfumeDao) {
-        perfumeDao = dao;
-    }
-
     setReviewDao(dao: any) {
         reviewDao = dao;
-    }
-
-    setNoteDao(dao: NoteDao) {
-        noteDao = dao;
     }
 
     setLikePerfumeDao(dao: LikePerfumeDao) {
