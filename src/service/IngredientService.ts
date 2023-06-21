@@ -72,6 +72,7 @@ class IngredientService {
             limit,
             whereOptions
         );
+        console.log(perfumes);
         const perfumesWithCategory = perfumes.map((perfume) => {
             return {
                 ...perfume,

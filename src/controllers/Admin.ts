@@ -18,10 +18,13 @@ import {
     ResponseDTO,
 } from './definitions/response';
 import { ListAndCountDTO } from '@src/data/dto';
+import IngredientCategoryService from '@src/service/IngredientCategoryService';
 
 let Admin: AdminService = new AdminService();
 let Perfume: PerfumeService = new PerfumeService();
 let Ingredient: IngredientService = new IngredientService();
+let IngredientCategory: IngredientCategoryService =
+    new IngredientCategoryService();
 
 /**
  * @swagger
@@ -138,6 +141,7 @@ export const getPerfume: RequestHandler = async (
         next(error);
     }
 };
+
 /**
  * @swagger
  *  /admin/perfumes:
@@ -252,13 +256,13 @@ export const getPerfumes: RequestHandler = async (
  *             properties:
  *               message:
  *                 type: string
- *                 example: 재료 목록 조회 성공
+ *                 example: ingredient 목록 조회 성공
  *               data:
  *                 type: object
  *                 properties:
  *                   count:
  *                     type: integer
- *                     example: 20
+ *                     example: 1
  *                   rows:
  *                     type: array
  *                     items:
@@ -299,7 +303,7 @@ export const getIngredientAll: RequestHandler = async (
  *       tags:
  *       - admin
  *       summary: 재료 카테고리 목록 조회
- *       description: 재료 카테고리 목록 조회 <br /> 반환 되는 정보 [재료]
+ *       description: 재료 카테고리 리스트 조회 <br /> 반환 되는 정보 [재료]
  *       operationId: getIngredientCategoryList
  *       produces:
  *       - application/json
@@ -329,7 +333,7 @@ export const getIngredientAll: RequestHandler = async (
  *             properties:
  *               message:
  *                 type: string
- *                 example: 재료 카테고리 목록 조회 성공
+ *                 example: Ingredient Category 목록 조회 성공
  *               data:
  *                 type: object
  *                 properties:
@@ -358,7 +362,11 @@ export const getIngredientCategoryList: RequestHandler = async (
     const limit = 20;
     const offset = (page - 1) * limit;
 
-    const categories = await Ingredient.readPage(offset, limit, req.query);
+    const categories = await IngredientCategory.readPage(
+        offset,
+        limit,
+        req.query
+    );
 
     res.status(StatusCode.OK).json(
         new ResponseDTO<ListAndCountDTO<IngredientResponse>>(
