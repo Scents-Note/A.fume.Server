@@ -7,7 +7,6 @@ import { flatJob, removeKeyJob } from '@utils/func';
 import KeywordDao from '@dao/KeywordDao';
 import PerfumeDao from '@dao/PerfumeDao';
 import ReviewDao from '@dao/ReviewDao';
-import S3FileDao from '@dao/S3FileDao';
 import UserDao from '@dao/UserDao';
 
 import {
@@ -30,6 +29,7 @@ import fp from 'lodash/fp';
 import { Op } from 'sequelize';
 import { NoteService } from './NoteService';
 import { LikePerfumeService } from './LikePerfumeService';
+import ImageService from './ImageService';
 
 const LOG_TAG: string = '[Perfume/Service]';
 const DEFAULT_VALUE_OF_INDEX = 0;
@@ -38,7 +38,6 @@ let perfumeDao: PerfumeDao = new PerfumeDao();
 let ingredientDao: IngredientDao = new IngredientDao();
 let reviewDao: ReviewDao = new ReviewDao();
 let keywordDao: KeywordDao = new KeywordDao();
-let s3FileDao: S3FileDao = new S3FileDao();
 let userDao: UserDao = new UserDao();
 
 const commonJob = [
@@ -52,9 +51,14 @@ const commonJob = [
 ];
 class PerfumeService {
     likePerfumeService: LikePerfumeService;
-    constructor(likePerfumeService?: LikePerfumeService) {
+    imageService: ImageService;
+    constructor(
+        likePerfumeService?: LikePerfumeService,
+        imageService?: ImageService
+    ) {
         this.likePerfumeService =
             likePerfumeService ?? new LikePerfumeService();
+        this.imageService = imageService ?? new ImageService();
     }
     /**
      * 향수 세부 정보 조회
@@ -92,7 +96,7 @@ class PerfumeService {
                 ).map((it: any) => it.name)
             ),
         ];
-        const imageUrls: string[] = await this.getImageList(
+        const imageUrls: string[] = await this.imageService.getImageList(
             perfumeIdx,
             perfume.imageUrl
         );
@@ -439,10 +443,6 @@ class PerfumeService {
         userDao = dao;
     }
 
-    setS3FileDao(dao: S3FileDao) {
-        s3FileDao = dao;
-    }
-
     private async generateSummary(
         perfumeIdx: number
     ): Promise<PerfumeSummaryDTO> {
@@ -525,21 +525,6 @@ class PerfumeService {
                 PerfumeThumbKeywordDTO.createByJson
             )(item);
         };
-    }
-
-    private async getImageList(
-        perfumeIdx: number,
-        defaultImage: string
-    ): Promise<string[]> {
-        const imageFromS3: string[] = await s3FileDao
-            .getS3ImageList(perfumeIdx)
-            .catch((_: any) => []);
-
-        if (imageFromS3.length > 0) {
-            return imageFromS3;
-        }
-
-        return [defaultImage];
     }
 
     async readPage(
