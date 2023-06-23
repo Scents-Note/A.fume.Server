@@ -36,13 +36,7 @@ import {
     LoginResponse,
 } from '@response/user';
 
-import {
-    UserAuthDTO,
-    UserInputDTO,
-    LoginInfoDTO,
-    SurveyDTO,
-    UserDTO,
-} from '@dto/index';
+import { UserAuthDTO, LoginInfoDTO, SurveyDTO, UserDTO } from '@dto/index';
 
 const LOG_TAG: string = '[User/Controller]';
 
@@ -99,7 +93,7 @@ const registerUser: RequestHandler = (
         return;
     }
     User.createUser(userRegisterRequest.toUserInputDTO())
-        .then((result: UserInputDTO) => {
+        .then((result) => {
             return UserRegisterResponse.createByJson(result);
         })
         .then((response: UserRegisterResponse) => {

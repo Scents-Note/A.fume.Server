@@ -13,11 +13,12 @@ import {
     SeriesFilterDTO,
     IngredientCategoryDTO,
 } from '@dto/index';
-import { THRESHOLD_CATEGORY } from '@src/utils/constants';
 import { Op } from 'sequelize';
 import { ETC } from '@src/utils/strings';
 
 const LOG_TAG: string = '[Series/Service]';
+
+const THRESHOLD_CATEGORY: number = 10;
 
 class SeriesService {
     seriesDao: SeriesDao;

@@ -26,11 +26,9 @@ import {
 import {
     DEFAULT_RECOMMEND_REQUEST_SIZE,
     DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE,
-    DEFAULT_RECOMMEND_COMMON_REQUEST_SIZE,
-    DEFAULT_OP_CODE,
 } from '@utils/constants';
 
-import { ResponseDTO, SimpleResponseDTO } from '@response/common';
+import { OpCode, ResponseDTO, SimpleResponseDTO } from '@response/common';
 import {
     PerfumeResponse,
     PerfumeDetailResponse,
@@ -180,12 +178,8 @@ describe('# Perfume Integral Test', () => {
                         expect(responseDTO.message).to.be.eq(
                             MSG_GET_RECOMMEND_PERFUME_BY_AGE_AND_GENDER
                         );
-                        expect(responseDTO.data.count).to.be.gte(
-                            DEFAULT_RECOMMEND_COMMON_REQUEST_SIZE
-                        );
-                        expect(responseDTO.data.rows.length).to.be.eq(
-                            DEFAULT_RECOMMEND_COMMON_REQUEST_SIZE
-                        );
+                        expect(responseDTO.data.count).to.be.gte(15);
+                        expect(responseDTO.data.rows.length).to.be.eq(15);
                         done();
                     })
                     .catch((err: Error) => done(err));
@@ -356,7 +350,7 @@ describe('# Perfume Integral Test', () => {
                 expect(responseDTO.message).to.be.eq(
                     MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS
                 );
-                expect(responseDTO.opcode).to.be.eq(DEFAULT_OP_CODE);
+                expect(responseDTO.opcode).to.be.eq(OpCode.NONE);
             });
 
             it('read success case', async () => {
@@ -373,7 +367,7 @@ describe('# Perfume Integral Test', () => {
                     MSG_GET_RECOMMEND_SIMILAR_PERFUMES
                 );
                 expect(responseDTO.data.count).to.be.eq(3);
-                expect(responseDTO.opcode).to.be.eq(DEFAULT_OP_CODE);
+                expect(responseDTO.opcode).to.be.eq(OpCode.NONE);
             });
         });
     });

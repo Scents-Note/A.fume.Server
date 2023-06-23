@@ -1,5 +1,4 @@
 import { NotMatchedError, DuplicatedEntryError } from '@errors';
-import { ACCESS_PUBLIC, ACCESS_PRIVATE } from '@utils/constants';
 
 import {
     sequelize,
@@ -10,6 +9,9 @@ import {
     Keyword,
 } from '@sequelize';
 import { Op, Order, QueryTypes } from 'sequelize';
+
+const ACCESS_PUBLIC: number = 1;
+const ACCESS_PRIVATE: number = 0;
 
 const SQL_READ_ALL_OF_PERFUME = `
     SELECT 
