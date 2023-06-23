@@ -17,31 +17,24 @@ class IngredientCategoryService {
         if (target && keyword) {
             switch (target) {
                 case 'id':
-                    whereOptions.ingredientIdx = keyword;
+                    whereOptions.id = keyword;
                     break;
                 case 'name':
                     whereOptions.name = { [Op.startsWith]: keyword };
                     break;
-                case 'englishName':
-                    whereOptions.englishName = { [Op.startsWith]: keyword };
-                    break;
             }
         }
 
-        const perfumes = await this.ingredientCategoryDao.readPage(
+        const { rows, count } = await this.ingredientCategoryDao.readPage(
             offset,
             limit,
             whereOptions
         );
-        console.log(perfumes);
-        const perfumesWithCategory = perfumes.map((perfume) =>
-            IngredientCategoryDTO.createByJson(perfume)
+
+        const perfumesWithCategory = rows.map((c) =>
+            IngredientCategoryDTO.createByJson(c)
         );
-        console.log(perfumesWithCategory);
-        return new ListAndCountDTO(
-            perfumesWithCategory.length,
-            perfumesWithCategory
-        );
+        return new ListAndCountDTO(count, perfumesWithCategory);
     }
 }
 

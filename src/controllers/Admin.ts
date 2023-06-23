@@ -10,8 +10,9 @@ import {
 } from '@src/utils/strings';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import {
+    IngredientCategoryResponse,
     IngredientFullResponse,
-    IngredientResponse,
+    // IngredientResponse,
     LoginResponse,
     PerfumeDetailResponse,
     PerfumeResponse,
@@ -320,7 +321,6 @@ export const getIngredientAll: RequestHandler = async (
  *         enum:
  *         - id
  *         - name
- *         - englishName
  *       - name: keyword
  *         in: query
  *         required: false
@@ -369,9 +369,9 @@ export const getIngredientCategoryList: RequestHandler = async (
     );
 
     res.status(StatusCode.OK).json(
-        new ResponseDTO<ListAndCountDTO<IngredientResponse>>(
+        new ResponseDTO<ListAndCountDTO<IngredientCategoryResponse>>(
             MSG_GET_SEARCH_INGREDIENT_SUCCESS,
-            categories.convertType(IngredientResponse.createByJson)
+            categories.convertType(IngredientCategoryResponse.create)
         )
     );
 };

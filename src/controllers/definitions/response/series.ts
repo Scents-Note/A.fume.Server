@@ -47,19 +47,19 @@ class SeriesResponse {
  *   IngredientCategory:
  *     type: object
  *     properties:
- *       ingredientIdx:
+ *       id:
  *         type: number
  *       name:
  *         type: string
  *     example:
- *       ingredientIdx: 5
+ *       id: 5
  *       name: 버터오렌지
  *  */
 class IngredientCategoryResponse {
-    readonly ingredientIdx: number;
+    readonly id: number;
     readonly name: string;
-    constructor(ingredientIdx: number, name: string) {
-        this.ingredientIdx = ingredientIdx;
+    constructor(id: number, name: string) {
+        this.id = id;
         this.name = name;
     }
 
@@ -70,7 +70,7 @@ class IngredientCategoryResponse {
         ingredientCategoryDTO: IngredientCategoryDTO
     ): IngredientCategoryResponse {
         return new IngredientCategoryResponse(
-            ingredientCategoryDTO.ingredientIdx,
+            ingredientCategoryDTO.id,
             ingredientCategoryDTO.name
         );
     }

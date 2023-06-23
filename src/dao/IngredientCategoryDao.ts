@@ -32,20 +32,15 @@ class IngredientCategoryDao {
      */
 
     async readPage(offset: number, limit: number, where?: WhereOptions) {
-        try {
-            return IngredientCategories.findAll({
-                offset,
-                limit,
-                where,
+        return IngredientCategories.findAndCountAll({
+            offset,
+            limit,
+            where,
 
-                raw: true,
-                nest: true,
-            });
-        } catch (error) {
-            // Handle the error appropriately
-            console.error('Error occurred while reading page:', error);
-            throw error;
-        }
+            raw: true,
+            nest: true,
+            order: [['createdAt', 'desc']],
+        });
     }
 }
 

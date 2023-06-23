@@ -38,41 +38,6 @@ class IngredientResponse {
 /**
  * @swagger
  * definitions:
- *  IngredientCategoryResponse:
- *     type: object
- *     properties:
- *       ingredientIdx:
- *         type: number
- *       name:
- *         type: string
- *     example:
- *       ingredientIdx: 1
- *       name: 베르가못
- *  */
-class IngredientCategoryResponse1 {
-    readonly ingredientIdx: number;
-    readonly name: string;
-
-    constructor(ingredientIdx: number, name: string) {
-        this.ingredientIdx = ingredientIdx;
-        this.name = name;
-    }
-
-    public toString(): string {
-        return `${this.constructor.name} (${JSON.stringify(this)})`;
-    }
-
-    static createByJson(json: {
-        ingredientIdx: number;
-        name: string;
-    }): IngredientCategoryResponse1 {
-        return new IngredientCategoryResponse1(json.ingredientIdx, json.name);
-    }
-}
-
-/**
- * @swagger
- * definitions:
  *  IngredientFullResponse:
  *     type: object
  *     properties:
@@ -146,8 +111,4 @@ class IngredientFullResponse {
     }
 }
 
-export {
-    IngredientResponse,
-    IngredientCategoryResponse1,
-    IngredientFullResponse,
-};
+export { IngredientResponse, IngredientFullResponse };

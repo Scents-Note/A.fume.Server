@@ -72,13 +72,13 @@ class IngredientService {
             limit,
             whereOptions
         );
-        console.log(perfumes);
         const perfumesWithCategory = perfumes.map((perfume) => {
             return {
                 ...perfume,
                 IngredientCategory: IngredientCategoryDTO.createByJson(perfume),
             };
         });
+
         return new ListAndCountDTO(
             perfumesWithCategory.length,
             perfumesWithCategory
