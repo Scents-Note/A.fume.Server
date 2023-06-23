@@ -62,9 +62,9 @@ class ReviewDao {
         score: number;
         longevity: number;
         sillage: number;
-        seasonal: string[];
+        seasonal: number;
         gender: number;
-        access: boolean;
+        access: number;
         content: string;
     }): Promise<any> {
         try {
@@ -185,7 +185,7 @@ class ReviewDao {
     readAllOfPerfume(
         perfumeIdx: number,
         includePrivate: boolean = false
-    ): Promise<any> {
+    ): Promise<Review[]> {
         return sequelize.query(SQL_READ_ALL_OF_PERFUME, {
             bind: [perfumeIdx, includePrivate ? ACCESS_PRIVATE : ACCESS_PUBLIC],
             nest: true,

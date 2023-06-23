@@ -196,8 +196,8 @@ class KeywordDao {
         sort: Order = [['count', 'desc']],
         condition: any = {},
         limitSize: number = 2
-    ): Promise<any> {
-        const result = await JoinPerfumeKeyword.findAll({
+    ): Promise<Array<JoinPerfumeKeyword & { Keyword: Keyword }>> {
+        const result = (await JoinPerfumeKeyword.findAll({
             attributes: {
                 exclude: ['createdAt', 'updatedAt'],
             },
@@ -220,7 +220,7 @@ class KeywordDao {
             limit: limitSize,
             raw: true, // To receive a plain response instead, pass { raw: true } as an option to the finder method.
             nest: true,
-        });
+        })) as Array<JoinPerfumeKeyword & { Keyword: Keyword }>;
 
         if (result.length === 0) {
             throw new NotMatchedError();

@@ -165,10 +165,10 @@ export const getPerfume: RequestHandler = async (
  *        in: query
  *        required: false
  *        type: string
- #        enum:
- #        - id
- #        - name
- #        - englishName
+ *        enum:
+ *        - id
+ *        - name
+ *        - englishName
  *      - name: keyword
  *        in: query
  *        required: false

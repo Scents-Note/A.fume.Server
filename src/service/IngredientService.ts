@@ -67,22 +67,19 @@ class IngredientService {
             }
         }
 
-        const perfumes = await this.ingredientDao.readPage(
+        const { rows, count } = await this.ingredientDao.readPage(
             offset,
             limit,
             whereOptions
         );
-        const perfumesWithCategory = perfumes.map((perfume) => {
+        const perfumesWithCategory = rows.map((perfume) => {
             return {
                 ...perfume,
                 IngredientCategory: IngredientCategoryDTO.createByJson(perfume),
             };
         });
+        return new ListAndCountDTO(count, perfumesWithCategory);
 
-        return new ListAndCountDTO(
-            perfumesWithCategory.length,
-            perfumesWithCategory
-        );
     }
 }
 
