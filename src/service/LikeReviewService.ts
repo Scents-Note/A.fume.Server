@@ -22,6 +22,10 @@ class LikeReviewService {
         }
         return !isLiked;
     }
+
+    async read(userIdx: number, reviewIdx: number) {
+        return await likeReviewDao.read(userIdx, reviewIdx);
+    }
 }
 
 export default LikeReviewService;

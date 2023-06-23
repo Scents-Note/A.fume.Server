@@ -1,9 +1,7 @@
 import { NotMatchedError, UnAuthorizedError } from '../utils/errors/errors';
 
-import LikeReviewDao from '@dao/LikeReviewDao';
 import ReportReviewDao from '@dao/ReportReviewDao';
 
-const likeReviewDao = new LikeReviewDao();
 const reportReviewDao = new ReportReviewDao();
 
 import {
@@ -18,6 +16,7 @@ import LikePerfumeDao from '@dao/LikePerfumeDao';
 import ReviewDao from '@dao/ReviewDao';
 import KeywordDao from '../dao/KeywordDao';
 import { PRIVATE } from '@src/utils/strings';
+import LikeReviewService from './LikeReviewService';
 
 const userDao = new UserDao();
 const likePerfumeDao = new LikePerfumeDao();
@@ -39,6 +38,12 @@ interface ReviewVO {
 }
 
 export class ReviewService {
+    likeReviewService: LikeReviewService;
+
+    constructor() {
+        this.likeReviewService = new LikeReviewService();
+    }
+
     /**
      * 시향노트 작성
      *
@@ -287,7 +292,7 @@ export class ReviewService {
                 const approxAge = it.User.birth
                     ? getApproxAge(it.User.birth)
                     : PRIVATE;
-                const readLikeResult = await likeReviewDao.read(
+                const readLikeResult = await this.likeReviewService.read(
                     userIdx,
                     it.reviewIdx
                 );
