@@ -6,12 +6,14 @@ import { NotMatchedError } from '@src/utils/errors/errors';
 import fp from 'lodash/fp';
 import { commonJob } from './PerfumeService';
 import _ from 'lodash';
-
-const keywordDao = new KeywordDao();
-
 class KeywordService {
+    keywordDao: KeywordDao;
     likePerfumeService: LikePerfumeService;
-    constructor(likePerfumeService?: LikePerfumeService) {
+    constructor(
+        keywordDao?: KeywordDao,
+        likePerfumeService?: LikePerfumeService
+    ) {
+        this.keywordDao = keywordDao ?? new KeywordDao();
         this.likePerfumeService =
             likePerfumeService ?? new LikePerfumeService();
     }
@@ -21,7 +23,7 @@ class KeywordService {
      * @returns {Promise<Keyword[]>}
      **/
     async getKeywordAll(pagingIndex: number, pagingSize: number) {
-        const result = await keywordDao.readAll(pagingIndex, pagingSize);
+        const result = await this.keywordDao.readAll(pagingIndex, pagingSize);
         return {
             ...result,
             rows: result.rows.map(this.transform),
@@ -35,7 +37,7 @@ class KeywordService {
      * @returns {Promise<keyword[]>}
      */
     async getKeywordOfPerfume(perfumeIdx: number) {
-        const keywords = await keywordDao.readAllOfPerfume(perfumeIdx);
+        const keywords = await this.keywordDao.readAllOfPerfume(perfumeIdx);
         return keywords.map(this.transform);
     }
 
@@ -59,7 +61,7 @@ class KeywordService {
             );
         }
 
-        const joinKeywordList: any[] = await keywordDao
+        const joinKeywordList: any[] = await this.keywordDao
             .readAllOfPerfumeIdxList(perfumeIdxList)
             .catch((err: Error) => {
                 if (err instanceof NotMatchedError) {
@@ -89,6 +91,10 @@ class KeywordService {
             ret.keywordList = keywordMap[obj.perfumeIdx] || [];
             return ret;
         };
+    }
+
+    async readAllOfPerfume(perfumeIdx: number) {
+        return this.keywordDao.readAllOfPerfume(perfumeIdx);
     }
 }
 

@@ -28,20 +28,20 @@ import {
 import PerfumeIntegralMockHelper from '../mock_helper/PerfumeIntegralMockHelper';
 import { LikePerfumeService } from '@src/service/LikePerfumeService';
 import ImageService from '@src/service/ImageService';
+import KeywordService from '@src/service/KeywordService';
 
 const mockLikePerfumeDao: any = {};
 const mockS3FileDao: any = {};
+const mockKeywordDao: any = {};
 const LikePerfume = new LikePerfumeService(mockLikePerfumeDao);
 const Image = new ImageService(mockS3FileDao);
-const Perfume: PerfumeService = new PerfumeService(LikePerfume, Image);
+const Keyword = new KeywordService(mockKeywordDao, LikePerfume);
+const Perfume: PerfumeService = new PerfumeService(LikePerfume, Image, Keyword);
 
 const defaultPagingDTO: PagingDTO = PagingDTO.createByJson({});
 
 const mockUserDao: any = {};
 Perfume.setUserDao(mockUserDao);
-
-const mockKeywordDao: any = {};
-Perfume.setKeywordDao(mockKeywordDao);
 
 const mockReviewDao: any = {};
 Perfume.setReviewDao(mockReviewDao);

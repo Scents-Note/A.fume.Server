@@ -2,7 +2,6 @@ import { logger } from '@modules/winston';
 
 import { flatJob, removeKeyJob } from '@utils/func';
 
-import KeywordDao from '@dao/KeywordDao';
 import PerfumeDao from '@dao/PerfumeDao';
 import ReviewDao from '@dao/ReviewDao';
 import UserDao from '@dao/UserDao';
@@ -36,7 +35,6 @@ const DEFAULT_VALUE_OF_INDEX = 0;
 let perfumeDao: PerfumeDao = new PerfumeDao();
 let ingredientDao: IngredientDao = new IngredientDao();
 let reviewDao: ReviewDao = new ReviewDao();
-let keywordDao: KeywordDao = new KeywordDao();
 let userDao: UserDao = new UserDao();
 
 export const commonJob = [
@@ -93,7 +91,7 @@ class PerfumeService {
         const keywordList: string[] = [
             ...new Set<string>(
                 (
-                    await keywordDao
+                    await this.keywordService
                         .readAllOfPerfume(perfumeIdx)
                         .catch((_: Error) => [])
                 ).map((it: any) => it.name)
@@ -439,10 +437,6 @@ class PerfumeService {
 
     setReviewDao(dao: any) {
         reviewDao = dao;
-    }
-
-    setKeywordDao(dao: any) {
-        keywordDao = dao;
     }
 
     setUserDao(dao: UserDao) {
