@@ -1,9 +1,20 @@
 import KeywordDao from '@dao/KeywordDao';
+import { PerfumeThumbDTO, PerfumeThumbKeywordDTO } from '@src/data/dto';
 import { Keyword } from '@src/models';
+import { LikePerfumeService } from './LikePerfumeService';
+import { NotMatchedError } from '@src/utils/errors/errors';
+import fp from 'lodash/fp';
+import { commonJob } from './PerfumeService';
+import _ from 'lodash';
 
 const keywordDao = new KeywordDao();
 
 class KeywordService {
+    likePerfumeService: LikePerfumeService;
+    constructor(likePerfumeService?: LikePerfumeService) {
+        this.likePerfumeService =
+            likePerfumeService ?? new LikePerfumeService();
+    }
     /**
      * 키워드 전체 조회
      *
@@ -33,6 +44,50 @@ class KeywordService {
             ...it,
             id: undefined,
             keywordIdx: it.id,
+        };
+    }
+
+    async getPerfumeThumbKeywordConverter(
+        perfumeIdxList: number[],
+        userIdx: number = -1
+    ): Promise<(item: PerfumeThumbDTO) => PerfumeThumbKeywordDTO> {
+        let likePerfumeList: any[] = [];
+        if (userIdx > -1) {
+            likePerfumeList = await this.likePerfumeService.readLikeInfo(
+                userIdx,
+                perfumeIdxList
+            );
+        }
+
+        const joinKeywordList: any[] = await keywordDao
+            .readAllOfPerfumeIdxList(perfumeIdxList)
+            .catch((err: Error) => {
+                if (err instanceof NotMatchedError) {
+                    return [];
+                }
+                throw err;
+            });
+
+        return (item: PerfumeThumbDTO): PerfumeThumbKeywordDTO => {
+            return fp.compose(
+                ...commonJob,
+                this.likePerfumeService.isLikeJob(likePerfumeList),
+                this.addKeyword(joinKeywordList),
+                PerfumeThumbKeywordDTO.createByJson
+            )(item);
+        };
+    }
+
+    private addKeyword(joinKeywordList: any[]): (obj: any) => any {
+        const keywordMap: { [key: number]: string[] } = _.chain(joinKeywordList)
+            .groupBy('perfumeIdx')
+            .mapValues((arr) => arr.map((it) => it.Keyword.name))
+            .value();
+
+        return (obj: any) => {
+            const ret: any = Object.assign({}, obj);
+            ret.keywordList = keywordMap[obj.perfumeIdx] || [];
+            return ret;
         };
     }
 }
