@@ -577,6 +577,7 @@ class PerfumeDao {
             where,
             raw: true,
             nest: true,
+            order: [['createdAt', 'desc']],
         });
     }
 }
