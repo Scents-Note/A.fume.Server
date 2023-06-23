@@ -92,7 +92,7 @@ class IngredientDao {
      */
     async readPage(offset: number, limit: number, where?: WhereOptions) {
         logger.debug(`${LOG_TAG} readAll()`);
-        return Ingredient.findAll({
+        return Ingredient.findAndCountAll({
             offset,
             limit,
             include: [
@@ -102,6 +102,7 @@ class IngredientDao {
             where,
             raw: true,
             nest: true,
+            order: [['createdAt', 'desc']],
         });
     }
 }

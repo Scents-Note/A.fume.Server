@@ -563,9 +563,13 @@ class PerfumeService {
             }
         }
 
-        const perfumes = await perfumeDao.readPage(offset, limit, whereOptions);
-        const list = perfumes.map((c) => PerfumeThumbDTO.createByJson(c));
-        return new ListAndCountDTO(list.length, list);
+        const { rows, count } = await perfumeDao.readPage(
+            offset,
+            limit,
+            whereOptions
+        );
+        const list = rows.map((c) => PerfumeThumbDTO.createByJson(c));
+        return new ListAndCountDTO(count, list);
     }
 }
 
