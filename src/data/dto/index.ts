@@ -21,7 +21,6 @@ export * from './ReportUserInquirePerfumeDTO';
 export * from './SeriesDTO';
 export * from './SeriesFilterDTO';
 export * from './SurveyDTO';
-export * from './TokenGroupDTO';
 export * from './TokenPayloadDTO';
 export * from './UserAuthDTO';
 export * from './UserDTO';

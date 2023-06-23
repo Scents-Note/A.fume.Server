@@ -17,7 +17,6 @@ import JwtController from '@libs/JwtController';
 import {
     TokenPayloadDTO,
     LoginInfoDTO,
-    TokenGroupDTO,
     UserAuthDTO,
     UserInputDTO,
     UserDTO,
@@ -52,10 +51,9 @@ class UserService {
      * 유저 회원 가입
      *
      * @param {UserInputDTO} UserInputDTO
-     * @returns {Promise<TokenGroupDTO>}
      * @throws {FailedToCreateError} if failed to create user
      **/
-    async createUser(userInputDTO: UserInputDTO): Promise<TokenGroupDTO> {
+    async createUser(userInputDTO: UserInputDTO) {
         logger.debug(`${LOG_TAG} createUser(userInputDTO = ${userInputDTO})`);
         return this.userDao
             .create(userInputDTO)
@@ -68,11 +66,11 @@ class UserService {
 
                 const { userIdx } = user;
                 const { token, refreshToken } = this.jwt.publish(payload);
-                return TokenGroupDTO.createByJSON({
+                return {
                     userIdx,
                     token,
                     refreshToken,
-                });
+                };
             })
             .catch((error: Error) => {
                 if (error instanceof DuplicatedEntryError) {
