@@ -63,10 +63,10 @@ export const InputIntToDBIntOfReview = async ({
         }
 
         return {
-            longevity: longevity + 1 ? longevity + 1 : null,
-            sillage: sillage + 1 ? sillage + 1 : null,
-            sumOfBitSeasonal: seasonalList && sum && sum > 0 ? sum : null,
-            gender: gender + 1 ? gender + 1 : null,
+            longevity: longevity + 1 ? longevity + 1 : 0,
+            sillage: sillage + 1 ? sillage + 1 : 0,
+            sumOfBitSeasonal: seasonalList && sum && sum > 0 ? sum : 0,
+            gender: gender + 1 ? gender + 1 : 0,
             keywordList: keywordIdxList,
         };
     } catch (err) {

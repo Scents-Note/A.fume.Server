@@ -1,13 +1,9 @@
 import { logger } from '@modules/winston';
 
-import { NotMatchedError } from '@errors';
-
 import { flatJob, removeKeyJob } from '@utils/func';
 
-import KeywordDao from '@dao/KeywordDao';
 import PerfumeDao from '@dao/PerfumeDao';
 import ReviewDao from '@dao/ReviewDao';
-import S3FileDao from '@dao/S3FileDao';
 import UserDao from '@dao/UserDao';
 
 import {
@@ -30,6 +26,8 @@ import fp from 'lodash/fp';
 import { Op } from 'sequelize';
 import { NoteService } from './NoteService';
 import { LikePerfumeService } from './LikePerfumeService';
+import ImageService from './ImageService';
+import KeywordService from './KeywordService';
 
 const LOG_TAG: string = '[Perfume/Service]';
 const DEFAULT_VALUE_OF_INDEX = 0;
@@ -37,11 +35,9 @@ const DEFAULT_VALUE_OF_INDEX = 0;
 let perfumeDao: PerfumeDao = new PerfumeDao();
 let ingredientDao: IngredientDao = new IngredientDao();
 let reviewDao: ReviewDao = new ReviewDao();
-let keywordDao: KeywordDao = new KeywordDao();
-let s3FileDao: S3FileDao = new S3FileDao();
 let userDao: UserDao = new UserDao();
 
-const commonJob = [
+export const commonJob = [
     removeKeyJob(
         'perfume_idx',
         'englishName',
@@ -52,9 +48,18 @@ const commonJob = [
 ];
 class PerfumeService {
     likePerfumeService: LikePerfumeService;
-    constructor(likePerfumeService?: LikePerfumeService) {
+    imageService: ImageService;
+    keywordService: KeywordService;
+
+    constructor(
+        likePerfumeService?: LikePerfumeService,
+        imageService?: ImageService,
+        keywordService?: KeywordService
+    ) {
         this.likePerfumeService =
             likePerfumeService ?? new LikePerfumeService();
+        this.imageService = imageService ?? new ImageService();
+        this.keywordService = keywordService ?? new KeywordService();
     }
     /**
      * 향수 세부 정보 조회
@@ -86,13 +91,13 @@ class PerfumeService {
         const keywordList: string[] = [
             ...new Set<string>(
                 (
-                    await keywordDao
+                    await this.keywordService
                         .readAllOfPerfume(perfumeIdx)
                         .catch((_: Error) => [])
                 ).map((it: any) => it.name)
             ),
         ];
-        const imageUrls: string[] = await this.getImageList(
+        const imageUrls: string[] = await this.imageService.getImageList(
             perfumeIdx,
             perfume.imageUrl
         );
@@ -419,7 +424,10 @@ class PerfumeService {
         userIdx: number
     ): Promise<PerfumeThumbKeywordDTO[]> {
         const converter: (item: PerfumeThumbDTO) => PerfumeThumbKeywordDTO =
-            await this.getPerfumeThumbKeywordConverter(perfumeIdxList, userIdx);
+            await this.keywordService.getPerfumeThumbKeywordConverter(
+                perfumeIdxList,
+                userIdx
+            );
         return perfumeDao
             .getPerfumesByIdxList(perfumeIdxList)
             .then((result: PerfumeThumbDTO[]): PerfumeThumbKeywordDTO[] => {
@@ -431,16 +439,8 @@ class PerfumeService {
         reviewDao = dao;
     }
 
-    setKeywordDao(dao: any) {
-        keywordDao = dao;
-    }
-
     setUserDao(dao: UserDao) {
         userDao = dao;
-    }
-
-    setS3FileDao(dao: S3FileDao) {
-        s3FileDao = dao;
     }
 
     private async generateSummary(
@@ -468,19 +468,6 @@ class PerfumeService {
         };
     }
 
-    private addKeyword(joinKeywordList: any[]): (obj: any) => any {
-        const keywordMap: { [key: number]: string[] } = _.chain(joinKeywordList)
-            .groupBy('perfumeIdx')
-            .mapValues((arr) => arr.map((it) => it.Keyword.name))
-            .value();
-
-        return (obj: any) => {
-            const ret: any = Object.assign({}, obj);
-            ret.keywordList = keywordMap[obj.perfumeIdx] || [];
-            return ret;
-        };
-    }
-
     private async convertToThumbKeyword(
         result: ListAndCountDTO<PerfumeThumbDTO>,
         userIdx: number = -1
@@ -489,57 +476,14 @@ class PerfumeService {
             (it: PerfumeThumbDTO) => it.perfumeIdx
         );
         const converter: (item: PerfumeThumbDTO) => PerfumeThumbKeywordDTO =
-            await this.getPerfumeThumbKeywordConverter(perfumeIdxList, userIdx);
+            await this.keywordService.getPerfumeThumbKeywordConverter(
+                perfumeIdxList,
+                userIdx
+            );
 
         return result.convertType((item: PerfumeThumbDTO) => {
             return converter(item);
         });
-    }
-
-    private async getPerfumeThumbKeywordConverter(
-        perfumeIdxList: number[],
-        userIdx: number = -1
-    ): Promise<(item: PerfumeThumbDTO) => PerfumeThumbKeywordDTO> {
-        let likePerfumeList: any[] = [];
-        if (userIdx > -1) {
-            likePerfumeList = await this.likePerfumeService.readLikeInfo(
-                userIdx,
-                perfumeIdxList
-            );
-        }
-
-        const joinKeywordList: any[] = await keywordDao
-            .readAllOfPerfumeIdxList(perfumeIdxList)
-            .catch((err: Error) => {
-                if (err instanceof NotMatchedError) {
-                    return [];
-                }
-                throw err;
-            });
-
-        return (item: PerfumeThumbDTO): PerfumeThumbKeywordDTO => {
-            return fp.compose(
-                ...commonJob,
-                this.likePerfumeService.isLikeJob(likePerfumeList),
-                this.addKeyword(joinKeywordList),
-                PerfumeThumbKeywordDTO.createByJson
-            )(item);
-        };
-    }
-
-    private async getImageList(
-        perfumeIdx: number,
-        defaultImage: string
-    ): Promise<string[]> {
-        const imageFromS3: string[] = await s3FileDao
-            .getS3ImageList(perfumeIdx)
-            .catch((_: any) => []);
-
-        if (imageFromS3.length > 0) {
-            return imageFromS3;
-        }
-
-        return [defaultImage];
     }
 
     async readPage(

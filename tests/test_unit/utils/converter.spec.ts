@@ -58,10 +58,10 @@ describe('# converter Test', () => {
             ...result,
             keywordList,
         });
-        expect(recover.longevity).to.be.eq(longevity);
-        expect(recover.sillage).to.be.eq(sillage);
-        expect(recover.sumOfBitSeasonal).to.be.eq(seasonal);
-        expect(recover.gender).to.be.eq(gender);
+        expect(recover.longevity).to.be.eq(0);
+        expect(recover.sillage).to.be.eq(0);
+        expect(recover.sumOfBitSeasonal).to.be.eq(0);
+        expect(recover.gender).to.be.eq(0);
         expect(recover.keywordList).to.be.deep.eq(keywordList);
     });
     describe(' # ApproxAge Test', () => {
