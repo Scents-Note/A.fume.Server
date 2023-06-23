@@ -3,6 +3,7 @@ import { AdminService } from '@src/service/AdminService';
 import PerfumeService from '@src/service/PerfumeService';
 import StatusCode from '@src/utils/statusCode';
 import {
+    MSG_EXIST_DUPLICATE_ENTRY,
     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
     MSG_GET_PERFUME_DETAIL_SUCCESS,
     MSG_GET_SEARCH_INGREDIENT_SUCCESS,
@@ -17,9 +18,11 @@ import {
     PerfumeDetailResponse,
     PerfumeResponse,
     ResponseDTO,
+    SimpleResponseDTO,
 } from './definitions/response';
 import { ListAndCountDTO } from '@src/data/dto';
 import IngredientCategoryService from '@src/service/IngredientCategoryService';
+import { DuplicatedEntryError } from '@src/utils/errors/errors';
 
 let Admin: AdminService = new AdminService();
 let Perfume: PerfumeService = new PerfumeService();
@@ -374,4 +377,63 @@ export const getIngredientCategoryList: RequestHandler = async (
             categories.convertType(IngredientCategoryResponse.create)
         )
     );
+};
+
+/**
+ * @swagger
+ *  /admin/ingredientCategories:
+ *     post:
+ *       tags:
+ *       - admin
+ *       summary: 재료 카테고리 추가
+ *       description: 재료 카테고리 추가
+ *       operationId: createIngredientCategory
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *         - name: body
+ *           in: body
+ *           required: true
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *       responses:
+ *         200:
+ *           description: success
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *         400:
+ *           description: 요청 실패
+ *         409:
+ *           description: 같은 이름의 카테고리가 존재할 때
+ *           schema:
+ *             type: object
+ *       x-swagger-router-controller: Admin
+ */
+export const createIngredientCategory: RequestHandler = async (
+    req: Request,
+    res: Response
+) => {
+    const { name } = req.body;
+    try {
+        await IngredientCategory.create(name);
+        res.status(StatusCode.OK).json({
+            message: '성공',
+        });
+    } catch (e: any) {
+        if (e instanceof DuplicatedEntryError) {
+            res.status(StatusCode.CONFLICT).json(
+                new ResponseDTO(MSG_EXIST_DUPLICATE_ENTRY, false)
+            );
+        } else {
+            res.status(StatusCode.BAD_REQUEST).json(
+                new SimpleResponseDTO(e.message)
+            );
+        }
+    }
 };

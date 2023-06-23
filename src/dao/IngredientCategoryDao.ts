@@ -42,6 +42,12 @@ class IngredientCategoryDao {
             order: [['createdAt', 'desc']],
         });
     }
+
+    async create(name: string) {
+        return IngredientCategories.create({
+            name,
+        });
+    }
 }
 
 export default IngredientCategoryDao;
