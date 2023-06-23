@@ -417,8 +417,7 @@ export const getIngredientCategoryList: RequestHandler = async (
  */
 export const createIngredientCategory: RequestHandler = async (
     req: Request,
-    res: Response,
-    next: NextFunction
+    res: Response
 ) => {
     const { name } = req.body;
     try {
