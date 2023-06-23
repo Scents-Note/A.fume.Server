@@ -570,7 +570,7 @@ class PerfumeDao {
      */
     async readPage(offset: number, limit: number, where?: WhereOptions) {
         logger.debug(`${LOG_TAG} readAll()`);
-        return Perfume.findAll({
+        return Perfume.findAndCountAll({
             offset,
             limit,
             include: [{ model: Brand, as: 'Brand' }],
