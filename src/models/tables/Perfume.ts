@@ -71,6 +71,12 @@ export class Perfume extends Model {
     })
     volumeAndPrice: string;
 
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+    })
+    brandIdx: number;
+
     @BelongsTo(() => Brand, {
         foreignKey: {
             name: 'brandIdx',

@@ -72,6 +72,12 @@ export class Review extends Model {
     })
     likeCnt: number;
 
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+    })
+    perfumeIdx: number;
+
     @BelongsTo(() => Perfume, {
         foreignKey: {
             name: 'perfumeIdx',
@@ -81,7 +87,13 @@ export class Review extends Model {
         onDelete: 'CASCADE',
         as: 'Perfume',
     })
-    perfume: Perfume;
+    Perfume: Perfume;
+
+    @Column({
+        type: DataType.INTEGER,
+        allowNull: false,
+    })
+    userIdx: number;
 
     @BelongsTo(() => User, {
         foreignKey: {
@@ -91,7 +103,7 @@ export class Review extends Model {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
     })
-    user: User;
+    User: User;
 
     @BelongsToMany(() => User, {
         through: {
