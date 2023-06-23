@@ -79,6 +79,7 @@ class IngredientService {
             };
         });
         return new ListAndCountDTO(count, perfumesWithCategory);
+
     }
 }
 

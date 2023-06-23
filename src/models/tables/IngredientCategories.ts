@@ -12,7 +12,13 @@ export class IngredientCategories extends Model {
         unique: true,
     })
     name: string;
-
+    @Column({
+        type: DataType.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
+        primaryKey: true,
+    })
+    id: number;
     @Column({
         type: DataType.INTEGER,
         allowNull: false,
