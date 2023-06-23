@@ -1,6 +1,10 @@
 import IngredientCategoryDao from '@dao/IngredientCategoryDao';
 
 import { IngredientCategoryDTO, ListAndCountDTO } from '@dto/index';
+import {
+    DuplicatedEntryError,
+    FailedToCreateError,
+} from '@src/utils/errors/errors';
 import { Op } from 'sequelize';
 
 class IngredientCategoryService {
@@ -35,6 +39,17 @@ class IngredientCategoryService {
             IngredientCategoryDTO.createByJson(c)
         );
         return new ListAndCountDTO(count, perfumesWithCategory);
+    }
+
+    async create(name: string) {
+        try {
+            return await this.ingredientCategoryDao.create(name);
+        } catch (err: Error | any) {
+            if (err.parent.errno === 1062) {
+                throw new DuplicatedEntryError();
+            }
+            throw new FailedToCreateError();
+        }
     }
 }
 
