@@ -5,7 +5,6 @@ export * from './IngredientCategoryDTO';
 export * from './IngredientDTO';
 export * from './ListAndCountDTO';
 export * from './LoginInfoDTO';
-export * from './NoteDictDTO';
 export * from './NoteDTO';
 export * from './PagingDTO';
 export * from './PerfumeDTO';
