@@ -27,7 +27,6 @@ const keywordDao = new KeywordDao();
 const discordHook = discordManager.getReportReviewHook();
 
 interface ReviewVO {
-    perfumeIdx: number;
     userIdx: number;
     score: number;
     longevity: number;
@@ -57,7 +56,7 @@ export class ReviewService {
         access,
         content,
         keywordList,
-    }: ReviewVO) => {
+    }: ReviewVO & { perfumeIdx: number }) => {
         try {
             // 데이터 변환
             const translationResult = await InputIntToDBIntOfReview({
@@ -313,27 +312,6 @@ export class ReviewService {
             console.log(err);
             throw err;
         }
-    };
-
-    /**
-     * 시향노트 좋아요 생성/취소
-     *
-     * @param {number} reviewIdx
-     * @param {number} userIdx
-     * @returns {boolean} isLiked
-     * reviewIdx Long 시향노트 Idx
-     * returns Boolean
-     **/
-    likeReview = async (reviewIdx: number, userIdx: number) => {
-        const resultOfReadLike = await likeReviewDao.read(userIdx, reviewIdx);
-        let isLiked = resultOfReadLike ? true : false;
-        if (!isLiked) {
-            await likeReviewDao.create(userIdx, reviewIdx);
-        }
-        if (isLiked) {
-            await likeReviewDao.delete(userIdx, reviewIdx);
-        }
-        return !isLiked;
     };
 
     /**

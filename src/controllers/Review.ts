@@ -1,4 +1,7 @@
-var Review = require('../service/ReviewService');
+import ReviewService from '@services/ReviewService';
+import LikeReviewService from '@services/LikeReviewService';
+const Review = new ReviewService();
+const LikeReview = new LikeReviewService();
 import StatusCode from '../utils/statusCode';
 
 import { NextFunction, Request, Response } from 'express';
@@ -51,7 +54,7 @@ export const getReviewByIdx = async (
 ) => {
     var reviewIdx = req.params['reviewIdx'];
     try {
-        const response = await Review.getReviewByIdx(reviewIdx);
+        const response = await Review.getReviewByIdx(Number(reviewIdx));
         res.status(StatusCode.OK).json({
             message: '시향노트 조회 성공',
             data: response,
@@ -162,7 +165,7 @@ export const likeReview = async (
     const reviewIdx = req.params['reviewIdx'];
     const userIdx = req.middlewareToken.loginUserIdx;
     try {
-        const result = await Review.likeReview(reviewIdx, userIdx);
+        const result = await LikeReview.likeReview(reviewIdx, userIdx);
         res.status(StatusCode.OK).json({
             message: '시향노트 좋아요 상태 변경 성공',
             data: result,
