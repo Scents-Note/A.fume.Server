@@ -17,8 +17,8 @@ class ReportReviewDao {
         reviewIdx,
         reason,
     }: {
-        reporterIdx: string;
-        reviewIdx: string;
+        reporterIdx: number;
+        reviewIdx: number;
         reason: string;
     }) => {
         try {
