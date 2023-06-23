@@ -27,12 +27,11 @@ import {
 import {
     DEFAULT_RECOMMEND_REQUEST_SIZE,
     DEFAULT_RECENT_ADDED_PERFUME_REQUEST_SIZE,
-    DEFAULT_OP_CODE,
 } from '@utils/constants';
 
 import JwtController from '@libs/JwtController';
 
-import { ResponseDTO, SimpleResponseDTO } from '@response/common';
+import { OpCode, ResponseDTO, SimpleResponseDTO } from '@response/common';
 import {
     PerfumeResponse,
     PerfumeDetailResponse,
@@ -487,7 +486,7 @@ describe('# Perfume Controller Test', () => {
                 expect(responseDTO.message).to.be.eq(
                     MSG_POST_PERFUME_RECOMMEND_SIMMILAR_SUCCESS
                 );
-                expect(responseDTO.opcode).to.be.eq(DEFAULT_OP_CODE);
+                expect(responseDTO.opcode).to.be.eq(OpCode.NONE);
             });
 
             it('read success case', async () => {
@@ -515,7 +514,7 @@ describe('# Perfume Controller Test', () => {
                 expect(responseDTO.data.count).to.be.eq(
                     DEFAULT_RECOMMEND_REQUEST_SIZE
                 );
-                expect(responseDTO.opcode).to.be.eq(DEFAULT_OP_CODE);
+                expect(responseDTO.opcode).to.be.eq(OpCode.NONE);
             });
         });
     });

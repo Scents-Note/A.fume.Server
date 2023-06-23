@@ -6,13 +6,7 @@ dotenv.config();
 
 import PerfumeService from '@services/PerfumeService';
 
-import {
-    ACCESS_PRIVATE,
-    ACCESS_PUBLIC,
-    GENDER_MAN,
-    GENDER_WOMAN,
-    GRADE_USER,
-} from '@utils/constants';
+import { GENDER_MAN, GENDER_WOMAN, GRADE_USER } from '@utils/constants';
 
 import {
     ListAndCountDTO,
@@ -81,7 +75,7 @@ describe('# Perfume Service Test', () => {
                             sillage: SillageProperty.light.value,
                             seasonal: SeasonalProperty.fall.value,
                             gender: GenderProperty.male.value,
-                            access: ACCESS_PUBLIC,
+                            access: 1,
                             content: '시향노트1',
                             createdAt: '2021-09-26T08:38:33.000Z',
                             User: {
@@ -103,7 +97,7 @@ describe('# Perfume Service Test', () => {
                             sillage: SillageProperty.light.value,
                             seasonal: SeasonalProperty.fall.value,
                             gender: GenderProperty.male.value,
-                            access: ACCESS_PRIVATE,
+                            access: 0,
                             content: '시향노트1',
                             createdAt: '2021-09-26T08:38:33.000Z',
                             User: {
@@ -179,7 +173,7 @@ describe('# Perfume Service Test', () => {
                             sillage: SillageProperty.light.value,
                             seasonal: SeasonalProperty.fall.value,
                             gender: GenderProperty.male.value,
-                            access: ACCESS_PUBLIC,
+                            access: 1,
                             content: '시향노트1',
                             createdAt: '2021-09-26T08:38:33.000Z',
                             User: {
@@ -201,7 +195,7 @@ describe('# Perfume Service Test', () => {
                             sillage: SillageProperty.light.value,
                             seasonal: SeasonalProperty.fall.value,
                             gender: GenderProperty.male.value,
-                            access: ACCESS_PRIVATE,
+                            access: 1,
                             content: '시향노트1',
                             createdAt: '2021-09-26T08:38:33.000Z',
                             User: {

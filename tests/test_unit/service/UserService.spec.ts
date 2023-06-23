@@ -4,7 +4,7 @@ dotenv.config();
 
 import { WrongPasswordError, PasswordPolicyError } from '@errors';
 
-import { TokenGroupDTO, LoginInfoDTO } from '@dto/index';
+import { LoginInfoDTO } from '@dto/index';
 
 import UserService from '@services/UserService';
 
@@ -49,16 +49,15 @@ class MockGenerator {
 describe('▣ UserService', () => {
     describe('▶ create Test', () => {
         describe('# method: createUser', () => {
-            new TestSingle<TokenGroupDTO>(
+            new TestSingle(
                 'common',
                 userService.createUser,
                 [{}],
-                (result: TokenGroupDTO | null, err: any, _: any[]) => {
+                (result, err: any, _: any[]) => {
                     expect(result).to.be.not.null;
                     expect(err).to.be.eq(null);
 
-                    const token: TokenGroupDTO = result!!;
-                    expect(token).to.be.instanceOf(TokenGroupDTO);
+                    const token = result!!;
                     expect(token.userIdx).to.be.ok;
                     expect(token.token).to.be.ok;
                     expect(token.refreshToken).to.be.ok;
