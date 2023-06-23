@@ -1,13 +1,5 @@
 import NoteDao from '@src/dao/NoteDao';
 import { NoteDTO } from '@src/data/dto';
-import {
-    NOTE_TYPE_BASE,
-    NOTE_TYPE_MIDDLE,
-    NOTE_TYPE_SINGLE,
-    NOTE_TYPE_TOP,
-    PERFUME_NOTE_TYPE_NORMAL,
-    PERFUME_NOTE_TYPE_SINGLE,
-} from '@src/utils/constants';
 
 interface NoteDict {
     top: string;
@@ -15,6 +7,14 @@ interface NoteDict {
     base: string;
     single: string;
 }
+
+const NOTE_TYPE_TOP: number = 1;
+const NOTE_TYPE_MIDDLE: number = 2;
+const NOTE_TYPE_BASE: number = 3;
+const NOTE_TYPE_SINGLE: number = 4;
+
+const PERFUME_NOTE_TYPE_SINGLE: number = 1;
+const PERFUME_NOTE_TYPE_NORMAL: number = 0;
 
 export class NoteService {
     noteDao: NoteDao;
