@@ -23,14 +23,14 @@ import { PerfumeSearchDTO } from '@src/data/dto';
  *           type: integer
  * */
 class PerfumeSearchRequest {
-    readonly keywordList: number[];
-    readonly brandList: number[];
-    readonly ingredientList: number[];
+    readonly keywordList?: number[];
+    readonly brandList?: number[];
+    readonly ingredientList?: number[];
     readonly searchText: string;
     constructor(
-        keywordList: number[],
-        brandList: number[],
-        ingredientList: number[],
+        keywordList: number[] | undefined,
+        brandList: number[] | undefined,
+        ingredientList: number[] | undefined,
         searchText: string
     ) {
         this.keywordList = keywordList;
