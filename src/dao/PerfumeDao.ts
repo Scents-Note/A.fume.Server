@@ -9,7 +9,6 @@ import {
     PagingDTO,
     PerfumeDTO,
     PerfumeInquireHistoryDTO,
-    PerfumeSearchResultDTO,
     PerfumeThumbDTO,
 } from '@dto/index';
 
@@ -37,36 +36,6 @@ const PERFUME_THUMB_COLUMNS: string[] = [
 ];
 
 import redis from '@utils/db/redis';
-
-const SQL_SEARCH_PERFUME_SELECT: string =
-    'SELECT ' +
-    'p.perfume_idx AS perfumeIdx, p.brand_idx AS brandIdx, p.name, p.english_name AS englishName, p.image_url AS imageUrl, p.created_at AS createdAt, p.updated_at AS updatedAt, ' +
-    'b.brand_idx AS "Brand.brandIdx", ' +
-    'b.name AS "Brand.name", ' +
-    'b.english_name AS "Brand.englishName", ' +
-    'b.first_initial AS "Brand.firstInitial", ' +
-    'b.image_url AS "Brand.imageUrl", ' +
-    'b.description AS "Brand.description", ' +
-    'b.created_at AS "Brand.createdAt", ' +
-    'b.updated_at AS "Brand.updatedAt" ' +
-    'FROM perfumes p ' +
-    'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
-    'WHERE p.deleted_at IS NULL AND (:whereCondition) ' +
-    'ORDER BY :orderCondition ' +
-    'LIMIT :limit ' +
-    'OFFSET :offset';
-const SQL_SEARCH_BRAND_CONDITION: string = ' p.brand_idx IN (:brands)';
-const SQL_SEARCH_KEYWORD_CONDITION: string =
-    '(SELECT COUNT(DISTINCT(jpk.keyword_idx)) FROM join_perfume_keywords jpk WHERE jpk.perfume_idx = p.perfume_idx AND jpk.keyword_idx IN (:keywords) GROUP BY jpk.perfume_idx) = (:keywordCount) ';
-const SQL_SEARCH_INGREDIENT_CONDITION: string =
-    '(SELECT COUNT(DISTINCT(i.category_idx)) FROM notes n INNER JOIN ingredients i ON i.ingredient_idx = n.ingredient_idx WHERE n.perfume_idx = p.perfume_idx AND n.ingredient_idx IN (:ingredients) GROUP BY n.perfume_idx) = (:categoryCount) ';
-
-const SQL_SEARCH_PERFUME_SELECT_COUNT: string =
-    'SELECT ' +
-    'COUNT(p.perfume_idx) as count ' +
-    'FROM perfumes p ' +
-    'INNER JOIN brands b ON p.brand_idx = b.brand_idx ' +
-    'WHERE p.deleted_at IS NULL AND (:whereCondition) ';
 
 const SQL_SEARCH_RANDOM_PERFUME_WITH_MIN_REVIEW_COUNT: string =
     'SELECT ' +
@@ -97,116 +66,6 @@ const defaultOption: { [key: string]: any } = {
 };
 
 class PerfumeDao {
-    /**
-     * 향수 검색
-     *
-     * @param {number[]} brandIdxList
-     * @param {number[]} ingredientIdxList
-     * @param {number[]} categoryIdxList
-     * @param {number[]} keywordIdxList
-     * @param {string} searchText
-     * @param {PagingDTO} pagingDTO
-     * @returns {Promise<Perfume[]>} perfumeList
-     */
-    async search(
-        brandIdxList: number[],
-        ingredientIdxList: number[],
-        categoryIdxList: number[],
-        keywordIdxList: number[],
-        searchText: string,
-        pagingDTO: PagingDTO
-    ): Promise<ListAndCountDTO<PerfumeSearchResultDTO>> {
-        logger.debug(
-            `${LOG_TAG} search(brandIdxList = ${brandIdxList}, ` +
-                `ingredientIdxList = ${ingredientIdxList}, ` +
-                `keywordList = ${keywordIdxList}, ` +
-                `searchText = ${searchText}, ` +
-                `pagingDTO = ${pagingDTO}`
-        );
-        let orderCondition = pagingDTO.sqlOrderQuery('p.perfume_idx ASC');
-
-        let whereCondition: string = '';
-        if (
-            ingredientIdxList.length +
-                keywordIdxList.length +
-                brandIdxList.length >
-            0
-        ) {
-            const arr: number[][] = [
-                ingredientIdxList,
-                keywordIdxList,
-                brandIdxList,
-            ];
-            const conditionSQL: string[] = [
-                SQL_SEARCH_INGREDIENT_CONDITION,
-                SQL_SEARCH_KEYWORD_CONDITION,
-                SQL_SEARCH_BRAND_CONDITION,
-            ];
-            whereCondition = arr
-                .reduce((prev: string[], cur: number[], index: number) => {
-                    if (cur.length > 0) {
-                        prev.push(conditionSQL[index]);
-                    }
-                    return prev;
-                }, [])
-                .join(' AND ');
-        }
-        if (searchText && searchText.length > 0) {
-            if (whereCondition.length) {
-                whereCondition = `${whereCondition} AND `;
-            }
-            whereCondition = `${whereCondition} (MATCH(p.name, p.english_name) AGAINST('${searchText}*' IN BOOLEAN MODE)`;
-            if (brandIdxList.length == 0) {
-                whereCondition = `${whereCondition} OR (MATCH(b.name, b.english_name) AGAINST ('${searchText}*' IN BOOLEAN MODE))`;
-            }
-            whereCondition = `${whereCondition} )`;
-            orderCondition =
-                `case when MATCH(p.name, p.english_name) AGAINST('${searchText}') then 0 ` +
-                `when MATCH(p.name, p.english_name) AGAINST('${searchText}*' IN BOOLEAN MODE) then 1 ` +
-                `else 2 end, ${orderCondition}`;
-        }
-        const countSQL: string = SQL_SEARCH_PERFUME_SELECT_COUNT.replace(
-            ':whereCondition',
-            whereCondition.length > 0 ? whereCondition : 'TRUE'
-        );
-        const selectSQL: string = SQL_SEARCH_PERFUME_SELECT.replace(
-            ':whereCondition',
-            whereCondition.length > 0 ? whereCondition : 'TRUE'
-        ).replace(':orderCondition', orderCondition);
-
-        if (ingredientIdxList.length == 0) ingredientIdxList.push(-1);
-        if (brandIdxList.length == 0) brandIdxList.push(-1);
-        if (keywordIdxList.length == 0) keywordIdxList.push(-1);
-        const [{ count }] = await sequelize.query<{ count: number }>(countSQL, {
-            replacements: {
-                keywords: keywordIdxList,
-                brands: brandIdxList,
-                ingredients: ingredientIdxList,
-                categoryCount: categoryIdxList.length,
-                keywordCount: keywordIdxList.length,
-            },
-            type: QueryTypes.SELECT,
-            raw: true,
-        });
-        const rows: PerfumeSearchResultDTO[] = (
-            await sequelize.query(selectSQL, {
-                replacements: {
-                    keywords: keywordIdxList,
-                    brands: brandIdxList,
-                    ingredients: ingredientIdxList,
-                    categoryCount: categoryIdxList.length,
-                    keywordCount: keywordIdxList.length,
-                    limit: pagingDTO.limit,
-                    offset: pagingDTO.offset,
-                },
-                type: QueryTypes.SELECT,
-                raw: true,
-                nest: true,
-            })
-        ).map(PerfumeSearchResultDTO.createByJson);
-        return new ListAndCountDTO(count, rows);
-    }
-
     /**
      * 향수 조회
      *
