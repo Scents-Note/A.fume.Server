@@ -30,7 +30,6 @@ import {
     TokenPayloadDTO,
     UserAuthDTO,
     UserDTO,
-    TokenGroupDTO,
     LoginInfoDTO,
 } from '@dto/index';
 
@@ -54,16 +53,14 @@ const invalidToken =
 
 describe('# User Controller Test', () => {
     describe('# registerUser Test', () => {
-        mockUserService.createUser = async (): Promise<TokenGroupDTO> =>
-            TokenGroupDTO.createByJSON(
-                Object.assign(
-                    {
-                        userIdx: 1,
-                        token: 'token',
-                        refreshToken: 'refreshToken',
-                    },
-                    {}
-                )
+        mockUserService.createUser = async (): Promise<object> =>
+            Object.assign(
+                {
+                    userIdx: 1,
+                    token: 'token',
+                    refreshToken: 'refreshToken',
+                },
+                {}
             );
         it('success case', (done: Done) => {
             request(app)

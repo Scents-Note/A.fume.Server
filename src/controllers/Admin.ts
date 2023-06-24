@@ -3,6 +3,7 @@ import { AdminService } from '@src/service/AdminService';
 import PerfumeService from '@src/service/PerfumeService';
 import StatusCode from '@src/utils/statusCode';
 import {
+    MSG_EXIST_DUPLICATE_ENTRY,
     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
     MSG_GET_PERFUME_DETAIL_SUCCESS,
     MSG_GET_SEARCH_INGREDIENT_SUCCESS,
@@ -10,17 +11,24 @@ import {
 } from '@src/utils/strings';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import {
+    IngredientCategoryResponse,
     IngredientFullResponse,
+    // IngredientResponse,
     LoginResponse,
     PerfumeDetailResponse,
     PerfumeResponse,
     ResponseDTO,
+    SimpleResponseDTO,
 } from './definitions/response';
 import { ListAndCountDTO } from '@src/data/dto';
+import IngredientCategoryService from '@src/service/IngredientCategoryService';
+import { DuplicatedEntryError } from '@src/utils/errors/errors';
 
 let Admin: AdminService = new AdminService();
 let Perfume: PerfumeService = new PerfumeService();
 let Ingredient: IngredientService = new IngredientService();
+let IngredientCategory: IngredientCategoryService =
+    new IngredientCategoryService();
 
 /**
  * @swagger
@@ -160,10 +168,10 @@ export const getPerfume: RequestHandler = async (
  *        in: query
  *        required: false
  *        type: string
- #        enum:
- #        - id
- #        - name
- #        - englishName
+ *        enum:
+ *        - id
+ *        - name
+ *        - englishName
  *      - name: keyword
  *        in: query
  *        required: false
@@ -289,4 +297,143 @@ export const getIngredientAll: RequestHandler = async (
             ingredients.convertType(IngredientFullResponse.createByJson)
         )
     );
+};
+
+/**
+ *
+ * @swagger
+ *  /admin/ingredientCategories:
+ *     get:
+ *       tags:
+ *       - admin
+ *       summary: 재료 카테고리 목록 조회
+ *       description: 재료 카테고리 리스트 조회 <br /> 반환 되는 정보 [재료]
+ *       operationId: getIngredientCategoryList
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: page
+ *         in: query
+ *         required: true
+ *         type: integer
+ *         format: int64
+ *       - name: target
+ *         in: query
+ *         required: false
+ *         type: string
+ *         enum:
+ *         - id
+ *         - name
+ *       - name: keyword
+ *         in: query
+ *         required: false
+ *         type: string
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: Ingredient Category 목록 조회 성공
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   count:
+ *                     type: integer
+ *                     example: 1
+ *                   rows:
+ *                     type: array
+ *                     items:
+ *                       allOf:
+ *                         - $ref: '#/definitions/IngredientResponse'
+ *         401:
+ *           description: Token is missing or invalid
+ *       x-swagger-router-controller: Admin
+ */
+export const getIngredientCategoryList: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const page: number = Number(req.query.page);
+    if (isNaN(page)) {
+        next();
+        return;
+    }
+    const limit = 20;
+    const offset = (page - 1) * limit;
+
+    const categories = await IngredientCategory.readPage(
+        offset,
+        limit,
+        req.query
+    );
+
+    res.status(StatusCode.OK).json(
+        new ResponseDTO<ListAndCountDTO<IngredientCategoryResponse>>(
+            MSG_GET_SEARCH_INGREDIENT_SUCCESS,
+            categories.convertType(IngredientCategoryResponse.create)
+        )
+    );
+};
+
+/**
+ * @swagger
+ *  /admin/ingredientCategories:
+ *     post:
+ *       tags:
+ *       - admin
+ *       summary: 재료 카테고리 추가
+ *       description: 재료 카테고리 추가
+ *       operationId: createIngredientCategory
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *         - name: body
+ *           in: body
+ *           required: true
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *       responses:
+ *         200:
+ *           description: success
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *         400:
+ *           description: 요청 실패
+ *         409:
+ *           description: 같은 이름의 카테고리가 존재할 때
+ *           schema:
+ *             type: object
+ *       x-swagger-router-controller: Admin
+ */
+export const createIngredientCategory: RequestHandler = async (
+    req: Request,
+    res: Response
+) => {
+    const { name } = req.body;
+    try {
+        await IngredientCategory.create(name);
+        res.status(StatusCode.OK).json({
+            message: '성공',
+        });
+    } catch (e: any) {
+        if (e instanceof DuplicatedEntryError) {
+            res.status(StatusCode.CONFLICT).json(
+                new ResponseDTO(MSG_EXIST_DUPLICATE_ENTRY, false)
+            );
+        } else {
+            res.status(StatusCode.BAD_REQUEST).json(
+                new SimpleResponseDTO(e.message)
+            );
+        }
+    }
 };

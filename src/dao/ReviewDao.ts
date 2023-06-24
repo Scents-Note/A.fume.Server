@@ -1,5 +1,4 @@
 import { NotMatchedError, DuplicatedEntryError } from '@errors';
-import { ACCESS_PUBLIC, ACCESS_PRIVATE } from '@utils/constants';
 
 import {
     sequelize,
@@ -10,6 +9,9 @@ import {
     Keyword,
 } from '@sequelize';
 import { Op, Order, QueryTypes } from 'sequelize';
+
+const ACCESS_PUBLIC: number = 1;
+const ACCESS_PRIVATE: number = 0;
 
 const SQL_READ_ALL_OF_PERFUME = `
     SELECT 
@@ -62,9 +64,9 @@ class ReviewDao {
         score: number;
         longevity: number;
         sillage: number;
-        seasonal: string[];
+        seasonal: number;
         gender: number;
-        access: boolean;
+        access: number;
         content: string;
     }): Promise<any> {
         try {
@@ -95,7 +97,7 @@ class ReviewDao {
      */
 
     // const SQL_REVIEW_SELECT_BY_IDX = `SELECT p.image_thumbnail_url as imageUrl, b.english_name as brandName, p.name, rv.score, rv.content, rv.longevity, rv.sillage, rv.seasonal, rv.gender, rv.access, rv.create_time as createTime, u.user_idx as userIdx, u.nickname FROM review rv NATURAL JOIN perfume p JOIN brand b ON p.brand_idx = b.brand_idx JOIN user u ON rv.user_idx = u.user_idx WHERE review_idx = ?`;
-    async read(reviewIdx: number): Promise<any> {
+    async read(reviewIdx: number) {
         const readReviewResult = await Review.findByPk(reviewIdx, {
             include: [
                 {
@@ -153,7 +155,7 @@ class ReviewDao {
     readAllOfUser(
         userIdx: number,
         sort: Order = [['createdAt', 'desc']]
-    ): Promise<any> {
+    ): Promise<Review[]> {
         return Review.findAll({
             where: { userIdx },
             include: {
@@ -185,7 +187,7 @@ class ReviewDao {
     readAllOfPerfume(
         perfumeIdx: number,
         includePrivate: boolean = false
-    ): Promise<any> {
+    ): Promise<Array<any>> {
         return sequelize.query(SQL_READ_ALL_OF_PERFUME, {
             bind: [perfumeIdx, includePrivate ? ACCESS_PRIVATE : ACCESS_PUBLIC],
             nest: true,
@@ -216,9 +218,9 @@ class ReviewDao {
         score: number;
         longevity: number;
         sillage: number;
-        seasonal: string[];
+        seasonal: number;
         gender: number;
-        access: boolean;
+        access: number;
         content: string;
         reviewIdx: number;
     }): Promise<any> {
