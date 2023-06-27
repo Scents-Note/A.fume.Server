@@ -14,6 +14,8 @@ Scents Node Server
 
 -   [기여하기](./docs/contribution.md)
 
+-   [환경, 배포](./docs/environments.md)
+
 # 연관 프로젝트
 
 [A.fume.Analysis](https://github.com/Scents-Note/A.fume.Analysis)
