@@ -3,8 +3,10 @@ import { Done } from 'mocha';
 import request from 'supertest';
 import { expect } from 'chai';
 dotenv.config();
+import sinon from 'sinon';
 
 import StatusCode from '@utils/statusCode';
+import * as opensearch from '@utils/opensearch';
 
 import {
     MSG_GET_PERFUME_DETAIL_SUCCESS,
@@ -46,6 +48,16 @@ import UserService from '@services/UserService';
 import { encrypt } from '@libs/crypto';
 
 describe('# Perfume Integral Test', () => {
+    let sandbox: sinon.SinonSandbox;
+
+    beforeEach(() => {
+        sandbox = sinon.createSandbox();
+    });
+
+    afterEach(() => {
+        sandbox.restore();
+    });
+
     describe('# with Token Test', () => {
         var user1token: string;
         var user1idx: number;
@@ -270,7 +282,12 @@ describe('# Perfume Integral Test', () => {
                 .catch((err: Error) => done(err));
         });
         describe('# searchPerfume Test', () => {
-            const tests: any[] = [
+            beforeEach(() => {
+                sandbox.stub(opensearch, 'requestPerfumeSearch').resolves({
+                    body: { hits: { total: { value: 1 }, hits: [] } },
+                });
+            });
+            const tests = [
                 {
                     args: {
                         searchText: 'Tom',
@@ -291,27 +308,23 @@ describe('# Perfume Integral Test', () => {
                 },
             ];
             let i = 0;
-            tests.forEach(
-                ({ args, expected }: { args: any; expected: any }) => {
-                    it(`searchPerfumeTest case ${i++}`, (done: Done) => {
-                        request(app)
-                            .post(`${basePath}/perfume/search`)
-                            .send(args)
-                            .expect((res: request.Response) => {
-                                expect(res.status).to.be.eq(StatusCode.OK);
-                                const result: ResponseDTO<
-                                    ListAndCountDTO<PerfumeResponse>
-                                > = res.body;
-                                expect(result.message).to.be.eq(
-                                    MSG_GET_SEARCH_PERFUME_SUCCESS
-                                );
-                                expect(result.data!!.count).to.be.gte(expected);
-                                done();
-                            })
-                            .catch((err: Error) => done(err));
-                    });
-                }
-            );
+            tests.forEach(({ args, expected }) => {
+                it(`searchPerfumeTest case ${i++}`, () => {
+                    request(app)
+                        .post(`${basePath}/perfume/search`)
+                        .send(args)
+                        .expect((res: request.Response) => {
+                            expect(res.status).to.be.eq(StatusCode.OK);
+                            const result: ResponseDTO<
+                                ListAndCountDTO<PerfumeResponse>
+                            > = res.body;
+                            expect(result.message).to.be.eq(
+                                MSG_GET_SEARCH_PERFUME_SUCCESS
+                            );
+                            expect(result.data!!.count).to.be.gte(expected);
+                        });
+                });
+            });
         });
         describe('# getNewPerfume Test', () => {
             it('success case', (done: Done) => {

@@ -1,4 +1,5 @@
 import LikePerfumeDao from '@src/dao/LikePerfumeDao';
+import { LikePerfume } from '@src/models';
 import { FailedToCreateError, NotMatchedError } from '@src/utils/errors/errors';
 import _ from 'lodash';
 
@@ -44,7 +45,7 @@ export class LikePerfumeService {
         }
     }
 
-    isLikeJob(likePerfumeList: any[]): (obj: any) => any {
+    isLikeJob(likePerfumeList: LikePerfume[]): (obj: any) => any {
         const likeMap: { [key: string]: boolean } = _.chain(likePerfumeList)
             .keyBy('perfumeIdx')
             .mapValues(() => true)
