@@ -12,15 +12,12 @@ import {
     PerfumeDTO,
     PerfumeIntegralDTO,
     PerfumeSearchDTO,
-    PerfumeSearchResultDTO,
     PerfumeSummaryDTO,
     PerfumeThumbDTO,
     PerfumeThumbKeywordDTO,
     PerfumeThumbWithReviewDTO,
     UserDTO,
 } from '@dto/index';
-import { Ingredient } from '@sequelize';
-import IngredientDao from '@src/dao/IngredientDao';
 import _ from 'lodash';
 import fp from 'lodash/fp';
 import { Op } from 'sequelize';
@@ -28,14 +25,16 @@ import { NoteService } from './NoteService';
 import { LikePerfumeService } from './LikePerfumeService';
 import ImageService from './ImageService';
 import KeywordService from './KeywordService';
+import SearchService from './SearchService';
+import { PerfumeResponse } from '@src/controllers/definitions/response';
 
 const LOG_TAG: string = '[Perfume/Service]';
 const DEFAULT_VALUE_OF_INDEX = 0;
 
 let perfumeDao: PerfumeDao = new PerfumeDao();
-let ingredientDao: IngredientDao = new IngredientDao();
 let reviewDao: ReviewDao = new ReviewDao();
 let userDao: UserDao = new UserDao();
+let searchService = new SearchService();
 
 export const commonJob = [
     removeKeyJob(
@@ -124,65 +123,23 @@ class PerfumeService {
         );
     }
 
-    /**
-     * 향수 검색
-     *
-     * @param {PerfumeSearchDTO} perfumeSearchDTO
-     * @param {PagingDTO} pagingDTO
-     * @returns {Promise<Perfume[]>}
-     **/
     async searchPerfume(
         perfumeSearchDTO: PerfumeSearchDTO,
         pagingDTO: PagingDTO
-    ): Promise<ListAndCountDTO<PerfumeSearchResultDTO>> {
-        logger.debug(
-            `${LOG_TAG} searchPerfume(perfumeSearchDTO = ${perfumeSearchDTO}, pagingDTO = ${pagingDTO})`
+    ): Promise<ListAndCountDTO<PerfumeResponse>> {
+        const result = await searchService.searchPerfume(
+            perfumeSearchDTO,
+            pagingDTO
         );
-        return ingredientDao
-            .getIngredientIdxByCategories(
-                perfumeSearchDTO.ingredientCategoryList
-            )
-            .then((ingredientList: Ingredient[]) => {
-                return ingredientList.map((it) => it.ingredientIdx);
-            })
-            .then((ingredientIdxList: number[]) => {
-                return perfumeDao.search(
-                    perfumeSearchDTO.brandIdxList,
-                    ingredientIdxList,
-                    perfumeSearchDTO.ingredientCategoryList,
-                    perfumeSearchDTO.keywordIdxList,
-                    perfumeSearchDTO.searchText,
-                    pagingDTO
-                );
-            })
-
-            .then(
-                async (
-                    result: ListAndCountDTO<PerfumeSearchResultDTO>
-                ): Promise<ListAndCountDTO<PerfumeSearchResultDTO>> => {
-                    const perfumeIdxList: number[] = result.rows.map(
-                        (it) => it.perfumeIdx
-                    );
-                    const likePerfumeList: any[] =
-                        await this.likePerfumeService.readLikeInfo(
-                            perfumeSearchDTO.userIdx,
-                            perfumeIdxList
-                        );
-                    return result.convertType(
-                        (
-                            item: PerfumeSearchResultDTO
-                        ): PerfumeSearchResultDTO => {
-                            return fp.compose(
-                                ...commonJob,
-                                this.likePerfumeService.isLikeJob(
-                                    likePerfumeList
-                                ),
-                                PerfumeSearchResultDTO.createByJson
-                            )(item);
-                        }
-                    );
-                }
+        const perfumeIdxList: number[] = result.rows.map((it) => it.perfumeIdx);
+        const likePerfumeList: any[] =
+            await this.likePerfumeService.readLikeInfo(
+                perfumeSearchDTO.userIdx,
+                perfumeIdxList
             );
+        return result.convertType((item: PerfumeResponse): PerfumeResponse => {
+            return this.likePerfumeService.isLikeJob(likePerfumeList)(item);
+        });
     }
 
     /**
@@ -472,9 +429,7 @@ class PerfumeService {
         result: ListAndCountDTO<PerfumeThumbDTO>,
         userIdx: number = -1
     ): Promise<ListAndCountDTO<PerfumeThumbKeywordDTO>> {
-        const perfumeIdxList: number[] = result.rows.map(
-            (it: PerfumeThumbDTO) => it.perfumeIdx
-        );
+        const perfumeIdxList = result.rows.map((it) => it.perfumeIdx);
         const converter: (item: PerfumeThumbDTO) => PerfumeThumbKeywordDTO =
             await this.keywordService.getPerfumeThumbKeywordConverter(
                 perfumeIdxList,

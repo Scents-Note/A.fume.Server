@@ -101,7 +101,7 @@ export class Perfume extends Model {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
     })
-    Notes: Note;
+    Notes: Note[];
 
     @BelongsToMany(() => User, {
         foreignKey: 'userIdx',
@@ -139,5 +139,5 @@ export class Perfume extends Model {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
     })
-    perfumeKeywords: JoinPerfumeKeyword[];
+    JoinPerfumeKeywords: JoinPerfumeKeyword[];
 }

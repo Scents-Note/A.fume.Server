@@ -7,13 +7,14 @@ dotenv.config();
 import PerfumeService from '@services/PerfumeService';
 
 import { GENDER_MAN, GENDER_WOMAN, GRADE_USER } from '@utils/constants';
+import sinon from 'sinon';
+import * as opensearch from '@utils/opensearch';
 
 import {
     ListAndCountDTO,
     PagingDTO,
     PerfumeIntegralDTO,
     PerfumeSearchDTO,
-    PerfumeSearchResultDTO,
     PerfumeThumbDTO,
     PerfumeThumbWithReviewDTO,
 } from '@dto/index';
@@ -50,6 +51,17 @@ describe('# Perfume Service Test', () => {
     before(async function () {
         await require('../dao/common/presets.js')(this);
     });
+
+    let sandbox: sinon.SinonSandbox;
+
+    beforeEach(() => {
+        sandbox = sinon.createSandbox();
+    });
+
+    afterEach(() => {
+        sandbox.restore();
+    });
+
     describe('# read Test', () => {
         describe('# read detail Test', () => {
             it('# success Test', (done: Done) => {
@@ -284,6 +296,11 @@ describe('# Perfume Service Test', () => {
         });
 
         it('# search Test', (done: Done) => {
+            sandbox
+                .stub(opensearch, 'requestPerfumeSearch')
+                .resolves({
+                    body: { hits: { total: { value: 1 }, hits: [] } },
+                });
             mockLikePerfumeDao.readLikeInfo = async (
                 userIdx: number,
                 __: any
@@ -298,7 +315,7 @@ describe('# Perfume Service Test', () => {
                 1
             );
             Perfume.searchPerfume(perfumeSearchDTO, defaultPagingDTO)
-                .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
+                .then((result) => {
                     expect(result).to.be.instanceOf(ListAndCountDTO);
                     done();
                 })

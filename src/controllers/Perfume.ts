@@ -36,11 +36,9 @@ import { ResponseDTO, SimpleResponseDTO } from '@response/index';
 import {
     PerfumeIntegralDTO,
     ListAndCountDTO,
-    PerfumeSearchResultDTO,
     PerfumeThumbDTO,
     PerfumeThumbWithReviewDTO,
     PerfumeThumbKeywordDTO,
-    PerfumeSearchDTO,
     PagingDTO,
 } from '@dto/index';
 import { GenderMap } from '@src/utils/enumType';
@@ -194,41 +192,32 @@ const getPerfume: RequestHandler = (
  *           description: Token is missing or invalid
  *       x-swagger-router-controller: Perfume
  * */
-const searchPerfume: RequestHandler = (
+const searchPerfume: RequestHandler = async (
     req: Request | any,
     res: Response,
     next: NextFunction
-): any => {
-    const loginUserIdx: number = req.middlewareToken.loginUserIdx || -1;
-    const perfumeSearchRequest: PerfumeSearchRequest =
-        PerfumeSearchRequest.createByJson(req.body);
-    const pagingRequestDTO: PagingRequestDTO = PagingRequestDTO.createByJson(
-        req.query
-    );
-    logger.debug(
-        `${LOG_TAG} likePerfume(userIdx = ${loginUserIdx}, query = ${JSON.stringify(
-            req.query
-        )}, body = ${JSON.stringify(req.body)})`
-    );
-    const perfumeSearchDTO: PerfumeSearchDTO =
-        perfumeSearchRequest.toPerfumeSearchDTO(loginUserIdx);
-    Perfume.searchPerfume(perfumeSearchDTO, pagingRequestDTO.toPageDTO())
-        .then((result: ListAndCountDTO<PerfumeSearchResultDTO>) => {
-            return result.convertType(PerfumeResponse.createByJson);
-        })
-        .then((response: ListAndCountDTO<PerfumeResponse>) => {
-            LoggerHelper.logTruncated(
-                logger.debug,
-                `${LOG_TAG} searchPerfume's result = ${response}`
-            );
-            res.status(StatusCode.OK).json(
-                new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
-                    MSG_GET_SEARCH_PERFUME_SUCCESS,
-                    response
-                )
-            );
-        })
-        .catch((err: Error) => next(err));
+) => {
+    const loginUserIdx = req.middlewareToken.loginUserIdx;
+    const perfumeSearchDTO = PerfumeSearchRequest.createByJson(
+        req.body
+    ).toPerfumeSearchDTO(loginUserIdx);
+    const pagingRequestDTO = PagingRequestDTO.createByJson(req.query);
+
+    try {
+        const result = await Perfume.searchPerfume(
+            perfumeSearchDTO,
+            pagingRequestDTO.toPageDTO()
+        );
+        const response = result.convertType(PerfumeResponse.createByJson);
+        res.status(StatusCode.OK).json(
+            new ResponseDTO<ListAndCountDTO<PerfumeResponse>>(
+                MSG_GET_SEARCH_PERFUME_SUCCESS,
+                response
+            )
+        );
+    } catch (err: Error | any) {
+        next(err);
+    }
 };
 
 /**
