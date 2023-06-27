@@ -11,7 +11,18 @@ export const opensearch_index_name = `scentsnote-perfume-${
     process.env.NODE_ENV === 'production' ? 'prod' : 'dev'
 }`;
 
-export async function requestPerfumeSearch(body: RequestBody) {
+interface SearchRequestResult<T> {
+    body: {
+        hits: {
+            total: { value: number };
+            hits: Array<{ _source: T }>;
+        };
+    };
+}
+
+export async function requestPerfumeSearch<T>(
+    body: RequestBody
+): Promise<SearchRequestResult<T>> {
     if (process.env.NODE_ENV === 'test') {
         throw new Error('must be mocked');
     }

@@ -2,6 +2,16 @@ import { PerfumeResponse } from '@src/controllers/definitions/response';
 import { ListAndCountDTO, PagingDTO, PerfumeSearchDTO } from '@src/data/dto';
 import { requestPerfumeSearch } from '@utils/opensearch';
 
+interface PerfumeSearchResultItem {
+    perfumeIdx: number;
+    name: string;
+    Brand: {
+        name: string;
+    };
+    imageUrl: string;
+    isLiked: boolean;
+}
+
 export default class SearchService {
     async searchPerfume(
         searchDTO: PerfumeSearchDTO,
@@ -9,7 +19,7 @@ export default class SearchService {
     ): Promise<ListAndCountDTO<PerfumeResponse>> {
         const query = this.buildQuery(searchDTO, pagingDTO);
 
-        const result = await requestPerfumeSearch({
+        const result = await requestPerfumeSearch<PerfumeSearchResultItem>({
             query,
             _source: ['perfumeIdx', 'name', 'Brand.name', 'imageUrl'],
             size: pagingDTO.limit,
@@ -25,7 +35,9 @@ export default class SearchService {
         );
     }
 
-    private transformBody(body: any) {
+    private transformBody(body: {
+        _source: PerfumeSearchResultItem;
+    }): PerfumeResponse {
         return {
             ...body._source,
             brandName: body._source.Brand.name,
