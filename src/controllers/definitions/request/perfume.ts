@@ -62,4 +62,98 @@ class PerfumeSearchRequest {
     }
 }
 
-export { PerfumeSearchRequest };
+// /**
+//  * @swagger
+//  * definitions:
+//  *   Brand:
+//  *     type: object
+//  *     properties:
+//  *       brandIdx:
+//  *         type: number
+//  *       name:
+//  *         type: string
+//  */
+// class Brand {
+//     brandIdx: number;
+//     name: string;
+
+//     constructor(brandIdx: number, name: string) {
+//         this.brandIdx = brandIdx;
+//         this.name = name;
+//     }
+// }
+
+// /**
+//  * @swagger
+//  * definitions:
+//  *   Ingredient:
+//  *     type: object
+//  *     properties:
+//  *       ingredientIdx:
+//  *         type: number
+//  *       name:
+//  *         type: string
+//  */
+
+/**
+ * @swagger
+ * definitions:
+ *   Note:
+ *     type: object
+ *     properties:
+ *       ingredientIdx:
+ *         type: number
+ *       type:
+ *         type: number
+ */
+class Note {
+    ingredientIdx: number;
+    type: number;
+
+    constructor(ingredientIdx: number, type: number) {
+        this.ingredientIdx = ingredientIdx;
+        this.type = type;
+    }
+}
+
+/**
+ * @swagger
+ * definitions:
+ *   PerfumeInput:
+ *     type: object
+ *     properties:
+ *       name:
+ *         type: string
+ *       englishName:
+ *         type: string
+ *       brandIdx:
+ *         type: number
+ *       abundanceRate:
+ *         type: number
+ *       Notes:
+ *         type: array
+ *         items:
+ *           $ref: '#/definitions/Note'
+ */
+class PerfumeInput {
+    name: string;
+    englishName: string;
+    brandIdx: number;
+    abundanceRate: number;
+    Notes: Note;
+
+    constructor(
+        name: string,
+        englishName: string,
+        brandIdx: number,
+        abundanceRate: number,
+        Notes: Note
+    ) {
+        this.name = name;
+        this.englishName = englishName;
+        this.brandIdx = brandIdx;
+        this.abundanceRate = abundanceRate;
+        this.Notes = Notes;
+    }
+}
+export { PerfumeSearchRequest, PerfumeInput };

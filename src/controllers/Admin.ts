@@ -22,6 +22,8 @@ import {
 import { ListAndCountDTO } from '@src/data/dto';
 import IngredientCategoryService from '@src/service/IngredientCategoryService';
 import { DuplicatedEntryError } from '@src/utils/errors/errors';
+import multer from 'multer';
+import ImageService from '@src/service/ImageService';
 
 let Admin: AdminService = new AdminService();
 let Perfume: PerfumeService = new PerfumeService();
@@ -446,28 +448,20 @@ export const createIngredientCategory: RequestHandler = async (
  *       summary: 향수 추가
  *       description: 향수 추가
  *       operationId: createPerfume
- *       consumes:
- *       - application/json
  *       produces:
  *       - application/json
+ *       consumes:
+ *       - multipart/form-data
  *       parameters:
  *         - name: body
  *           in: body
  *           required: true
  *           schema:
  *             $ref: '#/definitions/PerfumeInput'
-//  *               name:
-//  *                 type: string
-//  *               elgishName:
-//  *                 type: string
-//  *               Brand:
-//  *                 type: object
-//  *               abundanceRate:
-//  *                 type: number
-//  *               Notes:
-//  *                 type: object
-//  *               imageUrl:
-//  *                 type: string
+ *         - name: file
+ *           in: formData
+ *           type: file
+ *           description: uploaded file
  *       responses:
  *         200:
  *           description: success
@@ -482,32 +476,52 @@ export const createIngredientCategory: RequestHandler = async (
  *           description: 같은 이름의 카테고리가 존재할 때
  *           schema:
  *             type: object
- *       x-swagger-router-controll er: Admin
- *  definitions:
- *    Brand: 
- *      type: object
- *        properties: 
- *        brandIdx:
- *          type: integer
- *        name:
- *          type: string
- *    Note: 
- *      type: object
- *      properties:
- *        perfumeIdx:
- *          type: integer
- *        ingredientIdx:
- *          type: integer
- *        type: 
- * 
+ *       x-swagger-router-controller: Admin
+ *
  */
+
 export const createPerfume: RequestHandler = async (
     req: Request,
     res: Response
 ) => {
-    const { name } = req.body;
+    console.log(req.file);
+    type FileNameCallback = (error: Error | null, filename: string) => void;
+
+    const multerConfig = {
+        storage: multer.diskStorage({
+            destination: 'perfumes/',
+            filename: function (
+                req: Request,
+                file: Express.Multer.File,
+                cb: FileNameCallback
+            ) {
+                cb(null, file.originalname);
+            },
+        }),
+    };
+    const upload = multer(multerConfig);
+    upload.single('image');
+    if (!req.file)
+        return res
+            .status(StatusCode.BAD_REQUEST)
+            .json(new SimpleResponseDTO('NULL_VALUE'));
+    const fileData: Express.Multer.File = req.file;
+    console.log('3');
+
+    console.log(fileData);
+    let imgUrl: string;
+
+    const { name, englishName, brandIdx, abundanceRate, Notes } = req.body;
     try {
-        await IngredientCategory.create(name);
+        imgUrl = await ImageService.uploadImagefileToS3(fileData);
+        await Perfume.create(
+            name,
+            englishName,
+            brandIdx,
+            abundanceRate,
+            Notes,
+            imgUrl
+        );
         res.status(StatusCode.OK).json({
             message: '성공',
         });
@@ -523,3 +537,25 @@ export const createPerfume: RequestHandler = async (
         }
     }
 };
+
+// const storage: AWS.S3 = new AWS.S3({
+//     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+//     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+//     region: 'ap-northeast-2',
+// });
+
+// type FileNameCallback = (error: Error | null, filename: string) => void;
+// const multerConfig = {
+//     storage: multer.diskStorage({
+//         destination: 'perfumes/',
+//         filename: function (
+//             req: Request,
+//             file: Express.Multer.File,
+//             cb: FileNameCallback
+//         ) {
+//             cb(null, file.originalname);
+//         },
+//     }),
+// };
+
+// const uploadFileToS3 = async (req: Request, res: Response) => {

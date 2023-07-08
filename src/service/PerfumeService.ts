@@ -25,8 +25,12 @@ import { NoteService } from './NoteService';
 import { LikePerfumeService } from './LikePerfumeService';
 import ImageService from './ImageService';
 import KeywordService from './KeywordService';
-import SearchService from './SearchService';
+import {
+    DuplicatedEntryError,
+    FailedToCreateError,
+} from '@src/utils/errors/errors';
 import { PerfumeResponse } from '@src/controllers/definitions/response';
+import SearchService from './SearchService';
 
 const LOG_TAG: string = '[Perfume/Service]';
 const DEFAULT_VALUE_OF_INDEX = 0;
@@ -131,7 +135,9 @@ class PerfumeService {
             perfumeSearchDTO,
             pagingDTO
         );
-        const perfumeIdxList: number[] = result.rows.map((it) => it.perfumeIdx);
+        const perfumeIdxList: number[] = result.rows.map(
+            (it: { perfumeIdx: any }) => it.perfumeIdx
+        );
         const likePerfumeList: any[] =
             await this.likePerfumeService.readLikeInfo(
                 perfumeSearchDTO.userIdx,
@@ -469,6 +475,31 @@ class PerfumeService {
         );
         const list = rows.map((c) => PerfumeThumbDTO.createByJson(c));
         return new ListAndCountDTO(count, list);
+    }
+
+    async create(
+        name: string,
+        englishName: string,
+        brandIdx: number,
+        abundanceRate: number,
+        Notes: Array<any>,
+        imageUrl: string
+    ) {
+        try {
+            return await perfumeDao.create(
+                name,
+                englishName,
+                brandIdx,
+                abundanceRate,
+                Notes,
+                imageUrl
+            );
+        } catch (err: Error | any) {
+            if (err.parent?.errno === 1062) {
+                throw new DuplicatedEntryError();
+            }
+            throw new FailedToCreateError();
+        }
     }
 }
 

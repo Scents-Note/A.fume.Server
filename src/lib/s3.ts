@@ -50,6 +50,7 @@ class S3Adapter {
                             return it.search(REGEX_IMAGE) > 0;
                         })
                         .map((it: string) => {
+                            console.log(`${this.info.getUrl()}/${it}`);
                             return `${this.info.getUrl()}/${it}`;
                         });
                     resolve(imageUrls);

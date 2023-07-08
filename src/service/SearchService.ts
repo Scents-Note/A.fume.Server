@@ -1,4 +1,4 @@
-import { PerfumeResponse } from '@src/controllers/definitions/response';
+import { PerfumeResponse } from '../controllers/definitions/response';
 import { ListAndCountDTO, PagingDTO, PerfumeSearchDTO } from '@src/data/dto';
 import { requestPerfumeSearch } from '@utils/opensearch';
 
