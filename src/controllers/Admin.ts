@@ -149,6 +149,7 @@ export const getPerfume: RequestHandler = async (
 };
 
 /**
+ *
  * @swagger
  *  /admin/perfumes:
  *    get:
