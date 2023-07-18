@@ -1,16 +1,19 @@
 import IngredientService from '@services/IngredientService';
 import { AdminService } from '@src/service/AdminService';
 import PerfumeService from '@src/service/PerfumeService';
+import BrandService from '@src/service/BrandService';
 import StatusCode from '@src/utils/statusCode';
 import {
     MSG_EXIST_DUPLICATE_ENTRY,
     MSG_GET_ADDED_PERFUME_RECENT_SUCCESS,
+    MSG_GET_BRAND_ALL_SUCCESS,
     MSG_GET_PERFUME_DETAIL_SUCCESS,
     MSG_GET_SEARCH_INGREDIENT_SUCCESS,
     MSG_LOGIN_SUCCESS,
 } from '@src/utils/strings';
 import { NextFunction, Request, RequestHandler, Response } from 'express';
 import {
+    BrandFullResponse,
     IngredientCategoryResponse,
     IngredientFullResponse,
     LoginResponse,
@@ -28,7 +31,7 @@ let Perfume: PerfumeService = new PerfumeService();
 let Ingredient: IngredientService = new IngredientService();
 let IngredientCategory: IngredientCategoryService =
     new IngredientCategoryService();
-
+let Brand: BrandService = new BrandService();
 /**
  * @swagger
  *   /admin/login:
@@ -456,18 +459,18 @@ export const createIngredientCategory: RequestHandler = async (
  *           required: true
  *           schema:
  *             $ref: '#/definitions/PerfumeInput'
-//  *               name:
-//  *                 type: string
-//  *               elgishName:
-//  *                 type: string
-//  *               Brand:
-//  *                 type: object
-//  *               abundanceRate:
-//  *                 type: number
-//  *               Notes:
-//  *                 type: object
-//  *               imageUrl:
-//  *                 type: string
+ *               name:
+ *                 type: string
+ *               elgishName:
+ *                 type: string
+ *               Brand:
+ *                 type: object
+ *               abundanceRate:
+ *                 type: number
+ *               Notes:
+ *                 type: object
+ *               imageUrl:
+ *                 type: string
  *       responses:
  *         200:
  *           description: success
@@ -523,3 +526,81 @@ export const createPerfume: RequestHandler = async (
         }
     }
 };
+
+/**
+ *
+ * @swagger
+ *  /admin/brands:
+ *     get:
+ *       tags:
+ *       - admin
+ *       summary: 브랜드 목록 조회
+ *       description: 브랜드 리스트 조회 <br /> 반환 되는 정보 [재료]
+ *       operationId: getBrandAll
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *       - name: page
+ *         in: query
+ *         required: true
+ *         type: integer
+ *         format: int64
+ *       - name: target
+ *         in: query
+ *         required: false
+ *         type: string
+ *         enum:
+ *         - id
+ *         - name
+ *         - englishName
+ *       - name: keyword
+ *         in: query
+ *         required: false
+ *         type: string
+ *       responses:
+ *         200:
+ *           description: 성공
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: brand 목록 조회 성공
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   count:
+ *                     type: integer
+ *                     example: 1
+ *                   rows:
+ *                     type: array
+ *                     items:
+ *                       allOf:
+ *                         - $ref: '#/definitions/BrandResponse'
+ *         401:
+ *           description: Token is missing or invalid
+ *       x-swagger-router-controller: Admin
+ */
+
+export const getBrandAll: RequestHandler = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+) => {
+    const page: number = Number(req.query.page);
+    if (isNaN(page)) {
+        next();
+        return;
+    }
+    const limit = 20;
+    const offset = (page - 1) * limit;
+    const brands = await Brand.readPage(offset, limit, req.query);
+
+    res.status(StatusCode.OK).json(
+        new ResponseDTO<ListAndCountDTO<BrandFullResponse>>(
+            MSG_GET_BRAND_ALL_SUCCESS,
+            brands.convertType(BrandFullResponse.createByJson)
+        )
+    );
+};
+

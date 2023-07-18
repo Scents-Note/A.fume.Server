@@ -68,4 +68,68 @@ class BrandFilterResponse {
     }
 }
 
-export { BrandResponse, BrandFilterResponse };
+/**
+ * @swagger
+ * definitions:
+ *  BrandFullResponse:
+ *     type: object
+ *     properties:
+ *       brand_idx:
+ *         type: number
+ *       name:
+ *         type: string
+ *       englishName:
+ *         type: string
+ *       description:
+ *         type: string
+ *       firstInitial:
+ *         type: string
+ *     example:
+ *       brand_idx: 1
+ *       name: (테스트)조말론
+ *       englishName: jo malone
+ *       description: 설명
+ *       firstInitial: ㅈ
+ *  */
+class BrandFullResponse {
+    readonly brandIdx: number;
+    readonly name: string;
+    readonly englishName: string;
+    readonly description: string;
+    readonly firstInitial: string;
+    constructor(
+        brandIdx: number,
+        name: string,
+        englishName: string,
+        description: string,
+        firstInitial: string
+    ) {
+        this.brandIdx = brandIdx;
+        this.name = name;
+        this.englishName = englishName;
+        this.description = description;
+        this.firstInitial = firstInitial;
+    }
+
+    public toString(): string {
+        return `${this.constructor.name} (${JSON.stringify(this)})`;
+    }
+
+    static createByJson(json: {
+        brandIdx: number;
+        name: string;
+        englishName: string;
+        description: string;
+        firstInitial: string;
+    }): BrandFullResponse {
+        return new BrandFullResponse(
+            json.brandIdx,
+            json.name,
+            json.englishName,
+            json.description,
+            json.firstInitial
+        );
+    }
+}
+
+export { BrandResponse, BrandFilterResponse, BrandFullResponse };
