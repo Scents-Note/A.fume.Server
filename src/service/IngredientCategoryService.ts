@@ -48,6 +48,7 @@ class IngredientCategoryService {
             if (err.parent.errno === 1062) {
                 throw new DuplicatedEntryError();
             }
+
             throw new FailedToCreateError();
         }
     }
