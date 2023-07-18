@@ -67,6 +67,20 @@ class BrandDao {
             order: [['createdAt', 'desc']],
         });
     }
+
+    async create(
+        name: string,
+        englishName: string,
+        description: string,
+        firstInitial: string
+    ) {
+        return Brand.create({
+            name,
+            englishName,
+            description,
+            firstInitial,
+        });
+    }
 }
 
 export default BrandDao;

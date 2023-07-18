@@ -38,6 +38,7 @@ export class Brand extends Model {
     @Column({
         type: DataType.STRING,
         allowNull: false,
+        defaultValue: '',
     })
     imageUrl: string;
 
