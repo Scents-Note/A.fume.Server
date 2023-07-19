@@ -9,10 +9,6 @@ import {
     BrandDTO,
     PagingDTO,
 } from '@dto/index';
-import {
-    DuplicatedEntryError,
-    FailedToCreateError,
-} from '@src/utils/errors/errors';
 
 const LOG_TAG: string = '[Brand/Service]';
 
@@ -80,30 +76,6 @@ class BrandService {
         );
         const list = rows.map((brand) => BrandDTO.createByJson(brand));
         return new ListAndCountDTO(count, list);
-    }
-
-    async create(
-        name: string,
-        englishName: string,
-        description: string,
-        firstInitial: string
-    ) {
-        try {
-            return await this.brandDao.create(
-                name,
-                englishName,
-                description,
-                firstInitial
-            );
-        } catch (err: Error | any) {
-            if (
-                err.original.code === 'ER_DUP_ENTRY' ||
-                err.parent.errno === 1062
-            ) {
-                throw new DuplicatedEntryError();
-            }
-            throw new FailedToCreateError();
-        }
     }
 }
 
