@@ -10,6 +10,7 @@ interface PerfumeSearchResultItem {
     };
     imageUrl: string;
     isLiked: boolean;
+    englishName: string;
 }
 
 export default class SearchService {
