@@ -21,6 +21,7 @@ import {
     Perfume,
     PerfumeSurvey,
     sequelize,
+    Note,
 } from '@sequelize';
 
 import Sequelize, { QueryTypes, WhereOptions } from 'sequelize';
@@ -437,6 +438,36 @@ class PerfumeDao {
             raw: true,
             nest: true,
             order: [['createdAt', 'desc']],
+        });
+    }
+
+    async create(
+        name: string,
+        englishName: string,
+        brandIdx: number,
+        abundanceRate: number,
+        Notes: Array<any>,
+        imageUrl: string
+    ) {
+        await sequelize.transaction(async (transaction) => {
+            const created = await Perfume.create(
+                {
+                    name,
+                    englishName,
+                    brandIdx,
+                    abundanceRate,
+                    imageUrl,
+                    story: '',
+                    volumeAndPrice: '',
+                },
+                { raw: true, transaction }
+            );
+
+            await Note.bulkCreate(
+                Notes.map((i) => ({ ...i, perfumeIdx: created.perfumeIdx })),
+                { transaction }
+            );
+            return created;
         });
     }
 }
