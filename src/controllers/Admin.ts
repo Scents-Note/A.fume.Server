@@ -25,7 +25,7 @@ import {
 import { ListAndCountDTO } from '@src/data/dto';
 import IngredientCategoryService from '@src/service/IngredientCategoryService';
 import { DuplicatedEntryError } from '@src/utils/errors/errors';
-
+import * as Hangul from 'hangul-js';
 let Admin: AdminService = new AdminService();
 let Perfume: PerfumeService = new PerfumeService();
 let Ingredient: IngredientService = new IngredientService();
@@ -487,22 +487,22 @@ export const createIngredientCategory: RequestHandler = async (
  *             type: object
  *       x-swagger-router-controll er: Admin
  *  definitions:
- *    Brand: 
+ *    Brand:
  *      type: object
- *        properties: 
+ *        properties:
  *        brandIdx:
  *          type: integer
  *        name:
  *          type: string
- *    Note: 
+ *    Note:
  *      type: object
  *      properties:
  *        perfumeIdx:
  *          type: integer
  *        ingredientIdx:
  *          type: integer
- *        type: 
- * 
+ *        type:
+ *
  */
 export const createPerfume: RequestHandler = async (
     req: Request,
@@ -604,3 +604,70 @@ export const getBrandAll: RequestHandler = async (
     );
 };
 
+/**
+ * @swagger
+ *  /admin/brand:
+ *     post:
+ *       tags:
+ *       - admin
+ *       summary: 브랜드 추가
+ *       description: 브랜드 추가
+ *       operationId: createBrand
+ *       consumes:
+ *       - application/json
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *         - name: body
+ *           in: body
+ *           required: true
+ *           schema:
+ *             type: object
+ *             properties:
+ *              name:
+ *                type: string
+ *              englishName:
+ *                type: string
+ *              description:
+ *                type: string
+ *       responses:
+ *         200:
+ *           description: success
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *                 example: 성공
+ *         400:
+ *           description: 요청 실패
+ *         409:
+ *           description: 같은 이름의 브랜드가 존재할 때
+ *           schema:
+ *             type: object
+ *       x-swagger-router-controller: Admin
+ *
+ */
+export const createBrand: RequestHandler = async (
+    req: Request,
+    res: Response
+) => {
+    const { name, englishName, description } = req.body;
+    try {
+        const firstInitail = Hangul.disassemble(name)[0];
+        await Brand.create(name, englishName, description, firstInitail);
+        res.status(StatusCode.OK).json({
+            message: '성공',
+        });
+    } catch (e: any) {
+        if (e instanceof DuplicatedEntryError) {
+            res.status(StatusCode.CONFLICT).json(
+                new ResponseDTO(MSG_EXIST_DUPLICATE_ENTRY, false)
+            );
+        } else {
+            res.status(StatusCode.BAD_REQUEST).json(
+                new SimpleResponseDTO(e.message)
+            );
+        }
+    }
+};
