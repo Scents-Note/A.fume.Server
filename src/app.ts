@@ -10,21 +10,24 @@ import properties from '@properties';
 
 import { logger } from '@modules/winston';
 import makeMorgan from '@modules/morgan';
-
 import { HttpError } from '@errors';
 import statusCode from '@utils/statusCode';
 import { verifyTokenMiddleware, encryptPassword } from '@middleware/auth';
 import { updateMonitoringToken } from '@middleware/monitoring';
 import { swaggerRouter } from '@controllers/index';
 import SchedulerManager from '@schedules/index';
+// import { createPerfume } from './controllers/Admin';
 
+import { createImageUrl, createPerfume } from './controllers/Admin';
 const {
     swaggerUi,
     specs,
     swaggerMetadataHandler,
 } = require('@modules/swagger');
-
 import { sequelize } from './models';
+import { multerConfig } from './config/multerConfig';
+import multer from 'multer';
+
 sequelize.sync();
 
 require('@utils/db/mongoose.js');
@@ -57,6 +60,12 @@ app.use(
         logger.http(message);
     })
 );
+
+const upload = multer({ storage: multerConfig.storage });
+
+// app.use('/file',)
+//router로 잡으면 upload 라는 path를
+app.post('/upload', upload.single('image'), createPerfume);
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 

@@ -26,6 +26,9 @@ import { ListAndCountDTO } from '@src/data/dto';
 import IngredientCategoryService from '@src/service/IngredientCategoryService';
 import { DuplicatedEntryError } from '@src/utils/errors/errors';
 import * as Hangul from 'hangul-js';
+import ImageService from '@src/service/ImageService';
+import multer from 'multer';
+import { multerConfig } from '../config/multerConfig';
 let Admin: AdminService = new AdminService();
 let Perfume: PerfumeService = new PerfumeService();
 let Ingredient: IngredientService = new IngredientService();
@@ -441,6 +444,28 @@ export const createIngredientCategory: RequestHandler = async (
     }
 };
 
+// export const imageUrlCreationHandler: RequestHandler = async (
+//     req: Request,
+//     res: Response
+// ): Promise<string | Response<any>> => {
+//     if (!req.file)
+//         return res
+//             .status(StatusCode.BAD_REQUEST)
+//             .json(new SimpleResponseDTO('NULL_VALUE'));
+
+//     const fileLocation = createImageUrl(req.file);
+//     return res.json({
+//         fileLocation,
+//     });
+// };
+
+export async function createImageUrl(
+    file: Express.Multer.File
+): Promise<string> {
+    const fileLocation: string = await ImageService.uploadImagefileToS3(file);
+    return fileLocation;
+}
+
 /**
  * @swagger
  *  /admin/perfumes:
@@ -480,12 +505,33 @@ export const createIngredientCategory: RequestHandler = async (
  *             type: object
  *       x-swagger-router-controller: Admin
  */
+// const upload = multer({ storage: multerConfig.storage });
+
 export const createPerfume: RequestHandler = async (
     req: Request,
     res: Response
 ) => {
-    const { name, englishName, brandIdx, abundanceRate, Notes, imageUrl } =
-        req.body;
+    console.log(req.file);
+    // const createImageUrl: Response | any = async (
+    //     req: Request,
+    //     res: Response
+    // ) => {
+    //     if (!req.file)
+    //         return res
+    //             .status(StatusCode.BAD_REQUEST)
+    //             .json(new SimpleResponseDTO('NULL_VALUE'));
+    //     const fileData: Express.Multer.File = req.file;
+    //     console.log('GET THE FILE DATA');
+    //     console.log(fileData);
+    //     await ImageService.uploadImagefileToS3(fileData);
+    //     return res.status(StatusCode.OK);
+    // };
+    if (!req.file)
+        return res
+            .status(400)
+            .json({ error: 'cannot find file from the request' });
+    const imageUrl = await createImageUrl(req.file);
+    const { name, englishName, brandIdx, abundanceRate, Notes } = req.body;
     try {
         await Perfume.create(
             name,
@@ -640,6 +686,65 @@ export const createBrand: RequestHandler = async (
     try {
         const firstInitail = Hangul.disassemble(name)[0];
         await Brand.create(name, englishName, description, firstInitail);
+        res.status(StatusCode.OK).json({
+            message: '성공',
+        });
+    } catch (e: any) {
+        if (e instanceof DuplicatedEntryError) {
+            res.status(StatusCode.CONFLICT).json(
+                new ResponseDTO(MSG_EXIST_DUPLICATE_ENTRY, false)
+            );
+        } else {
+            res.status(StatusCode.BAD_REQUEST).json(
+                new SimpleResponseDTO(e.message)
+            );
+        }
+    }
+};
+
+/**
+ * @swagger
+ *  /admin/Ingredient:
+ *     post:
+ *       tags:
+ *       - admin
+ *       summary: 재료 추가
+ *       description: 재료 추가
+ *       operationId: createIngredient
+ *       produces:
+ *       - application/json
+ *       parameters:
+ *         - name: body
+ *           in: body
+ *           required: true
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *       responses:
+ *         200:
+ *           description: success
+ *           schema:
+ *             type: object
+ *             properties:
+ *               message:
+ *                 type: string
+ *         400:
+ *           description: 요청 실패
+ *         409:
+ *           description: 같은 이름의 카테고리가 존재할 때
+ *           schema:
+ *             type: object
+ *       x-swagger-router-controller: Admin
+ */
+export const createIngredient: RequestHandler = async (
+    req: Request,
+    res: Response
+) => {
+    const { name, seriesIdx, Category } = req.body;
+    try {
+        await IngredientCategory.create(name);
         res.status(StatusCode.OK).json({
             message: '성공',
         });

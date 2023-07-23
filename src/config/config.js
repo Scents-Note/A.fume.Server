@@ -1,3 +1,40 @@
+// const config = {
+//     development: {
+//         username: process.env.MYSQL_DEV_USERNAME as string,
+//         password: process.env.MYSQL_DEV_PASSWORD as string,
+//         database: process.env.MYSQL_DEV_DATABASE as string,
+//         host: process.env.MYSQL_DEV_HOST as string,
+//         port: parseInt(process.env.MYSQL_DEV_PORT as string, 10),
+//         dialect: process.env.MYSQL_DEV_DIALECT as string,
+//         timezone: '+09:00',
+//         logging: false,
+//         s3AccessKey: process.env.AWS_ACCESS_KEY_ID as string,
+//         s3SecretKey: process.env.AWS_SECRET_ACCESS_KEY as string,
+//         bucketName: process.env.AWS_BUCKET_NAME as string,
+//     },
+//     test: {
+//         username: process.env.MYSQL_TST_USERNAME as string,
+//         password: process.env.MYSQL_TST_PASSWORD as string,
+//         database: process.env.MYSQL_TST_DATABASE as string,
+//         host: process.env.MYSQL_TST_HOST as string,
+//         port: parseInt(process.env.MYSQL_DEV_PORT as string, 10),
+//         dialect: process.env.MYSQL_TST_DIALECT as string,
+//         timezone: '+09:00',
+//         logging: false,
+//     },
+//     production: {
+//         username: process.env.MYSQL_PRD_USERNAME as string,
+//         password: process.env.MYSQL_PRD_PASSWORD as string,
+//         database: process.env.MYSQL_PRD_DATABASE as string,
+//         host: process.env.MYSQL_PRD_HOST as string,
+//         port: parseInt(process.env.MYSQL_DEV_PORT as string, 10),
+//         dialect: process.env.MYSQL_PRD_DIALECT as string,
+//         timezone: '+09:00',
+//         logging: false,
+//     },
+// };
+
+// export default config;
 module.exports = {
     development: {
         username: process.env.MYSQL_DEV_USERNAME,
@@ -8,6 +45,9 @@ module.exports = {
         dialect: process.env.MYSQL_DEV_DIALECT,
         timezone: '+09:00',
         logging: false,
+        s3AccessKey: process.env.AWS_ACCESS_KEY_ID,
+        s3SecretKey: process.env.AWS_SECRET_ACCESS_KEY,
+        bucketName: process.env.AWS_BUCKET_NAME,
     },
     test: {
         username: process.env.MYSQL_TST_USERNAME,
