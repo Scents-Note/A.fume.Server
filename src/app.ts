@@ -16,9 +16,7 @@ import { verifyTokenMiddleware, encryptPassword } from '@middleware/auth';
 import { updateMonitoringToken } from '@middleware/monitoring';
 import { swaggerRouter } from '@controllers/index';
 import SchedulerManager from '@schedules/index';
-// import { createPerfume } from './controllers/Admin';
 
-import { createImageUrl, createPerfume } from './controllers/Admin';
 const {
     swaggerUi,
     specs,
@@ -54,6 +52,7 @@ const corsOptionsDelegate: CorsOptionsDelegate<express.Request> = function (
 
 app.use(cors(corsOptionsDelegate));
 app.use(bodyParser.json({ limit: '5mb' }));
+const upload = multer({ storage: multerConfig.storage });
 
 app.use(
     makeMorgan((message: string) => {
@@ -61,11 +60,7 @@ app.use(
     })
 );
 
-const upload = multer({ storage: multerConfig.storage });
-
-// app.use('/file',)
-//router로 잡으면 upload 라는 path를
-app.post('/upload', upload.single('image'), createPerfume);
+app.use(upload.single('file'));
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 

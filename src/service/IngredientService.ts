@@ -9,6 +9,10 @@ import {
     PagingDTO,
 } from '@dto/index';
 import { Op } from 'sequelize';
+import {
+    DuplicatedEntryError,
+    FailedToCreateError,
+} from '@src/utils/errors/errors';
 
 const LOG_TAG: string = '[Ingredient/Service]';
 
@@ -79,7 +83,22 @@ class IngredientService {
             };
         });
         return new ListAndCountDTO(count, perfumesWithCategory);
+    }
 
+    async create(name: string, seriesIdx: number, categoryIdx: number) {
+        try {
+            return await this.ingredientDao.create(
+                name,
+                seriesIdx,
+                categoryIdx
+            );
+        } catch (err: Error | any) {
+            if (err.parent.errno === 1062) {
+                throw new DuplicatedEntryError();
+            }
+
+            throw new FailedToCreateError();
+        }
     }
 }
 
