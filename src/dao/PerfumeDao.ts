@@ -446,8 +446,7 @@ class PerfumeDao {
         englishName: string,
         brandIdx: number,
         abundanceRate: number,
-        Notes: Array<any>,
-        imageUrl: string
+        Notes: Array<any>
     ) {
         await sequelize.transaction(async (transaction) => {
             const created = await Perfume.create(
@@ -456,7 +455,7 @@ class PerfumeDao {
                     englishName,
                     brandIdx,
                     abundanceRate,
-                    imageUrl,
+                    imageUrl: '',
                     story: '',
                     volumeAndPrice: '',
                 },
@@ -469,6 +468,16 @@ class PerfumeDao {
             );
             return created;
         });
+    }
+
+    async createImg(imageUrl: string | any) {
+        const created = await Perfume.update(
+            {
+                imageUrl,
+            },
+            { where: {} }
+        );
+        return created;
     }
 }
 
