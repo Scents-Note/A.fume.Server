@@ -6,6 +6,7 @@ import {
     FailedToCreateError,
 } from '@src/utils/errors/errors';
 import storage from '../config/s3Config';
+
 class ImageService {
     s3FileDao: S3FileDao;
 
@@ -33,8 +34,8 @@ class ImageService {
     ): Promise<string> {
         try {
             const fileContent: Buffer = fs.readFileSync(fileData.path);
-
             const keyWithPrefix = `perfumes/${fileData.originalname}`;
+
             const params: {
                 Bucket: string;
                 Key: string;
