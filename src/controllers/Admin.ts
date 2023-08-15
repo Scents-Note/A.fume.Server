@@ -522,6 +522,11 @@ export const createPerfume: RequestHandler = async (
  *           in: formData
  *           type: file
  *           description: uploaded file
+ *         - name: perfumeIdx
+ *           in: query
+ *           required: true
+ *           type: integer
+ *           format: int64
  *       responses:
  *         200:
  *           description: success
@@ -543,14 +548,15 @@ export const createPerfumeImg: RequestHandler = async (
     req: Request,
     res: Response
 ) => {
-    console.log(req.file);
     if (!req.file)
         return res
             .status(400)
             .json({ error: 'cannot find file from the request' });
     const imageUrl = await createImageUrl(req.file);
+    const perfumeIdx: number = Number(req.query.perfumeIdx);
+
     try {
-        await Perfume.createImg(imageUrl);
+        await Perfume.createImg(imageUrl, perfumeIdx);
         res.status(StatusCode.OK).json({
             message: '성공',
         });

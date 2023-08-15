@@ -497,9 +497,9 @@ class PerfumeService {
         }
     }
 
-    async createImg(imageUrl: string) {
+    async createImg(imageUrl: string, perfumeIdx: number) {
         try {
-            return await perfumeDao.createImg(imageUrl);
+            return await perfumeDao.createImg(imageUrl, perfumeIdx);
         } catch (err: Error | any) {
             if (err.parent?.errno === 1062) {
                 throw new DuplicatedEntryError();
