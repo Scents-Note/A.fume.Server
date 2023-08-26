@@ -149,7 +149,6 @@ export const getPerfume: RequestHandler = async (
 };
 
 /**
- *
  * @swagger
  *  /admin/perfumes:
  *    get:
@@ -450,20 +449,28 @@ export const createIngredientCategory: RequestHandler = async (
  *       summary: 향수 추가
  *       description: 향수 추가
  *       operationId: createPerfume
+ *       consumes:
+ *       - application/json
  *       produces:
  *       - application/json
- *       consumes:
- *       - multipart/form-data
  *       parameters:
  *         - name: body
  *           in: body
  *           required: true
  *           schema:
  *             $ref: '#/definitions/PerfumeInput'
- *         - name: file
- *           in: formData
- *           type: file
- *           description: uploaded file
+ *               name:
+ *                 type: string
+ *               elgishName:
+ *                 type: string
+ *               Brand:
+ *                 type: object
+ *               abundanceRate:
+ *                 type: number
+ *               Notes:
+ *                 type: object
+ *               imageUrl:
+ *                 type: string
  *       responses:
  *         200:
  *           description: success
@@ -478,23 +485,32 @@ export const createIngredientCategory: RequestHandler = async (
  *           description: 같은 이름의 카테고리가 존재할 때
  *           schema:
  *             type: object
- *       x-swagger-router-controller: Admin
+ *       x-swagger-router-controll er: Admin
+ *  definitions:
+ *    Brand:
+ *      type: object
+ *        properties:
+ *        brandIdx:
+ *          type: integer
+ *        name:
+ *          type: string
+ *    Note:
+ *      type: object
+ *      properties:
+ *        perfumeIdx:
+ *          type: integer
+ *        ingredientIdx:
+ *          type: integer
+ *        type:
+ *
  */
 export const createPerfume: RequestHandler = async (
     req: Request,
     res: Response
 ) => {
-    const { name, englishName, brandIdx, abundanceRate, Notes, imageUrl } =
-        req.body;
+    const { name } = req.body;
     try {
-        await Perfume.create(
-            name,
-            englishName,
-            brandIdx,
-            abundanceRate,
-            Notes,
-            imageUrl
-        );
+        await IngredientCategory.create(name);
         res.status(StatusCode.OK).json({
             message: '성공',
         });
