@@ -17,20 +17,10 @@ class PerfumeInquireHistoryDTO extends PerfumeThumbDTO {
         imageUrl: string,
         createdAt: Date,
         updatedAt: Date,
-        englishName: string,
         Brand: BrandDTO,
         inquireHistory: InquireHistory
     ) {
-        super(
-            perfumeIdx,
-            name,
-            isLiked,
-            imageUrl,
-            englishName,
-            createdAt,
-            updatedAt,
-            Brand
-        );
+        super(perfumeIdx, name, isLiked, imageUrl, createdAt, updatedAt, Brand);
         this.InquireHistory = inquireHistory;
     }
 
@@ -46,7 +36,6 @@ class PerfumeInquireHistoryDTO extends PerfumeThumbDTO {
             json.imageUrl,
             json.createdAt,
             json.updatedAt,
-            json.englishName,
             json.Brand,
             json.InquireHistory
         );

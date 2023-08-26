@@ -8,9 +8,6 @@ module.exports = {
         dialect: process.env.MYSQL_DEV_DIALECT,
         timezone: '+09:00',
         logging: false,
-        s3AccessKey: process.env.AWS_ACCESS_KEY_ID,
-        s3SecretKey: process.env.AWS_SECRET_ACCESS_KEY,
-        bucketName: process.env.AWS_BUCKET_NAME,
     },
     test: {
         username: process.env.MYSQL_TST_USERNAME,

@@ -10,6 +10,7 @@ import properties from '@properties';
 
 import { logger } from '@modules/winston';
 import makeMorgan from '@modules/morgan';
+
 import { HttpError } from '@errors';
 import statusCode from '@utils/statusCode';
 import { verifyTokenMiddleware, encryptPassword } from '@middleware/auth';
@@ -22,10 +23,8 @@ const {
     specs,
     swaggerMetadataHandler,
 } = require('@modules/swagger');
-import { sequelize } from './models';
-import { multerConfig } from './config/multerConfig';
-import multer from 'multer';
 
+import { sequelize } from './models';
 sequelize.sync();
 
 require('@utils/db/mongoose.js');
@@ -52,15 +51,12 @@ const corsOptionsDelegate: CorsOptionsDelegate<express.Request> = function (
 
 app.use(cors(corsOptionsDelegate));
 app.use(bodyParser.json({ limit: '5mb' }));
-const upload = multer({ storage: multerConfig.storage });
 
 app.use(
     makeMorgan((message: string) => {
         logger.http(message);
     })
 );
-
-app.use(upload.single('file'));
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(specs));
 

@@ -6,7 +6,6 @@ class PerfumeThumbDTO {
     readonly brandName: string;
     readonly isLiked: boolean;
     readonly imageUrl: string;
-    readonly englishName: string;
     readonly createdAt: Date;
     readonly updatedAt: Date;
     readonly Brand: BrandDTO;
@@ -15,7 +14,6 @@ class PerfumeThumbDTO {
         name: string,
         isLiked: boolean,
         imageUrl: string,
-        englishName: string,
         createdAt: Date,
         updatedAt: Date,
         Brand: BrandDTO
@@ -25,7 +23,6 @@ class PerfumeThumbDTO {
         this.brandName = Brand?.name;
         this.isLiked = isLiked || false;
         this.imageUrl = imageUrl;
-        this.englishName = englishName;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.Brand = Brand;
@@ -41,7 +38,6 @@ class PerfumeThumbDTO {
             json.name,
             json.isLiked,
             json.imageUrl,
-            json.englishName,
             json.createdAt,
             json.updatedAt,
             json.Brand

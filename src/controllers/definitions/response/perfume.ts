@@ -291,21 +291,18 @@ class PerfumeResponse {
     readonly brandName: string;
     readonly imageUrl: string;
     readonly isLiked: boolean;
-    readonly englishName: string;
     constructor(
         perfumeIdx: number,
         name: string,
         brandName: string,
         imageUrl: string,
-        isLiked: boolean,
-        englishName: string
+        isLiked: boolean
     ) {
         this.perfumeIdx = perfumeIdx;
         this.name = name;
         this.brandName = brandName;
         this.imageUrl = imageUrl;
         this.isLiked = isLiked;
-        this.englishName = englishName;
     }
 
     public toString(): string {
@@ -318,8 +315,7 @@ class PerfumeResponse {
             json.name,
             json.brandName,
             json.imageUrl,
-            json.isLiked,
-            json.englishName
+            json.isLiked
         );
     }
 }
@@ -360,10 +356,9 @@ class PerfumeRecommendResponse extends PerfumeResponse {
         brandName: string,
         imageUrl: string,
         isLiked: boolean,
-        englishName: string,
         keywordList: string[]
     ) {
-        super(perfumeIdx, name, brandName, imageUrl, isLiked, englishName);
+        super(perfumeIdx, name, brandName, imageUrl, isLiked);
         this.keywordList = keywordList;
     }
 
@@ -378,7 +373,6 @@ class PerfumeRecommendResponse extends PerfumeResponse {
             json.brandName,
             json.imageUrl,
             json.isLiked,
-            json.englishName,
             json.keywordList
         );
     }
