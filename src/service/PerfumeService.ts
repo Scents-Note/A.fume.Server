@@ -479,7 +479,8 @@ class PerfumeService {
         englishName: string,
         brandIdx: number,
         abundanceRate: number,
-        Notes: Array<any>
+        Notes: Array<any>,
+        imageUrl: string
     ) {
         try {
             return await perfumeDao.create(
@@ -487,19 +488,9 @@ class PerfumeService {
                 englishName,
                 brandIdx,
                 abundanceRate,
-                Notes
+                Notes,
+                imageUrl
             );
-        } catch (err: Error | any) {
-            if (err.parent?.errno === 1062) {
-                throw new DuplicatedEntryError();
-            }
-            throw new FailedToCreateError();
-        }
-    }
-
-    async createImg(imageUrl: string) {
-        try {
-            return await perfumeDao.createImg(imageUrl);
         } catch (err: Error | any) {
             if (err.parent?.errno === 1062) {
                 throw new DuplicatedEntryError();

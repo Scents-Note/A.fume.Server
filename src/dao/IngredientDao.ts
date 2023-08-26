@@ -105,17 +105,6 @@ class IngredientDao {
             order: [['createdAt', 'desc']],
         });
     }
-
-    async create(name: string, seriesIdx: number, categoryIdx: number) {
-        return Ingredient.create({
-            name,
-            seriesIdx,
-            categoryIdx,
-            englishName: '',
-            description: '',
-            imageUrl: '',
-        });
-    }
 }
 
 export default IngredientDao;
