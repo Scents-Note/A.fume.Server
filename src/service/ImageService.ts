@@ -1,11 +1,11 @@
 import S3FileDao from '@src/dao/S3FileDao';
 import config from '../config/config';
 import fs from 'fs';
+import AWS from 'aws-sdk';
 import {
     DuplicatedEntryError,
     FailedToCreateError,
 } from '@src/utils/errors/errors';
-import storage from '../config/s3Config';
 
 class ImageService {
     s3FileDao: S3FileDao;
@@ -33,8 +33,15 @@ class ImageService {
         fileData: Express.Multer.File
     ): Promise<string> {
         try {
+            console.log('Inside the Service');
             const fileContent: Buffer = fs.readFileSync(fileData.path);
-            const keyWithPrefix = `perfumes/${fileData.originalname}`;
+
+            const storage: AWS.S3 = new AWS.S3({
+                accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+                region: 'ap-northeast-2',
+            });
+            console.log('Inside the Service2');
 
             const params: {
                 Bucket: string;
@@ -42,11 +49,13 @@ class ImageService {
                 Body: Buffer;
             } = {
                 Bucket: config.development.bucketName as string,
-                Key: keyWithPrefix,
+                Key: fileData.originalname,
                 Body: fileContent,
             };
+            console.log('Inside the Service3');
 
             const result = await storage.upload(params).promise();
+            console.log(result.Location);
             return result.Location;
         } catch (err: Error | any) {
             if (err.parent?.errno === 1062) {

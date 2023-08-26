@@ -470,12 +470,12 @@ class PerfumeDao {
         });
     }
 
-    async createImg(imageUrl: string | any, perfumeIdx: number) {
+    async createImg(imageUrl: string | any) {
         const created = await Perfume.update(
             {
                 imageUrl,
             },
-            { where: { perfumeIdx } }
+            { where: {} }
         );
         return created;
     }
