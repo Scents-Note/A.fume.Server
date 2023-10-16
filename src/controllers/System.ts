@@ -133,8 +133,8 @@ interface IVersionChecker {
 class VersionCheckerAndroid implements IVersionChecker {
     // TODO: prevVersion, latestVersion을 삭제하고 minimumVersion으로 변경
     //       유연한 변경을 위해서 코드 레벨이 아닌 환경 변수 주입으로 변경 필요
-    prevVersion: Version = new Version(1, 4, 0);
-    latestVersion: Version = new Version(1, 4, 1);
+    prevVersion: Version = new Version(1, 5, 2);
+    latestVersion: Version = new Version(1, 5, 2);
 
     isSupportVersion(apkVersion: string): Boolean {
         const version: Version = Version.create(apkVersion);
