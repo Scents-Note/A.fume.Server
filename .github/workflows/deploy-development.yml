@@ -3,8 +3,7 @@ name: Deploy development server to ec2
 on:
     push:
         branches:
-            # - dev
-            - refact/issue-533
+            - dev
 
 jobs:
     deploy:
