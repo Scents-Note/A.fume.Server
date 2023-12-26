@@ -1,35 +1,42 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
-
 name: Deploy development server to ec2
 
 on:
     push:
         branches:
-            - dev
+            # - dev
+            - refact/issue-533
 
 jobs:
-    build:
-        runs-on: self-hosted
+    deploy:
+        runs-on: ubuntu-latest
+
         strategy:
             matrix:
                 node-version: [16.x]
-                # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-        defaults:
-            run:
-                working-directory: ${{ env.SERVER_PROFILE }}
+
         steps:
-            - uses: actions/checkout@93ea575cb5d8a053eaa0ac8fa3b40d7e05a33cc8 #v3.1.0
-              with:
-                  path: ${{ env.SERVER_PROFILE }}
+            - name: Checkout Repository
+              uses: actions/checkout@v3
+
             - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 #v.3.5.1
+              uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node-version }}
-            - run: cp ~/config-injection/ecosystem-${{ env.SERVER_PROFILE }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
-            - run: cp ~/config-injection/envs/.env.${{ env.NODE_ENV }} ${{ env.PROJECT_PATH }}/.env
-            - run: bash ${{ env.PROJECT_PATH }}/script/prebuild.sh
-            - run: sh ${{ env.PROJECT_PATH }}/script/reload.sh
+
+            - name: Deploy to EC2 using SSH
+              uses: appleboy/ssh-action@master
+              with:
+                  host: ${{ secrets.SERVER_HOST }}
+                  username: ${{ secrets.SSH_USERNAME }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  port: 22
+                  script: |
+                      cp ~/config-injection/ecosystem-${{ env.SERVER_PROFILE }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
+                      cp ~/config-injection/envs/.env.${{ env.NODE_ENV }} ${{ env.PROJECT_PATH }}/.env
+                      cd ${{ env.PROJECT_PATH }}
+                      bash script/prebuild.sh
+                      sh script/reload.sh
+
         env:
             NODE_ENV: development
             SERVER_PROFILE: development
