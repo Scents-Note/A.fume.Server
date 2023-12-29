@@ -3,7 +3,7 @@ name: Deploy test server to ec2
 on:
     push:
         branches:
-            - refact/issue-533-continued
+            - ${{ env.BRANCH_NAME }}
 
 jobs:
     deploy:
@@ -36,13 +36,14 @@ jobs:
                       cp ~/config-injection/ecosystem-${{ env.SERVER_PROFILE }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
                       cp ~/config-injection/envs/.env.${{ env.NODE_ENV }} ${{ env.PROJECT_PATH }}/.env
                       cd ${{ env.PROJECT_PATH }}
-                      git checkout refact/issue-533-continued
-                      git reset --hard origin/refact/issue-533-continued
-                      git pull origin refact/issue-533-continued
+                      git checkout ${{ env.BRANCH_NAME }}
+                      git reset --hard origin/${{ env.BRANCH_NAME }}
+                      git pull origin ${{ env.BRANCH_NAME }}
                       bash script/prebuild.sh
                       bash script/reload.sh
 
         env:
+            BRANCH_NAME: refact/issue-533-continued
             NODE_ENV: development
             SERVER_PROFILE: development
             PROJECT_PATH: ~/development
