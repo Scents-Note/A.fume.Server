@@ -36,6 +36,7 @@ jobs:
                       cp ~/config-injection/ecosystem-${{ env.SERVER_PROFILE }}.json ${{ env.PROJECT_PATH }}/ecosystem.json &&
                       cp ~/config-injection/envs/.env.${{ env.NODE_ENV }} ${{ env.PROJECT_PATH }}/.env &&
                       cd ${{ env.PROJECT_PATH }} &&
+                      git fetch --all &&
                       git checkout ${{ env.BRANCH_NAME }} &&
                       git reset --hard origin/${{ env.BRANCH_NAME }} &&
                       git pull origin ${{ env.BRANCH_NAME }} &&
