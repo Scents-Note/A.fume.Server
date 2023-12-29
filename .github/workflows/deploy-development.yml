@@ -14,6 +14,9 @@ jobs:
                 node-version: [16.x]
 
         steps:
+            - name: Print workspace directory
+              run: echo $GITHUB_WORKSPACE
+
             - name: Checkout Repository
               uses: actions/checkout@v3
 
@@ -30,13 +33,17 @@ jobs:
                   key: ${{ secrets.SSH_PRIVATE_KEY }}
                   port: 22
                   script: |
-                      cp ~/config-injection/ecosystem-${{ env.SERVER_PROFILE }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
-                      cp ~/config-injection/envs/.env.${{ env.NODE_ENV }} ${{ env.PROJECT_PATH }}/.env
-                      cd ${{ env.PROJECT_PATH }}
-                      bash script/prebuild.sh
-                      sh script/reload.sh
+                      cp ~/config-injection/ecosystem-${{ env.SERVER_PROFILE }}.json ${{ env.PROJECT_PATH }}/ecosystem.json &&
+                      cp ~/config-injection/envs/.env.${{ env.NODE_ENV }} ${{ env.PROJECT_PATH }}/.env &&
+                      cd ${{ env.PROJECT_PATH }} &&
+                      git fetch --all &&
+                      git checkout ${{ env.BRANCH_NAME }} &&
+                      git pull origin ${{ env.BRANCH_NAME }} &&
+                      bash script/prebuild.sh &&
+                      bash script/reload.sh
 
         env:
+            BRANCH_NAME: dev
             NODE_ENV: development
             SERVER_PROFILE: development
             PROJECT_PATH: ~/actions-runner/_work/A.fume.Server/A.fume.Server/development
