@@ -3,7 +3,7 @@ name: Deploy test server to ec2
 on:
     push:
         branches:
-            - ${{ env.BRANCH_NAME }}
+            - refact/issue-533-continued
 
 jobs:
     deploy:
