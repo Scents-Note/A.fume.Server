@@ -33,13 +33,13 @@ jobs:
                   key: ${{ secrets.TEST_PEM_KEY }} # ec2 instance pem key
                   port: 22
                   script: |
-                      cp ~/config-injection/ecosystem-${{ env.SERVER_PROFILE }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
-                      cp ~/config-injection/envs/.env.${{ env.NODE_ENV }} ${{ env.PROJECT_PATH }}/.env
-                      cd ${{ env.PROJECT_PATH }}
-                      git checkout ${{ env.BRANCH_NAME }}
-                      git reset --hard origin/${{ env.BRANCH_NAME }}
-                      git pull origin ${{ env.BRANCH_NAME }}
-                      bash script/prebuild.sh
+                      cp ~/config-injection/ecosystem-${{ env.SERVER_PROFILE }}.json ${{ env.PROJECT_PATH }}/ecosystem.json &&
+                      cp ~/config-injection/envs/.env.${{ env.NODE_ENV }} ${{ env.PROJECT_PATH }}/.env &&
+                      cd ${{ env.PROJECT_PATH }} &&
+                      git checkout ${{ env.BRANCH_NAME }} &&
+                      git reset --hard origin/${{ env.BRANCH_NAME }} &&
+                      git pull origin ${{ env.BRANCH_NAME }} &&
+                      bash script/prebuild.sh &&
                       bash script/reload.sh
 
         env:
