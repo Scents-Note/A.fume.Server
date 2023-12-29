@@ -36,6 +36,9 @@ jobs:
                       cp ~/config-injection/ecosystem-${{ env.SERVER_PROFILE }}.json ${{ env.PROJECT_PATH }}/ecosystem.json
                       cp ~/config-injection/envs/.env.${{ env.NODE_ENV }} ${{ env.PROJECT_PATH }}/.env
                       cd ${{ env.PROJECT_PATH }}
+                      git checkout refact/issue-533-continued
+                      git reset --hard origin/refact/issue-533-continued
+                      git pull origin refact/issue-533-continued
                       bash script/prebuild.sh
                       bash script/reload.sh
 
