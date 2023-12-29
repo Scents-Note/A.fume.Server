@@ -37,7 +37,7 @@ jobs:
                       cp ~/config-injection/envs/.env.${{ env.NODE_ENV }} ${{ env.PROJECT_PATH }}/.env
                       cd ${{ env.PROJECT_PATH }}
                       bash script/prebuild.sh
-                      sh script/reload.sh
+                      bash script/reload.sh
 
         env:
             NODE_ENV: development
