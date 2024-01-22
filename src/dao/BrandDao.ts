@@ -4,7 +4,7 @@ import { NotMatchedError } from '@errors';
 import { BrandDTO, PagingDTO, ListAndCountDTO } from '@dto/index';
 
 import { Brand } from '@sequelize';
-
+import { WhereOptions } from 'sequelize';
 const LOG_TAG: string = '[Brand/DAO]';
 
 class BrandDao {
@@ -48,6 +48,37 @@ class BrandDao {
                 result.count,
                 result.rows.map(BrandDTO.createByJson)
             );
+        });
+    }
+
+    /**
+     * 브랜드 전체 조회
+     *
+     * @returns {Promise<Brand[]>}
+     */
+    async readPage(offset: number, limit: number, where?: WhereOptions) {
+        logger.debug(`${LOG_TAG} readAll()`);
+        return Brand.findAndCountAll({
+            offset,
+            limit,
+            where,
+            raw: true,
+            nest: true,
+            order: [['createdAt', 'desc']],
+        });
+    }
+
+    async create(
+        name: string,
+        englishName: string,
+        description: string,
+        firstInitial: string
+    ) {
+        return Brand.create({
+            name,
+            englishName,
+            description,
+            firstInitial,
         });
     }
 }
