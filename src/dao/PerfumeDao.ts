@@ -195,6 +195,8 @@ class PerfumeDao {
                 count: { perfume_idx: number; count: number }[];
             } = (await InquireHistory.findAndCountAll(
                 _.merge({}, pagingDTO.sequelizeOption(), {
+                    raw: true,
+                    nest: true,
                     attributes: {
                         include: [
                             [
