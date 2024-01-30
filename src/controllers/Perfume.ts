@@ -93,11 +93,11 @@ const LikePerfume: LikePerfumeService = new LikePerfumeService();
  *           description: Perfume not found
  *       x-swagger-router-controller: Perfume
  * */
-const getPerfume: RequestHandler = (
+const getPerfume: RequestHandler = async (
     req: Request | any,
     res: Response,
     next: NextFunction
-): any => {
+) => {
     const perfumeIdx: number = req.params['perfumeIdx'];
     if (isNaN(perfumeIdx)) {
         next();
@@ -109,30 +109,27 @@ const getPerfume: RequestHandler = (
             req.params
         )})`
     );
-    Promise.all([
-        Perfume.getPerfumeById(perfumeIdx, loginUserIdx),
-        SearchHistory.recordInquire(
-            loginUserIdx,
-            perfumeIdx,
-            '' /* 향후 경로가 다양화 되면 경로 기록 용 */
-        ),
-    ])
-        .then(([result, _]: [PerfumeIntegralDTO, void]) => {
-            return PerfumeDetailResponse.createByPerfumeIntegralDTO(result);
-        })
-        .then((response: PerfumeDetailResponse) => {
-            LoggerHelper.logTruncated(
-                logger.debug,
-                `${LOG_TAG} getPerfume's result = ${response}`
-            );
-            res.status(StatusCode.OK).json(
-                new ResponseDTO<PerfumeDetailResponse>(
-                    MSG_GET_PERFUME_DETAIL_SUCCESS,
-                    response
-                )
-            );
-        })
-        .catch((err: Error) => next(err));
+
+    try {
+        const [result, _]: [PerfumeIntegralDTO, void] = await Promise.all([
+            Perfume.getPerfumeById(perfumeIdx, loginUserIdx),
+            SearchHistory.recordInquire(
+                loginUserIdx,
+                perfumeIdx,
+                '' /* 향후 경로가 다양화 되면 경로 기록 용 */
+            ),
+        ]);
+        const response: PerfumeDetailResponse =
+            PerfumeDetailResponse.createByPerfumeIntegralDTO(result);
+        res.status(StatusCode.OK).json(
+            new ResponseDTO<PerfumeDetailResponse>(
+                MSG_GET_PERFUME_DETAIL_SUCCESS,
+                response
+            )
+        );
+    } catch (err) {
+        next(err);
+    }
 };
 
 /**
