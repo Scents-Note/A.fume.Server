@@ -3,7 +3,7 @@ import { InquireHistoryDTO } from '@src/data/dto/InquireHistoryDTO';
 
 const LOG_TAG: string = '[SearchHistory/DAO]';
 
-const { InquireHistory } = require('@sequelize');
+import { InquireHistory } from '@sequelize';
 
 class InquireHistoryDao {
     /**

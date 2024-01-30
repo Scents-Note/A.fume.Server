@@ -3,6 +3,7 @@ import cron from 'node-cron';
 import { logger } from '@modules/winston';
 import properties from '@src/utils/properties';
 import MonitoringService from '@src/service/MonitoringService';
+import { PerfumeSearchRefreshService } from '@src/service/PerfumeSearchRefreshService';
 
 const TAG = '[Scheduler]';
 const searchHistoryService = new SearchHistoryService();
@@ -20,19 +21,26 @@ const debug: boolean = false;
 
 class SchedulerManager {
     tasks = [
-        cron.schedule('0 0 4 * * *', (now: Date) => {
+        cron.schedule('0 0 4 * * *', (now) => {
             logger.debug(
                 TAG,
                 `execute reloadSearchHistory() by schedule [0 0 4 * * *] at ${now}`
             );
             reloadSearchHistory();
         }),
-        cron.schedule('0 0 */2 * * *', (now: Date) => {
+        cron.schedule('0 0 */2 * * *', (now) => {
             logger.debug(
                 TAG,
                 `execute sendServerStatusMessage() by schedule [0 0 */2 * * *] at ${now}`
             );
             sendServerStatusMessage();
+        }),
+        cron.schedule('0 0 4 * * *', (now) => {
+            logger.debug(
+                TAG,
+                `execute migratePerfumes() by schedule [0 0 16 * * *] at ${now}`
+            );
+            new PerfumeSearchRefreshService().migratePerfumes();
         }),
     ];
     constructor() {

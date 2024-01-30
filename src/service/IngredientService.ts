@@ -3,11 +3,12 @@ import { logger } from '@modules/winston';
 import IngredientDao from '@dao/IngredientDao';
 
 import {
-    IngredientConditionDTO,
-    ListAndCountDTO,
+    IngredientCategoryDTO,
     IngredientDTO,
+    ListAndCountDTO,
     PagingDTO,
 } from '@dto/index';
+import { Op } from 'sequelize';
 
 const LOG_TAG: string = '[Ingredient/Service]';
 
@@ -32,22 +33,6 @@ class IngredientService {
     }
 
     /**
-     * 재료 검색
-     *
-     * @param {IngredientConditionDTO} ingredientConditionDTO
-     * @returns {Promise<IngredientDTO>} ingredientDTO
-     * @throws {NotMatchedError} if there is no Ingredient
-     **/
-    findIngredient(
-        ingredientConditionDTO: IngredientConditionDTO
-    ): Promise<IngredientDTO> {
-        logger.debug(
-            `${LOG_TAG} findIngredient(ingredientConditionDTO = ${ingredientConditionDTO})`
-        );
-        return this.ingredientDao.findIngredient(ingredientConditionDTO);
-    }
-
-    /**
      * 계열에 해당하는 재료 조회
      *
      * @param {number} seriesIdx
@@ -63,6 +48,38 @@ class IngredientService {
 
     setIngredientDao(dao: IngredientDao) {
         this.ingredientDao = dao;
+    }
+
+    async readPage(offset: number, limit: number, query: any) {
+        const { target, keyword } = query;
+        const whereOptions = {} as any;
+        if (target && keyword) {
+            switch (target) {
+                case 'id':
+                    whereOptions.ingredientIdx = keyword;
+                    break;
+                case 'name':
+                    whereOptions.name = { [Op.startsWith]: keyword };
+                    break;
+                case 'englishName':
+                    whereOptions.englishName = { [Op.startsWith]: keyword };
+                    break;
+            }
+        }
+
+        const { rows, count } = await this.ingredientDao.readPage(
+            offset,
+            limit,
+            whereOptions
+        );
+        const perfumesWithCategory = rows.map((perfume) => {
+            return {
+                ...perfume,
+                IngredientCategory: IngredientCategoryDTO.createByJson(perfume),
+            };
+        });
+        return new ListAndCountDTO(count, perfumesWithCategory);
+
     }
 }
 

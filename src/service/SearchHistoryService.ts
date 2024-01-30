@@ -8,7 +8,7 @@ import _ from 'lodash';
 import { ReportUserInquirePerfumeDTO } from '@src/data/dto';
 
 /* TODO Service에서 Sequelize Dependency 제거 해야함 */
-const { sequelize } = require('../models');
+import { sequelize } from '@sequelize';
 
 const LOG_TAG: string = '[SearchHistory/Service]';
 

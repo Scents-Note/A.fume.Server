@@ -1,10 +1,15 @@
 import { DEFAULT_PAGE_SIZE } from '@src/utils/constants';
+import { Fn } from 'sequelize/types/utils';
 
 class PagingDTO {
     readonly offset: number;
     readonly limit: number;
-    readonly order: string[][] | undefined;
-    constructor(offset: number, limit: number, order: string[][] | undefined) {
+    readonly order: (Fn | string[])[] | undefined;
+    constructor(
+        offset: number,
+        limit: number,
+        order: (Fn | string[])[] | undefined
+    ) {
         this.offset = offset;
         this.limit = limit;
         this.order = order;
@@ -40,7 +45,7 @@ class PagingDTO {
     }: {
         offset?: number;
         limit?: number;
-        order?: string[][];
+        order?: (Fn | string[])[];
     }): PagingDTO {
         return new PagingDTO(offset || 0, limit || DEFAULT_PAGE_SIZE, order);
     }

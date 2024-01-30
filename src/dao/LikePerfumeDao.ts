@@ -2,8 +2,8 @@ import { logger } from '@modules/winston';
 
 import { NotMatchedError, DuplicatedEntryError } from '@errors';
 
-const { LikePerfume, Sequelize } = require('@sequelize');
-const { Op } = Sequelize;
+import { LikePerfume } from '@sequelize';
+import { Op } from 'sequelize';
 
 const LOG_TAG: string = '[Ingredient/DAO]';
 
@@ -79,24 +79,9 @@ class LikePerfumeDao {
             where: { userIdx, perfumeIdx },
             raw: true,
             nest: true,
-        }).then((it: number) => {
+        } as any).then((it: number) => {
             if (it == 0) throw new NotMatchedError();
             return it;
-        });
-    }
-
-    /**
-     * 위시 리스트 향수 전체 삭제
-     *
-     * @param {number} userIdx
-     * @returns {Promise}
-     */
-    deleteByUserIdx(userIdx: number): Promise<void> {
-        logger.debug(`${LOG_TAG} deleteByUserIdx(userIdx = ${userIdx})`);
-        return LikePerfume.destroy({
-            where: {
-                userIdx,
-            },
         });
     }
 

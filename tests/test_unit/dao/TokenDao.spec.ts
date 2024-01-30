@@ -7,7 +7,7 @@ import { TokenDao, TokenDaoSequelize } from '@dao/TokenDao';
 
 import { TokenSetDTO } from '@dto/index';
 
-const { Token } = require('@sequelize');
+import { Token } from '@sequelize';
 
 const tokenDao: TokenDao = new TokenDaoSequelize();
 

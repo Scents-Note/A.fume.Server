@@ -2,7 +2,8 @@ import { logger } from '@modules/winston';
 
 import { IngredientCategoryDTO } from '@src/data/dto';
 
-const { IngredientCategories } = require('@sequelize');
+import { IngredientCategories } from '@sequelize';
+import { WhereOptions } from 'sequelize';
 
 const LOG_TAG: string = '[IngredientCategory/DAO]';
 
@@ -22,6 +23,30 @@ class IngredientCategoryDao {
             raw: true,
         });
         return result.map((it: any) => IngredientCategoryDTO.createByJson(it));
+    }
+
+    /**
+     * 향료 카테고리 조회
+     *
+     * @returns {Promise<IngredientDTO[]>}
+     */
+
+    async readPage(offset: number, limit: number, where?: WhereOptions) {
+        return IngredientCategories.findAndCountAll({
+            offset,
+            limit,
+            where,
+
+            raw: true,
+            nest: true,
+            order: [['createdAt', 'desc']],
+        });
+    }
+
+    async create(name: string) {
+        return IngredientCategories.create({
+            name,
+        });
     }
 }
 

@@ -3,8 +3,8 @@ import { NotMatchedError } from '@errors';
 
 import { BrandDTO, PagingDTO, ListAndCountDTO } from '@dto/index';
 
-const { Brand } = require('@sequelize');
-
+import { Brand } from '@sequelize';
+import { WhereOptions } from 'sequelize';
 const LOG_TAG: string = '[Brand/DAO]';
 
 class BrandDao {
@@ -25,28 +25,6 @@ class BrandDao {
             throw new NotMatchedError();
         }
         return BrandDTO.createByJson(result);
-    }
-
-    /**
-     * 브랜드 검색
-     *
-     * @param {PagingDTO} pagingDTO
-     * @returns {Promise<ListAndCountDTO<BrandDTO>>}
-     */
-    async search(pagingDTO: PagingDTO): Promise<ListAndCountDTO<BrandDTO>> {
-        logger.debug(`${LOG_TAG} search(PagingDTO = ${pagingDTO})`);
-        return Brand.findAndCountAll(
-            Object.assign(
-                {
-                    raw: true,
-                    nest: true,
-                },
-                pagingDTO.sequelizeOption()
-            )
-        ).then((it: any) => {
-            it.rows = it.rows.map((it: any) => BrandDTO.createByJson(it));
-            return new ListAndCountDTO<BrandDTO>(it.count, it.rows);
-        });
     }
 
     /**
@@ -74,25 +52,33 @@ class BrandDao {
     }
 
     /**
-     * 브랜드 검색
+     * 브랜드 전체 조회
      *
-     * @param {Object} condition
-     * @returns {Promise<BrandDTO>}
-     * @throws {NotMatchedError} if there is no brand
+     * @returns {Promise<Brand[]>}
      */
-    async findBrand(condition: any): Promise<BrandDTO> {
-        logger.debug(
-            `${LOG_TAG} findBrand(condition = ${JSON.stringify(condition)})`
-        );
-        return Brand.findOne({
-            where: { ...condition },
-            nest: true,
+    async readPage(offset: number, limit: number, where?: WhereOptions) {
+        logger.debug(`${LOG_TAG} readAll()`);
+        return Brand.findAndCountAll({
+            offset,
+            limit,
+            where,
             raw: true,
-        }).then((it: any) => {
-            if (!it) {
-                throw new NotMatchedError();
-            }
-            return BrandDTO.createByJson(it);
+            nest: true,
+            order: [['createdAt', 'desc']],
+        });
+    }
+
+    async create(
+        name: string,
+        englishName: string,
+        description: string,
+        firstInitial: string
+    ) {
+        return Brand.create({
+            name,
+            englishName,
+            description,
+            firstInitial,
         });
     }
 }

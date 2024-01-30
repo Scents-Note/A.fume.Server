@@ -24,7 +24,7 @@ import {
 } from '../../internal/TestHelper';
 
 const userDao = new UserDao();
-const { User } = require('@sequelize');
+import { User } from '@sequelize';
 
 class MockGenerator {
     static _userIdx: number = 6;

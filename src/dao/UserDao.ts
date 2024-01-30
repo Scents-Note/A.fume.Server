@@ -6,8 +6,9 @@ import { CreatedResultDTO, UserDTO, SurveyDTO, UserInputDTO } from '@dto/index';
 
 const LOG_TAG: string = '[User/DAO]';
 
-const { sequelize, User } = require('@sequelize');
-const { user: MongooseUser } = require('@mongoose');
+import { sequelize, User } from '@sequelize';
+
+import { User as MongooseUser } from '@mongoose';
 
 class UserDao {
     /**
@@ -27,7 +28,7 @@ class UserDao {
                 { ...userInputDTO }
             )
         )
-            .then((it: UserDTO) => {
+            .then((it: User) => {
                 return new CreatedResultDTO<UserDTO>(
                     it.userIdx,
                     UserDTO.createByJson(it)
@@ -75,7 +76,7 @@ class UserDao {
         if (!result) {
             throw new NotMatchedError();
         }
-        return UserDTO.createByJson(result.dataValues);
+        return UserDTO.createByJson(result);
     }
 
     /**
@@ -162,16 +163,25 @@ class UserDao {
      */
     async postSurvey(surveyDTO: SurveyDTO) {
         logger.debug(`${LOG_TAG} postSurvey(surveyDTO = ${surveyDTO})`);
-        return MongooseUser.create(surveyDTO).catch((err: any) => {
+
+        try {
+            const user = new MongooseUser(surveyDTO);
+
+            return user.save();
+        } catch (err: any) {
             if (err.code == 11000) {
-                return MongooseUser.updateByPk(surveyDTO.userIdx, {
-                    surveyKeywordList: surveyDTO.surveyKeywordList,
-                    surveyPerfumeList: surveyDTO.surveyPerfumeList,
-                    surveySeriesList: surveyDTO.surveySeriesList,
-                });
+                return MongooseUser.findOneAndUpdate(
+                    { userIdx: surveyDTO.userIdx },
+                    {
+                        surveyKeywordList: surveyDTO.surveyKeywordList,
+                        surveyPerfumeList: surveyDTO.surveyPerfumeList,
+                        surveySeriesList: surveyDTO.surveySeriesList,
+                    },
+                    { new: true }
+                );
             }
             throw err;
-        });
+        }
     }
 }
 

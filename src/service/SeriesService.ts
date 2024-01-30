@@ -4,7 +4,6 @@ import _, { Dictionary } from 'lodash';
 import IngredientDao from '@dao/IngredientDao';
 import IngredientCategoryDao from '@src/dao/IngredientCategoryDao';
 import SeriesDao from '@dao/SeriesDao';
-import NoteDao from '@dao/NoteDao';
 
 import {
     PagingDTO,
@@ -14,40 +13,26 @@ import {
     SeriesFilterDTO,
     IngredientCategoryDTO,
 } from '@dto/index';
-import { THRESHOLD_CATEGORY } from '@src/utils/constants';
 import { Op } from 'sequelize';
 import { ETC } from '@src/utils/strings';
 
 const LOG_TAG: string = '[Series/Service]';
 
+const THRESHOLD_CATEGORY: number = 10;
+
 class SeriesService {
     seriesDao: SeriesDao;
     ingredientDao: IngredientDao;
     ingredientCategoryDao: IngredientCategoryDao;
-    noteDao: any;
     constructor(
         seriesDao?: SeriesDao,
         ingredientDao?: IngredientDao,
-        ingredientCategoryDao?: IngredientCategoryDao,
-        noteDao?: any
+        ingredientCategoryDao?: IngredientCategoryDao
     ) {
         this.seriesDao = seriesDao ?? new SeriesDao();
         this.ingredientDao = ingredientDao ?? new IngredientDao();
         this.ingredientCategoryDao =
             ingredientCategoryDao ?? new IngredientCategoryDao();
-        this.noteDao = noteDao ?? new NoteDao();
-    }
-
-    /**
-     * 특정 계열 조회
-     *
-     * @param {integer} seriesIdx
-     * @returns {Promise<SeriesDTO>} seriesDTO
-     * @throws {NotMatchedError} if there is no series
-     **/
-    getSeriesByIdx(seriesIdx: number): Promise<SeriesDTO> {
-        logger.debug(`${LOG_TAG} getSeriesByIdx(seriesIdx = ${seriesIdx})`);
-        return this.seriesDao.readByIdx(seriesIdx);
     }
 
     /**
@@ -59,17 +44,6 @@ class SeriesService {
     getSeriesAll(pagingDTO: PagingDTO): Promise<ListAndCountDTO<SeriesDTO>> {
         logger.debug(`${LOG_TAG} getSeriesAll(pagingDTO = ${pagingDTO})`);
         return this.seriesDao.readAll(pagingDTO);
-    }
-
-    /**
-     * 계열 검색
-     *
-     * @param {PagingDTO} pagingDTO
-     * @returns {Promise<ListAndCountDTO<SeriesDTO>>} listAndCountDTO
-     **/
-    searchSeries(pagingDTO: PagingDTO): Promise<ListAndCountDTO<SeriesDTO>> {
-        logger.debug(`${LOG_TAG} searchSeries(pagingDTO = ${pagingDTO})`);
-        return this.seriesDao.search(pagingDTO);
     }
 
     /**
@@ -130,19 +104,6 @@ class SeriesService {
                 })
             );
         });
-    }
-
-    /**
-     * 계열 영어 이름으로 조회
-     *
-     * @param {string} englishName
-     * @returns {Promise<SeriesDTO>}
-     **/
-    findSeriesByEnglishName(englishName: string): Promise<SeriesDTO> {
-        logger.debug(
-            `${LOG_TAG} findSeriesByEnglishName(englishName = ${englishName})`
-        );
-        return this.seriesDao.findSeries({ englishName });
     }
 }
 
