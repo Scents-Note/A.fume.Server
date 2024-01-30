@@ -188,43 +188,49 @@ class PerfumeDao {
         logger.debug(
             `${LOG_TAG} recentSearchPerfumeList(userIdx = ${userIdx}, pagingDTO = ${pagingDTO})`
         );
-        return InquireHistory.findAndCountAll(
-            _.merge({}, pagingDTO.sequelizeOption(), {
-                attributes: {
-                    include: [
-                        [
-                            Sequelize.fn(
-                                'max',
-                                Sequelize.col('InquireHistory.created_at')
-                            ),
-                            'inquireAt',
-                        ],
-                    ],
-                },
-                where: {
-                    userIdx,
-                },
-                include: [
-                    {
-                        model: Perfume,
-                        as: 'Perfume',
-                        required: true,
+        try {
+            const result: {
+                rows: InquireHistory[];
+                // todo: count에 배열이 아닌 number이 오게끔 수정
+                count: { perfume_idx: number; count: number }[];
+            } = (await InquireHistory.findAndCountAll(
+                _.merge({}, pagingDTO.sequelizeOption(), {
+                    attributes: {
                         include: [
-                            {
-                                model: Brand,
-                                as: 'Brand',
-                                required: true,
-                            },
+                            [
+                                Sequelize.fn(
+                                    'max',
+                                    Sequelize.col('InquireHistory.created_at')
+                                ),
+                                'inquireAt',
+                            ],
                         ],
-                        raw: true,
-                        nest: true,
                     },
-                ],
-                order: [[sequelize.col('inquireAt'), 'desc']],
-                group: ['InquireHistory.perfume_idx'],
-            })
-        ).then((it: any) => {
-            const rows: PerfumeInquireHistoryDTO[] = it.rows
+                    where: {
+                        userIdx,
+                    },
+                    include: [
+                        {
+                            model: Perfume,
+                            as: 'Perfume',
+                            required: true,
+                            include: [
+                                {
+                                    model: Brand,
+                                    as: 'Brand',
+                                    required: true,
+                                },
+                            ],
+                            raw: true,
+                            nest: true,
+                        },
+                    ],
+                    order: [[sequelize.col('inquireAt'), 'desc']],
+                    group: ['InquireHistory.perfume_idx'],
+                })
+            )) as any;
+
+            const rows: PerfumeInquireHistoryDTO[] = result.rows
                 .map((json: any) => {
                     return {
                         perfumeIdx: json.Perfume.perfumeIdx,
@@ -243,8 +249,10 @@ class PerfumeDao {
                     };
                 })
                 .map(PerfumeInquireHistoryDTO.createByJson);
-            return new ListAndCountDTO(it.count.length, rows);
-        });
+            return new ListAndCountDTO(result.count.length as number, rows);
+        } catch (err) {
+            throw err;
+        }
     }
 
     /**
