@@ -48,6 +48,7 @@ class PerfumeIntegralDTO {
     readonly noteType: number;
     readonly noteDict: NoteDict;
     readonly reviewIdx: number;
+    readonly priceComparisonUrl: string;
     constructor(
         perfumeIdx: number,
         name: string,
@@ -65,7 +66,8 @@ class PerfumeIntegralDTO {
         keywordList: string[],
         noteType: number,
         noteDict: NoteDict,
-        reviewIdx: number
+        reviewIdx: number,
+        priceComparisonUrl: string
     ) {
         this.perfumeIdx = perfumeIdx;
         this.name = name;
@@ -84,6 +86,7 @@ class PerfumeIntegralDTO {
         this.noteType = noteType;
         this.noteDict = noteDict;
         this.reviewIdx = reviewIdx;
+        this.priceComparisonUrl = priceComparisonUrl;
     }
 
     public toString(): string {
@@ -142,7 +145,8 @@ class PerfumeIntegralDTO {
             json.keywordList,
             json.noteType,
             json.noteDict,
-            json.reviewIdx
+            json.reviewIdx,
+            json.priceComparisonUrl
         );
     }
 }
