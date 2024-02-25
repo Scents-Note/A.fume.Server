@@ -52,6 +52,12 @@ export class Perfume extends Model {
     imageUrl: string;
 
     @Column({
+        type: DataType.STRING,
+        allowNull: true,
+    })
+    priceComparisonUrl: string;
+
+    @Column({
         type: DataType.STRING(1000),
         allowNull: false,
     })
