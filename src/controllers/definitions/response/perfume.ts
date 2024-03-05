@@ -67,6 +67,9 @@ type NoteDict = {
  *         type: array
  *         items:
  *           type: string
+ *       priceComparisonUrl:
+ *         type: string
+ *         description: 가격 비교 url
  *       score:
  *         type: number
  *         description: 점수 평균 값
@@ -169,6 +172,7 @@ class PerfumeDetailResponse {
     readonly noteType: number;
     readonly ingredients: NoteDict;
     readonly reviewIdx: number;
+    readonly priceComparisonUrl: string;
     constructor(
         perfumeIdx: number,
         name: string,
@@ -186,7 +190,8 @@ class PerfumeDetailResponse {
         Keywords: string[],
         noteType: number,
         ingredients: NoteDict,
-        reviewIdx: number = NO_REVIEW
+        reviewIdx: number = NO_REVIEW,
+        priceComparisonUrl?: string
     ) {
         this.perfumeIdx = perfumeIdx;
         this.name = name;
@@ -205,6 +210,7 @@ class PerfumeDetailResponse {
         this.noteType = noteType;
         this.ingredients = ingredients;
         this.reviewIdx = reviewIdx;
+        this.priceComparisonUrl = priceComparisonUrl ?? '';
     }
 
     public toString(): string {
@@ -242,7 +248,8 @@ class PerfumeDetailResponse {
             perfumeIntegralDTO.keywordList,
             perfumeIntegralDTO.noteType,
             perfumeIntegralDTO.noteDict,
-            perfumeIntegralDTO.reviewIdx
+            perfumeIntegralDTO.reviewIdx,
+            perfumeIntegralDTO.priceComparisonUrl
         );
     }
     private static convertLongevity(longevity: any): Longevity {
