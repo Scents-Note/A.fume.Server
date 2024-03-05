@@ -8,6 +8,7 @@ class PerfumeDTO {
     readonly abundanceRate: number;
     readonly volumeAndPrice: { [key: string]: number }[];
     readonly imageUrl: string;
+    readonly priceComparisonUrl: string;
     readonly Brand: BrandDTO;
     constructor(
         perfumeIdx: number,
@@ -16,7 +17,8 @@ class PerfumeDTO {
         abundanceRate: number,
         volumeAndPrice: { [key: string]: number }[],
         imageUrl: string,
-        Brand: BrandDTO
+        Brand: BrandDTO,
+        priceComparisonUrl: string
     ) {
         this.perfumeIdx = perfumeIdx;
         this.name = name;
@@ -26,6 +28,7 @@ class PerfumeDTO {
         this.volumeAndPrice = volumeAndPrice;
         this.imageUrl = imageUrl;
         this.Brand = Brand;
+        this.priceComparisonUrl = priceComparisonUrl;
     }
 
     public toString(): string {
@@ -40,7 +43,8 @@ class PerfumeDTO {
             json.abundanceRate,
             json.volumeAndPrice,
             json.imageUrl,
-            BrandDTO.createByJson(json.Brand)
+            BrandDTO.createByJson(json.Brand),
+            json.priceComparisonUrl
         );
     }
 }
